@@ -1,4 +1,4 @@
-# 使用 LXML、XPath 和 CSS 选择器
+# 第三章：使用 LXML、XPath 和 CSS 选择器
 
 到目前为止，我们已经了解了 Web 开发技术、数据查找技术以及使用 Python 编程语言访问 Web 内容。
 

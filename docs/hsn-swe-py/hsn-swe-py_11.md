@@ -1,4 +1,4 @@
-# 数据持久性和 BaseDataObject
+# 第十一章：数据持久性和 BaseDataObject
 
 本章将专注于`BaseDataObject` ABC（抽象基类）的开发和测试，我们将在`hms_artisan`（**Artisan Application**）和`hms_gateway`（**Artisan Gateway**服务）组件项目中都需要它。`hms_co`（**Central Office Application**）代码库可能也需要利用相同的功能。在后面深入研究`hms_co`代码时，我们将更深入地了解这一点。
 

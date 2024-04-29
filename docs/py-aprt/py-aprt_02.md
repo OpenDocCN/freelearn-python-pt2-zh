@@ -1,4 +1,4 @@
-## Python 促销
+## 第二章：Python 促销
 
 首先，Python 有什么好处？为什么你想学它？对于这些问题有很多好答案。其中一个是 Python 很强大。Python 语言表达力强，高效，它带有一个[很棒的标准库](https://docs.python.org/3/library/index.html)，并且它是一个[巨大的精彩第三方库的中心](https://pypi.python.org/pypi)。使用 Python，你可以从简单的脚本到复杂的应用程序，你可以快速完成，你可以安全地完成，而且你可以用比你可能认为可能的更少的代码行数完成。
 

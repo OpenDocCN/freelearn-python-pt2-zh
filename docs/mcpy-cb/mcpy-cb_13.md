@@ -1,4 +1,4 @@
-# 与 Adafruit FeatherWing OLED 交互
+# 第十三章：与 Adafruit FeatherWing OLED 交互
 
 本章将向您介绍 Adafruit FeatherWing 有机发光二极管（OLED）显示器。Adafruit Feather 是一个标准的板安排，允许将这些板升级插入到彼此之间。它们可以堆叠在一起或作为独立板运行。FeatherWings 是可以插入这些 Feather 板的附件。
 

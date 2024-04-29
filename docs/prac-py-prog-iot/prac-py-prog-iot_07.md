@@ -1,3 +1,5 @@
+# 第八章
+
 将您的 Raspberry Pi 连接到物理世界
 
 在本章中，我们将探讨与将您的 Raspberry Pi 连接到物理世界相关的硬件和软件概念。我们将介绍由 GPIO 库使用的流行编号方案，以引用您的 Raspberry Pi 上的 GPIO 引脚，并概述流行的 GPIO 库，除了我们在之前章节中使用的 GPIOZero 和 PiGPIO 库。正如我们将会了解的那样，理解 GPIO 编号方案对于确保您理解 GPIO 库如何与 GPIO 引脚一起工作至关重要。

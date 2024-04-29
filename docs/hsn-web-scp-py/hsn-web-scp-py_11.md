@@ -1,4 +1,4 @@
-# 使用 Selenium 进行 Web 抓取
+# 第八章：使用 Selenium 进行 Web 抓取
 
 到目前为止，我们已经学习了如何使用多种数据查找技术，并通过实现各种 Python 库来访问 Web 内容进行 Web 抓取。
 

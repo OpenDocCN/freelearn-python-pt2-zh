@@ -1,4 +1,4 @@
-# 控制 ESP8266
+# 第十章：控制 ESP8266
 
 在本章中，我们将介绍 Adafruit Feather HUZZAH ESP8266 微控制器。当您的嵌入式项目需要支持互联网连接时，ESP8266 是最受欢迎的 MicroPython 硬件选项之一。通过板上内置的 Wi-Fi 功能实现此连接。
 

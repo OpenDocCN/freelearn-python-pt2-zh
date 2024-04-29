@@ -1,4 +1,4 @@
-# 控制 LED
+# 第二章：控制 LED
 
 在本章中，我们将介绍控制 Adafruit Circuit Playground Express 附带的一系列 NeoPixel LED 的几种方法。在这些示例中，我们将研究设置像素颜色的各种方法，每种方法都有其自己的权衡。
 

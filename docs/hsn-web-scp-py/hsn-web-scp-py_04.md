@@ -1,4 +1,4 @@
-# Python 和 Web - 使用 urllib 和 Requests
+# 第二章：Python 和 Web - 使用 urllib 和 Requests
 
 从上一章，我们现在对 Web 抓取是什么，存在哪些核心开发技术以及我们可以计划在哪里或如何找到我们正在寻找的信息有了一个概念。
 

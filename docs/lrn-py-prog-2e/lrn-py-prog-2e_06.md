@@ -1,4 +1,4 @@
-# OOP，装饰器和迭代器
+# 第六章：OOP，装饰器和迭代器
 
 La classe non è acqua.（类似水）- 意大利谚语
 
