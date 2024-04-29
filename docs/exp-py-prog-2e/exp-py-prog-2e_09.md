@@ -70,7 +70,7 @@ Peter Elbow 在《写作的力量：掌握写作过程的技巧》（牛津大�
 
 一个好的做法是提供一个简短的介绍性文本，简要解释文档的内容，并引导读者到适当的部分：
 
-```py
+```
 Atomisator is a product that fetches RSS feeds and saves them in a database, with a filtering process.
 
 If you are a developer, you might want to look at the API description (api.txt)
@@ -132,7 +132,7 @@ If you are a designer, you can read the architecture and infrastructure notes (a
 
 为了展示一个糟糕的用法示例，让我们假设我们想展示如何使用`parse()`函数：
 
-```py
+```
 **>>> from atomisator.parser import parse**
 **>>> # Let's use it:**
 **>>> stuff = parse('some-feed.xml')**
@@ -143,7 +143,7 @@ If you are a designer, you can read the architecture and infrastructure notes (a
 
 一个更好的例子是，当解析器知道如何使用 parse 函数返回一个 feed 内容时，它作为一个顶级函数可用：
 
-```py
+```
 **>>> from atomisator.parser import parse**
 **>>> # Let's use it:**
 **>>> my_feed = parse('http://tarekziade.wordpress.com/feed')**
@@ -182,7 +182,7 @@ reStructuredText 也被称为 reST（参见[`docutils.sourceforge.net/rst.html`]
 
 这是这样一个文档的示例：
 
-```py
+```
 =====
 Title
 =====
@@ -220,14 +220,14 @@ reST 包含在`docutils`中，该软件包提供了一套脚本，可将 reST �
 
 要安装 reStructuredText，安装`docutils`：
 
-```py
+```
 **$ pip install docutils**
 
 ```
 
 例如，由`docutils`包提供的`rst2html`脚本将根据 reST 文件生成 HTML 输出：
 
-```py
+```
 **$ more text.txt**
 **Title**
 **=====**
@@ -261,7 +261,7 @@ reST 包含在`docutils`中，该软件包提供了一套脚本，可将 reST �
 
 例如，考虑以下代码：
 
-```py
+```
 ==============
 Document title
 ==============
@@ -305,7 +305,7 @@ Subsection (C) of Section 2.
 
 reST 为项目列表、编号列表和具有自动编号功能的定义列表提供可读的语法：
 
-```py
+```
 Bullet list:
 
 - one
@@ -347,7 +347,7 @@ two
 
 当您需要展示一些代码示例时，可以使用文字块。两个冒号用于标记块，这是一个缩进的段落：
 
-```py
+```
 This is a code example
 
 ::
@@ -364,7 +364,7 @@ Let's continue our text
 
 请注意，冒号字符可以放在文本行中。在这种情况下，它们将在各种呈现格式中被替换为单个冒号：
 
-```py
+```
 This is a code example::
 
     >>> 1 + 1
@@ -383,60 +383,54 @@ Let's continue our text
 
 只要提供在文档中，文本就可以通过以两个点开头的特殊行更改为外部链接：
 
-```py
+```
 Try `Plone CMS`_, it is great ! It is based on Zope_.
 
 .. _`Plone CMS`: http://plone.org
 .. _Zope: http://zope.org
 ```
 
-通常的做法是将外部链接分组放在文档的末尾。当要链接的文本包含空格时，必须用```py (backtick) characters.
+通常的做法是将外部链接分组放在文档的末尾。当要链接的文本包含空格时，必须用`` ` ``（反引号）字符括起来。
 
 Internal links can also be used by adding a marker in the text:
 
-```括起来
+```
 
-这是一个代码示例
+This is a code example
 
-.. _ 示例：
+.. _example:
 
 ::
 
->>> 1 + 1
+    >>> 1 + 1
+    2
 
-2
-
-让我们继续我们的文本，或者回到
-
-示例 _。
-
-```py
+Let's continue our text, or maybe go back to
+the example_.
+```
 
 Sections are also targets that can be used:
 
 ```
 
 ==============
-
-文档标题
-
+Document title
 ==============
 
-介绍文档内容。
+Introduction to the document content.
 
-第一部分
 
+Section 1
 =========
 
-第一部分文档。
+First document section.
 
-第二部分
 
+Section 2
 =========
 
--> 回到`第一部分`_
-
-```py
+-> go back to `Section 1`_
+```
 
 # Building the documentation
 
@@ -483,40 +477,36 @@ The example design document template in reST could be as follows:
 ```
 
 =========================================
-
-设计文件标题
-
+Design document title
 =========================================
 
-:作者：文档作者
+:Author: Document Author
+:Tags: document tags separated with spaces
 
-:标签: 用空格分隔的文档标签
+:abstract:
 
-:摘要:
+    Write here a small abstract about your design document.
 
-在这里写一个关于你的设计文档的小摘要。
+.. contents ::
 
-.. 目录 ::
 
-受众
-
+Audience
 ========
 
-在这里解释目标读者是谁。
+Explain here who is the target readership.
 
-内容
 
+Content
 =======
 
-在这里写你的文档。不要犹豫把它分成几个部分。
+Write your document here. Do not hesitate to split it in several sections.
 
-参考文献
 
+References
 ==========
 
-在这里放置参考文献和指向其他文档的链接。
-
-```py
+Put here references, and links to other documents.
+```
 
 ### Usage
 
@@ -562,52 +552,48 @@ A simple reusable template for the recipes could be as follows:
 ```
 
 ===========
-
-食谱名称
-
+Recipe name
 ===========
 
-:作者：食谱作者
+:Author: Recipe Author
+:Tags: document tags separated with spaces
 
-:标签：用空格分隔的文档标签
+:abstract:
 
-:摘要:
+    Write here a small abstract about your design document.
 
-在这里写一个关于你的设计文档的小摘要。
+.. contents ::
 
-.. 目录 ::
 
-受众
-
+Audience
 ========
 
-在这里解释目标读者是谁。
+Explain here who is the target readership.
 
-先决条件
 
+Prerequisites
 =============
 
-写出实施这个食谱所需的先决条件列表。这可以是额外的文档、软件、特定库、环境设置或任何超出明显语言解释器所需的东西。
+Write the list of prerequisites for implementing this recipe. This can be additional documents, software, specific libraries, environment settings or just anything that is required beyond the obvious language interpreter.
 
-问题
 
+Problem
 =======
 
-解释这个食谱试图解决的问题。
+Explain the problem that this recipe is trying to solve.
 
-解决方案
 
+Solution
 ========
 
-给出前面解释的问题的解决方案。这是食谱的核心。
+Give solution to problem explained earlier. This is the core of a recipe.
 
-参考文献
 
+References
 ==========
 
-在这里放置参考文献和指向其他文档的链接。
-
-```py
+Put here references, and links to other documents.
+```
 
 #### Tutorial
 
@@ -696,27 +682,17 @@ By convention, the `docs` folder is used as a root of documentation tree:
 
 ```
 
-**$ cd my-project**
-
-**$ find docs**
-
-**docs**
-
-**docs/source**
-
-**docs/source/design**
-
-**docs/source/operations**
-
-**docs/source/usage**
-
-**docs/source/usage/cookbook**
-
-**docs/source/usage/modules**
-
-**docs/source/usage/tutorial**
-
-```py
+$ cd my-project
+$ find docs
+docs
+docs/source
+docs/source/design
+docs/source/operations
+docs/source/usage
+docs/source/usage/cookbook
+docs/source/usage/modules
+docs/source/usage/tutorial
+```
 
 Notice that the tree is located in a `source` folder because the `docs` folder will be used as a root folder to set up a special tool in the next section.
 
@@ -725,18 +701,16 @@ From there, an `index.txt` file can be added at each level (besides the root), e
 ```
 
 ==========
-
-操作
-
+Operations
 ==========
 
-这一部分包含操作文档：
+This section contains operations documents:
 
-- 如何安装和运行项目
+− How to install and run the project
+− How to install and manage a database for the project
+It is important to know that people tend to forget 
 
-- 如何安装和管理项目的数据库
-
-```py
+```
 
 It is important to know that people tend to forget to update such lists of documents and tables of content. So it is better to have them updated automatically. In the next subsection, we will discuss one tool that, among many other features, can also handle this use case.
 
@@ -752,51 +726,30 @@ The easiest way to start working with Sphinx is to use the `sphinx-quickstart` s
 
 ```
 
-**project/docs$ make html**
+project/docs$ make html
+sphinx-build -b html -d _build/doctrees   . _build/html
+Running Sphinx v1.3.6
+making output directory...
+loading pickled environment... not yet created
+building [mo]: targets for 0 po files that are out of date
+building [html]: targets for 1 source files that are out of date
+updating environment: 1 added, 0 changed, 0 removed
+reading sources... [100%] index
+looking for now-outdated files... none found
+pickling environment... done
+checking consistency... done
+preparing documents... done
+writing output... [100%] index
+generating indices... genindex
+writing additional pages... search
+copying static files... done
+copying extra files... done
+dumping search index in English (code: en) ... done
+dumping object inventory... done
+build succeeded.
+Build finished. The HTML pages are in _build/html.
 
-**sphinx-build -b html -d _build/doctrees   . _build/html**
-
-**运行 Sphinx v1.3.6**
-
-**创建输出目录...**
-
-**加载腌制环境...尚未创建**
-
-**构建[mo]：为 0 个过时的 po 文件创建目标**
-
-**构建[html]：为 1 个过时的源文件创建目标**
-
-**更新环境：1 个添加，0 个更改，0 个删除**
-
-**读取源... [100%] 索引**
-
-**寻找现在过时的文件...未找到**
-
-**腌制环境...完成**
-
-**检查一致性...完成**
-
-**准备文档...完成**
-
-**编写输出... [100%] 索引**
-
-**生成索引...genindex**
-
-**编写额外的页面...搜索**
-
-**复制静态文件...完成**
-
-**复制额外的文件...完成**
-
-**在英语中转储搜索索引（代码：en）...完成**
-
-**转储对象库存...完成**
-
-**构建成功。**
-
-**构建完成。HTML 页面在 _build/html 中。**
-
-```py
+```
 
 ![Consumer's layout](img/5295_09_04.jpg)
 
@@ -817,22 +770,18 @@ For example, the index file in the `cookbook` folder, which we have previously d
 ```
 
 ========
-
-食谱
-
+Cookbook
 ========
 
-欢迎来到食谱。
+Welcome to the Cookbook.
 
-可用的食谱：
+Available recipes:
 
 .. toctree::
+   :glob:
+   *
 
-:全局：
-
-*
-
-```py
+```
 
 With this syntax, the HTML page will display a list of all the reStructuredText documents available in the `cookbook` folder. This directive can be used in all the index files to build a browsable documentation.
 
@@ -843,16 +792,14 @@ For module helpers, a marker can be added so that it is automatically listed and
 ```
 
 =======
-
-会话
-
+session
 =======
 
 .. module:: db.session
 
-模块会话...
+The module session...
 
-```py
+```
 
 Notice that the `db` prefix here can be used to avoid module collision. Sphinx will use it as a module category and will group all modules that start with `db.` in this category.
 
@@ -861,24 +808,19 @@ Notice that the `db` prefix here can be used to avoid module collision. Sphinx w
 Another option can be used to fill the index page by linking the document to an entry:
 
 ```
-
 =======
-
-会话
-
+session
 =======
 
 .. module:: db.session
 
-.. 索引::
+.. index::
+   Database Access
+   Session
 
-数据库访问
+The module session...
 
-会话
-
-模块会话...
-
-```py
+```
 
 Two new entries, `Database Access` and `Session`, will be added in the index page.
 
