@@ -536,7 +536,7 @@ def write_sequence(filename, num):
 
 ### 禅的时刻
 
-![](img/m09----zen-beautiful-is-better-than-ugly.png)
+![](img/zen-beautiful-is-better-than-ugly.png)
 
 with-block 的语法如下：
 
@@ -815,7 +815,7 @@ def mandelbrot(size_x, size_y):
 
 找到文件并在图像查看器中打开它，例如通过在 Web 浏览器中打开它。
 
-![](img/m09----mandel.png)
+![](img/mandel.png)
 
 #### 读取二进制文件
 

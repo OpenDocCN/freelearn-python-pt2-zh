@@ -264,13 +264,13 @@ Python 一个与众不同的（有时是有争议的）方面是，前导空格�
 
 看着屏幕上的 Python 代码，我们可以看到缩进清晰地匹配 - 实际上*必须*匹配 - 程序的结构。
 
-![Python 源代码](img/m01----significant_whitespace_code.png)
+![Python 源代码](img/significant_whitespace_code.png)
 
 Python 源代码
 
 即使我们用灰色线代替代码，程序的结构也是清晰的。
 
-![灰色的代码](img/m01----significant_whitespace_bars.png)
+![灰色的代码](img/significant_whitespace_bars.png)
 
 灰色的代码
 
@@ -334,7 +334,7 @@ Namespaces are one honking great idea -- let's do more of those!
 
 * * *
 
-![](img/m01----zen-readability-counts.png)
+![](img/zen-readability-counts.png)
 
 随着时间的推移，你会开始欣赏 Python 的重要空白，因为它为*你的*代码带来了优雅，以及你可以轻松阅读*他人的*代码。
 

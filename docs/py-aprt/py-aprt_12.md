@@ -221,7 +221,7 @@
 
 ### 禅的时刻
 
-![](img/m07----zen-simple-is-better-than-complex.png)
+![](img/zen-simple-is-better-than-complex.png)
 
 理解通常比替代方法更易读。然而，过度使用理解是可能的。有时，一个长或复杂的理解可能比等价的 for 循环*更*难读。关于何时应该优先选择哪种形式没有硬性规定，但在编写代码时要谨慎，并尽量选择适合你情况的最佳形式。
 

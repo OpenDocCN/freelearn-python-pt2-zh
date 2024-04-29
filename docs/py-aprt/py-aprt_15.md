@@ -468,7 +468,7 @@ OK
 
 ### 禅宗时刻
 
-![](img/m10----zen-in-the-face-of-ambiguity-refuse-the-temptation-to-guess.png)
+![](img/zen-in-the-face-of-ambiguity-refuse-the-temptation-to-guess.png)
 
 猜测的诱惑，或者用一厢情愿的想法忽略模棱两可，可能会带来短期收益。但它往往会导致未来的混乱，以及难以理解和修复的错误。在进行下一个快速修复之前，问问自己需要什么信息才能正确地进行操作。
 

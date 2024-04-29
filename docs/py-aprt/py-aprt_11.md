@@ -386,7 +386,7 @@ TypeError: int() argument must be a string or a number, not 'list'
 
 异常是函数 API 的重要组成部分。函数的调用者需要知道在各种条件下期望哪些异常，以便他们可以确保适当的异常处理程序已经就位。我们将使用寻找平方根作为示例，使用一个自制的平方根函数，由亚历山大的赫罗（尽管他可能没有使用 Python）提供。
 
-![函数的调用者需要知道期望哪些异常。](img/m06----callers-need-to-know.png)
+![函数的调用者需要知道期望哪些异常。](img/callers-need-to-know.png)
 
 函数的调用者需要知道期望哪些异常。
 
@@ -534,7 +534,7 @@ def sqrt(x):
 
 虽然它可以工作，但这将是浪费的；我们会明知道继续进行一个最终毫无意义的非平凡计算。
 
-![](img/m06----wasteful.png)
+![](img/wasteful.png)
 
 ### 守卫子句
 
@@ -692,7 +692,7 @@ def convert(s):
 
 或者我们可以在函数内部拦截`TypeError`并重新引发它，但是有什么意义呢？
 
-![通常不必处理 TypeErrors。](img/m06----just-let-it-fail.png)
+![通常不必处理 TypeErrors。](img/just-let-it-fail.png)
 
 通常不必处理 TypeErrors。
 
@@ -792,7 +792,7 @@ def make_at(path, dir_name):
 
 ### 禅意时刻
 
-![](img/m06----zen-errors-should-never-pass-silently.png)
+![](img/zen-errors-should-never-pass-silently.png)
 
 * * *
 

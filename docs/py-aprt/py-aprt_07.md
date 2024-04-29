@@ -61,7 +61,7 @@ SyntaxError: EOL while scanning string literal
 
 ### 禅境时刻
 
-![](img/m02----zen-practicality-beats-purity.png)
+![](img/zen-practicality-beats-purity.png)
 
 乍一看，支持两种引用样式似乎违反了 Python 风格的一个重要原则。来自 Python 之禅：
 
@@ -394,7 +394,7 @@ b'data'
 
 在 Python 中，我们可以将 Unicode`str`*编码*为`bytes`对象，反之亦然，我们可以将`bytes`对象*解码*为 Unicode`str`。在任何方向上，我们都必须指定编码。Python 不会-通常也不能-阻止您使用 CP037 编解码`bytes`对象中存储的 UTF-16 数据，例如处理旧 IBM 主机上的字符串。如果你幸运的话，解码将在运行时失败并显示`UnicodeError`；如果你不幸的话，你将得到一个充满垃圾的`str`，这将不会被你的程序检测到。
 
-![编码和解码字符串。](img/m02----encoding-decoding.png)
+![编码和解码字符串。](img/encoding-decoding.png)
 
 编码和解码字符串。
 

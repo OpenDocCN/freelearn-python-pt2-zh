@@ -260,7 +260,7 @@ False
 
 ```
 
-![威尔士安格尔西岛上的兰韦尔普尔古因吉尔戈盖里希温德罗布尔兰蒂斯利奥戈戈戈乔火车站的标志 - 欧洲最长的地名。](img/m05----llanfair.png)
+![威尔士安格尔西岛上的兰韦尔普尔古因吉尔戈盖里希温德罗布尔兰蒂斯利奥戈戈戈乔火车站的标志 - 欧洲最长的地名。](img/llanfair.png)
 
 威尔士安格尔西岛上的兰韦尔普尔古因吉尔戈盖里希温德罗布尔兰蒂斯利奥戈戈戈乔火车站的标志 - 欧洲最长的地名。
 
@@ -285,7 +285,7 @@ Newfoundland
 
 ```
 
-![纽芬兰岛，世界第十六大岛，是英语中相对较少的封闭的三重复合词之一。](img/m05----newfoundland.png)
+![纽芬兰岛，世界第十六大岛，是英语中相对较少的封闭的三重复合词之一。](img/newfoundland.png)
 
 纽芬兰岛是世界第十六大岛，是英语中相对较少的封闭的三重复合词之一。
 
@@ -338,7 +338,7 @@ highwayman
 
 ### 禅之时刻
 
-![](img/m05----zen-the-way-may-not-be-obvious.png)
+![](img/zen-the-way-may-not-be-obvious.png)
 
 这种使用`join()`的方法常常让初学者感到困惑，但随着使用，Python 采取的方法将被认为是自然和优雅的。
 
@@ -512,7 +512,7 @@ Range 还支持步长参数：
 
 请注意，为了使用步长参数，我们必须提供所有三个参数。范围很奇怪，因为它通过计算其参数来确定它们的含义。只提供一个参数意味着该参数是`stop`值。两个参数是`start`和`stop`，三个参数是`start`，`stop`和`step`。Python `range()`以这种方式工作，因此第一个参数`start`可以是可选的，这在通常情况下是不可能的。此外，`range`构造函数不支持关键字参数。你几乎可以说它是不符合 Python 风格的！
 
-![arguably unPythonic constructor for range, where the interpretation of the arguments depends on whether one, two, or three are provided.](img/m05----range-constructor.png)
+![arguably unPythonic constructor for range, where the interpretation of the arguments depends on whether one, two, or three are provided.](img/range-constructor.png)
 
 对于范围的构造函数，这可能是不符合 Python 风格的，因为参数的解释取决于提供了一个、两个还是三个参数。
 
@@ -579,7 +579,7 @@ i = 4, v = 2096886
 
 我们已经稍微介绍了列表，并且已经充分利用了它们。我们知道如何使用文字语法创建列表，使用`append()`方法添加到列表中，并使用带有正数、从零开始的索引的方括号索引来获取和修改它们的内容。
 
-![零和正整数从列表的前面索引，因此索引四是列表中的第五个元素。](img/m05----list-forward-index.png)
+![零和正整数从列表的前面索引，因此索引四是列表中的第五个元素。](img/list-forward-index.png)
 
 零和正整数从列表的前面索引，因此索引四是列表中的第五个元素。
 
@@ -598,7 +598,7 @@ i = 4, v = 2096886
 
 ```
 
-![负整数是从末尾向后的-1，因此索引-5 是最后但第四个元素。](img/m05----list-reverse-index.png)
+![负整数是从末尾向后的-1，因此索引-5 是最后但第四个元素。](img/list-reverse-index.png)
 
 负整数是从末尾向后的-1，因此索引-5 是最后但第四个元素。
 
@@ -790,7 +790,7 @@ True
 
 ```
 
-![复制是浅层的。当复制列表时，对包含对象的引用（黄色菱形）进行复制，但被引用的对象（蓝色矩形）不会被复制。](img/m05----copies-are-shallow.png)
+![复制是浅层的。当复制列表时，对包含对象的引用（黄色菱形）进行复制，但被引用的对象（蓝色矩形）不会被复制。](img/copies-are-shallow.png)
 
 复制是浅层的。当复制列表时，对包含对象的引用（黄色菱形）进行复制，但被引用的对象（蓝色矩形）不会被复制。
 
@@ -811,7 +811,7 @@ True
 
 ```
 
-![列表`a`和`b`的第一个元素现在是唯一拥有的，而第二个元素是共享的。](img/m05----unique-and-shared-elements.png)
+![列表`a`和`b`的第一个元素现在是唯一拥有的，而第二个元素是共享的。](img/unique-and-shared-elements.png)
 
 列表`a`和`b`的第一个元素现在是唯一拥有的，而第二个元素是共享的。
 
@@ -832,7 +832,7 @@ True
 
 ```
 
-![修改两个列表所引用的对象。](img/m05----mutating-shared-elements.png)
+![修改两个列表所引用的对象。](img/mutating-shared-elements.png)
 
 修改两个列表所引用的对象。
 
@@ -846,11 +846,11 @@ True
 
 ```
 
-![列表`a`的最终状态。](img/m05----final-state-a.png)
+![列表`a`的最终状态。](img/final-state-a.png)
 
 列表`a`的最终状态。
 
-![列表`b`的最终状态。](img/m05----final-state-b.png)
+![列表`b`的最终状态。](img/final-state-b.png)
 
 列表`b`的最终状态。
 
@@ -885,7 +885,7 @@ True
 
 ```
 
-![重复是浅层的。](img/m05----repetition-is-shallow.png)
+![重复是浅层的。](img/repetition-is-shallow.png)
 
 重复是浅层的。
 
@@ -904,7 +904,7 @@ True
 
 ```
 
-![改变列表中重复内容的变异。对对象的任何更改都会反映在外部列表的每个索引中。](img/m05----repetition-mutation.png)
+![改变列表中重复内容的变异。对对象的任何更改都会反映在外部列表的每个索引中。](img/repetition-mutation.png)
 
 改变列表中重复内容的变异。对对象的任何更改都会反映在外部列表的每个索引中。
 
@@ -1147,7 +1147,7 @@ handwriting']
 
 ```
 
-![一个 URL 字典。字典键的顺序不被保留。](img/m05----dictionary.png)
+![一个 URL 字典。字典键的顺序不被保留。](img/dictionary.png)
 
 一个 URL 字典。字典键的顺序不被保留。
 
@@ -1409,7 +1409,7 @@ True
 
 `set`数据类型是一个无序的唯一元素的集合。集合是可变的，因为可以向集合添加和移除元素，但每个元素本身必须是不可变的，就像字典的键一样。
 
-![集合是无序的不同元素的组合。](img/m05----set.png)
+![集合是无序的不同元素的组合。](img/set.png)
 
 集合是无序的不同元素的组合。
 
@@ -1602,7 +1602,7 @@ KeyError: 98
 
 ```
 
-![集合代数操作。](img/m05----set-algebra.png)
+![集合代数操作。](img/set-algebra.png)
 
 集合代数操作。
 
@@ -1689,7 +1689,7 @@ True
 
 ##### 子集关系
 
-![设置关系。](img/m05----set-relationships.png)
+![设置关系。](img/set-relationships.png)
 
 设置关系。
 
@@ -1713,7 +1713,7 @@ True
 
 这检查第二个集合中的所有元素是否都存在于第一个集合中。
 
-![苯硫脲（PTC）的表示。它具有不寻常的特性，即根据品尝者的遗传学，它可能非常苦或几乎没有味道。](img/m05----ptc.png)
+![苯硫脲（PTC）的表示。它具有不寻常的特性，即根据品尝者的遗传学，它可能非常苦或几乎没有味道。](img/ptc.png)
 
 苯硫脲（PTC）的表示。它具有不寻常的特性，即根据品尝者的遗传学，它可能非常苦或几乎没有味道。
 
