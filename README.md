@@ -4,7 +4,7 @@
 > 
 > 所谓弃族的命运，就是要穿越荒原，再次竖起战旗，返回故乡。——《龙族》
 
-* [在线阅读](https://flpy2.apachecn.org)
+* [在线阅读](https://flpy2.flygon.net)
 
 
 ## 下载
