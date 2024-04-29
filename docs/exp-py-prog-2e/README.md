@@ -1,4 +1,4 @@
-# Python 专家级编程
+# Python 专家级编程第二版
 
 > 原文：[`zh.annas-archive.org/md5/4CC2EF9A4469C814CC3EEBD966D2E707`](https://zh.annas-archive.org/md5/4CC2EF9A4469C814CC3EEBD966D2E707)
 > 
