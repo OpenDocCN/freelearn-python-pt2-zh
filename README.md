@@ -12,8 +12,8 @@
 ### Docker
 
 ```
-docker pull apachecn0/freelearn-python-pt2-zh
-docker run -tid -p <port>:80 apachecn0/freelearn-python-pt2-zh
+docker pull opendoccn0/freelearn-python-pt2-zh
+docker run -tid -p <port>:80 opendoccn0/freelearn-python-pt2-zh
 # 访问 http://localhost:{port} 查看文档
 ```
 
