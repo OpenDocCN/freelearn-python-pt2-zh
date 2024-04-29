@@ -265,7 +265,7 @@ print(graduates[0: 16])
 
 请注意，我们的算法导入了 pandas 库。`read_csv()`函数告诉 Python 我们将使用文件名和我们想要开始处理的列的索引。该索引给我们提供了我们将用作行标题的值。如果索引不在第一列，我们可以将其更改为不同的值。然后，我们打印我们想要看到的行。因为我们的数据很宽，我们的输出如下所示：
 
-![图 12.6 - ch12_csvAnalysis.py 算法的输出](img/Figure_12.05_B15414.jpg)
+![图 12.6 - ch12_csvAnalysis.py 算法的输出](img/Figure_12.06_B15413.jpg)
 
 图 12.6 - ch12_csvAnalysis.py 算法的输出
 
