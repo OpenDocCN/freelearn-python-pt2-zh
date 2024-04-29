@@ -14,28 +14,15 @@ Python 为我们提供了许多创建高阶函数的方法。在第五章中，*
 
 +   作为一个前缀，创建一个与基本函数同名的新函数，如下所示：
 
-```py
-**@decorator**
-**def original_function():**
- **pass**
-
-```
+[PRE0]
 
 +   作为一个显式操作，返回一个新的函数，可能有一个新的名称：
 
-```py
-**def original_function():**
- **pass**
-**original_function= decorator(original_function)**
-
-```
+[PRE1]
 
 这些是相同操作的两种不同语法。前缀表示法的优点是整洁和简洁。对于某些读者来说，前缀位置更加可见。后缀表示法是显式的，稍微更加灵活。虽然前缀表示法很常见，但使用后缀表示法的一个原因是：我们可能不希望结果函数替换原始函数。我们可能希望执行以下命令，允许我们同时使用装饰和未装饰的函数：
 
-```py
-**new_function = decorator(original_function)**
-
-```
+[PRE2]
 
 Python 函数是一等对象。接受函数作为参数并返回函数作为结果的函数显然是语言的内置特性。那么，我们如何更新或调整函数的内部代码结构呢？
 
@@ -49,15 +36,7 @@ Python 函数是一等对象。接受函数作为参数并返回函数作为结�
 
 这是一个简单装饰器的例子：
 
-```py
-**from functools import wraps**
-**def nullable(function):**
- **@wraps(function)**
- **def null_wrapper(arg):**
- **return None if arg is None else function(arg)**
- **return null_wrapper**
-
-```
+[PRE3]
 
 我们几乎总是希望使用`functools.wraps()`函数来确保装饰的函数保留原始函数的属性。例如，复制`__name__`和`__doc__`属性可以确保结果装饰的函数具有原始函数的名称和文档字符串。
 
@@ -67,20 +46,11 @@ Python 函数是一等对象。接受函数作为参数并返回函数作为结�
 
 我们可以应用我们的`@nullable`装饰器来创建一个复合函数，如下所示：
 
-```py
-**nlog = nullable(math.log)**
-
-```
+[PRE4]
 
 现在我们有了一个函数`nlog()`，它是`math.log()`函数的空值感知版本。我们可以使用我们的复合函数`nlog()`，如下所示：
 
-```py
-**>>> some_data = [10, 100, None, 50, 60]**
-**>>> scaled = map(nlog, some_data)** 
-**>>> list(scaled)**
-**[2.302585092994046, 4.605170185988092, None, 3.912023005428146, 4.0943445622221]**
-
-```
+[PRE5]
 
 我们已经将函数应用于一组数据值。`None`值礼貌地导致`None`结果。没有涉及异常处理。
 
@@ -90,33 +60,19 @@ Python 函数是一等对象。接受函数作为参数并返回函数作为结�
 
 以下是使用装饰符表示法创建空值感知舍入函数的方法：
 
-```py
-**@nullable**
-**def nround4(x):**
- **return round(x,4)**
-
-```
+[PRE6]
 
 这个函数是`round()`函数的部分应用，包装成空值感知。在某些方面，这是一种相对复杂的函数式编程，对 Python 程序员来说是很容易使用的。
 
 我们还可以使用以下方法创建空值感知的四舍五入函数：
 
-```py
-**nround4= nullable(lambda x: round(x,4))**
-
-```
+[PRE7]
 
 这具有相同的效果，但在清晰度方面有一些成本。
 
 我们可以使用`round4()`函数来创建一个更好的测试用例，用于我们的`nlog()`函数，如下所示：
 
-```py
-**>>> some_data = [10, 100, None, 50, 60]**
-**>>> scaled = map(nlog, some_data)**
-**>>> [nround4(v) for v in scaled]**
-**[2.3026, 4.6052, None, 3.912, 4.0943]**
-
-```
+[PRE8]
 
 这个结果将独立于任何平台考虑。
 
@@ -130,10 +86,7 @@ Python 函数是一等对象。接受函数作为参数并返回函数作为结�
 
 `update_wrapper()`函数依赖于一个模块全局变量来确定要保留哪些属性。`WRAPPER_ASSIGNMENTS`变量定义了默认情况下要复制的属性。默认值是要复制的属性列表：
 
-```py
-**('__module__', '__name__', '__qualname__', '__doc__', '__annotations__')**
-
-```
+[PRE9]
 
 对这个列表进行有意义的修改是困难的。为了复制额外的属性，我们必须确保我们的函数是用这些额外的属性定义的。这是具有挑战性的，因为`def`语句的内部不容易进行简单的修改或更改。
 
@@ -173,12 +126,7 @@ Python 函数是一等对象。接受函数作为参数并返回函数作为结�
 
 Python 的多行定义形式如下：
 
-```py
-**@f**
-**def g(x):**
- **something**
-
-```
+[PRE10]
 
 这在某种程度上相当于![组合设计](img/B03652_11_01.jpg)。等价性并不是非常精确，因为`@f`装饰器与组合![组合设计](img/B03652_11_04.jpg)和![组合设计](img/B03652_11_05.jpg)的数学抽象不同。在讨论函数组合的目的时，我们将忽略![组合设计](img/B03652_11_04.jpg)的抽象和`@f`装饰器之间的实现断开连接。
 
@@ -190,14 +138,7 @@ Python 的多行定义形式如下：
 
 `Wrapper()`函数通常如下所示：
 
-```py
-**@wraps(argument_function)**
-**def something_wrapper(*args, **kw):**
- **# The "before" part, w_α, applied to *args or **kw**
- **result= argument_function(*args, **kw)**
- **# the "after" part, w_β, applied to the result**
-
-```
+[PRE11]
 
 细节会有所不同，而且差异很大。在这个一般框架内可以做很多聪明的事情。
 
@@ -215,19 +156,7 @@ Python 的多行定义形式如下：
 
 这是一个简单的坏数据装饰器：
 
-```py
-**import decimal**
-**def bad_data(function):**
- **@wraps(function)**
- **def wrap_bad_data(text, *args, **kw):**
- **try:**
- **return function(text, *args, **kw)**
- **except (ValueError, decimal.InvalidOperation):**
- **cleaned= text.replace(",", "")**
- **return function(cleaned, *args, **kw)**
- **return wrap_bad_data**
-
-```
+[PRE12]
 
 这个函数包装了一个给定的转换函数，以尝试在第一次转换涉及坏数据时进行第二次转换。在保留`None`值作为`Not Applicable`代码的情况下，异常处理将简单地返回`None`值。
 
@@ -235,26 +164,13 @@ Python 的多行定义形式如下：
 
 我们可以使用这个包装器如下：
 
-```py
-**bd_int= bad_data(int)**
-**bd_float= bad_data(float)**
-**bd_decimal= bad_data(Decimal)**
-
-```
+[PRE13]
 
 这将创建一套函数，可以对良好的数据进行转换，同时也可以进行有限的数据清洗，以处理特定类型的坏数据。
 
 以下是使用`bd_int()`函数的一些示例：
 
-```py
-**>>> bd_int("13")**
-**13**
-**>>> bd_int("1,371")**
-**1371**
-**>>> bd_int("1,371", base=16)**
-**4977**
-
-```
+[PRE14]
 
 我们已经将`bd_int()`函数应用于一个字符串，它转换得很整洁，还有一个带有特定类型标点符号的字符串，我们将容忍它。我们还表明我们可以为每个转换函数提供额外的参数。
 
@@ -266,23 +182,13 @@ Python 的多行定义形式如下：
 
 在 Python 语法中，我们可以写成如下形式：
 
-```py
-**@deco(arg)**
-**def func( ):**
- **something**
-
-```
+[PRE15]
 
 这将为基本函数定义提供一个参数化的`deco(arg)`函数。
 
 效果如下：
 
-```py
-**def func( ):**
- **something**
-**func= deco(arg)(func)**
-
-```
+[PRE16]
 
 我们已经做了三件事，它们如下：
 
@@ -296,21 +202,7 @@ Python 的多行定义形式如下：
 
 我们可以扩展我们的*bad-data*感知装饰器，以创建一个稍微更灵活的转换。我们将定义一个可以接受要移除的字符参数的装饰器。以下是一个带参数的装饰器：
 
-```py
-**import decimal**
-**def bad_char_remove(*char_list):**
- **def cr_decorator(function):**
- **@wraps(function)**
- **def wrap_char_remove(text, *args, **kw):**
- **try:**
- **return function(text, *args, **kw)**
- **except (ValueError, decimal.InvalidOperation):**
- **cleaned= clean_list(text, char_list)**
- **return function(cleaned, *args, **kw)**
- **return wrap_char_remove**
- **return cr_decorator**
-
-```
+[PRE17]
 
 一个带参数的装饰器有三个部分，它们如下：
 
@@ -322,26 +214,13 @@ Python 的多行定义形式如下：
 
 我们可以使用这个装饰器来创建转换函数，如下所示：
 
-```py
-**@bad_char_remove("$", ",")**
-**def currency(text, **kw):**
- **return Decimal(text, **kw)**
-
-```
+[PRE18]
 
 我们已经使用我们的装饰器来包装一个 `currency()` 函数。`currency()` 函数的基本特征是对 `decimal.Decimal` 构造函数的引用。
 
 这个 `currency()` 函数现在将处理一些变体数据格式：
 
-```py
-**>>> currency("13")**
-**Decimal('13')**
-**>>> currency("$3.14")**
-**Decimal('3.14')**
-**>>> currency("$1,701.00")**
-**Decimal('1701.00')**
-
-```
+[PRE19]
 
 我们现在可以使用相对简单的 `map(currency, row)` 方法来处理输入数据，将源数据从字符串转换为可用的 `Decimal` 值。`try:/except:` 错误处理已经被隔离到一个函数中，我们用它来构建一个复合转换函数。
 
@@ -351,22 +230,13 @@ Python 的多行定义形式如下：
 
 我们可以轻松地编写以下命令：
 
-```py
-**@f_wrap**
-**@g_wrap**
-**def h(x):**
- **something**
-
-```
+[PRE20]
 
 Python 中没有任何阻止我们的东西。这有一些类似于 ![实现更复杂的描述符](img/B03652_11_11.jpg)。然而，名称仅仅是 ![实现更复杂的描述符](img/B03652_11_12.jpg)。因此，当创建涉及深度嵌套描述符的函数时，我们需要谨慎。如果我们的意图只是处理一些横切关注，那么每个装饰器可以处理一个关注而不会造成太多混乱。
 
 另一方面，如果我们使用装饰来创建一个复合函数，那么使用以下命令可能更好：
 
-```py
-**f_g_h= f_wrap(g_wrap(h))**
-
-```
+[PRE21]
 
 这澄清了正在发生的事情。装饰器函数并不完全对应于函数被组合的数学抽象。装饰器函数实际上包含一个包装器函数，该包装器函数将包含被组合的函数。当尝试理解应用程序时，函数和创建函数组合的装饰器之间的区别可能会成为一个问题。
 
@@ -400,74 +270,35 @@ Python 中没有任何阻止我们的东西。这有一些类似于 ![实现更�
 
 我们想要使用这个包装器来创建两个额外函数的组合。对于语法，我们有两种选择。我们可以将清洁函数作为装饰器的参数包含在转换中，如下所示：
 
-```py
-**@cleanse_before(cleanser)**
-**def convert(text):**
- **something**
-
-```
+[PRE22]
 
 或者，我们可以将转换函数作为清洁函数的装饰器的参数包含如下：
 
-```py
-**@then_convert(converter)**
-**def clean(text):**
- **something**
-
-```
+[PRE23]
 
 在这种情况下，我们可以选择`@then_convert(converter)`样式的装饰器，因为我们在很大程度上依赖于内置转换。我们的观点是要表明选择并不是非常清晰的。
 
 装饰器如下所示：
 
-```py
-**def then_convert(convert_function):**
- **def clean_convert_decorator(clean_function):**
- **@wraps(clean_function)**
- **def cc_wrapper(text, *args, **kw):**
- **try:**
- **return convert_function(text, *args, **kw)**
- **except (ValueError, decimal.InvalidOperation):**
- **cleaned= clean_function(text)**
- **return convert_function(cleaned, *args, **kw)**
- **return cc_wrapper**
- **return clean_convert_decorator**
-
-```
+[PRE24]
 
 我们定义了一个三层装饰器。核心是`cc_wrapper()`函数，应用`convert_function`函数。如果失败，它会使用`clean_function`函数，然后再次尝试`convert_function`函数。这个函数被`then_convert_decorator()`具体装饰器函数包裹在`clean_function`函数周围。具体装饰器具有`convert_function`函数作为自由变量。具体装饰器由装饰器接口`then_convert()`创建，该接口由转换函数定制。
 
 现在我们可以构建一个稍微更灵活的清洁和转换函数，如下所示：
 
-```py
-**@then_convert(int)**
-**def drop_punct(text):**
- **return text.replace(",", "").replace("$", "")**
-
-```
+[PRE25]
 
 整数转换是应用于给定清洁函数的装饰器。在这种情况下，清洁函数移除了`$`和`,`字符。整数转换包裹在这个清洁函数周围。
 
 我们可以如下使用整数转换：
 
-```py
-**>>> drop_punct("1,701")**
-**1701**
-**>>> drop_punct("97")**
-**97**
-
-```
+[PRE26]
 
 虽然这可以将一些复杂的清洁和转换封装成一个非常整洁的包，但结果可能令人困惑。函数的名称是核心清洁算法的名称；另一个函数对组合的贡献被忽略了。
 
 作为替代，我们可以如下使用整数转换：
 
-```py
-**def drop_punct(text):**
- **return text.replace(",", "").replace("$", "")**
-**drop_punct_int = then_convert(int)(drop_punct)**
-
-```
+[PRE27]
 
 这将允许我们为装饰的清洁函数提供一个新的名称。这解决了命名问题，但是通过`then_convert(int)(drop_punct)`方法构建最终函数的过程相当不透明。
 

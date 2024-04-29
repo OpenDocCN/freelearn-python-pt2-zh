@@ -96,63 +96,19 @@
 
 ch10_rollDice.py
 
-```py
-import random as rand
-print("Let's play a game. ")
-print("You get 5 points for rolling 1 or 3\. You get 5 points for rolling 2, 4, or 6.")
-print("You lose all points if you roll a 5 in either round.")
-ready = input("Are you ready to begin? Type r to roll. ")
-score = 0
-if ready == 'r':
-    roll = rand.randint(1, 6)
-    print('You rolled a ' + str(roll) + '.')
-    if (roll == 1) or (roll == 3):
-        score = 5
-    elif (roll == 5):
-        score = 0
-    else:
-        score = 10
-    ready2 = input('Your round 1 score is ' + str(score) + '. 
-```
+[PRE0]
 
 请注意，在上面的代码片段中，我们需要为这个特定的算法导入`random`库。将其导入为`rand`而不是`random`可以让我们缩短一些代码，从而减少输入。因此，我们使用`rand.randint()`而不是`random.randint()`。我们需要`random`库，因为我们希望能够访问*随机整数函数*，以便算法可以在`1`和`6`之间选择一个数字（包括两个端点）。让我们看看当前的输出：
 
-```py
-Let's play a game. 
-You get 5 points for rolling 1 or 3\. You get 5 points for rolling 2, 4, or 6.
-You lose all points if you roll a 5 in either round.
-Are you ready to begin? Type r to roll. r
-You rolled a 3.
-Your round 1 score is 5\. 
-```
+[PRE1]
 
 从上面的输出中可以看出，首先提供了说明，然后一旦玩家按下`r`键选择掷骰子，游戏就会选择一个随机整数并显示出来。它还显示了第一轮后的当前得分。现在，让我们看看算法的下一部分，即进行第二次掷骰子。请注意，缩进遵循前面的代码片段。这个片段也包含在之前的较大文件中：
 
-```py
-ready2 = input('Your round 1 score is ' + str(score) + '. Type r to roll again. ')
-    roll2 = rand.randint(1, 6)
-    print('You rolled a ' + str(roll2) + '.')
-    if (roll2 == 1) or (roll2 == 3):
-        score += 5
-    elif (roll2 == 5):
-        score = 0
-    else:
-        score += 10
-    print('Your final score is ' + str(score) + '.')
-```
+[PRE2]
 
 当我们运行新代码时，它会显示*第一轮得分*，两次掷骰子和游戏的最终得分。请记住，如果我们在第二轮中掷出`5`，我们将失去所有的点数：
 
-```py
-Let's play a game. 
-You get 5 points for rolling 1 or 3\. You get 5 points for rolling 2, 4, or 6.
-You lose all points if you roll a 5 in either round.
-Are you ready to begin? Type r to roll. r
-You rolled a 2.
-Your round 1 score is 10\. Type r to roll again. r
-You rolled a 6.
-Your final score is 20.
-```
+[PRE3]
 
 正如你所看到的，程序为我们打印了一些内容。首先，我们掷出了`2`和`6`，所以我们没有失去我们的点数。其次，`2`和`6`都有 10 分，最终得分为 20 分。但让我们回顾一下嵌套的`if`语句。
 
@@ -166,71 +122,35 @@ Your final score is 20.
 
 ch10_forLoop1.py
 
-```py
-for letter in 'mountain':
-    print(letter)
-```
+[PRE4]
 
 在上面的代码片段中，`letter`不是一个变量。它只是告诉 Python 我们想要迭代单词`mountain`中的每个字符。不过，我可以随便起名字。如果我写成下面这样，程序会做完全相同的事情：
 
-```py
-for pin in 'mountain':
-    print(pin)
-```
+[PRE5]
 
 在每种情况下，使用`letter`、`pin`或者任何让我当时感到高兴的单词，程序的输出看起来像这样：
 
-```py
-m
-o
-u
-n
-t
-a
-i
-n    
-```
+[PRE6]
 
 正如您所看到的，Python 迭代了单词`mountain`中的每个字母，并将其打印到控制台上。同样的事情也可以用范围内的数字来做。例如，如果我想打印出`1`到`10`的数字，我可以使用`for`循环，如下所示：
 
 ch10_forLoop2.py
 
-```py
-for num in range(1, 11):
-    print(num)
-```
+[PRE7]
 
 *等等，我说我想要 1 到 10 的数字，为什么范围函数中有 11 呢？*那是因为`range()`函数总是包括范围内的最小值，但不包括上限。因此，我们需要在我们的顶部数字上加`1`。让我们看看这个程序的输出是什么样子的：
 
-```py
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-```
+[PRE8]
 
 正如您所看到的，每个数字都打印在单独的一行上。因此，让我们看看如果我们只想将这些数字添加到一个列表中会怎么样。我们可以将它们附加到一个新列表中，然后打印出列表。这对某些类型的算法和游戏非常有帮助。但在我深入讨论这些之前，让我们首先看看如何使用几行代码附加这些数字：
 
 ch10_forLoop3.py
 
-```py
-myNumbers = []
-for num in range(1, 11):
-    myNumbers.append(num)
-print(myNumbers)
-```
+[PRE9]
 
 现在，当您打印列表时，请注意。如果您正确缩进了它，它将在每次附加新数字时都打印列表。但如果您的缩进是正确的，您只会打印最终列表，使输出看起来如下：
 
-```py
-[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-```
+[PRE10]
 
 正如您所看到的，我们现在有了相同信息的表示。在这种情况下，我们打印出了数字列表。如果您试图将特定的东西附加到列表中，即使是用户输入，这是很有帮助的。在下一节中，当我们看`while`循环时，我们将看另一个列表问题，但在我们继续之前，让我们再看一个`for`循环问题和算法。
 
@@ -238,18 +158,7 @@ print(myNumbers)
 
 ch10_forLoop4.py
 
-```py
-print('This program will provide a list of cubes for you. ')
-minRange = int(input('What\'s the minimum for your range? '))
-maxRange = int(input('What\'s the maximum for your range? '))
-listOfCubes = []
-for value in range(minRange, maxRange+1):
-    number = value**3
-    listOfCubes.append(number)
-print('Your list of cubes in the range(' + str(minRange) + ', ' \
-      +str(maxRange) + ') is: ')
-print(listOfCubes)
-```
+[PRE11]
 
 让我们从前面的程序中注意几点：
 
@@ -265,13 +174,7 @@ print(listOfCubes)
 
 当我们输入`range(3, 6)`时，程序看起来像这样：
 
-```py
-This program will provide a list of cubes for you. 
-What's the minimum for your range? 3
-What's the maximum for your range? 6
-Your list of cubes in the range(3, 6) is: 
-[27, 64, 125, 216]
-```
+[PRE12]
 
 正如您所看到的，程序接受了提供的输入，最小值为`3`，最大值为`6`，并创建了该范围内数字的立方的列表。
 
@@ -301,19 +204,7 @@ Python 提供了各种迭代信息的方法，除了`for`循环之外，还有`w
 
 ch10_whileLoop1.py
 
-```py
-myAnimals = []
-print('Let\'s see how many animals you can name. Get ready!')
-readyPlayer = input('When you are ready to begin, type y. ')
-while readyPlayer == 'y':
-    if readyPlayer == 'y':
-        animalAdd = input('Name an animal. ')
-        myAnimals.append(animalAdd)
-        readyPlayer = input('Ready for the next one? Type y for yes or n for no. ')
-howMany = len(myAnimals)
-print('You were able to name ' + str(howMany) + ' animals. Here\'s your list: ')
-print(myAnimals)
-```
+[PRE13]
 
 让我们稍微解释一下这段代码：
 
@@ -335,22 +226,7 @@ print(myAnimals)
 
 但是让我们看看当我们运行它时，这个程序是什么样子的：
 
-```py
-Let's see how many animals you can name. Get ready!
-When you are ready to begin, type y. y
-Name an animal. bird
-Ready for the next one? Type y for yes or n for no. y
-Name an animal. dog
-Ready for the next one? Type y for yes or n for no. y
-Name an animal. cat
-Ready for the next one? Type y for yes or n for no. y
-Name an animal. mouse
-Ready for the next one? Type y for yes or n for no. y
-Name an animal. elephant
-Ready for the next one? Type y for yes or n for no. n
-You were able to name 5 animals. Here's your list: 
-['bird', 'dog', 'cat', 'mouse', 'elephant']
-```
+[PRE14]
 
 请注意，这个程序的写法要求我们每次都要回答是否要添加一个动物。这是因为只要我们回答“是”，条件就会继续运行。但一旦我们回答“否”，程序就会结束，给我们动物列表和我们能够命名的数量。
 
@@ -358,46 +234,17 @@ You were able to name 5 animals. Here's your list:
 
 ch10_whileLoop2.py
 
-```py
-while True:
-    num = int(input('Please enter an integer 0 through 9\. '))
-    if num in range(0, 10):
-        print(num)
-    else:
-        print('That\'s not in range. ')
-        break
-```
+[PRE15]
 
 在前面的算法中，控制流规定我们反复要求一个介于`0`和`9`之间的数字。只要我们给它一个介于`0`和`9`之间的数字，程序就会继续询问，直到我们犯错为止。这是因为只要我给它一个介于`0`和`9`之间的数字，它就会继续为`True`。让我们看一下这个的一个示例输出：
 
-```py
-Please enter an integer 0 through 9\. 0
-0
-Please enter an integer 0 through 9\. 1
-1
-Please enter an integer 0 through 9\. 2
-2
-Please enter an integer 0 through 9\. 3
-3
-Please enter an integer 0 through 9\. 4
-4
-Please enter an integer 0 through 9\. 39
-That's not in range.
-```
+[PRE16]
 
 请注意，程序一直重复询问同一个问题。有时如果用户不知道如何打破循环，这是没有帮助的。我们可以在我们的陈述中潜在地添加一行，这样它会问问题但提供一个提示。看看编辑后的代码：
 
 ch10_whileLoop3.py
 
-```py
-while True:
-    num = int(input('Please enter an integer 0 through 9\. Tired? Type a number out of range. '))
-    if num in range(0, 10):
-        print(num)
-    else:
-        print('That\'s not in range. ')
-        break
-```
+[PRE17]
 
 正如你所看到的，我们现在告诉用户，如果他们厌倦了提供范围，那么他们可以通过提供范围之外的输入来选择退出。虽然这个例子似乎不是很有用，但想想你可以有多少应用。例如，这种类型的算法可以用于纸牌游戏。你也可以使用类似这样的东西来检查输入是否与现有列表匹配。
 
@@ -417,24 +264,11 @@ while True:
 
 ch10_functions1.py
 
-```py
-minNum = int(input('What\'s your minimum number? '))
-maxNum = int(input('What\'s your maximum number? '))
-def myNumbers(minNum, maxNum):
-    myList = []
-    for num in range(minNum, maxNum + 1):
-        myList.append(num)
-    print(myList)
-myNumbers(minNum, maxNum)
-```
+[PRE18]
 
 请注意，我们是根据用户输入调用函数的。当此程序运行时，它根据该输入调用函数。我们将在一秒钟内重新访问并通过在算法中调用多个范围来运行程序，但是看看前面的片段给出了什么输出：
 
-```py
-What's your minimum number? 3
-What's your maximum number? 9
-[3, 4, 5, 6, 7, 8, 9]
-```
+[PRE19]
 
 请注意，我们还调整了`for`循环中的范围中的最大数字，以包括提供的顶部数字。这样我们就可以得到完整的数字列表。
 
@@ -442,24 +276,11 @@ What's your maximum number? 9
 
 ch10_functions2.py
 
-```py
-def myNumbers(minNum, maxNum):
-    myList = []
-    for num in range(minNum, maxNum + 1):
-        myList.append(num)
-    print(myList)
-myNumbers(4, 9)
-myNumbers(1, 3)
-myNumbers(9, 17)
-```
+[PRE20]
 
 最后三个语句是我们调用函数的地方。由于我们定义了函数以接受两个参数，它使用这两个参数来运行函数。因为我们调用了函数三次，所以应该看到三个列表作为输出。让我们看一下：
 
-```py
-[4, 5, 6, 7, 8, 9]
-[1, 2, 3]
-[9, 10, 11, 12, 13, 14, 15, 16, 17]
-```
+[PRE21]
 
 正如您所看到的，我们在单独的行上打印了每个范围。这是函数可以为我们做的最有用的事情之一。例如，如果我们正在处理图像，我们可以使用库来创建形状，然后定义一个带有改变一些参数的循环的函数。通过一个函数和几个循环，我们可以根据调用函数和使用一些循环在不同位置创建多个具有不同半径的圆。
 
@@ -467,21 +288,11 @@ myNumbers(9, 17)
 
 ch10_functions3.py
 
-```py
-def menu(appetizer, entree, dessert):
-    print('Your appetizer is %s.' %(appetizer))
-    print('You entree is %s.' %(entree))
-    print('Your dessert is %s.' %(dessert))
-menu('street tacos', 'chilaquiles', 'sopapillas')
-```
+[PRE22]
 
 在这种情况下，我们正在使用已经给定的值调用函数。*我喜欢，我的意思是我非常喜欢，墨西哥食物*。因此，那个菜单会让我非常开心！这是输出的样子：
 
-```py
-Your appetizer is street tacos.
-You entree is chilaquiles.
-Your dessert is sopapillas.
-```
+[PRE23]
 
 正如您所看到的，该函数在`print`语句中使用了每个参数。 “％s”语句用于让程序知道值将被替换的位置。 “％（）”语句让程序知道从调用函数中获取哪个值。
 
@@ -489,16 +300,7 @@ Your dessert is sopapillas.
 
 ch10_functions4.py
 
-```py
-appetizer = input('What would you like as an appetizer? ')
-entree = input('What would you like as an entree? ')
-dessert = input('what would you like for dessert? ')
-def menu(appetizer, entree, dessert):
-    print('Your appetizer is %s.' %(appetizer))
-    print('You entree is %s.' %(entree))
-    print('Your dessert is %s.' %(dessert))
-menu(appetizer, entree, dessert)
-```
+[PRE24]
 
 正如您所看到的，我们的定义和参数是重复的。我们使用`input`语句从程序用户那里获取信息，然后打印出语句。现在在 Python shell 中看起来是这样的：
 
@@ -514,24 +316,11 @@ menu(appetizer, entree, dessert)
 
 ch10_functions5.py
 
-```py
-numItem = int(input('What is your maximum number for the list of triples? '))
-def cost(numItem):
-    while numItem > 0:
-        print(numItem * 3)
-        numItem -= 1
-cost(numItem)
-```
+[PRE25]
 
 请注意，`while`循环和函数定义取决于用户输入。然后，程序将打印用户提供的值的三倍，然后减少该数字一次并找到该数字的三倍。让我们看看这意味着什么：
 
-```py
-What is your maximum number for the list of triples? 4
-12
-9
-6
-3
-```
+[PRE26]
 
 正如你所看到的，程序找到了`4`的三倍，即`12`，然后找到了`3`的三倍，即`9`，依此类推。它停止是因为我们告诉它在数字大于`0`时运行循环。但要记住，我们也可以将它们添加到一个列表中，并且我们可以使用`for`循环。
 
@@ -539,23 +328,11 @@ What is your maximum number for the list of triples? 4
 
 ch10_functions6.py
 
-```py
-numItem = int(input('What is your maximum number for the list of triples? '))
-myList = []
-def cost(numItem):
-    for x in range(1, numItem + 1):
-        newNum = 3 * x
-        myList.append(newNum)
-    print(myList)    
-cost(numItem)
-```
+[PRE27]
 
 注意我们定义了一些更多的东西，并在算法中添加了一个空列表。虽然代码行数多了一些，但它基本上与先前的代码做了相同的事情。还要注意，我们从`1`开始范围；否则，它也会在列表中包括`0`。看一下这个算法的输出：
 
-```py
-What is your maximum number for the list of triples? 4
-[3, 6, 9, 12]
-```
+[PRE28]
 
 我们有相同的信息，但是按照从小到大的顺序排列，并且放在一个列表中。从我们的算法中，发生事情的顺序很重要，当然。我们首先收集了用户输入。然后算法定义了一个空列表，然后定义了一个函数。函数然后使用了一个`for`循环，该循环使用输入创建一个范围，并在数字范围内进行迭代。然后每次迭代都被添加到列表中。最后，算法打印了列表。
 

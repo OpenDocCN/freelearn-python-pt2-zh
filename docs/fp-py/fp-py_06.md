@@ -32,12 +32,7 @@
 
 这在 Python 中可以很好地转换，如下面的命令片段所示：
 
-```py
-**def add(a,b):**
- **if a == 0: return b**
- **else: return add(a-1, b+1)**
-
-```
+[PRE0]
 
 我们只是将常见的数学符号重新排列成 Python。`if`子句放在左边而不是右边。
 
@@ -61,12 +56,7 @@
 
 前面的公式可以通过以下命令在 Python 中执行：
 
-```py
-**def fact(n):**
- **if n == 0: return 1**
- **else: return n*fact(n-1)**
-
-```
+[PRE1]
 
 这样做的好处是简单。在 Python 中，递归限制人为地限制了我们；我们不能计算大约 fact(997)以上的任何值。1000!的值有 2568 位数，通常超出了我们的浮点容量；在某些系统上，这大约是![实现尾递归优化](img/B03652_06_10.jpg)。从实用的角度来看，通常会切换到`log gamma`函数，它在处理大浮点值时效果很好。
 
@@ -76,15 +66,7 @@
 
 走出纯粹的函数处理，我们可以定义一个命令式的`facti()`计算如下：
 
-```py
-**def facti(n):**
- **if n == 0: return 1**
- **f= 1**
- **for i in range(2,n):**
- **f= f*i**
- **return f**
-
-```
+[PRE2]
 
 这个阶乘函数的版本将计算超过 1000!的值（例如，2000!有 5733 位数）。它并不是纯粹的函数。我们已经将尾递归优化为一个有状态的循环，取决于`i`变量来维护计算的状态。
 
@@ -98,15 +80,7 @@
 
 我们将这个过程分成三种情况，可以很容易地在 Python 中写成递归。看一下以下命令片段：
 
-```py
-**def fastexp(a, n):**
- **if n == 0: return 1**
- **elif n % 2 == 1: return a*fastexp(a,n-1)**
- **else:**
- **t= fastexp(a,n//2)**
- **return t*t**
-
-```
+[PRE3]
 
 这个函数有三种情况。基本情况，`fastexp(a, 0)`方法被定义为值为 1。另外两种情况采取了两种不同的方法。对于奇数，`fastexp()`方法被递归定义。指数*n*减少了 1。简单的尾递归优化对这种情况有效。
 
@@ -124,13 +98,7 @@
 
 以下是一个天真的实现：
 
-```py
-**def fib(n):**
- **if n == 0: return 0**
- **if n == 1: return 1**
- **return fib(n-1) + fib(n-2)**
-
-```
+[PRE4]
 
 这遭受了多重递归问题。在计算`fib(n)`方法时，我们必须计算`fib(n-1)`和`fib(n-2)`方法。计算`fib(n-1)`方法涉及重复计算`fib(n-2)`方法。斐波那契函数的两个递归使用将使得计算量翻倍。
 
@@ -138,16 +106,7 @@
 
 以下是一个替代方案，它重新陈述了整个算法，使用有状态变量而不是简单的递归：
 
-```py
-**def fibi(n):**
- **if n == 0: return 0**
- **if n == 1: return 1**
- **f_n2, f_n1 = 1, 1**
- **for i in range(3, n+1):**
- **f_n2, f_n1 = f_n1, f_n2+f_n1**
- **return f_n1**
-
-```
+[PRE5]
 
 ### 注意
 
@@ -165,12 +124,7 @@
 
 以下是较旧的`map()`函数的纯递归函数版本：
 
-```py
-**def mapr(f, collection):**
- **if len(collection) == 0: return []**
- **return mapr(f, collection[:-1]) + [f(collection[-1])]**
-
-```
+[PRE6]
 
 `mapr(f,[])`方法的值被定义为一个空的`list`对象。`mapr()`函数对非空列表的值将应用函数到列表的最后一个元素，并将其附加到从`mapr()`函数递归应用到列表头部构建的列表中。
 
@@ -184,32 +138,19 @@
 
 以下是一个行为类似于内置`map()`函数的高阶函数：
 
-```py
-**def mapf(f, C):**
- **return (f(x) for x in C)**
-
-```
+[PRE7]
 
 我们返回了一个生成器表达式，它产生了所需的映射。这使用了一个显式的`for`循环作为一种尾调用优化。
 
 以下是一个具有相同值的生成器函数：
 
-```py
-**def mapg(f, C):**
- **for x in C:**
- **yield f(x)**
-
-```
+[PRE8]
 
 这使用了一个完整的`for`语句进行所需的优化。
 
 在这两种情况下，结果是可迭代的。我们必须在此之后做一些事情来实现一个序列对象：
 
-```py
-**>>> list(mapg(lambda x:2**x, [0, 1, 2, 3, 4]))**
-**[1, 2, 4, 8, 16]**
-
-```
+[PRE9]
 
 为了性能和可伸缩性，在 Python 程序中基本上需要这种尾调用优化。它使代码不纯粹功能。然而，好处远远超过了纯度的缺失。为了获得简洁和表达式功能设计的好处，有助于将这些不纯粹的函数视为适当的递归。
 
@@ -233,45 +174,21 @@
 
 在 Python 中，可以递归地定义乘积函数如下：
 
-```py
-**def prodrc(collection):**
- **if len(collection) == 0: return 1**
- **return collection[0] * prodrc(collection[1:])**
-
-```
+[PRE10]
 
 从技术上讲，这是正确的。这是从数学符号转换为 Python 的一个微不足道的重写。然而，它不够优化，因为它倾向于创建大量中间的`list`对象。它也仅限于与显式集合一起使用；它不能轻松地与`iterable`对象一起使用。
 
 我们可以稍微修改这个函数，使其适用于可迭代对象，从而避免创建任何中间的`collection`对象。以下是一个可以与可迭代数据源一起使用的适当递归乘积函数：
 
-```py
-**def prodri(iterable):**
- **try:**
- **head= next(iterable)**
- **except StopIteration:**
- **return 1**
- **return head*prodri(iterable)**
-
-```
+[PRE11]
 
 我们不能使用`len()`函数来查询可迭代对象有多少个元素。我们所能做的就是尝试提取`iterable`序列的头部。如果序列中没有项目，那么任何获取头部的尝试都将引发`StopIteration`异常。如果有一个项目，那么我们可以将该项目乘以序列中剩余项目的乘积。对于演示，我们必须明确地使用`iter()`函数从一个具体化的`sequence`对象中创建一个可迭代对象。在其他情境中，我们可能会有一个可迭代的结果可以使用。以下是一个例子：
 
-```py
-**>>> prodri(iter([1,2,3,4,5,6,7]))**
-**5040**
-
-```
+[PRE12]
 
 这个递归定义不依赖于 Python 的显式状态或其他命令式特性。虽然它更加纯粹功能，但它仍然局限于处理少于 1000 个项目的集合。从实用的角度来看，我们可以使用以下类型的命令式结构来进行减少函数：
 
-```py
-**def prodi(iterable):**
- **p= 1**
- **for n in iterable:**
- **p *= n**
- **return p**
-
-```
+[PRE13]
 
 这缺乏递归限制。它包括所需的尾调用优化。此外，这将同样适用于`sequence`对象或可迭代对象。
 
@@ -287,19 +204,13 @@
 
 我们将使用我们在第四章*与集合一起工作*中计算的行程数据。这些数据最初是一系列纬度-经度航点。我们重新构造它以创建由`leg`的起点、终点和距离表示的航段。数据如下所示：
 
-```py
-**(((37.5490162, -76.330295), (37.840832, -76.273834), 17.7246), ((37.840832, -76.273834), (38.331501, -76.459503), 30.7382), ((38.331501, -76.459503), (38.845501, -76.537331), 31.0756), ... ((38.330166, -76.458504), (38.976334, -76.473503), 38.8019))**
-
-```
+[PRE14]
 
 一个常见的操作，可以作为有状态的映射或作为一个实现、排序的对象来处理，就是计算一组数据值的模式。当我们查看我们的行程数据时，变量都是连续的。要计算模式，我们需要量化所覆盖的距离。这也被称为**分箱**：我们将数据分组到不同的箱中。分箱在数据可视化应用中很常见。在这种情况下，我们将使用 5 海里作为每个箱的大小。
 
 可以使用生成器表达式生成量化距离：
 
-```py
-**quantized= (5*(dist//5) for start,stop,dist in trip)**
-
-```
+[PRE15]
 
 这将把每个距离除以 5-丢弃任何小数-然后乘以 5 来计算代表四舍五入到最近 5 海里的距离的数字。
 
@@ -309,62 +220,31 @@
 
 我们将使用以下生成器创建一个简单的距离序列，转换为箱：
 
-```py
-**quantized= (5*(dist//5) for start,stop,dist in trip)**
-
-```
+[PRE16]
 
 我们使用截断的整数除法将每个距离除以 5，然后乘以 5，以创建一个四舍五入到最近 5 英里的值。
 
 以下表达式创建了一个从距离到频率的`映射`：
 
-```py
-**from collections import Counter**
-**Counter(quantized)**
-
-```
+[PRE17]
 
 这是一个有状态的对象，由技术上的命令式面向对象编程创建。然而，由于它看起来像一个函数，它似乎很适合基于函数式编程思想的设计。
 
 如果我们打印`Counter(quantized).most_common()`函数，我们将看到以下结果：
 
-```py
-**[(30.0, 15), (15.0, 9), (35.0, 5), (5.0, 5), (10.0, 5), (20.0, 5), (25.0, 5), (0.0, 4), (40.0, 3), (45.0, 3), (50.0, 3), (60.0, 3), (70.0, 2), (65.0, 1), (80.0, 1), (115.0, 1), (85.0, 1), (55.0, 1), (125.0, 1)]**
-
-```
+[PRE18]
 
 最常见的距离约为 30 海里。记录的最短`leg`是 4 个 0 的实例。最长的航段是 125 海里。
 
 请注意，你的输出可能与此略有不同。`most_common()`函数的结果按频率排序；相同频率的箱可能以任何顺序出现。这 5 个长度可能不总是按照所示的顺序排列：
 
-```py
-**(35.0, 5), (5.0, 5), (10.0, 5), (20.0, 5), (25.0, 5)**
-
-```
+[PRE19]
 
 ## 通过排序构建映射
 
 如果我们想要在不使用`Counter`类的情况下实现这一点，我们可以使用更多基于函数的排序和分组方法。以下是一个常见的算法：
 
-```py
-**def group_sort(trip):**
- **def group(data):**
- **previous, count = None, 0**
- **for d in sorted(data):**
- **if d == previous:**
- **count += 1**
- **elif previous is not None: # and d != previous**
- **yield previous, count**
- **previous, count = d, 1**
- **elif previous is None:**
- **previous, count = d, 1**
- **else:**
- **raise Exception("Bad bad design problem.")**
- **yield previous, count**
- **quantized= (5*(dist//5) for start,stop,dist in trip)**
- **return dict(group(quantized))**
-
-```
+[PRE20]
 
 内部的`group()`函数遍历排序后的数据项序列。如果给定项已经被看到 - 它与`previous`中的值匹配 - 那么计数器可以递增。如果给定项与前一个值不匹配，并且前一个值不是`None`，那么我们就有了值的变化；我们可以输出前一个值和计数，并开始对新值进行新的累积计数。第三个条件只适用一次：如果前一个值从未被设置过，那么这是第一个值，我们应该保存它。
 
@@ -374,21 +254,7 @@
 
 为了去掉额外的`elif`子句，我们需要在内部的`group()`函数中使用稍微更复杂的初始化：
 
-```py
- **def group(data):**
- **sorted_data= iter(sorted(data))**
- **previous, count = next(sorted_data), 1**
- **for d in sorted_data:**
- **if d == previous:**
- **count += 1**
- **elif previous is not None: # and d != previous**
- **yield previous, count**
- **previous, count = d, 1**
- **else:**
- **raise Exception("Bad bad design problem.")**
- **yield previous, count**
-
-```
+[PRE21]
 
 这会从数据集中挑选出第一个项目来初始化`previous`变量。然后剩下的项目通过循环进行处理。这种设计与递归设计有一定的相似之处，其中我们使用第一个项目初始化递归，每次递归调用都提供下一个项目或`None`来指示没有剩余项目需要处理。
 
@@ -406,84 +272,39 @@
 
 对于非空集合，我们需要处理项`C[0]`，即头，然后递归处理序列`C[1:]`，即尾。我们可以使用`head, *tail = C`命令来解析集合，如下所示：
 
-```py
-**>>> C= [1,2,3,4,5]**
-**>>> head, *tail= C**
-**>>> head**
-**1**
-**>>> tail**
-**[2, 3, 4, 5]**
-
-```
+[PRE22]
 
 我们需要执行`dict[key(head)].append(head)`方法来将头元素包含在结果字典中。然后我们需要执行`groupby(tail,key)`方法来处理剩余的元素。
 
 我们可以创建一个如下的函数：
 
-```py
-**def group_by(key, data):**
- **def group_into(key, collection, dictionary):**
- **if len(collection) == 0:** 
- **return dictionary**
- **head, *tail= collection**
- **dictionary[key(head)].append(head)**
- **return group_into(key, tail, dictionary)**
- **return group_into(key, data, defaultdict(list))**
-
-```
+[PRE23]
 
 内部函数处理我们的基本递归定义。一个空集合返回提供的字典。非空集合被解析为头和尾。头用于更新字典。然后使用尾递归地更新字典中的所有剩余元素。
 
 我们无法轻松地使用 Python 的默认值将其合并为一个函数。我们不能使用以下命令片段：
 
-```py
-**def group_by(key, data, dictionary=defaultdict(list)):**
-
-```
+[PRE24]
 
 如果我们尝试这样做，`group_by()`函数的所有用法都共享一个`defaultdict(list)`对象。Python 只构建默认值一次。可变对象作为默认值很少能实现我们想要的效果。与其尝试包含更复杂的决策来处理不可变的默认值（如`None`），我们更喜欢使用嵌套函数定义。`wrapper()`函数正确地初始化了内部函数的参数。
 
 我们可以按距离对数据进行分组，如下所示：
 
-```py
-**binned_distance = lambda leg: 5*(leg[2]//5)**
-**by_distance= group_by(binned_distance, trip)**
-
-```
+[PRE25]
 
 我们定义了一个简单的可重用的`lambda`，将我们的距离放入 5 纳米的箱中。然后使用提供的`lambda`对数据进行分组。
 
 我们可以按以下方式检查分箱数据：
 
-```py
-**import pprint**
-**for distance in sorted(by_distance):**
- **print(distance)**
- **pprint.pprint(by_distance[distance])**
-
-```
+[PRE26]
 
 以下是输出的样子：
 
-```py
-**0.0**
-**[((35.505665, -76.653664), (35.508335, -76.654999), 0.1731), ((35.028175, -76.682495), (35.031334, -76.682663), 0.1898), ((25.4095, -77.910164), (25.425833, -77.832664), 4.3155), ((25.0765, -77.308167), (25.080334, -77.334), 1.4235)]**
-**5.0**
-**[((38.845501, -76.537331), (38.992832, -76.451332), 9.7151), ((34.972332, -76.585167), (35.028175, -76.682495), 5.8441), ((30.717167, -81.552498), (30.766333, -81.471832), 5.103), ((25.471333, -78.408165), (25.504833, -78.232834), 9.7128), ((23.9555, -76.31633), (24.099667, -76.401833), 9.844)] ... 125.0**
-**[((27.154167, -80.195663), (29.195168, -81.002998), 129.7748)]**
-
-```
+[PRE27]
 
 这也可以写成迭代，如下所示：
 
-```py
-**def partition(key, data):**
- **dictionary= defaultdict(list)**
- **for head in data:**
- **dictionary[key(head)].append(head)**
- **return dictionary**
-
-```
+[PRE28]
 
 在进行尾递归优化时，命令式版本中的关键代码行将与递归定义相匹配。我们已经突出显示了该行以强调重写的目的是具有相同的结果。其余结构代表了我们采用的尾递归优化，这是一种常见的解决 Python 限制的方法。
 
@@ -493,54 +314,25 @@
 
 我们将介绍一些辅助函数来分解元组，如下所示：
 
-```py
-**start = lambda s, e, d: s**
-**end = lambda s, e, d: e**
-**dist = lambda s, e, d: d**
-**latitude = lambda lat, lon: lat**
-**longitude = lambda lat, lon: lon**
-
-```
+[PRE29]
 
 这些辅助函数中的每一个都期望提供一个`tuple`对象，使用`*`运算符将元组的每个元素映射到`lambda`的单独参数。一旦元组扩展为`s`、`e`和`p`参数，通过名称返回正确的参数就变得相当明显。这比尝试解释`tuple_arg[2]`方法要清晰得多。
 
 以下是我们如何使用这些辅助函数：
 
-```py
-**>>> point = ((35.505665, -76.653664), (35.508335, -76.654999), 0.1731)**
-**>>> start(*point)**
-**(35.505665, -76.653664)**
-**>>> end(*point)**
-**(35.508335, -76.654999)**
-**>>> dist(*point)**
-**0.1731**
-**>>> latitude(*start(*point))**
-**35.505665**
-
-```
+[PRE30]
 
 我们的初始点对象是一个嵌套的三元组，包括`(0)` - 起始位置，`(1)` - 结束位置和`(2)` - 距离。我们使用我们的辅助函数提取了各种字段。
 
 有了这些辅助函数，我们可以找到每个箱中腿的最北端起始位置：
 
-```py
-**for distance in sorted(by_distance):**
- **print(distance, max(by_distance[distance], key=lambda pt: latitude(*start(*pt))))**
-
-```
+[PRE31]
 
 我们按距离分组的数据包括给定距离的每条腿。我们将每个箱中的所有腿提供给`max()`函数。我们提供给`max()`函数的`key`函数仅提取了腿的起始点的纬度。
 
 这给我们一个关于每个距离的最北端腿的简短列表，如下所示：
 
-```py
-**0.0 ((35.505665, -76.653664), (35.508335, -76.654999), 0.1731)**
-**5.0 ((38.845501, -76.537331), (38.992832, -76.451332), 9.7151)**
-**10.0 ((36.444168, -76.3265), (36.297501, -76.217834), 10.2537)**
-**...** 
-**125.0 ((27.154167, -80.195663), (29.195168, -81.002998), 129.7748)**
-
-```
+[PRE32]
 
 ## 编写高阶约简
 
@@ -548,56 +340,29 @@
 
 正如我们在第四章中所指出的，*处理集合*，如果我们从一些简单的约简开始，我们可以进行大量的统计计算，例如以下内容：
 
-```py
-**def s0(data):**
- **return sum(1 for x in data) # or len(data)**
-**def s1(data):**
- **return sum(x for x in data) # or sum(data)**
-**def s2(data):**
- **return sum(x*x for x in data)**
-
-```
+[PRE33]
 
 这使我们能够使用几个简单的函数来定义均值、标准差、归一化值、校正，甚至最小二乘线性回归。
 
 我们的最后一个简单约简`s2()`显示了我们如何应用现有的约简来创建高阶函数。我们可能会改变我们的方法，使其更像以下内容：
 
-```py
-**def sum_f(function, data):**
- **return sum(function(x) for x in data)**
-
-```
+[PRE34]
 
 我们添加了一个函数，用于转换数据。我们将计算转换值的总和。
 
 现在我们可以以三种不同的方式应用此函数来计算三个基本总和，如下所示：
 
-```py
-**N= sum_f(lambda x: 1, data) # x**0**
-**S= sum_f(lambda x: x, data) # x**1**
-**S2= sum_f( lambda x: x*x, data ) # x**2**
-
-```
+[PRE35]
 
 我们插入了一个小的`lambda`来计算![Writing higher-order reductions](img/B03652_06_23.jpg)，即计数，![Writing higher-order reductions](img/B03652_06_24.jpg)，即总和，以及![Writing higher-order reductions](img/B03652_06_25.jpg)，即平方和，我们可以用它来计算标准偏差。
 
 这通常包括一个过滤器，用于拒绝某种方式未知或不合适的原始数据。我们可以使用以下命令来拒绝错误的数据：
 
-```py
-**def sum_filter_f(filter, function, data):**
- **return sum(function(x) for x in data if filter(x))**
-
-```
+[PRE36]
 
 执行以下命令片段允许我们以简单的方式拒绝`None`值：
 
-```py
-**count_= lambda x: 1**
-**sum_ = lambda x: x**
-**valid = lambda x: x is not None**
-**N = sum_filter_f(valid, count_, data)**
-
-```
+[PRE37]
 
 这显示了我们如何向`sum_filter_f()`函数提供两个不同的`lambda`。`filter`参数是一个拒绝`None`值的`lambda`，我们称之为`valid`以强调其含义。`function`参数是一个实现`count`或`sum`方法的`lambda`。我们可以轻松地添加一个`lambda`来计算平方和。
 
@@ -609,13 +374,7 @@
 
 低级词法扫描是一种将单个字符组合成标记的缩减。这与 Python 的生成器函数设计模式非常匹配。我们经常可以编写如下的函数：
 
-```py
-**Def lexical_scan( some_source ):**
- **for char in some_source:**
- **if some_pattern completed: yield token**
- **else: accumulate token**
-
-```
+[PRE38]
 
 对于我们的目的，我们将依赖于低级文件解析器来处理这些问题。我们将使用 CSV、JSON 和 XML 包来管理这些细节。我们将基于这些包编写高级解析器。
 
@@ -623,18 +382,7 @@
 
 我们在第四章*处理集合*中提供了一个低级解析器的示例。输入是一个 KML 文件；KML 是地理信息的 XML 表示。解析器的基本特征看起来类似于以下命令片段：
 
-```py
-**def comma_split(text):**
- **return text.split(",")**
-**def row_iter_kml(file_obj):**
- **ns_map={**
- **"ns0": "http://www.opengis.net/kml/2.2",**
- **"ns1": "http://www.google.com/kml/ext/2.2"}**
- **doc= XML.parse(file_obj)**
- **return (comma_split(coordinates.text)**
- **for coordinates in doc.findall("./ns0:Document/ns0:Folder/ns0:Placemark/ns0:Point/ns0:coordinates", ns_map)**
-
-```
+[PRE39]
 
 `row_iter_kml()`函数的主要部分是 XML 解析，它允许我们使用`doc.findall()`函数来迭代文档中的`<ns0:coordinates>`标签。我们使用了一个名为`comma_split()`的函数来解析这个标签的文本为一个三元组的值。
 
@@ -644,23 +392,13 @@
 
 我们需要一个更高级别的转换来将文本的元组映射为浮点数。此外，我们希望丢弃海拔，并重新排列经度和纬度。这将产生我们需要的特定于应用程序的元组。我们可以使用以下函数进行此转换：
 
-```py
-**def pick_lat_lon(lon, lat, alt):**
- **return lat, lon**
-**def float_lat_lon(row_iter):**
- **return (tuple(map(float, pick_lat_lon(*row)))for row in row_iter)**
-
-```
+[PRE40]
 
 关键工具是`float_lat_lon()`函数。这是一个返回生成器表达式的高阶函数。生成器使用`map()`函数将`float()`函数转换应用到`pick_lat_lon()`类的结果上。我们使用`*row`参数将行元组的每个成员分配给`pick_lat_lon()`函数的不同参数。然后该函数以所需顺序返回所选项目的元组。
 
 我们可以按以下方式使用此解析器：
 
-```py
-**with urllib.request.urlopen("file:./Winter%202012-2013.kml") as source:**
- **trip = tuple(float_lat_lon(row_iter_kml(source)))**
-
-```
+[PRE41]
 
 这将为原始 KML 文件中路径上的每个航路点构建一个元组表示。它使用低级解析器从原始表示中提取文本数据行。它使用高级解析器将文本项转换为更有用的浮点值元组。在这种情况下，我们没有实现任何验证。
 
@@ -670,27 +408,13 @@
 
 数据如下：
 
-```py
-**Anscombe's quartet**
-**I  II  III  IV**
-**x  y  x  y  x  y  x  y**
-**10.0  8.04  10.0  9.14  10.0  7.46  8.0  6.58**
-**8.0  6.95  8.0  8.14  8.0  6.77  8.0  5.76**
-**...** 
-**5.0  5.68  5.0  4.74  5.0  5.73  8.0  6.89**
-
-```
+[PRE42]
 
 列由制表符分隔。另外还有三行标题，我们可以丢弃。
 
 以下是基于 CSV 的解析器的另一个版本。我们将其分为三个函数。第一个`row_iter()`函数返回制表符分隔文件中行的迭代器。函数如下所示：
 
-```py
-**def row_iter_csv(source):**
- **rdr= csv.reader(source, delimiter="\t")**
- **return rdr**
-
-```
+[PRE43]
 
 这是围绕 CSV 解析过程的简单包装。当我们回顾以前用于 XML 和纯文本的解析器时，这是那些解析器缺少的东西。生成可迭代的行元组可以是规范化数据解析器的常见特征。
 
@@ -698,37 +422,19 @@
 
 以下是转换：
 
-```py
-**def float_none(data):**
- **try:**
- **data_f= float(data)**
- **return data_f**
- **except ValueError:**
- **return None**
-
-```
+[PRE44]
 
 此函数处理将单个`string`转换为`float`值，将错误数据转换为`None`值。我们可以将此函数嵌入到映射中，以便将行的所有列转换为`float`或`None`值。`lambda`如下所示：
 
-```py
-**float_row = lambda row: list(map(float_none, row))**
-
-```
+[PRE45]
 
 以下是基于使用`all()`函数的行级验证器，以确保所有值都是`float`（或没有值是`None`）：
 
-```py
-**all_numeric = lambda row: all(row) and len(row) == 8**
-
-```
+[PRE46]
 
 以下是一个高阶函数，它结合了行级转换和过滤：
 
-```py
-**def head_filter_map(validator, converter, validator, row_iter):**
- **return filter(all_validator, map(converter, row_iter))**
-
-```
+[PRE47]
 
 此函数为我们提供了一个稍微更完整的解析输入文件的模式。基础是一个低级函数，它迭代文本元组。然后我们可以将其包装在函数中以转换和验证转换后的数据。对于文件要么处于第一正规形式（所有行都相同），要么简单验证器可以拒绝其他行的情况，这种设计非常有效。
 
@@ -738,30 +444,13 @@
 
 在第三章，“函数，迭代器和生成器”中，`Crayola.GPL`文件是在没有显示解析器的情况下呈现的。该文件如下所示：
 
-```py
-GIMP Palette
-Name: Crayola
-Columns: 16
-#
-239 222 205  Almond
-205 149 117  Antique Brass
-```
+[PRE48]
 
 我们可以使用正则表达式解析文本文件。我们需要使用过滤器来读取（和解析）标题行。我们还希望返回一个可迭代的数据行序列。这种相当复杂的两部分解析完全基于两部分 - 头部和尾部 - 文件结构。
 
 以下是处理头部和尾部的低级解析器：
 
-```py
-**def row_iter_gpl(file_obj):**
- **header_pat= re.compile(r"GIMP Palette\nName:\s*(.*?)\nColumns:\s*(.*?)\n#\n", re.M)**
- **def read_head(file_obj):**
- **match= header_pat.match("".join( file_obj.readline() for _ in range(4)))**
- **return (match.group(1), match.group(2)), file_obj**
- **def read_tail(headers, file_obj):**
- **return headers, (next_line.split() for next_line in file_obj)**
- **return read_tail(*read_head(file_obj))**
-
-```
+[PRE49]
 
 我们已经定义了一个正则表达式，用于解析标题的所有四行，并将其分配给`header_pat`变量。有两个内部函数用于解析文件的不同部分。`read_head()`函数解析标题行。它通过读取四行并将它们合并成一个长字符串来实现这一点。然后使用正则表达式对其进行解析。结果包括标题中的两个数据项以及一个准备处理额外行的迭代器。
 
@@ -777,24 +466,13 @@ Columns: 16
 
 以下是一个更高级别的解析器命令片段：
 
-```py
-**def color_palette(headers, row_iter):**
- **name, columns = headers**
- **colors = tuple(Color(int(r), int(g), int(b), " ".join(name))for r,g,b,*name in row_iter)**
- **return name, columns, colors**
-
-```
+[PRE50]
 
 这个函数将使用低级`row_iter_gpl()`解析器的输出：它需要标题和迭代器。这个函数将使用多重赋值将`color`数字和剩余单词分成四个变量，`r`、`g`、`b`和`name`。使用`*name`参数确保所有剩余值都将被分配给名字作为一个`tuple`。然后`" ".join(name)`方法将单词连接成一个以空格分隔的字符串。
 
 以下是我们如何使用这个两层解析器：
 
-```py
-**with open("crayola.gpl") as source:**
- **name, columns, colors = color_palette(*row_iter_gpl(source))**
- **print(name, columns, colors)**
-
-```
+[PRE51]
 
 我们将高级解析器应用于低级解析器的结果。这将返回标题和从`Color`对象序列构建的元组。
 

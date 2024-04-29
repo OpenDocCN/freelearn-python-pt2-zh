@@ -70,15 +70,7 @@ Peter Elbow 在《写作的力量：掌握写作过程的技巧》（牛津大�
 
 一个好的做法是提供一个简短的介绍性文本，简要解释文档的内容，并引导读者到适当的部分：
 
-```
-Atomisator is a product that fetches RSS feeds and saves them in a database, with a filtering process.
-
-If you are a developer, you might want to look at the API description (api.txt)
-
-If you are a manager, you can read the features list and the FAQ (features.txt)
-
-If you are a designer, you can read the architecture and infrastructure notes (arch.txt)
-```
+[PRE0]
 
 通过这种方式引导读者，你可能会产生更好的文档。
 
@@ -132,25 +124,11 @@ If you are a designer, you can read the architecture and infrastructure notes (a
 
 为了展示一个糟糕的用法示例，让我们假设我们想展示如何使用`parse()`函数：
 
-```
-**>>> from atomisator.parser import parse**
-**>>> # Let's use it:**
-**>>> stuff = parse('some-feed.xml')**
-**>>> next(stuff)**
-**{'title': 'foo', 'content': 'blabla'}**
-
-```
+[PRE1]
 
 一个更好的例子是，当解析器知道如何使用 parse 函数返回一个 feed 内容时，它作为一个顶级函数可用：
 
-```
-**>>> from atomisator.parser import parse**
-**>>> # Let's use it:**
-**>>> my_feed = parse('http://tarekziade.wordpress.com/feed')**
-**>>> next(my_feed)**
-**{'title': 'eight tips to start with python', 'content': 'The first tip is..., ...'}**
-
-```
+[PRE2]
 
 这种细微的差别可能听起来有些过分，但事实上它会使你的文档更有用。读者可以将这些行复制到 shell 中，理解 parse 使用 URL 作为参数，并且它返回一个包含博客条目的迭代器。
 
@@ -182,23 +160,7 @@ reStructuredText 也被称为 reST（参见[`docutils.sourceforge.net/rst.html`]
 
 这是这样一个文档的示例：
 
-```
-=====
-Title
-=====
-
-Section 1
-=========
-This *word* has emphasis.
-
-Section 2
-=========
-
-Subsection
-::::::::::
-
-Text.
-```
+[PRE3]
 
 reST 包含在`docutils`中，该软件包提供了一套脚本，可将 reST 文件转换为各种格式，如 HTML、LaTeX、XML，甚至是 S5，Eric Meyer 的幻灯片系统（参见[`meyerweb.com/eric/tools/s5`](http://meyerweb.com/eric/tools/s5)）。
 
@@ -220,36 +182,11 @@ reST 包含在`docutils`中，该软件包提供了一套脚本，可将 reST �
 
 要安装 reStructuredText，安装`docutils`：
 
-```
-**$ pip install docutils**
-
-```
+[PRE4]
 
 例如，由`docutils`包提供的`rst2html`脚本将根据 reST 文件生成 HTML 输出：
 
-```
-**$ more text.txt**
-**Title**
-**=====**
-
-**content.**
-
-**$ rst2html.py text.txt**
-**<?xml version="1.0" encoding="utf-8" ?>**
-**...**
-**<html ...>**
-**<head>**
-**...**
-**</head>**
-**<body>**
-**<div class="document" id="title">**
-**<h1 class="title">Title</h1>**
-**<p>content.</p>**
-**</div>**
-**</body>**
-**</html>**
-
-```
+[PRE5]
 
 ## 部分结构
 
@@ -261,41 +198,7 @@ reST 包含在`docutils`中，该软件包提供了一套脚本，可将 reST �
 
 例如，考虑以下代码：
 
-```
-==============
-Document title
-==============
-
-Introduction to the document content.
-
-Section 1
-=========
-
-First document section with two subsections.
-
-Note the ``=`` used as heading underline.
-
-Subsection A
-------------
-
-First subsection (A) of Section 1.
-
-Note the ``-`` used as heading underline.
-
-Subsection B
-------------
-Second subsection (B) of Section 1.
-
-Section 2
-=========
-
-Second section of document with one subsection.
-
-Subsection C
-------------
-
-Subsection (C) of Section 2.
-```
+[PRE6]
 
 ![部分结构](img/5295_09_01.jpg)
 
@@ -305,27 +208,7 @@ Subsection (C) of Section 2.
 
 reST 为项目列表、编号列表和具有自动编号功能的定义列表提供可读的语法：
 
-```
-Bullet list:
-
-- one
-- two
-- three
-
-Enumerated list:
-
-1\. one
-2\. two
-#. auto-enumerated
-
-Definition list:
-
-one
-    one is a number.
-
-two
-    two is also a number.
-```
+[PRE7]
 
 ![列表](img/5295_09_02.jpg)
 
@@ -347,16 +230,7 @@ two
 
 当您需要展示一些代码示例时，可以使用文字块。两个冒号用于标记块，这是一个缩进的段落：
 
-```
-This is a code example
-
-::
-
-    >>> 1 + 1
-    2
-
-Let's continue our text
-```
+[PRE8]
 
 ### 注意
 
@@ -364,14 +238,7 @@ Let's continue our text
 
 请注意，冒号字符可以放在文本行中。在这种情况下，它们将在各种呈现格式中被替换为单个冒号：
 
-```
-This is a code example::
-
-    >>> 1 + 1
-    2
-
-Let's continue our text
-```
+[PRE9]
 
 如果不想保留单个冒号，可以在前导文本和`::`之间插入一个空格。在这种情况下，`::`将被解释并完全删除。
 
@@ -383,456 +250,296 @@ Let's continue our text
 
 只要提供在文档中，文本就可以通过以两个点开头的特殊行更改为外部链接：
 
-```
-Try `Plone CMS`_, it is great ! It is based on Zope_.
-
-.. _`Plone CMS`: http://plone.org
-.. _Zope: http://zope.org
-```
+[PRE10]
 
 通常的做法是将外部链接分组放在文档的末尾。当要链接的文本包含空格时，必须用`` ` ``（反引号）字符括起来。
 
-Internal links can also be used by adding a marker in the text:
+通过在文本中添加标记，也可以使用内部链接：
 
-```
+[PRE11]
 
-This is a code example
+还可以使用目标作为部分：
 
-.. _example:
+[PRE12]
 
-::
+# 搭建文档
 
-    >>> 1 + 1
-    2
+引导读者和作者更简单的方法是为每个人提供助手和指南，就像我们在本章的前一节中学到的那样。
 
-Let's continue our text, or maybe go back to
-the example_.
-```
+从作者的角度来看，这是通过具有一组可重用的模板以及描述何时何地在项目中使用它们的指南来完成的。这被称为**文档投资组合**。
 
-Sections are also targets that can be used:
+从读者的角度来看，能够毫无困难地浏览文档并有效地查找信息是很重要的。通过构建一个**文档景观**来实现。
 
-```
+## 构建投资组合
 
-==============
-Document title
-==============
+软件项目可能有许多种类的文档，从直接参考代码的低级文档到提供应用程序高级概述的设计论文。
 
-Introduction to the document content.
+例如，Scott Ambler 在他的书 *敏捷建模：极限编程和统一过程的有效实践* 中定义了一个广泛的文档类型列表，*约翰·威利和儿子*。他从早期规格到操作文档构建了一个投资组合。甚至项目管理文档也包括在内，因此整个文档需求都建立在一套标准化的模板集合上。
 
+由于完整的投资组合与用于构建软件的方法密切相关，本章将只关注你可以根据自己的特定需求完成的常见子集。构建高效的投资组合需要很长时间，因为它涵盖了你的工作习惯。
 
-Section 1
-=========
+软件项目中的一组常见文档可以分为三类：
 
-First document section.
++   **设计**：这包括所有提供架构信息和低级设计信息的文档，如类图或数据库图
 
++   **用法**：这包括所有关于如何使用软件的文档；这可以是烹饪书和教程或模块级别的帮助
 
-Section 2
-=========
++   **操作**：这提供了有关如何部署、升级或操作软件的指南
 
--> go back to `Section 1`_
-```
+### 设计
 
-# Building the documentation
+创建此类文档的重要点是确保目标读者群体完全了解，内容范围受限。因此，设计文档的通用模板可以提供轻量级结构，并为作者提供一点建议。
 
-An easier way to guide your readers and your writers is to provide each one of them with helpers and guidelines, as we have learned in the previous section of this chapter.
+这样的结构可能包括：
 
-From a writer's point of view, this is done by having a set of reusable templates together with a guide that describes how and when to use them in a project. It is called a **documentation portfolio**.
++   标题
 
-From a reader's point of view, it is important to be able to browse the documentation with no pain, and getting used to finding the information efficiently. It is done by building a **document landscape**.
++   作者
 
-## Building the portfolio
++   标签（关键字）
 
-There are many kinds of documents a software project can have, from low-level documents that refer directly to the code, to design papers that provide a high-level overview of the application.
++   描述（摘要）
 
-For instance, Scott Ambler defines an extensive list of document types in his book, *Agile Modeling: Effective Practices for eXtreme Programming and the Unified Process*, *John Wiley & Sons*. He builds a portfolio from early specifications to operations documents. Even the project management documents are covered, so the whole documenting needs are built with a standardized set of templates.
++   目标（谁应该阅读这个？）
 
-Since a complete portfolio is tightly related to the methodologies used to build the software, this chapter will only focus on a common subset that you can complete with your specific needs. Building an efficient portfolio takes a long time as it captures your working habits.
++   内容（含图表）
 
-A common set of documents in software projects can be classified into three categories:
++   引用其他文档
 
-*   **Design**: This includes all the documents that provide architectural information and low-level design information, such as class diagrams or database diagrams
-*   **Usage**: This includes all the documents on how to use the software; this can be in the shape of a cookbook and tutorials or a module-level help
-*   **Operations**: This provides guidelines on how to deploy, upgrade, or operate the software
+打印时，内容应为三至四页，以确保范围受限。如果内容变得更大，应将其拆分为几个文档或进行摘要。
 
-### Design
+该模板还提供了作者的姓名和一系列标签，以管理其发展并便于分类。这将在本章后面介绍。
 
-The important point when creating such documents is to make sure the target readership is perfectly known and the content scope is limited. So, a generic template for design documents can provide a light structure with a little advice for the writer.
+在 reST 中的示例设计文档模板可以如下所示：
 
-Such a structure might include:
+[PRE13]
 
-*   Title
-*   Author
-*   Tags (keywords)
-*   Description (abstract)
-*   Target (who should read this?)
-*   Content (with diagrams)
-*   References to other documents
+### 用法
 
-The content should be three or four pages when printed, at the most, to be sure to limit the scope. If it gets bigger, it should be split into several documents or summarized.
+使用文档描述了软件的特定部分如何使用。 此文档可以描述低级部分，例如函数的工作原理，但也可以描述高级部分，例如调用程序的命令行参数。 这是框架应用程序中文档的最重要部分，因为目标读者主要是将重用代码的开发人员。
 
-The template also provides the author's name and a list of tags to manage its evolutions and ease its classification. This will be covered later in the chapter.
+三种主要类型的文档是：
 
-The example design document template in reST could be as follows:
++   **配方**：这是一份简短的文档，解释如何做某事。 这种文档针对一个读者群，重点是一个特定主题。
 
-```
++   **教程**：这是一份逐步解释如何使用软件功能的文档。 这个文档可以参考配方，每个实例都针对一个读者群。
 
-=========================================
-Design document title
-=========================================
++   **模块助手**：这是一份低级文档，解释模块包含什么内容。 例如，当您调用模块上的`help`内置时，可以显示此文档。
 
-:Author: Document Author
-:Tags: document tags separated with spaces
+#### 配方
 
-:abstract:
+配方回答了一个非常具体的问题，并提供了解决方案以解决它。 例如，ActiveState 在线提供了一个巨大的 Python 配方库，开发人员可以在其中描述如何在 Python 中做某事（参见[`code.activestate.com/recipes/langs/python/`](http://code.activestate.com/recipes/langs/python/)）。 这样一个与单一领域/项目相关的配方集合通常称为*食谱*。
 
-    Write here a small abstract about your design document.
+这些配方必须简短，结构如下：
 
-.. contents ::
++   标题
 
++   提交者
 
-Audience
-========
++   最后更新
 
-Explain here who is the target readership.
++   版本
 
++   类别
 
-Content
-=======
++   描述
 
-Write your document here. Do not hesitate to split it in several sections.
++   来源（源代码）
 
++   讨论（解释代码的文本）
 
-References
-==========
++   评论（来自 Web）
 
-Put here references, and links to other documents.
-```
+往往只有一个屏幕长，不会详细说明。 这种结构非常适合软件的需要，并且可以适应通用结构，在这个结构中，添加了目标读者，并用标签替换了类别：
 
-### Usage
++   标题（简短的句子）
 
-The usage documentation describes how a particular part of the software is used. This documentation can describe low-level parts, such as how a function works, but also high-level parts, such as command-line arguments for calling the program. This is the most important part of documentation in framework applications, since the target readership is mainly the developers that are going to reuse the code.
++   作者
 
-The three main kinds of documents are:
++   标签（关键词）
 
-*   **Recipe**: This is a short document that explains how to do something. This kind of document targets one readership and focuses on one specific topic.
-*   **Tutorial**: This is a step-by-step document that explains how to use a feature of the software. This document can refer to recipes, and each instance is intended to one readership.
-*   **Module helper**: This is a low-level document that explains what a module contains. This document could be shown (for instance) when you call the `help` built-in over a module.
++   谁应该阅读这个？
 
-#### Recipe
++   先决条件（要阅读的其他文档，例如）
 
-A recipe answers a very specific problem and provides a solution to resolve it. For example, ActiveState provide a huge repository of Python recipes online where developers can describe how to do something in Python (refer to [`code.activestate.com/recipes/langs/python/`](http://code.activestate.com/recipes/langs/python/)). Such a set of recipes related to a single area/project is often called *cookbook*.
++   问题（简短描述）
 
-These recipes must be short and are structured like this:
++   解决方案（主要内容，一个或两个屏幕）
 
-*   Title
-*   Submitter
-*   Last updated
-*   Version
-*   Category
-*   Description
-*   Source (the source code)
-*   Discussion (the text explaining the code)
-*   Comments (from the Web)
++   引用（链接到其他文档）
 
-Often, they are one-screen long and do not go into great detail. This structure perfectly fits a software's needs and can be adapted in a generic structure, where the target readership is added and the category is replaced by tags:
+这里的日期和版本不太有用，因为项目文档应该像项目中的源代码一样管理。 这意味着最好的处理文档的方法是通过版本控制系统进行管理。 在大多数情况下，这与用于项目代码的代码存储库完全相同。
 
-*   Title (short sentence)
-*   Author
-*   Tags (keywords)
-*   Who should read this?
-*   Prerequisites (other documents to read, for example)
-*   Problem (a short description)
-*   Solution (the main text, one or two screens)
-*   References (links to other documents)
+一个简单的可重用的模板，用于配方，可以如下所示：
 
-The date and version are not useful here, since project documentation should be rather managed like a source code in the project. This means that the best way to handle the documentation is to manage it through the version control system. In most cases, this is exactly the same code repository as the one used for the project's code.
+[PRE14]
 
-A simple reusable template for the recipes could be as follows:
+#### 教程
 
-```
+教程与配方在目的上有所不同。 它不是为了解决一个孤立的问题，而是描述如何逐步使用应用程序的功能。 这可能比配方长，并且可能涉及应用程序的许多部分。 例如，Django 在其网站上提供了一系列教程。 *编写你的第一个 Django 应用程序，第一部分*（参见[`docs.djangoproject.com/en/1.9/intro/tutorial01/`](https://docs.djangoproject.com/en/1.9/intro/tutorial01/)）简要解释了如何使用 Django 构建应用程序的几个屏幕。
 
-===========
-Recipe name
-===========
+这种文档的结构将是：
 
-:Author: Recipe Author
-:Tags: document tags separated with spaces
++   标题（简短的句子）
 
-:abstract:
++   作者
 
-    Write here a small abstract about your design document.
++   标签 (单词)
 
-.. contents ::
++   描述（摘要）
 
++   谁应该阅读这个？
 
-Audience
-========
++   先决条件（要阅读的其他文档，例如）
 
-Explain here who is the target readership.
++   教程（主要文本）
 
++   参考文献 (链接到其他文档)
 
-Prerequisites
-=============
+#### 模块助手
 
-Write the list of prerequisites for implementing this recipe. This can be additional documents, software, specific libraries, environment settings or just anything that is required beyond the obvious language interpreter.
+我们收集的最后一个模板是模块助手模板。模块助手指的是单个模块，并提供其内容的描述以及用法示例。
 
+一些工具可以通过提取文档字符串并使用`pydoc`来计算模块帮助来自动生成这样的文档，例如 Epydoc（参见 [`epydoc.sourceforge.net`](http://epydoc.sourceforge.net)）。因此，可以基于 API 内省生成广泛的文档。这种类型的文档通常在 Python 框架中提供。例如，Plone 提供了一个 [`api.plone.org`](http://api.plone.org) 服务器，保存了一个最新的模块助手集合。
 
-Problem
-=======
+这种方法的主要问题有：
 
-Explain the problem that this recipe is trying to solve.
++   没有进行对真正有趣的模块的智能选择
 
++   文档可以使代码变得晦涩难懂
 
-Solution
-========
+此外，模块文档提供的示例有时涉及模块的几个部分，很难将其分割为函数和类文档字符串之间。模块文档字符串可以通过在模块顶部编写文本来用于这一目的。但这会导致具有一段文本而非代码块的混合文件。当代码占总长度的不到 50%时，这会导致混淆。如果你是作者，这很正常。但当人们尝试阅读代码（而不是文档）时，他们将不得不跳过文档字符串部分。
 
-Give solution to problem explained earlier. This is the core of a recipe.
+另一种方法是将文本分开存储在自己的文件中。然后可以进行手动选择，决定哪个 Python 模块将拥有自己的模块助手文件。然后，文档可以从代码库中分离出来，允许它们独立存在，就像我们将在下一部分看到的那样。这就是 Python 的文档方式。
 
+许多开发人员对文档和代码分离是否比文档字符串更好持不同意见。这种方法意味着文档过程完全集成在开发周期中； 否则它将很快变得过时。文档字符串方法通过提供代码和使用示例之间的接近性来解决了这个问题，但并未将其提升到更高的水平——可以作为纯文档的一部分使用的文档。
 
-References
-==========
+模块助手的模板非常简单，因为在编写内容之前它只包含一些元数据。目标未定义，因为希望使用该模块的是开发人员：
 
-Put here references, and links to other documents.
-```
++   标题（模块名称）
 
-#### Tutorial
++   作者
 
-A tutorial differs from a recipe in its purpose. It is not intended to resolve an isolated problem, but rather describes how to use a feature of the application step by step. This can be longer than a recipe and can concern many parts of the application. For example, Django provides a list of tutorials on its website. *Writing your first Django App, part 1* (refer to [`docs.djangoproject.com/en/1.9/intro/tutorial01/`](https://docs.djangoproject.com/en/1.9/intro/tutorial01/)) explains in few screens how to build an application with Django.
++   标签 (单词)
 
-A structure for such a document will be:
++   内容
 
-*   Title (short sentence)
-*   Author
-*   Tags (words)
-*   Description (abstract)
-*   Who should read this?
-*   Prerequisites (other documents to read, for example)
-*   Tutorial (the main text)
-*   References (links to other documents)
+### 注意
 
-#### Module helper
+下一章将涵盖使用 doctests 和模块助手进行测试驱动开发。
 
-The last template that can be added in our collection is the module helper template. A module helper refers to a single module and provides a description of its contents, together with usage examples.
+### 操作
 
-Some tools can automatically build such documents by extracting the docstrings and computing module help using `pydoc`, such as Epydoc (refer to [`epydoc.sourceforge.net`](http://epydoc.sourceforge.net)). So it is possible to generate an extensive documentation based on API introspection. This kind of documentation is often provided in Python frameworks. For instance, Plone provides an [`api.plone.org`](http://api.plone.org) server that keeps an up-to-date collection of module helpers.
+操作文档用于描述如何操作软件。例如，请考虑以下几点：
 
-The main problems with this approach are:
++   安装和部署文档
 
-*   There is no smart selection performed over the modules that are really interesting to the document
-*   The code can be obfuscated by the documentation
++   管理文档
 
-Furthermore, a module documentation provides examples that sometimes refer to several parts of the module and that are hard to split between the functions' and classes' docstrings. The module docstring could be used for that purpose by writing text at the top of the module. But this ends in having a hybrid file composed of a block of text rather than a block of code. This is rather obfuscating when the code represents less than 50% of the total length. If you are the author, this is perfectly fine. But when people try to read the code (not the documentation), they will have to skip the docstrings part.
++   常见问题（FAQ）文档
 
-Another approach is to separate the text in its own file. A manual selection can then be operated to decide which Python module will have its module helper file. The documents can then be separated from the code base and allowed to live their own life, as we will see in the next part. This is how Python is documented.
++   解释人们如何贡献、寻求帮助或提供反馈的文档
 
-Many developers will disagree on the fact that doc and code separation is better than docstrings. This approach means that the documentation process is fully integrated in the development cycle; otherwise it will quickly become obsolete. The docstrings approach solves this problem by providing proximity between the code and its usage example but doesn't bring it to a higher level—a document that can be used as part of a plain documentation.
+这些文档非常具体，但它们可能可以使用在前面一节中定义的教程模板。
 
-The template for a module helper is really simple, as it contains just a little metadata before the content is written. The target is not defined since it is the developers who wish to use the module:
+# 制作你自己的作品集
 
-*   Title (module name)
-*   Author
-*   Tags (words)
-*   Content
+我们之前讨论的模板只是你可以用来记录软件的基础。随着时间的推移，你最终会开发出自己的模板和文档风格。但始终要记住轻量但足够的项目文档编写方法：每个添加的文档都应该有一个明确定义的目标读者群，并填补一个真实的需求。不增加真实价值的文档不应该被写入。
 
-### Note
+每个项目都是独特的，有不同的文档需求。例如，具有简单使用的小型终端工具绝对可以只使用单个`README`文件作为其文档景观。如果目标读者被精确定义并始终分组（例如系统管理员），那么采用这种最小单文档方法完全可以接受。
 
-The next chapter will cover test-driven development using doctests and module helpers.
+同样，不要过于严格地应用提供的模板。例如，在大型项目或严格规范化的团队中，提供的一些附加元数据作为示例真的很有用。例如，标签旨在提高大型文档中的文本搜索，但在只包含几个文档的文档景观中将不提供任何价值。
 
-### Operations
+此外，包括文档作者并不总是一个好主意。这种方法在开源项目中可能尤其值得怀疑。在这类项目中，你会希望社区也为文档做出贡献。在大多数情况下，这样的文档在需要时会由任何人不断更新。人们往往也会将文档的 *作者* 视为文档的 *所有者*。如果每个文档都明确指定了作者，这可能会阻止人们更新文档。通常，版本控制软件提供了关于真实文档作者的更清晰、更透明的信息，而不是提供明确的元数据注释。确实建议明确指定作者的情况是各种设计文档，特别是在设计过程严格规范化的项目中。最好的例子是 Python 语言增强提案系列（PEP）文档。
 
-Operation documents are used to describe how the software can be operated. Consider the following points for instance:
+## 构建景观
 
-*   Installation and deployment documents
-*   Administration documents
-*   Frequently Asked Questions (FAQ) documents
-*   Documents that explain how people can contribute, ask for help, or provide feedback
+在前一节中构建的文档组合在文档级别提供了一个结构，但没有提供一种组织和分类来构建读者将拥有的文档。这就是安德烈亚斯·鲁平格所称的文档景观，指的是读者在浏览文档时使用的心智地图。他得出结论，组织文档的最佳方式是构建一个逻辑树。
 
-These documents are very specific but they can probably use the tutorial template defined in the earlier section.
+换句话说，组成作品集的不同类型的文档需要在目录树中找到一个存放的位置。当作者创建文档时，这个位置对他们来说必须是明显的；当读者寻找文档时，这个位置对他们也必须是明显的。
 
-# Making your own portfolio
+浏览文档时一个很大的帮助是每个级别都有索引页面可以引导作者和读者。
 
-The templates that we discussed earlier are just a basis that you can use to document your software. With time, you will eventually develop your own templates and style for making documentation. But always keep in mind the light but sufficient approach for project documentation: each document added should have a clearly defined target readership and should fill a real need. Documents that don't add a real value should not be written.
+构建文档景观有两个步骤：
 
-Each project is unique and has different documentation needs. For example, small terminal tools with simple usage can definitely live with only a single `README` file as its document landscape. Having such a minimal single-document approach is completely fine if the target readers are precisely defined and consistently grouped (system administrators, for instance).
++   为制片人（作者）构建一个树
 
-Also, do not apply the provided templates too rigorously. Some additional metadata provided as an example is really useful in either big projects or in strictly formalized teams. Tags, for instance, are intended to improve textual search in big documentations but will not provide any value in a documentation landscape consisting only of a few documents.
++   在制片人树的基础上为消费者（读者）构建一个树
 
-Also, including the document author is not always a good idea. Such an approach may be especially questionable in open source projects. In such projects, you will want the community to also contribute to documentation. In most cases, such documents are continuously updated whenever there is such a need by whoever makes the contribution. People tend to treat the document *author* also as the document *owner*. This may discourage people to update the documentation if every document has its author always specified. Usually, the version control software provides clearer and more transparent information about real document authors than explicitly provided metadata annotations. The situations where explicit authors are really recommended are various design documents, especially in projects where the design process is strictly formalized. The best example is the series of PEP documents with the Python language enhancement proposals.
+制片人和消费者之间的区别很重要，因为它们以不同的方式访问文档，而且使用不同的格式。
 
-## Building the landscape
+### 制片人布局
 
-The document portfolio built in the previous section provides a structure at document level but does not provide a way to group and organize it to build the documentation the readers will have. This is what Andreas Rüping calls a document landscape, referring to the mental map the readers use when they browse documentation. He came up with the conclusion that the best way to organize documents is to build a logical tree.
+从制片人的角度来看，每个文档都要像 Python 模块一样处理。它应该存储在版本控制系统中，并且像代码一样工作。作者不关心他们的散文最终的外观和可用性，他们只是想确保他们在写一篇文档，因此它是有关主题的唯一真相来源。存储在文件夹树中的 reStructuredText 文件与软件代码一起存储在版本控制系统中，并且是制片人构建文档景观的方便解决方案。
 
-In other words, the different kinds of documents composing the portfolio need to find a place to live within a tree of directories. This place must be obvious to the writers when they create the document and to the readers when they are looking for it.
+按照惯例，`docs`文件夹被用作文档树的根：
 
-A great help when browsing documentation is the index pages at each level that can drive writers and readers.
+[PRE15]
 
-Building a document landscape is done in two steps:
+注意，这个树位于一个`source`文件夹中，因为`docs`文件夹将被用作下一节中设置特殊工具的根文件夹。
 
-*   Building a tree for the producers (the writers)
-*   Building a tree for the consumers (the readers) on top of the producers' tree
+从那里，可以在每个级别（除了根目录）添加一个`index.txt`文件，解释文件夹包含什么类型的文档或总结每个子文件夹包含的内容。这些索引文件可以定义它们所包含的文档列表。例如，`operations`文件夹可以包含一个可用的操作文档列表：
 
-This distinction between producers and consumers is important since they access the documents in different places and different formats.
+[PRE16]
 
-### Producer's layout
+需要知道的是，人们往往会忘记更新这些文档列表和目录。因此最好是自动更新它们。在下一小节，我们将讨论一个工具，它除了许多其他功能之外，也可以处理这种情况。
 
-From a producer's point of view, each document is processed exactly like a Python module. It should be stored in the version control system and works like code. Writers do not care about the final appearance of their prose and where it is available, they just want to make sure that they are writing a document, so it is the single source of truth on the topic covered. reStructuredText files stored in a folder tree are available in the version control system together with the software code and are a convenient solution to building the documentation landscape for producers.
+### 消费者的布局
 
-By convention, the `docs` folder is used as a root of documentation tree:
+从消费者的角度来看，重要的是制作出索引文件，并以易于阅读和美观的格式呈现整个文档。网页是最好的选择，也很容易从 reStructuredText 文件中生成。
 
-```
+**Sphinx** ([`sphinx.pocoo.org`](http://sphinx.pocoo.org)) 是一组脚本和`docutils`扩展，可以用来从我们的文本树生成 HTML 结构。这个工具被用于（例如）构建 Python 文档，并且现在有许多项目都在用它来编写文档。其中内置的功能之一是，它生成了一个真正好用的浏览系统，还有一个轻量但足够的客户端 JavaScript 搜索引擎。它还使用`pygments`来渲染代码示例，因此产生了非常好的语法高亮。
 
-$ cd my-project
-$ find docs
-docs
-docs/source
-docs/source/design
-docs/source/operations
-docs/source/usage
-docs/source/usage/cookbook
-docs/source/usage/modules
-docs/source/usage/tutorial
-```
+Sphinx 可以轻松配置为与前一节中定义的文档方向保持一致。它可以使用`pip`轻松安装为`Sphinx`包。
 
-Notice that the tree is located in a `source` folder because the `docs` folder will be used as a root folder to set up a special tool in the next section.
+与 Sphinx 一起工作的最简单方法是使用`sphinx-quickstart`脚本。此实用程序将生成一个脚本和`Makefile`，可用于在需要时生成 Web 文档。它将交互式地询问您一些问题，然后引导整个初始文档源树和配置文件。一旦完成，您可以随时轻松调整它。假设我们已经引导了整个 Sphinx 环境，并且我们想要查看其 HTML 表示。这可以通过使用`make html`命令轻松完成：
 
-From there, an `index.txt` file can be added at each level (besides the root), explaining what kind of documents the folder contains or summarizing what each subfolder contains. These index files can define a listing of the documents they contain. For instance, the `operations` folder can contain a list of operations documents available:
+[PRE17]
 
-```
+![消费者布局](img/5295_09_04.jpg)
 
-==========
-Operations
-==========
+图 4 使用 Sphinx 构建的文档的示例 HTML 版本 - [`graceful.readthedocs.org/en/latest/`](http://graceful.readthedocs.org/en/latest/)
 
-This section contains operations documents:
+除了文档的 HTML 版本外，该工具还构建了自动页面，例如模块列表和索引。Sphinx 提供了一些`docutils`扩展来驱动这些功能。主要的是：
 
-− How to install and run the project
-− How to install and manage a database for the project
-It is important to know that people tend to forget 
++   构建目录的指令
 
-```
++   可用于将文档注册为模块助手的标记
 
-It is important to know that people tend to forget to update such lists of documents and tables of content. So it is better to have them updated automatically. In the next subsection, we will discuss one tool that, among many other features, can also handle this use case.
++   添加索引中的元素的标记
 
-### Consumer's layout
+#### 处理索引页面
 
-From a consumer's point of view, it is important to work out the index files and to present the whole documentation in a format that is easy to read and looks good. Web pages are the best pick and are easy to generate from reStructuredText files.
+Sphinx 提供了一个`toctree`指令，可用于在文档中注入带有指向其他文档链接的目录。每行必须是具有其相对路径的文件，从当前文档开始。还可以提供 Glob 样式名称以添加匹配表达式的多个文件。
 
-**Sphinx** ([`sphinx.pocoo.org`](http://sphinx.pocoo.org)) is a set of scripts and `docutils` extensions that can be used to generate an HTML structure from our text tree. This tool is used (for instance) to build the Python documentation, and many projects are now using it for their documentation. Among its built-in features, it produces a really nice browsing system, together with a light but sufficient client-side JavaScript search engine. It also uses `pygments` for rendering code examples, which produces really nice syntax highlights.
+例如，`cookbook`文件夹中的索引文件，我们之前在生产者景观中定义的，可以是这样的：
 
-Sphinx can be easily configured to stick with the document landscape defined in the earlier section. It can be easily installed with `pip` as `Sphinx` package.
+[PRE18]
 
-The easiest way to start working with Sphinx is to use the `sphinx-quickstart` script. This utility will generate a script together with `Makefile`, which can be used to generate the web documentation every time it is needed. It will interactively ask you some questions and then bootstrap the whole initial documentation source tree and configuration file. Once it is done, you can easily tweak it whenever you want. Let's assume we have already bootstrapped the whole Sphinx environment and we want to see its HTML representation. This can be easily done using the `make html` command:
+使用这种语法，HTML 页面将显示`cookbook`文件夹中所有可用的 reStructuredText 文档的列表。此指令可用于所有索引文件中以构建可浏览的文档。
 
-```
+#### 注册模块助手
 
-project/docs$ make html
-sphinx-build -b html -d _build/doctrees   . _build/html
-Running Sphinx v1.3.6
-making output directory...
-loading pickled environment... not yet created
-building [mo]: targets for 0 po files that are out of date
-building [html]: targets for 1 source files that are out of date
-updating environment: 1 added, 0 changed, 0 removed
-reading sources... [100%] index
-looking for now-outdated files... none found
-pickling environment... done
-checking consistency... done
-preparing documents... done
-writing output... [100%] index
-generating indices... genindex
-writing additional pages... search
-copying static files... done
-copying extra files... done
-dumping search index in English (code: en) ... done
-dumping object inventory... done
-build succeeded.
-Build finished. The HTML pages are in _build/html.
+对于模块助手，可以添加标记，以便它自动列在模块的索引页面中并可用：
 
-```
+[PRE19]
 
-![Consumer's layout](img/5295_09_04.jpg)
+注意，这里的`db`前缀可以用来避免模块冲突。Sphinx 将其用作模块类别，并将以`db.`开头的所有模块分组到此类别中。
 
-Figure 4 An example HTML version of documentation built with Sphinx – [`graceful.readthedocs.org/en/latest/`](http://graceful.readthedocs.org/en/latest/)
+#### 添加索引标记
 
-Besides the HTML versions of the documents, the tool also builds automatic pages, such as a module list and an index. Sphinx provides a few `docutils` extensions to drive these features. The main ones are:
+还可以使用另一个选项填充索引页面，将文档链接到条目：
 
-*   A directive that builds a table of contents
-*   A marker that can be used to register a document as a module helper
-*   A marker to add an element in the index
+[PRE20]
 
-#### Working on the index pages
+将在索引页面中添加两个新条目，`Database Access`和`Session`。
 
-Sphinx provides a `toctree` directive that can be used to inject a table of contents in a document with links to other documents. Each line must be a file with its relative path, starting from the current document. Glob-style names can also be provided to add several files that match the expression.
+#### 交叉引用
 
-For example, the index file in the `cookbook` folder, which we have previously defined in the producer's landscape, can look like this:
+最后，Sphinx 提供了一种内联标记来设置交叉引用。例如，可以这样链接到模块：
 
-```
 
-========
-Cookbook
-========
-
-Welcome to the Cookbook.
-
-Available recipes:
-
-.. toctree::
-   :glob:
-   *
-
-```
-
-With this syntax, the HTML page will display a list of all the reStructuredText documents available in the `cookbook` folder. This directive can be used in all the index files to build a browsable documentation.
-
-#### Registering module helpers
-
-For module helpers, a marker can be added so that it is automatically listed and available in the module's index page:
-
-```
-
-=======
-session
-=======
-
-.. module:: db.session
-
-The module session...
-
-```
-
-Notice that the `db` prefix here can be used to avoid module collision. Sphinx will use it as a module category and will group all modules that start with `db.` in this category.
-
-#### Adding index markers
-
-Another option can be used to fill the index page by linking the document to an entry:
-
-```
-=======
-session
-=======
-
-.. module:: db.session
-
-.. index::
-   Database Access
-   Session
-
-The module session...
-
-```
-
-Two new entries, `Database Access` and `Session`, will be added in the index page.
-
-#### Cross-references
-
-Finally, Sphinx provides an inline markup to set cross-references. For instance, a link to a module can be done like this:
-
-```
-
-:mod:`db.session`
-
-```
+[PRE21]
 
 在这里，`:mod:`是模块标记的前缀，``db.session``是要链接到的模块的名称（如之前注册的）；请记住，`：mod:`以及之前的元素都是 Sphinx 在 reSTructuredText 中引入的特定指令。
 
@@ -854,7 +561,7 @@ Sphinx 确实提高了从消费者角度阅读文档的可读性和体验。正�
 
 本章详细解释了如何：
 
-+   ```使用一些高效写作的规则
++   使用一些高效写作的规则
 
 +   使用 reStructuredText，Python 程序员的 LaTeX
 

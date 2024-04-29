@@ -48,10 +48,7 @@
 
 请注意，您不应该在活动的**Shell**窗口中。如果您在行首看到`>>>`，请单击**文件** | **新建文件**选项，然后输入以下代码指令行以创建空的 shell：
 
-```py
-import nltk 
-nltk.download()
-```
+[PRE0]
 
 从前面的代码中可以看到，您还将在`nltk`中打开下载器。前面的代码将弹出一个窗口，如下面的屏幕截图所示（请注意，`nltk`库大约需要 7MB 的内存，而安装额外的软件包也需要内存，每个软件包的范围从几 KB 到 14 到 15MB 不等）：
 
@@ -75,52 +72,31 @@ nltk.download()
 
 ch15_historicalTextAnalysis.py
 
-```py
-import nltk
-from nltk.tokenize import sent_tokenize, word_tokenize
-```
+[PRE1]
 
 演讲的整个文本包含在 GitHub 存储库文件中。出于长度目的，我们在这里只包含了其中一半的文本。请注意，我们将在算法和解释之后分享的输出将对应于截断的演讲，但可视化图将包含整篇演讲的数据。在 `text` 定义的末尾看到的 `[…]` 仅用于显示那里有额外的文本。
 
-```py
-text = 'Fellow-Countrymen: At this second appearing to take the oath of the Presidential office there is less occasion for an extended address than there was at the first. Then a statement somewhat in detail of a course to be pursued seemed fitting and proper. Now, at the expiration of four years, during which public declarations have been constantly called forth on every point and phase of the great contest which still absorbs the attention and engrosses the energies of the nation, little that is new could be presented. The progress of our arms, upon which all else chiefly depends, is as well known to the public as to myself, and it is, I trust, reasonably satisfactory and encouraging to all. With high hope for the future, no prediction in regard to it is ventured. On the occasion corresponding to this four years ago all thoughts were anxiously directed to an impending civil war. All dreaded it, all sought to avert it. While the inaugural address was being delivered from this place, devoted altogether to saving the Union without war, urgent agents were in the city seeking to destroy it without war—seeking to dissolve the Union and divide effects by negotiation. Both parties deprecated war, but one of them would make war rather than let the nation survive, and the other would accept war rather than let it perish, and the war came. One-eighth of the whole population were colored slaves, not distributed generally over the Union, but localized in the southern part of it. These slaves constituted a peculiar and powerful interest. All knew that this interest was somehow the cause of the war. To strengthen, perpetuate, and extend this interest was the object for which the insurgents would rend the Union even by war, while the Government claimed no right to do more than to restrict the territorial enlargement of it. Neither party expected for the war the magnitude or the duration which it has already attained. […]'
-```
+[PRE2]
 
 1.  现在我们已经定义了我们想要分析的文本，如前面的代码片段所示，我们可以告诉算法我们想要对文本进行*标记化*，也就是说，我们希望将其分成单词。算法将打印出一个包含每个单词或标点符号的列表，用逗号分隔，如下面的代码所示：
 
-```py
-tokenized_word = word_tokenize(text)
-print(tokenized_word)
-```
+[PRE3]
 
 1.  在我们有了单词列表之后，我们想要得到单词的频率分布。为此，我们将从 `nltk.probability` 导入包，如下面的代码片段所示：
 
-```py
-from nltk.probability import FreqDist
-fdist = FreqDist(tokenized_word)
-print(fdist)
-fdist.most_common(2)
-```
+[PRE4]
 
 1.  一旦我们有了分布，我们就希望得到这些数据的可视化图表，因此我们将使用 `matplotlib` 来创建我们的分布图，如下面的代码片段所示：
 
-```py
-import matplotlib.pyplot as plt
-fdist.plot(30, cumulative = False)
-plt.show()
-```
+[PRE5]
 
 这就是我们需要的整个算法。当我们运行算法时，我们的输出如下：
 
-```py
-['Fellow-Countrymen', ':', 'At', 'this', 'second', 'appearing', 'to', 'take', 'the', 'oath', 'of', 'the', 'Presidential', 'office', 'there', 'is', 'less', 'occasion', 'for', 'an', 'extended', 'address', 'than', 'there', 'was', 'at', 'the', 'first', '.', 'Then', 'a', 'statement', 'somewhat', 'in', 'detail', 'of', 'a', 'course', 'to', 'be', 'pursued', 'seemed', 'fitting', 'and', 'proper', '.', 'Now', ',', 'at', 'the', 'expiration', 'of', 'four', 'years', ',', 'during', 'which', 'public', 'declarations', 'have', 'been', 'constantly', 'called', 'forth', 'on', 'every', 'point', 'and', 'phase', 'of', 'the', 'great', 'contest', 'which', 'still', 'absorbs', 'the', 'attention', 'and', 'engrosses', 'the', 'energies', 'of', 'the', 'nation', ',', 'little', 'that', 'is', 'new', 'could', 'be', 'presented', '.', 'The', 'progress', 'of', 'our', 'arms', ',', 'upon', 'which', 'all', 'else', 'chiefly', 'depends', ',', 'is', 'as', 'well', 'known', 'to', 'the', 'public', 'as', 'to', 'myself', ',', 'and', 'it', 'is', ',', 'I', 'trust', ',', 'reasonably', 'satisfactory', 'and', 'encouraging', 'to', 'all', '.', 'With', 'high', 'hope', 'for', 'the', 'future', ',', 'no', 'prediction', 'in', 'regard', 'to', 'it', 'is', 'ventured', '.', 'On', 'the', 'occasion', 'corresponding', 'to', 'this', 'four', 'years', 'ago', 'all', 'thoughts', 'were', 'anxiously', 'directed', 'to', 'an', 'impending', 'civil', 'war', '.', 'All', 'dreaded', 'it', ',', 'all', 'sought', 'to', 'avert', 'it', '.', 'While', 'the', 'inaugural', 'address', 'was', 'being', 'delivered', 'from', 'this', 'place', ',', 'devoted', 'altogether', 'to', 'saving', 'the', 'Union', 'without', 'war', ',', 'urgent', 'agents', 'were', 'in', 'the', 'city', 'seeking', 'to', 'destroy', 'it', 'without', 'war—seeking', 'to', 'dissolve', 'the', 'Union', 'and', 'divide', 'effects', 'by', 'negotiation', '.', 'Both', 'parties', 'deprecated', 'war', ',', 'but', 'one', 'of', 'them', 'would', 'make', 'war', 'rather', 'than', 'let', 'the', 'nation', 'survive', ',', 'and', 'the', 'other', 'would', 'accept', 'war', 'rather', 'than', 'let', 'it', 'perish', ',', 'and', 'the', 'war', 'came', '.', 'One-eighth', 'of', 'the', 'whole', 'population', 'were', 'colored', 'slaves', ',', 'not', 'distributed', 'generally', 'over', 'the', 'Union', ',', 'but', 'localized', 'in', 'the', 'southern', 'part', 'of', 'it', '.', 'These', 'slaves', 'constituted', 'a', 'peculiar', 'and', 'powerful', 'interest', '.', 'All', 'knew', 'that', 'this', 'interest', 'was', 'somehow', 'the', 'cause', 'of', 'the', 'war', '.', 'To', 'strengthen', ',', 'perpetuate', ',', 'and', 'extend', 'this', 'interest', 'was', 'the', 'object', 'for', 'which', 'the', 'insurgents', 'would', 'rend', 'the', 'Union', 'even', 'by', 'war', ',', 'while', 'the', 'Government', 'claimed', 'no', 'right', 'to', 'do', 'more', 'than', 'to', 'restrict', 'the', 'territorial', 'enlargement', 'of', 'it', '.', 'Neither', 'party', 'expected', 'for', 'the', 'war', 'the', 'magnitude', 'or', 'the', 'duration', 'which', 'it', 'has', 'already', 'attained', '.']
-```
+[PRE6]
 
 1.  请回想一下，`单词标记化` 只包括了截断的文本。然而，随后的频率信息和图表是针对整篇演讲的。`ch15_historicalTextAnalysis.py` GitHub 文件包含了完整的演讲：
 
-```py
-<FreqDist with 365 samples and 782 outcomes>
-```
+[PRE7]
 
 以下屏幕截图显示了该算法的频率分布可视化图：
 
@@ -140,10 +116,7 @@ plt.show()
 
 首先，*我们要创造什么？* 好吧，一个故事。由于这个问题的性质，我们将从反向开始，用我们想要实现的输出样本开始，也就是一个样本故事。在我们真正进入算法之前，让我们先看一下我们的算法生成的一个快速故事：
 
-```py
-There once was a citizen in the town of Narnia, whose name was Malena. Malena loved to hang with their trusty dog, King Kong.
-You could always see them strolling through the market in the morning, wearing their favorite blue attire.
-```
+[PRE8]
 
 前面的输出是由一个算法创建的，该算法替换了名字、地点、时间、宠物和宠物名字。这是一个简短的故事，但这是可以在更广泛的应用中使用的东西，比如使用输入来撰写社交媒体帖子，并为邀请、表格等填写信息。
 
@@ -169,42 +142,17 @@ You could always see them strolling through the market in the morning, wearing t
 
 1.  我们需要用户的输入，所以我们想使用一个`print`语句和包含所需指令的输入请求：
 
-```py
-print('Help me write a story by answering some questions. ')
-name = input('What name would you like to be known by? ')
-location = input('What is your favorite city, real or imaginary? ')
-time = input('Is this happening in the morning or afternoon? ')
-color = input('What is your favorite color? ')
-town_spot = input('Are you going to the market, the library, or the park? ')
-pet = input('What kind of pet would you like as your companion? ')
-pet_name = input('What is your pet\'s name? ')
-```
+[PRE9]
 
 前面的代码片段从用户那里获取所有输入，这样我们就可以写我们的故事了。
 
 1.  一旦我们有了这些，我们就必须`print`我们的故事。请注意，我们用简单的术语写了它，使用`％s`，这样我们就可以用相应的输入替换它。我们还使用反斜杠，这样我们就可以在多行上看到我们的代码，而不是将其放在一行上：
 
-```py
-print('There once was a citizen in the town of %s, whose name was %s. %s loved to hang \
-with their trusty %s, %s.' % (location, name, name, pet, pet_name))
-print('You could always see them strolling through the %s \
-in the %s, wearing their favorite %s attire.' % (town_spot, time, color))
-```
+[PRE10]
 
 让我们再次运行那段代码，看看我们的故事现在说了什么：
 
-```py
-Help me write a story by answering some questions. 
-What name would you like to be known by? Azabache
-What is your favorite city, real or imaginary? Rincon
-Is this happening in the morning or afternoon? afternoon
-What is your favorite color? magenta
-Are you going to the market, the library, or the park? library
-What kind of pet would you like as your companion? dog
-What is your pet's name? Luna
-There once was a citizen in the town of Rincon, whose name was Azabache. Azabache loved to hang with their trusty dog, Luna.
-You could always see them strolling through the library in the afternoon, wearing their favorite magenta attire.
-```
+[PRE11]
 
 请注意，角色和设置等细节已经发生了变化。在教育学习环境中，这样一个简单的算法可以成为一个很好的工具，用来向学生展示如何与故事互动并识别其中的关键信息。
 
@@ -234,13 +182,7 @@ Rudolf Flesch 在与美联社合作期间创建了它，以改善报纸的可读
 
 ch15_readability.py
 
-```py
-from readability import Readability
-text = open('C:\\...\\ch15_MLK-IHaveADream.txt')
-text_up = text.read()
-r = Readability(text_up)
-flesch_kincaidR = r.flesch_kincaid()
-```
+[PRE12]
 
 从前面的代码中，您会看到我们将`readability`包导入到我们的程序中。如果您需要安装库/包，可以使用`pip install readability`来安装。
 
@@ -248,15 +190,11 @@ flesch_kincaidR = r.flesch_kincaid()
 
 1.  在我们完成所有这些之后，我们可以使用以下代码片段`print`我们的年级水平：
 
-```py
-print('The text has a grade '+ flesch_kincaidR.grade_level + ' readability level.')
-```
+[PRE13]
 
 当我们运行我们的算法时，输出也是非常简单的。看一下以下输出：
 
-```py
-The text has a grade 9 readability level.
-```
+[PRE14]
 
 现在您知道如何验证任何文本的可读性，尝试对其他类型的文本执行分析，包括诗歌、故事、演讲、歌曲等。
 
@@ -318,118 +256,49 @@ The text has a grade 9 readability level.
 
 因此，如您在上表中所见，如果我们将这些距离写成一个数组，我们将使用以下代码：
 
-```py
-[0, 95, 192, 789, 462]
-```
+[PRE15]
 
 对于费城，我们将有以下数组：
 
-```py
-[95, 0, 105, 759, 431]
-```
+[PRE16]
 
 对于巴尔的摩，我们将有以下数组：
 
-```py
-[192, 105, 0, 701, 374]
-```
+[PRE17]
 
 对于芝加哥，我们将有以下数组：
 
-```py
-[789, 759, 701, 0, 344]
-```
+[PRE18]
 
 最后，对于克利夫兰，我们将有以下数组：
 
-```py
-[462, 431, 374, 344, 0]
-```
+[PRE19]
 
 请注意，我们将为每个城市分配索引以便识别它们。纽约是*0*，费城是*1*，巴尔的摩是*2*，芝加哥是*3*，克利夫兰是*4*。让我们看看这个问题的算法是什么样子的（请注意，**OR-Tools 库**用于优化车辆路线、线性规划、约束规划等）：
 
 1.  首先，让我们开始导入我们需要的包和库。这个算法的完整文件是`ch15_travel.py`，可以在 GitHub 上找到：
 
-```py
-from ortools.constraint_solver import routing_enums_pb2
-from ortools.constraint_solver import pywrapcp
-```
+[PRE20]
 
 请记住，如果您计划访问更多的城市和/或不同的城市，这个算法需要获取一个新的距离矩阵。这是您需要更改的代码的唯一部分。您每次需要调整的代码片段是`create_data_model()`下的矩阵，如下面的代码片段所示：
 
-```py
-#Create data model.
-def create_data_model():
-    data = {}
-    data['distance_matrix'] = [
-        [0, 95, 192, 789, 462],
-        [95, 0, 105, 759, 431],
-        [192, 105, 0, 701, 374],
-        [789, 759, 701, 0, 344],
-        [462, 431, 374, 344, 0],
-    ]  
-    data['num_vehicles'] = 1
-    data['depot'] = 0
-    return data
-```
+[PRE21]
 
 1.  在我们定义了数据模型之后，我们需要打印一个解决方案。以下函数提供了该信息：
 
-```py
-#Provide solution as output - print to console
-def print_solution(manager, routing, solution):
-    print('Objective: {} miles'.format(solution.ObjectiveValue()))
-    index = routing.Start(0)
-    plan_output = 'Route for vehicle 0:\n'
-    route_distance = 0
-    while not routing.IsEnd(index):
-        plan_output += ' {} ->'.format(manager.IndexToNode(index))
-        previous_index = index
-        index = solution.Value(routing.NextVar(index))
-        route_distance += routing.GetArcCostForVehicle(previous_index, index, 0)
-    plan_output += ' {}\n'.format(manager.IndexToNode(index))
-    print(plan_output)
-    plan_output += 'Route distance: {}miles\n'.format(route_distance)
-```
+[PRE22]
 
 如您从上述代码中所见，我们正在创建一个函数，以便我们可以根据我们的数组和这些数组中的距离打印解决方案。请记住，您将确定出发点，也就是您要离开的城市。然后我们运行算法来收集信息并创建我们的`print`语句。
 
 1.  最后，我们需要定义我们的`main()`函数以运行我们的算法。`main()`函数告诉算法继续创建我们已经定义的数据模型，并将其存储为数据。然后我们创建路由模型来找到我们的解决方案。请看以下代码片段：
 
-```py
-def main():    
-    data = create_data_model()
-    manager = pywrapcp.RoutingIndexManager(len(data['distance_matrix']),
-                                           data['num_vehicles'], data['depot'])
-    # Create Routing Model.
-    routing = pywrapcp.RoutingModel(manager)
-    def distance_callback(from_index, to_index):
-        """Returns the distance between the two nodes."""
-        # Convert from routing variable Index to distance matrix NodeIndex.
-        from_node = manager.IndexToNode(from_index)
-        to_node = manager.IndexToNode(to_index)
-        return data['distance_matrix'][from_node][to_node]
-    transit_callback_index = routing.RegisterTransitCallback(distance_callback)
-    routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
-    search_parameters = pywrapcp.DefaultRoutingSearchParameters()
-    search_parameters.first_solution_strategy = (
-        routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC)
-    solution = routing.SolveWithParameters(search_parameters)
-    if solution:
-        print_solution(manager, routing, solution)
-if __name__ == '__main__':
-    main()
-```
+[PRE23]
 
 上述代码显示了我们如何定义我们的`main()`函数。需要注意的是，`main()`函数可以被命名为任何我们想要的名称。在使用多个函数时，我们有时使用`main()`来标识最初从算法中输出我们想要的功能。对于这个问题，我们正在创建一个`main()`函数，它将确定我们旅行的最佳路线。
 
 1.  现在让我们看看当我们运行这段代码时，我们得到了什么输出。该代码为我们提供了里程的“目标”总数以及我们应该采取的行程路线。以下是输出：
 
-```py
-Objective: 1707 miles
-Route for vehicle 0:
- 0 -> 1 -> 2 -> 4 -> 3 -> 0
-```
+[PRE24]
 
 从纽约到纽约的行程，如果我们按照以下顺序进行，将会是最有效的：纽约 | 费城 | 巴尔的摩 | 克利夫兰 | 芝加哥 | 纽约。
 
@@ -481,23 +350,11 @@ Python 有一个可以安装的密码学包，就像我们安装其他库（如*
 
 1.  让我们首先定义我们的字母。下面的代码片段定义了我们的字母，然后将每个字母转换为小写：
 
-```py
-LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ'
-LETTERS = LETTERS.lower()
-```
+[PRE25]
 
 1.  接下来，我们定义我们的加密函数。这个函数将接受两个参数——`message`和`key`。`message`函数将由用户定义，在`main`函数中完成。现在，我们将通过在`encryptedM`变量的定义中添加空引号（`''`）来使用空消息，如下面的代码片段所示：
 
-```py
-def encrypt(message, key):
-    encryptedM = ''
-    for letts in message:
-        if letts in LETTERS:
-            num = LETTERS.find(letts)
-            num += key
-            encryptedM +=  LETTERS[num]
-    return encryptedM
-```
+[PRE26]
 
 请注意，我们迭代要加密的消息中的字母，然后我们使用用户在`main`函数中定义的密钥来加密消息。然后这个函数返回加密的消息。
 
@@ -505,16 +362,7 @@ def encrypt(message, key):
 
 1.  现在让我们来看一下解码函数。当我们有一个加密的消息并想知道原始消息是什么时，我们将使用这个函数：
 
-```py
-def decode(message, key):
-    decodedM = ''
-    for chars in message:
-        if chars in LETTERS:
-            num = LETTERS.find(chars)
-            num -= key
-            decodedM +=  LETTERS[num]
-    return decodedM
-```
+[PRE27]
 
 前面的代码显示了我们将用来解码消息的函数。它使用消息中的字符和加密密钥来解码消息。请注意，如果没有原始密钥，您就无法解码消息，除非您有时间坐下来尝试每一个密钥。
 
@@ -522,29 +370,13 @@ def decode(message, key):
 
 这是`main`函数：
 
-```py
-def main():
-    message = input('What message do you need to encrypt or decrypt? ')
-    key = int(input('Enter the key, numbered 1-26: '))
-    choice = input('Do you want to encrypt or decode? Type E for encrypt or D for decode: ')
-    if choice.lower().startswith('e'):
-        print(encrypt(message, key))
-    else:
-        print(decode(message, key))
-if __name__ == '__main__':
-    main()
-```
+[PRE28]
 
 从前面的代码中可以看到，我们定义了一个`main`函数。在代码的结尾，我们调用了该函数。*不要忘记在算法中调用*`main`*函数！*这是让算法运行的方法。
 
 当我们尝试使用密钥`9`加密输入消息`the name of the dog is King Kong`时，这是一个样本输出：
 
-```py
-What message do you need to encrypt or decrypt? the name of the dog is King Kong
-Enter the key, numbered 1-26: 9
-Do you want to encrypt or decode? Type E for encrypt or D for decode: E
-cqnwjvnxocqnmxprbrwpxwp
-```
+[PRE29]
 
 正如您所看到的，我们获得了加密文本`cqnwjvnxocqnmxprbrwpxwp`作为密文，现在我们已经创建了一个可以加密或解密任何消息的算法。现在让我们继续解决一个新问题。
 
@@ -556,9 +388,7 @@ cqnwjvnxocqnmxprbrwpxwp
 
 对于这个特定的问题，我们将探讨一些事情。首先，让我们谈谈**哈希**。在网络安全中，哈希意味着那些用数字和字母组成的非常长的字符串，用来替代密码之类的东西。例如，如果您输入了密码`password1`（请不要这样做，永远不要使用`password`作为密码），哈希过程会将其替换为看起来更像这样的东西：
 
-```py
-27438d623d9e09d7b0f8083b9178b5bb8ff8bc321fee518af 4466f6aadb68a8f:100133bfdbff492cbc8f5d17af46adab
-```
+[PRE30]
 
 当我们创建密码算法时，我们必须添加随机数据，我们称之为**盐**。盐只是提供额外的输入，并在存储密码时帮助我们使密码更安全。
 
@@ -566,20 +396,13 @@ cqnwjvnxocqnmxprbrwpxwp
 
 1.  首先我们要导入库：
 
-```py
-import uuid
-import hashlib
-```
+[PRE31]
 
 我们正在导入两个库，这将允许我们使用加盐和哈希保存我们的密码。
 
 1.  在文件的下一个代码片段中，我们定义了对密码进行哈希的函数：
 
-```py
-def hash_pwd(password):
-    salt = uuid.uuid4().hex 
-    return hashlib.sha1(salt.encode() + password.encode()).hexdigest() + ':' + salt
-```
+[PRE32]
 
 我们使用我们的`uuid`包对密码进行了加盐处理，然后使用安全哈希算法 1 `sha1`返回了哈希值。这只是我们可以使用的算法之一。我们还可以使用其他算法，比如**SHA-256**，**SHA-384**等。`sha1`哈希的输出大小为 160，而`sha256`的输出大小为 256。`sha1`和`sha256`的块大小都为 512 位，而`sha384`的块大小为 1,024 位。
 
@@ -587,24 +410,11 @@ def hash_pwd(password):
 
 1.  现在让我们看一下`check`函数。我们总是希望通过要求两次输入密码来确认密码。以下代码片段定义了当接收到第二个密码时算法将执行的操作：
 
-```py
-def check_pwd(hashed_pwd, user_pwd):
-    password, salt = hashed_pwd.split(':')
-    return password == hashlib.sha1(salt.encode() + user_pwd.encode()).hexdigest()
-```
+[PRE33]
 
 1.  现在让我们要求一些输入。首先，我们会要求输入密码。因为我们对程序的操作很感兴趣，所以我们会打印出哈希密码，但在构建成网站或其他应用程序时，您可以省略该行。之后，我们要求验证密码，并为用户提供输出，以便他们知道它们是否匹配，如果匹配，我们可能会希望他们再试一次。目前，该算法要么确认它，要么让用户知道它现在已经确认：
 
-```py
-new_pwd = input('Enter new password: ')
-hashed_pwd = hash_pwd(new_pwd)
-print('Hashed password: ' + hashed_pwd)
-confirm_pwd = input('Confirm password: ')
-if check_pwd(hashed_pwd, confirm_pwd):
-    print('Confirmed!')
-else:
-    print('Please try again')
-```
+[PRE34]
 
 运行程序后，我们得到以下输出：
 
@@ -628,16 +438,7 @@ else:
 
 1.  让我们看看我们可以做些什么来为某人提供再次输入密码的机会。在算法结束时，让我们在最后一行之后添加一些代码：
 
-```py
-    new_pwd = input('Enter new password: ')
-    hashed_pwd = hash_pwd(new_pwd)
-    print('Hashed password: ' + hashed_pwd)
-    confirm_pwd = input('Confirm password: ')
-    if check_pwd(hashed_pwd, confirm_pwd):
-        print('Confirmed!')
-    else:
-        print('Please try again later')
-```
+[PRE35]
 
 请注意我们之前片段中的最后一句话是“请稍后重试”。这让用户知道，如果他们想要保存密码，他们将不得不重新开始这个过程。算法在那时停止了。
 
@@ -659,20 +460,7 @@ else:
 
 我们将在这里创建类似那些聊天机器人的东西。在我们开始之前，有一些组件是我们需要的。其中之一是一个`intents`文件。这个文件应该是一个`.json`文件，包含了机器人将使用和/或回应的问候和回应。以下是`intents`内容的样本：
 
-```py
-{"intents": [
-        {"tag": "greeting",
-         "patterns": ["Hi", "How are you", "Hello?", "Welcome!", "Hello"],
-         "responses": ["Hello! Thank you for visiting our site! ", "Welcome back!", "Hello, how can I help you?", "What can I do for you? "],
-         "context_set": ""
-        },
-        {"tag": "goodbye",
-         "patterns": ["Bye", "See you later", "Goodbye"],
-         "responses": ["See you later, thanks for visiting", "Thank you and have a wonderful day!", "Bye! See you soon!"]
-        }
-   ]
-} 
-```
+[PRE36]
 
 正如您所看到的，这只是一组可能的响应。我们给`.json`文件提供的数据越多，我们的机器人就会越强大和准确。
 
@@ -686,70 +474,29 @@ else:
 
 ch15_chatBot.py
 
-```py
-import nltk
-import json
-import pickle
-import numpy as np
-nltk.download('punkt')
-nltk.download('wordnet')
-from nltk.stem import WordNetLemmatizer
-lemmatizer = WordNetLemmatizer()
-```
+[PRE37]
 
 从前面的代码中可以看出，您不必每次下载`nltk`模块。但是拥有这段代码也不会有害。系统不会每次安装多个副本；它只会识别它们已经存在，并且不会第二次安装它们。
 
 1.  让我们继续从我们的库和软件包中获取我们需要的东西：
 
-```py
-from keras.models import Sequential
-from keras.optimizers import SGD
-from keras.layers import Activation, Dense, Dropout
-import random
-```
+[PRE38]
 
 1.  现在我们已经得到了我们需要的东西，我们必须查看我们的`.json`文件。该文件包含了前面提到的意图。我们不仅需要打开该文件，还需要将组件分开并以我们的算法能够理解的方式进行排序。看一下以下代码片段：
 
-```py
-#Upload intents file and create our lists
-words=[]
-classes = []
-doc = []
-ignore_words = ['?', '!', ',', '.']
-data_words = open(r'C:\...\intents.json').read()
-intents = json.loads(data_words)
-```
+[PRE39]
 
 请记住，除非您指定要访问的文件的正确位置，否则程序将无法运行，在这种情况下是`.json`文件。还要注意，这次我们以稍微不同的方式打开它，如前面的代码片段所示。以这种方式打开文件，与我们用 Pandas 打开`.csv`文件不同，意味着我们不需要在路径中使用双`\\`。
 
 1.  现在让我们告诉算法如何处理该文件：
 
-```py
-for intent in intents['intents']:
-    for pattern in intent['patterns']:
-        #Tokenize all the words (separate them)
-        w = nltk.word_tokenize(pattern)
-        words.extend(w)
-        #Add all the words into doc 
-        doc.append((w, intent['tag']))
-        #Add the classes
-        if intent['tag'] not in classes:
-            classes.append(intent['tag'])
-print(doc)      
-```
+[PRE40]
 
 在这里，我们正在对我们的信息进行标记化，也就是说，我们正在将所有内容分解成单词，然后将它们添加到列表中。这就是使处理信息成为可能的东西。在我们将它们分开后，我们将根据单词的含义对它们进行分组。
 
 1.  然后这些单词被排序，如下面的代码片段所示：
 
-```py
-#lemmatization      
-words = [lemmatizer.lemmatize(w.lower()) for w in words if w not in ignore_words]
-words = sorted(list(set(words)))
-classes = sorted(list(set(classes)))
-pickle.dump(words,open('words.pkl','wb'))
-pickle.dump(classes,open('classes.pkl','wb'))       
-```
+[PRE41]
 
 请注意，在前面的代码中，我们使用了`pickle()`。Pickle 是 Python 中的一个方法，我们可以使用它来序列化数据（或反序列化）。然后使用该方法替换当前文件数据，以便可以将其用作转换。
 
@@ -757,83 +504,25 @@ pickle.dump(classes,open('classes.pkl','wb'))       
 
 一旦我们完成了这个过程，我们就会保存模型以便我们可以使用它。但现在让我们看看聊天机器人的功能：
 
-```py
-#Define chatbot functions
-def clean_up_sentence(sentence):
-    sentence_words = nltk.word_tokenize(sentence)
-    sentence_words = [lemmatizer.lemmatize(word.lower()) for word in sentence_words]
-    return sentence_words
-def bow(sentence, words, show_details=True):
-    sentence_words = clean_up_sentence(sentence)
-    bag = [0]*len(words)
-    for s in sentence_words:
-        for i,w in enumerate(words):
-            if w == s:
-                bag[i] = 1
-    return(np.array(bag))
-def predict_class(sentence, model):
-    p = bow(sentence, words,show_details=False)
-    res = model.predict(np.array([p]))[0]
-    ERROR_THRESHOLD = 0.25
-    results = [[i,r] for i,r in enumerate(res) if r>ERROR_THRESHOLD]
-    results.sort(key=lambda x: x[1], reverse=True)
-    return_list = []
-    for r in results:
-        return_list.append({"intent": classes[r[0]], "probability": str(r[1])})
-    return return_list
-```
+[PRE42]
 
 前三个函数用于为聊天机器人创建响应并进行预测。这些类将影响我们如何从我们的机器人那里获得这些响应。让我们这样考虑——如果我说你好，我不希望聊天机器人说再见。那将是不礼貌的。但请记住，我们的机器人只有我们的训练好，它才会有多好。因此，如果我们在`.json`文件中没有足够的内容，并且没有正确训练模型，那么机器人将是相当无用的。
 
 1.  现在让我们定义如何获取响应：
 
-```py
-def getResponse(ints, intents_json):
-    tag = ints[0]['intent']
-    list_of_intents = intents_json['intents']
-    for i in list_of_intents:
-        if(i['tag']== tag):
-            result = random.choice(i['responses'])
-            break
-    return result
-def chatbot_response(msg):
-    ints = predict_class(msg, model)
-    res = getResponse(ints, intents)
-    return res
-```
+[PRE43]
 
 从前面的代码片段中可以看到，机器人将制作一个响应并返回它。我们将在我们的文件中的下几个代码片段中调用这些内容。
 
 1.  但我们将在这里跳过这一点，进入我们聊天机器人的外观：
 
-```py
-base = Tk()
-base.title("Chat with Customer Service")
-base.geometry("400x500")
-base.resizable(width=FALSE, height=FALSE)
-```
+[PRE44]
 
 请注意，我们在前面的代码片段中建立了一些关键信息。我们确定了窗口的大小并阻止了其调整大小。
 
 1.  在下一个代码片段中，我们将建立背景，添加`滚动条`，并确定**发送**按钮的外观：
 
-```py
-#Create chatbot window
-ChatLog = Text(base, bd=6, bg="white", height="8", width="70", font="Calibri")
-ChatLog.config(state=DISABLED)
-#Scrollbar
-scrollbar = Scrollbar(base, command=ChatLog.yview, cursor="arrow")
-#Create Send button
-SendButton = Button(base, font=("Calibri",12,'bold'), text="Send", width="15", height=5,
-                    bd=0, bg="pink", activebackground="light green",fg='black',
-                    command= send )
-EntryBox = Text(base, bd=0, bg="white",width="29", height="5", font="Arial")
-scrollbar.place(x=376,y=6, height=386)
-ChatLog.place(x=6,y=6, height=386, width=370)
-EntryBox.place(x=128, y=401, height=90, width=265)
-SendButton.place(x=6, y=401, height=90)
-base.mainloop()
-```
+[PRE45]
 
 所以，这就是全部。*我们创建了一个聊天机器人！* *但是当它运行时会是什么样子呢？* 看一下输出：
 

@@ -50,19 +50,11 @@
 
 ch16_tessellation.py
 
-```py
-import math
-import cmath
-import cairo
-```
+[PRE0]
 
 1.  接下来，我们要定义我们的画布和子细分数。请注意，我们选择了`4`作为我们的示例。在*图 16.1*中，您将看到来自此代码片段的示例以及改变子细分的两个额外示例：
 
-```py
-#Define the configuration of the image. 
-canvas_size = (500, 500)
-numberSubdivisions = 4
-```
+[PRE1]
 
 1.  对于镶嵌，我们需要定义**黄金比例**。
 
@@ -70,99 +62,35 @@ numberSubdivisions = 4
 
 看一下以下代码片段：
 
-```py
-#Define the Golden Ratio - gr
-gr = (1 + math.sqrt(5)) / 2
-```
+[PRE2]
 
 1.  现在我们使用函数来定义当我们的三角形进行子细分时会发生什么：
 
-```py
-def subdivide(triangles):
-    result = []
-    for color, A, B, C in triangles:
-        if color == 0:
-            P = A + (B - A) / gr
-            result += [(0, C, P, B), (1, P, C, A)]
-        else:
-            Q = B + (A - B) / gr
-            R = B + (C - B) / gr
-            result += [(1, R, C, A), (1, Q, R, B), (0, R, Q, A)]
-    return result
-```
+[PRE3]
 
 在上述代码中，我们定义了将三角形细分的函数。该函数包含一个条件语句，用于在找到比例之前识别三角形的颜色。
 
 1.  要创建三角形的轮廓，我们需要将三角形附加到一个组中。因为 Python 是一种面向对象的编程语言，所以我们可以通过创建一个空列表，然后使用循环附加形状来轻松地做到这一点：
 
-```py
-#Wheel of teal triangles
-triangles = []
-for i in range(10):
-    B = cmath.rect(1, (2*i - 1) * math.pi / 10)
-    C = cmath.rect(1, (2*i + 1) * math.pi / 10)
-    if i % 2 == 0:
-        B, C = C, B  # Make sure to mirror every second triangle
-    triangles.append((0, 0j, B, C))
-for i in range(numberSubdivisions):
-    triangles = subdivide(triangles)
-```
+[PRE4]
 
 1.  现在我们要准备用于我们的镶嵌的画布。请注意，我们使用`cairo`函数来使用我们在算法开头定义的变量来定义参数。在这里，我们使用`canvas_size`：
 
-```py
-surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, canvas_size[0], canvas_size[1])
-cr = cairo.Context(surface)
-cr.translate(canvas_size[0] / 2.0, canvas_size[1] / 2.0)
-wheelRadius = 1.2 * math.sqrt((canvas_size[0] / 2.0) ** 2 + (canvas_size[1] / 2.0) ** 2)
-cr.scale(wheelRadius, wheelRadius)
-```
+[PRE5]
 
 1.  现在我们要定义我们将使用的两个三角形。在这种情况下，我们的三角形是蓝绿色和紫色的，但是您可以更改它们的 RGB 值，也就是说，如果您想要测试不同的颜色：
 
-```py
-#Define the teal triangles
-for color, A, B, C in triangles:
-    if color == 0:
-        cr.move_to(A.real, A.imag)
-        cr.line_to(B.real, B.imag)
-        cr.line_to(C.real, C.imag)
-        cr.close_path()
-cr.set_source_rgb(.2, .8, .8)
-cr.fill()    
-#Define the purple triangles
-for color, A, B, C in triangles:
-    if color == 1:
-        cr.move_to(A.real, A.imag)
-        cr.line_to(B.real, B.imag)
-        cr.line_to(C.real, C.imag)
-        cr.close_path()
-cr.set_source_rgb(0.7, 0, 0.7)
-cr.fill()
-color, A, B, C = triangles[0]
-cr.set_line_width(abs(B - A) / 10.0)
-cr.set_line_join(cairo.LINE_JOIN_ROUND)
-```
+[PRE6]
 
 上述代码创建了蓝绿色的三角形和紫色的三角形。每个都使用 RGB 值定义，并使用路径和线条创建。
 
 1.  旋转的三角形形成了一个瓷砖图案，也就是我们的镶嵌图案。瓷砖之间也有边框分隔。边框的颜色也在接下来的循环中定义：
 
-```py
-#Triangle borders
-for color, A, B, C in triangles:
-    cr.move_to(C.real, C.imag)
-    cr.line_to(A.real, A.imag)
-    cr.line_to(B.real, B.imag)
-cr.set_source_rgb(0.3, 0.5, 0.3)
-cr.stroke()
-```
+[PRE7]
 
 1.  最后，我们希望算法创建一个带有我们的镶嵌的图像文件：
 
-```py
-surface.write_to_png('tessellation.png')
-```
+[PRE8]
 
 以下截图显示了使用不同数量的子区划进行的三种变化：
 
@@ -186,22 +114,11 @@ surface.write_to_png('tessellation.png')
 
 1.  我们像往常一样从数据开始，导入我们将使用的库。请注意，我们在这里使用了两个显示库，即`matplotlib`和`seaborn`库。这是我们第一次使用`seaborn`。我们使用`seaborn`是因为使用这个库可以轻松处理额外的工作，比如找到回归线：
 
-```py
-#Import libraries needed
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-%matplotlib inline
-```
+[PRE9]
 
 1.  现在我们要找到`.csv`文件。请记住，您可以先建立目录。否则，请确保您在运行文件之前包含文件的完整位置。由于我们的目录不同，请确保在运行文件之前更改目录：
 
-```py
-#Get data set. Remember to check your directory and/or add the full location of the file.
-dataset = pd.read_csv('C:\\... \\breast-cancer.csv')
-dataset.head()
-dataset.isnull().sum()
-```
+[PRE10]
 
 注意算法中的`dataset.head()`命令。如果我们仅运行代码到那一点，那么我们会得到以下输出：
 
@@ -217,24 +134,13 @@ dataset.isnull().sum()
 
 1.  由于没有缺失值，如前面的屏幕截图所示，我们将继续到下一个代码片段，我们将为诊断创建`count`变量：
 
-```py
-#Create count variable for diagnosis
-count = dataset.diagnosis.value_counts()
-count
-```
+[PRE11]
 
 在前面的代码片段中创建了`count`变量，这意味着我们可以使用诊断的值来创建条形图，无论是恶性还是良性。
 
 1.  以下代码片段创建了该条形图并显示了结果输出：
 
-```py
-#Create bargraph of the diagnosis values
-count.plot(kind = 'bar')
-plt.title('Tumor distribution (malignant: 1, benign: 0)')
-plt.xlabel('Diagnosis')
-plt.ylabel('count')
-plt.show()
-```
+[PRE12]
 
 看一下下面的屏幕截图，显示了使用诊断数值的条形图。正如你所看到的，条形图显示了**恶性**肿瘤与**良性**肿瘤的数量：
 
@@ -246,13 +152,7 @@ plt.show()
 
 1.  您可以运行不同的分析来查看哪些更相关，但现在，我们只是要使用周长均值和纹理均值来创建我们的散点图。以下代码片段显示了如何使用`seaborn`库来创建这些：
 
-```py
-y_target = dataset['diagnosis']
-dataset.columns.values
-dataset['target'] = dataset['diagnosis'].map({0:'B',1:'M'})
-#Create scatterplot of mean perimeter and mean texture
-sns.scatterplot(x = 'perimeter_mean', y = 'texture_mean', data = dataset, hue = 'diagnosis', palette = 'bright');
-```
+[PRE13]
 
 创建了我们的散点图后，算法将返回以下输出，显示了平均周长散点图与平均纹理散点图的比较：
 
@@ -282,28 +182,15 @@ sns.scatterplot(x = 'perimeter_mean', y = 'texture_mean', data = dataset, hue = 
 
 1.  与数据一起工作时，我们需要确保导入我们将使用的库：
 
-```py
-import pandas as pd
-import matplotlib.pyplot as plt
-```
+[PRE14]
 
 1.  接下来，我们需要获取我们的文件。请记住，有多种方法可以做到这一点。您可以给 Python 提供文件的完整位置，或者您可以首先识别目录，然后只提供文件名。在运行程序之前，请确保更改您将使用的`.csv`文件的位置：
 
-```py
-df = pd.read_csv('C:\\...\\us-PuertoRico.csv')
-```
+[PRE15]
 
 1.  在确定文件后，我们将只需使用日期创建一个简单的散点图作为我们的*x*轴，以及死亡人数作为我们的*y*轴。此代码片段中的下几个命令是为了使图表更易于阅读，例如*y*轴标签，*x-tick*标记的旋转以及图表的标题。*x-tick*标记是水平轴或*x*轴的分割标记。您可以在*图 16.6*中看到*x-tick*标记和标签：
 
-```py
-plt.scatter(df['date'], df['deaths'])
-plt.xticks(rotation = 90)
-plt.title('Deaths per day during October 2020 due to COVID19 in Puerto Rico')
-plt.ylabel('Number of Deaths')
-fig.tight_layout()
-plt.show()
-plt.savefig('COVID_PR.png')
-```
+[PRE16]
 
 从前面的代码片段可以看出，我们还创建了一个图像文件，以备将来使用。该图表将显示在我们的屏幕上，如下截图所示：
 
@@ -337,39 +224,19 @@ plt.savefig('COVID_PR.png')
 
 1.  对于这个特定的程序，我们需要`pandas`和`matplotlib`库，所以我们需要导入它们：
 
-```py
-import pandas as pd
-import matplotlib.pyplot as plt
-```
+[PRE17]
 
 1.  接下来，我们需要读取我们的文件。这就是你需要更新这段代码以便在你的机器上运行它的地方：
 
-```py
-df = pd.read_csv('C:\\...\\brooklyn_sales_map.csv')
-```
+[PRE18]
 
 1.  现在我们要创建我们的`bins`。这些是我们的值范围，当我们创建图表时会用到它们，你可以在以下几行代码中的`df['price_range']`下看到它们：
 
-```py
-bins = [-100000000,20000,40000,60000,80000,100000,1000000,10000000,500000000]
-ranges_prices = ['$0-$200k','$200k-$400k','$400k-$600k','$600k-$800k','$800k-$1mlln','$1mlln-$10mlln','$10mlln-$100mlln','$100mlln-$500mlln']
-df['price_range'] = pd.cut(df['sale_price'], bins = bins, labels = ranges_prices)
-```
+[PRE19]
 
 1.  现在我们要定义一个函数，我们将在其中转换一些数据。请注意，我们在数据集的每一年上运行该函数，以找到我们稍后将用于`housing_df`的总百分比：
 
-```py
-def convert(year):
-    return df[df['year_of_sale'] == year].groupby('price_range').size()
-percent_total = [x/sum(x)*100 for x in [convert(2003),convert(2004),convert(2005),convert(2006),convert(2007),convert(2008),convert(2009),convert(2010),convert(2011),convert(2012),convert(2013),convert(2014),convert(2015),convert(2016),convert(2017)]]
-year_names = list(range(2003,2018))
-housing_df = pd.DataFrame(percent_total, index = year_names)
-ax_two = housing_df.plot(kind = 'barh', stacked = True, width = 0.9, cmap = 'Spectral')
-plt.legend(bbox_to_anchor = (1.45, 1), loc='upper right')
-ax_two.set_xlabel('Percentages', fontname='Arial', fontsize = 12)
-ax_two.set_ylabel('Years', fontname='Arial', fontsize = 12)
-ax_two.set_title('Housing Sale ')
-```
+[PRE20]
 
 前面的片段帮助我们创建了两个模型中的第一个。这是一个水平条形图。我们标记了所有的轴和图表，然后在前面的代码片段中显示的下一行中，我们还定义了我们将在这个图表中使用的颜色映射，这里是`'Spectral'`。你可以尝试不同的颜色映射以便更容易阅读。看一下我们的第一个图表，如下所示：
 
@@ -383,13 +250,7 @@ ax_two.set_title('Housing Sale ')
 
 1.  在下面的片段中，我们创建了我们的第二张图，它使用我们的信息为每个社区的每个价格范围生成了一个垂直条形图的百分比：
 
-```py
-df.groupby(['neighborhood','price_range']).size().unstack().plot.bar(stacked = True, cmap = 'rainbow')
-plt.legend(bbox_to_anchor = (1.45, 1), loc = 'upper right')
-plt.title('Pricing by Neighborhoods in Brooklyn from 2003 to 2017')
-plt.ylabel('Price Range')
-plt.xticks(fontsize = 6)
-```
+[PRE21]
 
 这张图用条形图显示了每个社区的价格范围。让我们看一下以下截图中的第二张图：
 
@@ -417,71 +278,23 @@ plt.xticks(fontsize = 6)
 
 ch16_electricFieldLines.py
 
-```py
-import numpy as np
-import matplotlib.pyplot as plt
-import random
-```
+[PRE22]
 
 1.  然后，我们将通过定义一些变量来设置我们的*x*和*y*轴：
 
-```py
-np.seterr(divide='ignore', invalid='ignore')
-#Define the size of the electric field lines grid
-N = 20
-M = 25
-#Set the x and y coordinates
-x_coor = np.arange(0, M, 1)
-y_coor = np.arange(0, N, 1)
-x_coor, y_coor = np.meshgrid(x_coor, y_coor)
-E_x = np.zeros((N, M))
-E_y = np.zeros((N, M))
-```
+[PRE23]
 
 在前面的代码片段中，我们致力于定义我们的网格并设置坐标。然后我们创建了网格。`meshgrid()`函数从向量坐标返回坐标矩阵。
 
 1.  在设置了我们的坐标并设置了我们的网格之后，我们可以开始定义我们的电荷发生了什么。首先，我们需要确定将绘制多少个电荷：
 
-```py
-#Set the number of total charges to plot
-nq = 8
-#Create empty lists to store coordinates of charges
-qq = [[], []]  
-for dummy in range(nq): 
-    q = random.choice([-1, 1])
-    q_x, q_y = random.randrange(1, N), random.randrange(1, M)
-    qq[0].append(q_y)
-    qq[1].append(q_x)
-    for i in range(N):
-        for j in range(M):
-            denom = ((i - q_x) ** 2 + (j - q_y) ** 2) ** 1.5
-            if denom != 0: 
-                E_x[i, j] += q * (j - q_y) / denom
-                E_y[i, j] += q * (i - q_x) / denom
-```
+[PRE24]
 
 正如你从前面的代码片段中所看到的，我们确定了电荷的数量后，创建了两个空列表。然后我们使用嵌套的`for`循环根据电荷的数量向这些列表添加坐标。
 
 1.  在我们进行必要的数学运算以获得我们的坐标和向量之后，我们可以继续绘制我们的电场线图。我们将使用`quiver`图，这是一个我们可以用来创建矢量场的`matplotlib`图形：
 
-```py
-C = np.hypot(E_x, E_y)
-E = (E_x ** 2 + E_y ** 2) ** .5
-E_x = E_x / E
-E_y = E_y / E
-plt.figure(figsize=(12, 8))
-#Plot charges
-plt.plot(*qq, 'ms')
-#Create 2D array
-rr = plt.quiver(x_coor, y_coor, E_x, E_y, C, pivot='middle')
-cbar = plt.colorbar()
-cbar.ax.set_ylabel('Magnitude')
-#Label graph
-plt.title('Electric Field Lines in Python')
-plt.axis('equal')
-plt.axis('off')
-plt.show()
-```
+[PRE25]
 
 重要的是要始终为我们的图表和绘图添加标签，因为这将使信息更易读，特别是对于那些不知道这背后的代码意味着什么或图表和绘图代表什么的人。当我们运行我们的代码片段时，我们会得到以下输出：
 
@@ -517,12 +330,7 @@ plt.show()
 
 1.  `seaborn`库可以帮助我们一点，让我们开始。我们可以创建`pairplot()`，它将使用直方图和散点图相关联`.csv`文件中的数值数据。这有点像一个神奇的魔术。我们可以用两行代码来看看我们看到了什么。看看生成*图 16.7*所需的两行代码（请注意，实际上有四行代码，但我没有计算我用来导入库的两行代码）：
 
-```py
-import seaborn as sns
-import pandas as pd
-df = pd.read_csv('C:\\...\\Data_Cortex_Nuclear.csv')
-sns.pairplot(df, hue = 'Treatment')
-```
+[PRE26]
 
 当您运行此程序时，请耐心等待。算法可能很简单，但它在后台所做的事情并不简单。请看以下截图以查看我们的配对图：
 
@@ -546,16 +354,7 @@ sns.pairplot(df, hue = 'Treatment')
 
 在查看这个数据集时，另一种有用的图表类型是箱线图。我们可以使用箱线图来查看我们想更仔细观察的蛋白质的类别的蛋白质表达水平。让我们以`NR2A_N`蛋白为例。使用`seaborn`箱线图，我们可以使用`ch16_boxplot.py`文件中的代码为这种特定蛋白创建一个图表。像往常一样，首先检查文件位置：
 
-```py
-import pandas as pd
-import scipy.stats as stats
-import matplotlib.pyplot as plt
-import seaborn as sns
-df = pd.read_csv('C:\\...\\Data_Cortex_Nuclear.csv')
-protein = df[['NR2A_N', 'class']].dropna()
-sns.boxplot(x='class', y='NR2A_N', data = protein)
-plt.show
-```
+[PRE27]
 
 在上面的代码中，我们确定了我们想要比较的事物，即蛋白质和类别。然后我们将使用我们的`seaborn`库创建箱线图，如下所示：
 
@@ -581,17 +380,7 @@ plt.show
 
 1.  让我们来看一下如何导入数据。你需要自己的 API。如果你想检查另一个股票，比如`AMZN`，你可以用`'WIKI/AMZ'`替换`'EOD/VZ'`。**AMZN**是**Amazon**股票的代码。但让我们来看看我们的`VZ`集：
 
-```py
-import quandl
-import numpy as np
-from sklearn.linear_model import LinearRegression
-from sklearn.svm import SVR
-from sklearn.model_selection import train_test_split
-#Get data from Quandl. Note that you'll need your own API to substitute in the api.key below.
-quandl.ApiConfig.api_key = '…'
-VZ = quandl.get('EOD/VZ')
-print(VZ.head())
-```
+[PRE28]
 
 当我们运行上述代码时，我们得到了数据集中前五个值的表格。以下截图显示了我们的数值表：
 
@@ -601,11 +390,7 @@ print(VZ.head())
 
 1.  现在假设我们只想关注调整后的收盘价，以便以后进行预测。那么我们可以使用以下代码片段来实现：
 
-```py
-#Grab the Adj_Close column
-VZ = VZ[['Adj_Close']]
-print(VZ.head())
-```
+[PRE29]
 
 运行上述代码后，我们的调整后的表格如下所示：
 
@@ -621,16 +406,7 @@ print(VZ.head())
 
 1.  以下代码片段将为数据集创建一个图。它从文件中选择`Date`列并将其设置为索引值。然后它创建一个图并为图和坐标轴添加标签：
 
-```py
-VZ["Date"]=pd.to_datetime(VZ.Date,format="%Y-%m-%d")
-VZ.index=VZ['Date']
-plt.figure(figsize=(16,8))
-plt.plot(VZ["Close"],label='Close price history')
-plt.title('Closing price over time', fontsize = 20)
-plt.xlabel('Time', fontsize = 15)
-plt.ylabel('Closing price', fontsize = 15)
-plt.show()
-```
+[PRE30]
 
 我们还没有看到模型。我们还没有定义我们的训练数据。我们只是看了我们的股票价格从**1983**年到**2020**年的情况，如下所示。请注意，第一个刻度标签显示**1984**。我们的数据似乎是在**1984**年之前开始的。刻度标记是自 1980 年以来每 4 年一次，如下所示：
 
@@ -642,22 +418,7 @@ plt.show()
 
 1.  让我们来看一下我们将要使用的另一段代码：
 
-```py
-VZ3=VZ2.values
-train_data=VZ3[0:750,:]
-valid_data=VZ3[750:,:]
-VZ2.index=VZ2.Date
-VZ2.drop("Date",axis=1,inplace=True)
-scaler=MinMaxScaler(feature_range=(0,1))
-scaled_data=scaler.fit_transform(VZ2)
-x_train_data,y_train_data=[],[]
-for i in range(60,len(train_data)):
-    x_train_data.append(scaled_data[i-60:i,0])
-    y_train_data.append(scaled_data[i,0])
-
-x_train_data,y_train_data=np.array(x_train_data),np.array(y_train_data)
-x_train_data=np.reshape(x_train_data,(x_train_data.shape[0],x_train_data.shape[1],1))
-```
+[PRE31]
 
 请注意代码中`train_data=VZ3[0:750,:]`行中的`750`值。这意味着我只使用了数据的前 750 行，而不是可能的 9166 行数据来训练我的模型。这不太好。
 
@@ -701,14 +462,7 @@ x_train_data=np.reshape(x_train_data,(x_train_data.shape[0],x_train_data.shape[1
 
 1.  让我们首先看一段代码片段，它将上传数据集，然后显示数据集中的第一项：
 
-```py
-from keras.datasets import mnist
-#Grab the testing and training data from existing dataset
-(X_train, y_train), (X_test, y_test) = mnist.load_data()
-import matplotlib.pyplot as plt
-#Take a look at the first item in the dataset
-plt.imshow(X_train[0], cmap='Greys')
-```
+[PRE32]
 
 我们在训练集中使用索引`0`来查看第一幅图像。`cmap`属性将使色图变为灰色。您可以根据需要进行调整。顺便说一句，对于那些有困难看到颜色或有特殊颜色需求的人来说，改变色图可以显著改变图像的感知方式。让我们看一下以下的第一幅图像：
 
@@ -726,51 +480,25 @@ plt.imshow(X_train[0], cmap='Greys')
 
 1.  现在我们已经看了我们正在使用的东西，让我们使用以下代码片段来重塑和编码我们的模型。作为提醒，完整的代码可以在存储库中找到，但是一些组件会略有不同（例如我们的文件不会测试数据集中的图像）：
 
-```py
-#Reshape the model 
-X_train = X_train.reshape(60000,28,28,1)
-X_test = X_test.reshape(10000,28,28,1)
-from keras.utils import to_categorical
-#Use One-Hot encoding
-y_train = to_categorical(y_train)
-y_test = to_categorical(y_test)
-y_train[0]
-```
+[PRE33]
 
 如您所见，我们正在将图像分成训练集和测试集。然后对它们进行编码。
 
 1.  一旦我们进行了一次性编码，我们就可以创建我们的模型：
 
-```py
-#Creating the model
-from keras.models import Sequential
-from keras.layers import Dense, Conv2D, Flatten
-model = Sequential()
-model.add(Conv2D(64, kernel_size=3, activation='relu', input_shape=(28,28,1)))
-model.add(Conv2D(32, kernel_size=3, activation='relu'))
-model.add(Flatten())
-model.add(Dense(10, activation='softmax'))
-#Compile the model
-model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-```
+[PRE34]
 
 在前面的代码片段中，我们使用了`softmax`函数。`softmax`函数有时被称为归一化指数函数。我们用它来规范化输出。
 
 1.  现在让我们训练模型。我们将首先拟合模型，然后验证数据。看一下这段代码：
 
-```py
-#train the model
-model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=3)
-```
+[PRE35]
 
 这就是训练和测试的好处之一。也就是说，当我们理解并练习它们时，我们意识到只需要几行代码就可以做一些非常了不起的事情。前面的两行代码（第三行是注释）将产生一些很棒的事情，并允许我们的算法测试其他图像。
 
 1.  现在我们可以预测数据集中的图像。我们将从最后四个开始，因为每个人都从相同的四个数字开始，所以这次我想从后面开始。请注意，要有耐心。在这个算法中有成千上万的图像需要处理。当时代运行时，您将看到一个时钟，它会告诉您信息处理需要多长时间。对于这个特定的算法，只需要几分钟。让我们看一下我们需要运行预测的代码片段：
 
-```py
-#Predict last 4 images
-model.predict(X_test[9996:])
-```
+[PRE36]
 
 当我们运行这段代码时，我们得到了一系列相当复杂的数字。看一下以下的截图。我们已经突出显示了讨论的代码的关键部分：
 
@@ -782,9 +510,7 @@ model.predict(X_test[9996:])
 
 1.  *但你相信这个模型吗？*我们可以直接返回到这次讨论开始时的代码片段，并打印我们的结果。记得稍微修改代码以打印测试图像，而不是训练图像，就像以下的代码片段中所示：
 
-```py
-plt.imshow(X_test[9996], cmap='Greys')
-```
+[PRE37]
 
 在运行代码时，请记住你需要为每个索引运行代码以查看图像。以下截图显示了测试图像的每个相关索引的图像：
 

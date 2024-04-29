@@ -108,21 +108,7 @@
 
 ch11_pledgesA.py
 
-```py
-import math
-tier1 = 1600
-tier2 = 800
-tier3 = 700
-perc = int(input("What percentage of the 100,000 do you 
-    expect will be Tier 1? Type a number between 1 and
-    100\. "))
-percentage = perc/100
-Tier1 = (100000*percentage)/1600
-totalTier1 = math.ceil(Tier1)
-print("You will need to sell %s Tier 1 pledges if you want 
-    %s percent of your sales to be in Tier 1." 
-    %(totalTier1,perc))
-```
+[PRE0]
 
 让我们看一下我们在前面片段中使用的一些东西。我们必须导入`math`模块，以便我们可以使用`math.ceil()`数学函数。我们使用这个函数来四舍五入所需的第 1 层承诺的数量。这是因为如果我们向下取整，我们将无法达到所需的百分比。通过这样做，我们找到了我们需要覆盖百分比的最小整数。
 
@@ -130,10 +116,7 @@ print("You will need to sell %s Tier 1 pledges if you want
 
 当我们运行该程序时，输出如下所示：
 
-```py
-What percentage of the 100,000 do you expect will be Tier 1? Type a number between 1 and 100\. 45
-You will need to sell 29 Tier 1 pledges if you want 45 percent of your sales to be in Tier 1.
-```
+[PRE1]
 
 请注意，我们的`print`语句使用了用户输入的百分比，部分是为了确保信息与预期相匹配。要想让 45%的资金来自 Tier-1 承诺，我们至少需要出售 29 个 Tier-1 承诺。如果我们运行数学来验证这一点，我们会发现这个信息是正确的：
 
@@ -145,34 +128,13 @@ You will need to sell 29 Tier 1 pledges if you want 45 percent of your sales to 
 
 ch11_pledgesB
 
-```py
-import math
-tier1 = 1600
-tier2 = 800
-tier3 = 700
-perc = int(input("What percentage of the 100,000 do you 
-    expect will be Tier 1? Type a number between 1 and 
-    100\. "))
-percentage = perc/100
-Tier1 = (100000*percentage)/1600
-totalTier1 = math.ceil(Tier1)
-print("You will need to sell %s Tier 1 pledges if you want 
-    %s percent of your sales to be in Tier 1." 
-    %(totalTier1,perc))
-print("You will need %s items, %s accessories kits, %s 
-    carrying cases, and %s year-long memberships." 
-    %(totalTier1*2, totalTier1, totalTier1, totalTier1))
-```
+[PRE2]
 
 请注意，我只添加了一个`print`语句。以这种方式使用这个算法有利有弊。在这种情况下，我只输出每个层级的数字。我没有在算法中保存需要的物品数量。如果我们想要为将来的参考保存这些信息，我们需要调整如何获取这些信息以及如何在算法中保存它。
 
 对于这个算法，输出如下：
 
-```py
-What percentage of the 100,000 do you expect will be Tier 1? Type a number between 1 and 100\. 45
-You will need to sell 29 Tier 1 pledges if you want 45 percent of your sales to be in Tier 1.
-You will need 58 items, 29 accessories kits, 29 carrying cases, and 29 year-long memberships.
-```
+[PRE3]
 
 请注意，我们得到了想要的信息。我们将需要`58`个`物品`，`29`个`配件套件`，`29`个`携带箱`，以及`29`个`年度`的`会员资格`。同样，如果我们只做一次性的事情，或者我们不希望有任何变化，这将是有帮助的。但让我们明确一点，这几乎从来不是这种情况。我们将希望进行更改。我们还需要根据层级 2 和层级 3 的选择来了解信息。*那么我们能做什么呢？*
 
@@ -188,66 +150,21 @@ You will need 58 items, 29 accessories kits, 29 carrying cases, and 29 year-long
 
 ch11_pledgesC.py
 
-```py
-tier1 = 1600
-tier2 = 800
-tier3 = 700
-perc = int(input("What percentage of the 100,000 do you 
-    expect will be Tier 1? Type a number between 
-    1 and 100."))
-percTier1 = perc/100
-percTier2 = (100-perc)/3/100
-percTier3 = (100-perc-percTier2)/100
-```
+[PRE4]
 
 请注意，在下面的片段中，我们添加了一些变量，如`totalTier1`、`itemsTier1`、`accTier1`和`cases1`。这些变量将帮助我们保存每个层级订购的数量。我们将对层级 2 和 3 做同样的事情：
 
-```py
-Tier1 = (100000*percTier1)/1600
-totalTier1 = math.ceil(Tier1)
-itemsTier1 = totalTier1*2
-accTier1 = totalTier1
-cases1 = totalTier1
-yearMemb = totalTier1
-Tier2 = (100000*percTier2)/800
-totalTier2 = math.ceil(Tier2)
-itemsTier2 = totalTier2
-cases2 = totalTier2
-sixMemb = totalTier2
-Tier3 = (100000*percTier3)/700
-totalTier3 = math.ceil(Tier3)
-itemsTier3 = totalTier3
-cases3 = totalTier3
-totalItems = itemsTier1 + itemsTier2 + itemsTier3
-totalAccessories = accTier1
-totalCases = cases1 + cases2 + cases3
-print("You will need to sell %s Tier 1 pledges if you want 
-    %s percent of your sales to be in Tier 1." 
-    %(totalTier1, perc))
-print("You will need %s Tier 2 pledges and %s Tier 3 
-    pledges to meet or exceed your $100,000 funding goal." 
-    %(totalTier2, totalTier3))
-```
+[PRE5]
 
 虽然我们还没有打印出总物品或总案例的详细信息，但现在我们已经将它们保存到变量中。现在我们的输出看起来是这样的：
 
-```py
-What percentage of the 100,000 do you expect will be Tier 1? Type a number between 1 and 100\. 50
-You will need to sell 32 Tier 1 pledges if you want 50 percent of your sales to be in Tier 1.
-You will need 21 Tier 2 pledges and 72 Tier 3 pledges to meet or exceed your $100,000 funding goal.
-```
+[PRE6]
 
 我们应该注意到，我们超过了我们的筹资目标，因为我们一直在四舍五入。也就是说，我们使用$1,540 来代替 Tier 1，我们使用$1,600。对于百分比，我们一直在四舍五入。所有这些加起来将使我们的总额超过 100,000。
 
 让我们再扩展一下算法。以下只是我们已经看到的算法中的新片段，其中包含了我们需要的物品的总数：
 
-```py
-print("These percentages are equivalent to %s total items, 
-    %s total cases, %s accessories kits, %s year-long 
-    memberships, and %s six-month memberships." \
-      %(totalItems, totalCases, totalAccessories, 
-      yearMemb, sixMemb))
-```
+[PRE7]
 
 请注意，我们现在可以在我们的`print`函数中调用我们添加的那些变量，以获取我们库存所需的数量。如果我们没有在算法中定义这些项目，我们将无法获得这些详细信息。
 
@@ -255,9 +172,7 @@ print("These percentages are equivalent to %s total items,
 
 因为它们已经分开，我们可以改变一个而不影响另一个。让我们看看新的`print`语句的输出是什么样的：
 
-```py
-These percentages are equivalent to 157 total items, 125 total cases, 32 accessories kits, 32 year-long memberships, and 21 six-month memberships.
-```
+[PRE8]
 
 看到这一点，你可能会意识到在第一层有一个携带箱，但有两个物品，这就是为什么这两个数字不同的原因。配件和一年的会员只发生在第一层，所以这两个数字相同是有道理的。6 个月的会员只适用于第二层，所以这个数字与第二层的承诺数量相匹配。
 
@@ -293,30 +208,7 @@ These percentages are equivalent to 157 total items, 125 total cases, 32 accesso
 
 在这个第一个片段中，我们要求初始输入，然后保存我们的百分比：
 
-```py
-import math
-numberTiers = int(input("How many tiers of pledges will you 
-    offer? Enter a number between 3 and 5 inclusive. "))
-#Number of tiers percentages
-if numberTiers == 3:
-    tier1 = .50
-    tier2 = .30
-    tier3 = .20
-elif numberTiers == 4:
-    tier1 = .40
-    tier2 = .30
-    tier3 = .20
-    tier4 = .10
-elif numberTiers == 5:
-    tier1 = .40
-    tier2 = .30
-    tier3 = .15
-    tier4 = .10
-    tier5 = .05
-else:
-    print("Please try again and enter the numbers 3, 4,
-        or 5\. ")
-```
+[PRE9]
 
 正如你所看到的，在我们要求输入后有三个条件。请注意，我们将输入转换为整数。这很重要，否则条件将运行，但`else`条件也将运行。
 
@@ -328,25 +220,7 @@ else:
 
 一旦我们有了层级的数量，我们将需要知道每个层级中物品的数量。我们需要询问每个层级选择了多少物品。让我们看看前面代码的继续部分：
 
-```py
-#Number of items per tier
-if numberTiers == 3:
-    numTier1Items = int(input("How many items will be 
-        provided for a Tier 1 pledge? "))
-    numTier2Items = int(input("How many items will be 
-        provided for a Tier 2 pledge? "))                 
-    numTier3Items = int(input("How many items will be 
-        provided for a Tier 3 pledge? "))
-elif numberTiers == 4:
-    numTier1Items = int(input("How many items will be 
-        provided for a Tier 1 pledge? "))
-    numTier2Items = int(input("How many items will be 
-        provided for a Tier 2 pledge? "))                 
-    numTier3Items = int(input("How many items will be 
-        provided for a Tier 3 pledge? "))
-    numTier4Items = int(input("How many items will be 
-        provided for a Tier 4 pledge? "))
-```
+[PRE10]
 
 请注意，我们只显示了层级为 3 或 4 时的条件。代码文件还将包含 5 个层级的信息，但它遵循了前面代码中显示的内容。请注意，该算法要求输入每个层级。当我们需要处理数字和百分比时，这将是重要的。
 
@@ -354,16 +228,7 @@ elif numberTiers == 4:
 
 现在让我们回想一下我们可能需要什么。我们将需要每个层级的价格点，这也将是模板类型算法的输入请求。由于每个活动的价格点都会有所不同，我们需要让用户输入。输入行将看起来与先前显示的片段非常相似。以下是 3 个层级的情况：
 
-```py
-#Price points for each Tier
-if numberTiers == 3:
-    priceTier1 = int(input("What is the price point of Tier 
-        1? Enter dollar amount without dollar sign. "))
-    priceTier2 = int(input("What is the price point of Tier 
-        2? Enter dollar amount without dollar sign. "))                
-    priceTier3 = int(input("What is the price point of Tier 
-        3? Enter dollar amount without dollar sign. "))
-```
+[PRE11]
 
 再次注意，我们使用注释来分隔代码的每个部分。您可以看到，我们正在添加有关每个承诺级别的收费信息。然后代码继续为 3、4 或 5 个层级执行此操作。
 
@@ -409,71 +274,21 @@ if numberTiers == 3:
 
 现在让我们在我们的代码中看看。记住，这是与之前片段相同的文件（`ch11_pledgesTemplate.py`）。我们将继续讨论并使用代码的部分：
 
-```py
-#Breakdown of number of Tiers based on funding goal
-fundGoal = int(input("What is the funding goal for this 
-    campaign? Enter dollar amount with no symbols. "))
-if numberTiers == 3:
-    Tier1Total = math.ceil(fundGoal*tier1/priceTier1)
-    Tier2Total = math.ceil(fundGoal*tier2/priceTier2)
-    Tier3Total = math.ceil(fundGoal*tier3/priceTier3)
-    print("For a funding goal of %s with %s tiers, you'll 
-        need %s Tier 1 pledges, %s Tier 2 pledges, and %s 
-        Tier 3 pledges. " % (fundGoal, numberTiers, 
-        Tier1Total, Tier2Total, Tier3Total))
-```
+[PRE12]
 
 在前面的片段中，我们有一个`print`函数，其中包含每个等级的承诺数量，但它们也保存为我们条件语句中的函数。请注意，我们现在将在这里得到一些输出。我们将从这段代码中得到我们需要的承诺数量，但不是每个等级的物品数量。我们很快会添加这部分内容。现在，当我们运行程序时，输出看起来是这样的：
 
-```py
-How many tiers of pledges will you offer? Enter a number between 3 and 5 inclusive. 3
-How many items will be provided for a Tier 1 pledge? Enter a number between 1 and 3 inclusive. 3
-How many items will be provided for a Tier 2 pledge? Enter a number between 1 and 3 inclusive. 2
-How many items will be provided for a Tier 3 pledge? Enter a number between 1 and 3 inclusive. 1
-What is the price point of Tier 1? Enter dollar amount without dollar sign. 500
-What is the price point of Tier 2? Enter dollar amount without dollar sign. 400
-What is the price point of Tier 3? Enter dollar amount without dollar sign. 350
-What is the funding goal for this campaign? Enter dollar amount with no symbols. 50000
-For a funding goal of 50000 with 3 tiers, you'll need 50 Tier 1 pledges, 38 Tier 2 pledges, and 29 Tier 3 pledges.
-```
+[PRE13]
 
 正如你所看到的，我们现在知道我们需要列出 50 个价值 500 美元的一级承诺，38 个价值 400 美元的二级承诺，以及 29 个价值 350 美元的三级承诺，以达到我们的筹资目标。现在我们必须根据每个等级提供的物品数量来计算每个等级需要多少物品。代码如下：
 
-```py
-if numberTiers == 3:
-    Tier1Total = math.ceil(fundGoal*tier1/priceTier1)
-    Tier2Total = math.ceil(fundGoal*tier2/priceTier2)
-    Tier3Total = math.ceil(fundGoal*tier3/priceTier3)
-    print("For a funding goal of %s with %s tiers, you'll 
-        need %s Tier 1 pledges, %s Tier 2 pledges, and %s 
-        Tier 3 pledges. " % (fundGoal, numberTiers, 
-        Tier1Total, Tier2Total, Tier3Total))
-    Tier1Items = numTier1Items*Tier1Total
-    Tier2Items = numTier2Items*Tier2Total
-    Tier3Items = numTier3Items*Tier3Total
-    print("For %s Tier 1 pledges, you'll need %s items. For 
-        %s Tier 2 pledges, you'll need %s items. For %s 
-        Tier 3 pledges, you'll need %s items. " 
-        %(Tier1Total, Tier1Items, Tier2Total, Tier2Items, 
-        Tier3Total, Tier3Items))
-```
+[PRE14]
 
 正如你所看到的，现在我们有另外三个数学方程和一个`print`语句，为我们分解了信息。我们将得到每个等级的承诺数量，以及每个等级所需的物品数量。如果你想从这个模板中获得更多信息，你可以包括本章第一个示例中的一些内容，那里我们分解了每个承诺的物品类型。我们将把这个挑战留给你。
 
 现在，对于三个等级和 50,000 美元的筹资目标，我们的最终输出如下：
 
-```py
-How many tiers of pledges will you offer? Enter a number between 3 and 5 inclusive. 3
-How many items will be provided for a Tier 1 pledge? 3
-How many items will be provided for a Tier 2 pledge? 2
-How many items will be provided for a Tier 3 pledge? 1
-What is the price point of Tier 1? Enter dollar amount without dollar sign. 500
-What is the price point of Tier 2? Enter dollar amount without dollar sign. 400
-What is the price point of Tier 3? Enter dollar amount without dollar sign. 350
-What is the funding goal for this campaign? Enter dollar amount with no symbols. 50000
-For a funding goal of 50000 with 3 tiers, you'll need 50 Tier 1 pledges, 38 Tier 2 pledges, and 29 Tier 3 pledges. 
-For 50 Tier 1 pledges, you'll need 150 items. For 38 Tier 2 pledges, you'll need 76 items. For 29 Tier 3 pledges, you'll need 29 items.
-```
+[PRE15]
 
 正如你所看到的，我们不仅得到了我们需要的信息，而且还设置了变量，以便在需要时使用这些信息。回想一下我们之前讨论过的章节和笔记，让我们试着确定我们现在如何保存这些信息。
 

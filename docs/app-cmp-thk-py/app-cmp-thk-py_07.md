@@ -162,17 +162,7 @@
 
 ch6_pizzeria.py
 
-```py
-#Get input for your variables for size and sauce first. 
-size_choice = str(input("Is this a personal or family pizza? Type personal or family. "))
-sauce_choice = str(input("Which sauce would you like? Marinara or garlic cream? Type m for marinara and g for garlic cream. "))
-if sauce_choice == "g":
-    sauce = "garlic cream"
-else:
-    sauce = "marinara"
-#The cheese choice will dictate a few more options. Define the variable first.                
-cheese_choice = str(input("Would you like cheese on your pizza? Type y for yes and n for no. "))
-```
+[PRE0]
 
 请注意，在代码片段中，我们首先定义了尺寸和酱料。我在这里重申，有其他处理这个特定逻辑过程的方法。例如，我们可以将一些变量保存到字典中，并使用数组。目前，我们正在使用到目前为止学到的知识来创建我们的算法，但是在本书的后面，我们将有机会了解其他方法。
 
@@ -182,40 +172,11 @@ cheese_choice = str(input("Would you like cheese on your pizza? Type y for yes a
 
 ch6_Pizzeria.py
 
-```py
-#Toppings need to happen whether or not you want cheese. 
-if cheese_choice == "y":
-    cheese2_choice = str(input("Would you like regular cheese or extra cheese? Type r for regular and e for extra cheese. "))
-    if cheese2_choice == "r":
-        cheese = "regular cheese"
-    else:
-        cheese = "extra cheese"
-    toppings1_input = str(input("Would you like mushrooms on your pizza? Type y for yes and n for no. "))
-    if toppings1_input == "y":
-        toppings1 = "mushrooms"
-    else:
-        toppings1 = "no mushrooms"
-else:
-    cheese = "no cheese"    
-if cheese_choice == "n":
-    toppings1_input = str(input("Would you like mushrooms on your pizza? Type y for yes and n for no. "))
-    if toppings1_input == "y":
-        toppings1 = "mushrooms"
-    else:
-        toppings1 = "no mushrooms"
-print("You want a " + size_choice + " pizza with " + sauce + " sauce, " + cheese + ", and " + toppings1 + ".")
-```
+[PRE1]
 
 正如您从代码片段中看到的，我们只使用了蘑菇。在选择家庭尺寸、大蒜酱、普通奶酪和蘑菇后，这个特定代码的输出如下：
 
-```py
-Is this a personal or family pizza? Type personal or family. family
-Which sauce would you like? Marinara or garlic cream? Type m for marinara and g for garlic cream. g
-Would you like cheese on your pizza? Type y for yes and n for no. y
-Would you like regular cheese or extra cheese? Type r for regular and e for extra cheese. r
-Would you like mushrooms on your pizza? Type y for yes and n for no. y
-You want a family pizza with garlic cream sauce, regular cheese, and mushrooms.
-```
+[PRE2]
 
 使用提供的代码并查看输出，尝试组合其余四种配料的代码。我猜，如果您正在制作自己的比萨饼，欢迎您更改这里提供的选项。只需将橄榄留给自己。
 
@@ -223,33 +184,11 @@ You want a family pizza with garlic cream sauce, regular cheese, and mushrooms.
 
 ch6_Pizzeria2.py
 
-```py
-ready_end = str(input("Do you need to make any changes? Type y for yes and n for no. "))
-if ready_end == "y":
-    size_choice = str(input("Is this a personal or family pizza? Type personal or family. "))
-    sauce_choice = str(input("Which sauce would you like? Marinara or garlic cream? Type m for marinara and g for garlic cream. "))
-    if sauce_choice == "g":
-        sauce = "garlic cream"
-    else:
-        sauce = "marinara"
-
-    cheese_choice = str(input("Would you like cheese on your pizza? Type y for yes and n for no. "))
-```
+[PRE3]
 
 从代码片段中可以看出，需要对所需的更改进行决策。如果是，则再次提出问题。如果不是，则为用户打印选项。查看完整运行程序的以下输出：
 
-```py
-Is this a personal or family pizza? Type personal or family. family
-Which sauce would you like? Marinara or garlic cream? Type m for marinara and g for garlic cream. g
-Would you like cheese on your pizza? Type y for yes and n for no. n
-Would you like mushrooms on your pizza? Type y for yes and n for no. y
-Do you need to make any changes? Type y for yes and n for no. y
-Is this a personal or family pizza? Type 1 for personal and 2 for family. family
-Which sauce would you like? Marinara or garlic cream? Type m for marinara and g for garlic cream. m
-Would you like cheese on your pizza? Type y for yes and n for no. n
-Would you like mushrooms on your pizza? Type y for yes and n for no. y
-You want a family pizza with marinara sauce, no cheese, and mushrooms.
-```
+[PRE4]
 
 如代码所示，问题被问了两次，因为我们在选项中做了更改。根据您想要问这个问题的频率，您需要继续重复部分代码。有简化的方法，我们将在 Python 语言程序章节（第八章，Python 简介）和后续章节中更深入地讨论这些选项。
 
@@ -281,43 +220,11 @@ You want a family pizza with marinara sauce, no cheese, and mushrooms.
 
 ch6_sleep.py
 
-```py
-import time
-print("Let's play a game. Choose a color to learn your destiny. Choose wisely or you'll have to start over. ")
-i = 0
-while i < 4:
-    color = str(input("Choose a color: red, green, or yellow. "))
-    if color == "green":
-        print("You must wait 5 seconds to learn your fate.")
-        time.sleep(5)
-        print("You win! Excellent choice!")
-        break
-    elif color == "yellow":
-        print("You must wait 2 seconds to learn your fate.")
-        time.sleep(2)
-        print("You lose! You must start over.")
-        i = i + 1
-    else:
-        print("You must wait 4 seconds to learn your fate.")
-        time.sleep(4)
-        print("You lose! You must start over.")
-        i = i + 1
-```
+[PRE5]
 
 如您所见，该算法包含了我们在之前章节中讨论循环、布尔语句等时看到的一些代码。如果用户没有赢得游戏，这段特定代码将在三轮后返回到开头。我们使用`if-elif-else`语句来处理颜色情况。游戏进行三轮的输出如下：
 
-```py
-Let's play a game. Choose a color to learn your destiny. Choose wisely or you'll have to start over. 
-Choose a color: red, green, or yellow. yellow
-You must wait 2 seconds to learn your fate.
-You lose! You must start over.
-Choose a color: red, green, or yellow. red
-You must wait 4 seconds to learn your fate.
-You lose! You must start over.
-Choose a color: red, green, or yellow. green
-You must wait 5 seconds to learn your fate.
-You win! Excellent choice!
-```
+[PRE6]
 
 从游戏输出中可以看出，所有三轮都已经玩过了。每个延迟都按照陈述发生，您需要自己测试，因为我无法用文本显示时间延迟。
 

@@ -59,47 +59,17 @@
 
 通常，当我们有一个常规类并访问其属性时，我们会按预期获得对象，甚至它们的属性，如下例所示：
 
-```py
->>> class Attribute:
-...     value = 42
-... 
->>> class Client:
-...     attribute = Attribute()
-... 
->>> Client().attribute
-<__main__.Attribute object at 0x7ff37ea90940>
->>> Client().attribute.value
-42
-```
+[PRE0]
 
 但是，在描述符的情况下，情况有所不同。当一个对象被定义为类属性（并且这是一个`descriptor`）时，当一个`client`请求此属性时，我们不是得到对象本身（正如我们从前面的例子中所期望的那样），而是得到了调用`__get__`魔术方法的结果。
 
 让我们从一些仅记录有关上下文的信息并返回相同的`client`对象的简单代码开始：
 
-```py
-class DescriptorClass:
-    def __get__(self, instance, owner):
-        if instance is None:
-            return self
-        logger.info("Call: %s.__get__(%r, %r)", 
-        self.__class__.__name__,instance, owner)
-        return instance
-
-class ClientClass:
-    descriptor = DescriptorClass()
-```
+[PRE1]
 
 当运行此代码并请求`ClientClass`实例的`descriptor`属性时，我们将发现实际上并没有得到`DescriptorClass`的实例，而是得到了其`__get__()`方法返回的内容：
 
-```py
->>> client = ClientClass()
->>> client.descriptor
-INFO:Call: DescriptorClass.__get__(<ClientClass object at 0x...>, <class 'ClientClass'>)
-<ClientClass object at 0x...>
->>> client.descriptor is client
-INFO:Call: DescriptorClass.__get__(ClientClass object at 0x...>, <class 'ClientClass'>)
-True
-```
+[PRE2]
 
 请注意，放置在`__get__`方法下面的日志行被调用，而不是只返回我们创建的对象。在这种情况下，我们让该方法返回`client`本身，从而使最后一条语句的比较成立。在我们更详细地探讨每个方法时，将更详细地解释此方法的参数。
 
@@ -123,33 +93,15 @@ True
 
 通过以下简单的代码，我们可以演示当描述符从类或实例中被调用时的区别。在这种情况下，`__get__`方法对每种情况都做了两件不同的事情。
 
-```py
-# descriptors_methods_1.py
-
-class DescriptorClass:
-    def __get__(self, instance, owner):
-        if instance is None:
-            return f"{self.__class__.__name__}.{owner.__name__}"
-        return f"value for {instance}"
-
-class ClientClass:
-
-    descriptor = DescriptorClass()
-```
+[PRE3]
 
 当我们直接从`ClientClass`中调用它时，它会做一件事，即用类的名称组成一个命名空间：
 
-```py
->>> ClientClass.descriptor
-'DescriptorClass.ClientClass'
-```
+[PRE4]
 
 然后，如果我们从创建的对象中调用它，它将返回另一条消息：
 
-```py
->>> ClientClass().descriptor
-'value for <descriptors_methods_1.ClientClass object at 0x...>'
-```
+[PRE5]
 
 一般来说，除非我们真的需要使用`owner`参数做一些事情，最常见的习惯是当`instance`为`None`时，只返回描述符本身。
 
@@ -157,9 +109,7 @@ class ClientClass:
 
 当我们尝试给`descriptor`赋值时，就会调用这个方法。它会被以下语句激活，其中`descriptor`是一个实现了`__set__()`的对象。在这种情况下，`instance`参数将是`client`，而`value`将是字符串`"value"`：
 
-```py
-client.descriptor = "value"
-```
+[PRE6]
 
 如果`client.descriptor`没有实现`__set__()`，那么`"value"`将完全覆盖`descriptor`。
 
@@ -169,62 +119,11 @@ client.descriptor = "value"
 
 以下清单说明了我们如何利用这个方法来为属性创建通用的`validation`对象，可以使用函数动态创建用于在分配给对象之前验证值的对象：
 
-```py
-class Validation:
-
-    def __init__(self, validation_function, error_msg: str):
-        self.validation_function = validation_function
-        self.error_msg = error_msg
-
-    def __call__(self, value):
-        if not self.validation_function(value):
-            raise ValueError(f"{value!r} {self.error_msg}")
-
-class Field:
-
-    def __init__(self, *validations):
-        self._name = None
-        self.validations = validations
-
-    def __set_name__(self, owner, name):
-        self._name = name
-
-    def __get__(self, instance, owner):
-        if instance is None:
-            return self
-        return instance.__dict__[self._name]
-
-    def validate(self, value):
-        for validation in self.validations:
-            validation(value)
-
-    def __set__(self, instance, value):
-        self.validate(value)
-        instance.__dict__[self._name] = value
-
-class ClientClass:
-    descriptor = Field(
-        Validation(lambda x: isinstance(x, (int, float)), "is not a 
-        number"),
-        Validation(lambda x: x >= 0, "is not >= 0"),
-    )
-```
+[PRE7]
 
 我们可以在以下清单中看到这个对象的作用：
 
-```py
->>> client = ClientClass()
->>> client.descriptor = 42
->>> client.descriptor
-42
->>> client.descriptor = -42
-Traceback (most recent call last):
- ...
-ValueError: -42 is not >= 0
->>> client.descriptor = "invalid value"
-...
-ValueError: 'invalid value' is not a number
-```
+[PRE8]
 
 这个想法是，我们通常会将属性放在属性中的东西抽象成一个`descriptor`，并且可以多次重用它。在这种情况下，`__set__()`方法将会做`@property.setter`本来会做的事情。
 
@@ -232,50 +131,11 @@ ValueError: 'invalid value' is not a number
 
 在以下语句中调用这个方法时，`self`将是`descriptor`属性，`instance`将是这个例子中的`client`对象：
 
-```py
->>> del client.descriptor
-```
+[PRE9]
 
 在下面的例子中，我们使用这个方法来创建一个`descriptor`，目的是防止用户在没有必要的管理权限的情况下删除对象的属性。请注意，在这种情况下，`descriptor`具有用于预测使用它的对象的值的逻辑，而不是不同相关对象的逻辑：
 
-```py
-# descriptors_methods_3.py
-
-class ProtectedAttribute:
-    def __init__(self, requires_role=None) -> None: 
-        self.permission_required = requires_role
-        self._name = None
-
-    def __set_name__(self, owner, name):
-        self._name = name
-
-    def __set__(self, user, value):
-        if value is None:
- raise ValueError(f"{self._name} can't be set to None")
-        user.__dict__[self._name] = value
-
-    def __delete__(self, user):
-        if self.permission_required in user.permissions:
-            user.__dict__[self._name] = None
-        else:
-            raise ValueError(
-                f"User {user!s} doesn't have {self.permission_required} "
-                "permission"
-            )
-
-class User:
-    """Only users with "admin" privileges can remove their email address."""
-
-    email = ProtectedAttribute(requires_role="admin")
-
-    def __init__(self, username: str, email: str, permission_list: list = None) -> None:
-        self.username = username
-        self.email = email
-        self.permissions = permission_list or []
-
-    def __str__(self):
-        return self.username
-```
+[PRE10]
 
 在看到这个对象如何工作的例子之前，重要的是要注意这个描述符的一些标准。注意`User`类要求`username`和`email`作为强制参数。根据其`**__init__**`方法，如果没有`email`属性，它就不能成为用户。如果我们要删除该属性，并从对象中完全提取它，我们将创建一个不一致的对象，其中包含一些无效的中间状态，这些状态与`User`类定义的接口不符。像这样的细节非常重要，以避免问题。其他对象期望与这个`User`一起工作，并且也期望它有一个`email`属性。
 
@@ -283,23 +143,7 @@ class User:
 
 在这里，我们可以看到它的作用，假设只有具有`"admin"`权限的用户才能删除他们的电子邮件地址：
 
-```py
->>> admin = User("root", "root@d.com", ["admin"])
->>> user = User("user", "user1@d.com", ["email", "helpdesk"]) 
->>> admin.email
-'root@d.com'
->>> del admin.email
->>> admin.email is None
-True
->>> user.email
-'user1@d.com'
->>> user.email = None
-...
-ValueError: email can't be set to None
->>> del user.email
-...
-ValueError: User user doesn't have admin permission
-```
+[PRE11]
 
 在这个简单的`descriptor`中，我们可以看到只有包含`"admin"`权限的用户才能删除用户的电子邮件。至于其他情况，当我们尝试在该属性上调用`del`时，我们将得到一个`ValueError`异常。
 
@@ -315,33 +159,11 @@ ValueError: User user doesn't have admin permission
 
 如果没有这个方法，典型的`descriptor`将如下所示：
 
-```py
-class DescriptorWithName:
-    def __init__(self, name):
-        self.name = name
-
-    def __get__(self, instance, value):
-        if instance is None:
-            return self
-        logger.info("getting %r attribute from %r", self.name, instance)
-        return instance.__dict__[self.name]
-
-    def __set__(self, instance, value):
-        instance.__dict__[self.name] = value
-
-class ClientClass:
-    descriptor = DescriptorWithName("descriptor")
-```
+[PRE12]
 
 我们可以看到`descriptor`如何使用这个值：
 
-```py
->>> client = ClientClass()
->>> client.descriptor = "value"
->>> client.descriptor
-INFO:getting 'descriptor' attribute from <ClientClass object at 0x...>
-'value'
-```
+[PRE13]
 
 现在，如果我们想要避免两次写入属性名称（一次是在类内部分配的变量，一次是作为描述符的第一个参数的名称），我们必须求助于一些技巧，比如使用类装饰器，或者（更糟糕的是）使用元类。
 
@@ -351,15 +173,7 @@ INFO:getting 'descriptor' attribute from <ClientClass object at 0x...>
 
 有了这个方法，我们可以将前面的描述符重写如下：
 
-```py
-class DescriptorWithName:
-    def __init__(self, name=None):
-        self.name = name
-
-    def __set_name__(self, owner, name):
-        self.name = name
-    ...
-```
+[PRE14]
 
 # 描述符的类型
 
@@ -375,69 +189,35 @@ class DescriptorWithName:
 
 我们将从仅实现`__get__`方法的`descriptor`开始，看看它是如何使用的：
 
-```py
-class NonDataDescriptor:
-    def __get__(self, instance, owner):
-        if instance is None:
-            return self
-        return 42
-
-class ClientClass:
-    descriptor = NonDataDescriptor()
-```
+[PRE15]
 
 像往常一样，如果我们请求`descriptor`，我们将得到其`__get__`方法的结果：
 
-```py
->>> client = ClientClass()
->>> client.descriptor
-42
-```
+[PRE16]
 
 但是，如果我们将`descriptor`属性更改为其他值，我们将失去对该值的访问，并获得分配给它的值：
 
-```py
->>> client.descriptor = 43
->>> client.descriptor
-43
-```
+[PRE17]
 
 现在，如果我们删除`descriptor`，然后再次请求它，让我们看看我们得到什么：
 
-```py
->>> del client.descriptor
->>> client.descriptor
-42
-```
+[PRE18]
 
 让我们回顾一下刚刚发生的事情。当我们首次创建`client`对象时，`descriptor`属性位于类中，而不是实例中，因此如果我们要求`client`对象的字典，它将是空的：
 
-```py
->>> vars(client)
-{}
-```
+[PRE19]
 
 然后，当我们请求`.descriptor`属性时，在`client.__dict__`中找不到任何名为`"descriptor"`的键，因此它转到类中，在那里找到它……但只是作为描述符，因此返回`__get__`方法的结果。
 
 但是，我们将`.descriptor`属性的值更改为其他值，这样做的效果是将其设置到`instance`的字典中，这意味着这次它不会是空的：
 
-```py
->>> client.descriptor = 99
->>> vars(client)
-{'descriptor': 99}
-```
+[PRE20]
 
 因此，当我们在这里请求`.descriptor`属性时，它将在对象中查找它（这次会找到，因为`__dict__`属性中有一个名为`descriptor`的键，正如`vars`结果所显示的），并返回它，而无需在类中查找。因此，从未调用描述符协议，下次我们请求此属性时，它将返回我们已经覆盖的值（`99`）。
 
 之后，我们通过调用`del`删除此属性，这样做的效果是从对象的字典中删除键`"descriptor"，使我们回到第一个场景，它将默认到描述符协议将被激活的类中：
 
-```py
->>> del client.descriptor
->>> vars(client)
-{}
->>> client.descriptor
-42
-```
+[PRE21]
 
 这意味着如果我们将`descriptor`的属性设置为其他值，我们可能会意外地破坏它。为什么？因为`descriptor`不处理删除操作（有些不需要）。
 
@@ -447,58 +227,25 @@ class ClientClass:
 
 现在，让我们看看使用数据描述符的区别。为此，我们将创建另一个实现`__set__`方法的简单`descriptor`：
 
-```py
-class DataDescriptor:
-
-    def __get__(self, instance, owner):
-        if instance is None:
-            return self
-        return 42
-
-    def __set__(self, instance, value):
-        logger.debug("setting %s.descriptor to %s", instance, value)
-        instance.__dict__["descriptor"] = value
-
-class ClientClass:
-    descriptor = DataDescriptor()
-```
+[PRE22]
 
 让我们看看`descriptor`的值返回的是什么：
 
-```py
->>> client = ClientClass()
->>> client.descriptor
-42
-```
+[PRE23]
 
 现在，让我们尝试将此值更改为其他值，看看它返回的是什么：
 
-```py
->>> client.descriptor = 99
->>> client.descriptor
-42
-```
+[PRE24]
 
 `descriptor`返回的值没有改变。但是当我们为其分配不同的值时，它必须设置为对象的字典（就像以前一样）：
 
-```py
->>> vars(client)
-{'descriptor': 99}
-
->>> client.__dict__["descriptor"]
-99
-```
+[PRE25]
 
 因此，`__set__()`方法被调用，确实将值设置到了对象的字典中，但是这次，当我们请求此属性时，不再使用字典的`__dict__`属性，而是使用`descriptor`（因为它是覆盖的`descriptor`）。
 
 还有一件事——删除属性将不再起作用：
 
-```py
->>> del client.descriptor
-Traceback (most recent call last):
- ...
-AttributeError: __delete__
-```
+[PRE26]
 
 原因如下——现在，`descriptor`总是生效，调用`del`删除对象的属性时，不会尝试从对象的字典（`__dict__`）中删除属性，而是尝试调用`descriptor`的`__delete__()`方法（在这个例子中没有实现，因此会出现属性错误）。
 
@@ -506,9 +253,7 @@ AttributeError: __delete__
 
 你可能已经注意到`set`方法中的这行代码是一个有趣的观察：
 
-```py
-instance.__dict__["descriptor"] = value
-```
+[PRE27]
 
 关于这行代码有很多问题，但让我们分解成几部分。
 
@@ -518,9 +263,7 @@ instance.__dict__["descriptor"] = value
 
 为什么直接访问实例的`__dict__`属性？另一个很好的问题，至少有两种解释。首先，你可能会想为什么不直接这样做：
 
-```py
-setattr(instance, "descriptor", value)
-```
+[PRE28]
 
 记住，当我们尝试给一个`descriptor`属性赋值时，会调用这个方法（`__set__`）。所以，使用`setattr()`会再次调用这个`descriptor`，然后再次调用，依此类推。这将导致无限递归。
 
@@ -548,40 +291,11 @@ setattr(instance, "descriptor", value)
 
 假设我们的类代表应用程序中的一个旅行者，他有一个当前城市，我们希望在程序运行期间跟踪用户访问过的所有城市。以下代码是一个可能的实现，满足这些要求：
 
-```py
-class Traveller:
-
-    def __init__(self, name, current_city):
-        self.name = name
-        self._current_city = current_city
-        self._cities_visited = [current_city]
-
-    @property
-    def current_city(self):
-        return self._current_city
-
-    @current_city.setter
-    def current_city(self, new_city):
-        if new_city != self._current_city:
-            self._cities_visited.append(new_city)
-        self._current_city = new_city
-
-    @property
-    def cities_visited(self):
-        return self._cities_visited
-```
+[PRE29]
 
 我们可以轻松地检查这段代码是否符合我们的要求：
 
-```py
->>> alice = Traveller("Alice", "Barcelona")
->>> alice.current_city = "Paris"
->>> alice.current_city = "Brussels"
->>> alice.current_city = "Amsterdam"
-
->>> alice.cities_visited
-['Barcelona', 'Paris', 'Brussels', 'Amsterdam']
-```
+[PRE30]
 
 到目前为止，这就是我们需要的一切，不需要实现其他内容。对于这个问题来说，属性已经足够了。如果我们需要在应用程序的多个地方使用完全相同的逻辑会发生什么？这意味着这实际上是一个更通用问题的实例——在另一个属性中跟踪所有值。如果我们想对其他属性执行相同的操作，比如跟踪爱丽丝购买的所有票或她去过的所有国家，会发生什么？我们将不得不在所有这些地方重复逻辑。
 
@@ -599,47 +313,7 @@ class Traveller:
 
 为了解决这个问题，代码的一些部分被注释，并且对每个部分的相应解释（它的作用以及它如何与原始问题相关）在下面的代码中描述。
 
-```py
-class HistoryTracedAttribute:
-    def __init__(self, trace_attribute_name) -> None:
-        self.trace_attribute_name = trace_attribute_name  # [1]
-        self._name = None
-
-    def __set_name__(self, owner, name):
-        self._name = name
-
-    def __get__(self, instance, owner):
-        if instance is None:
-            return self
-        return instance.__dict__[self._name]
-
-    def __set__(self, instance, value):
-        self._track_change_in_value_for_instance(instance, value)
-        instance.__dict__[self._name] = value
-
-    def _track_change_in_value_for_instance(self, instance, value):
-        self._set_default(instance)   # [2]
-        if self._needs_to_track_change(instance, value):
-            instance.__dict__[self.trace_attribute_name].append(value)
-
-    def _needs_to_track_change(self, instance, value) -> bool:
-        try:
-            current_value = instance.__dict__[self._name]
-        except KeyError:   # [3]
-            return True
-        return value != current_value  # [4]
-
-    def _set_default(self, instance):
-        instance.__dict__.setdefault(self.trace_attribute_name, [])  # [6]
-
-class Traveller:
-
-    current_city = HistoryTracedAttribute("cities_visited")  # [1]
-
-    def __init__(self, name, current_city):
-        self.name = name
-        self.current_city = current_city  # [5]
-```
+[PRE31]
 
 对代码的一些注解和评论如下（列表中的数字对应前面清单中的注解编号）：
 
@@ -673,41 +347,11 @@ class Traveller:
 
 让我们看看当我们不正确地定义一个将数据本身保存在`descriptor`中而不是在每个对象中存储时会发生什么：
 
-```py
-class SharedDataDescriptor:
-    def __init__(self, initial_value):
-        self.value = initial_value
-
-    def __get__(self, instance, owner):
-        if instance is None:
-            return self
-        return self.value
-
-    def __set__(self, instance, value):
-        self.value = value
-
-class ClientClass:
-    descriptor = SharedDataDescriptor("first value")
-```
+[PRE32]
 
 在这个例子中，`descriptor`对象存储数据本身。这带来的不便之处在于，当我们修改一个`instance`的值时，同一类的所有其他实例也会被修改为相同的值。下面的代码清单将这个理论付诸实践：
 
-```py
->>> client1 = ClientClass()
->>> client1.descriptor
-'first value'
-
->>> client2 = ClientClass()
->>> client2.descriptor
-'first value'
-
->>> client2.descriptor = "value for client 2"
->>> client2.descriptor
-'value for client 2'
-
->>> client1.descriptor
-'value for client 2'
-```
+[PRE33]
 
 注意我们如何改变一个对象，突然之间所有这些对象都来自同一个类，我们可以看到这个值是如何反映的。这是因为`ClientClass.descriptor`是唯一的；它对于所有这些对象都是相同的对象。
 
@@ -733,22 +377,7 @@ class ClientClass:
 
 在这种情况下，`descriptor`的代码可能如下所示：
 
-```py
-from weakref import WeakKeyDictionary
-
-class DescriptorClass:
-    def __init__(self, initial_value):
-        self.value = initial_value
-        self.mapping = WeakKeyDictionary()
-
-    def __get__(self, instance, owner):
-        if instance is None:
-            return self
-        return self.mapping.get(instance, self.value)
-
-    def __set__(self, instance, value):
-        self.mapping[instance] = value
-```
+[PRE34]
 
 这解决了问题，但也带来了一些考虑：
 
@@ -782,56 +411,13 @@ class DescriptorClass:
 
 如果我们回想一下我们在第五章中使用的类装饰器，*使用装饰器改进我们的代码*，来确定如何序列化事件对象，我们最终得到了一个实现（对于 Python 3.7+）依赖于两个类装饰器的实现：
 
-```py
-@Serialization(
-    username=show_original,
-    password=hide_field,
-    ip=show_original,
-    timestamp=format_time,
-)
-@dataclass
-class LoginEvent:
-    username: str
-    password: str
-    ip: str
-    timestamp: datetime
-```
+[PRE35]
 
 第一个从注释中获取属性来声明变量，而第二个定义了如何处理每个文件。让我们看看是否可以将这两个装饰器改为描述符。
 
 这个想法是创建一个描述符，它将对每个属性的值应用转换，根据我们的要求返回修改后的版本（例如，隐藏敏感信息，并正确格式化日期）：
 
-```py
-from functools import partial
-from typing import Callable
-
-class BaseFieldTransformation:
-
-    def __init__(self, transformation: Callable[[], str]) -> None:
-        self._name = None
-        self.transformation = transformation
-
-    def __get__(self, instance, owner):
-        if instance is None:
-            return self
-        raw_value = instance.__dict__[self._name]
-        return self.transformation(raw_value)
-
-    def __set_name__(self, owner, name):
-        self._name = name
-
-    def __set__(self, instance, value):
-        instance.__dict__[self._name] = value
-
-ShowOriginal = partial(BaseFieldTransformation, transformation=lambda x: x)
-HideField = partial(
-    BaseFieldTransformation, transformation=lambda x: "**redacted**"
-)
-FormatTime = partial(
-    BaseFieldTransformation,
-    transformation=lambda ft: ft.strftime("%Y-%m-%d %H:%M"),
-)
-```
+[PRE36]
 
 这个“描述符”很有趣。它是用一个接受一个参数并返回一个值的函数创建的。这个函数将是我们想要应用于字段的转换。从定义了通用工作方式的基本定义开始，其余的“描述符”类被定义，只需更改每个类需要的特定函数即可。
 
@@ -839,39 +425,11 @@ FormatTime = partial(
 
 为了保持示例简单，我们将实现`__init__()`和`serialize()`方法，尽管它们也可以被抽象化。在这些考虑下，事件的类现在将被定义如下：
 
-```py
-class LoginEvent:
-    username = ShowOriginal()
-    password = HideField()
-    ip = ShowOriginal()
-    timestamp = FormatTime()
-
-    def __init__(self, username, password, ip, timestamp):
-        self.username = username
-        self.password = password
-        self.ip = ip
-        self.timestamp = timestamp
-
-    def serialize(self):
-        return {
-            "username": self.username,
-            "password": self.password,
-            "ip": self.ip,
-            "timestamp": self.timestamp,
-        }
-```
+[PRE37]
 
 我们可以看到对象在运行时的行为：
 
-```py
->>> le = LoginEvent("john", "secret password", "1.1.1.1", datetime.utcnow())
->>> vars(le)
-{'username': 'john', 'password': 'secret password', 'ip': '1.1.1.1', 'timestamp': ...}
->>> le.serialize()
-{'username': 'john', 'password': '**redacted**', 'ip': '1.1.1.1', 'timestamp': '...'}
->>> le.password
-'**redacted**'
-```
+[PRE38]
 
 与以前使用装饰器的实现相比，这里有一些不同之处。这个例子添加了`serialize()`方法，并在呈现其结果的字典之前隐藏了字段，但是如果我们在内存中的任何时候向事件实例询问这些属性，它仍然会给我们原始值，而不会对其进行任何转换（我们可以选择在设置值时应用转换，并直接在`__get__()`中返回它）。
 
@@ -883,13 +441,7 @@ class LoginEvent:
 
 让我们举一个例子，我们创建一个基类，实现`__init__()`和`serialize()`方法，这样我们就可以通过继承它来简单地定义`LoginEvent`类，如下所示：
 
-```py
-class LoginEvent(BaseEvent):
-    username = ShowOriginal()
-    password = HideField()
-    ip = ShowOriginal()
-    timestamp = FormatTime()
-```
+[PRE39]
 
 一旦我们实现了这段代码，类看起来更清晰。它只定义了它需要的属性，通过查看每个属性的类，可以快速分析其逻辑。基类将仅抽象出共同的方法，每个事件的类看起来更简单、更紧凑。
 
@@ -917,49 +469,27 @@ class LoginEvent(BaseEvent):
 
 换句话说，当我们定义类似这样的东西时：
 
-```py
-class MyClass:
-    def method(self, ...):
-        self.x = 1
-```
+[PRE40]
 
 实际上，这与我们定义以下内容是一样的：
 
-```py
-class MyClass: pass
-
-def method(myclass_instance, ...):
-    myclass_instance.x = 1
-
- method(MyClass())
-```
+[PRE41]
 
 因此，它只是另一个函数，修改对象，只是它是在类内部定义的，并且被认为是绑定到对象上。
 
 当我们以这种形式调用某些东西时：
 
-```py
-instance = MyClass()
-instance.method(...)
-```
+[PRE42]
 
 实际上，Python 正在做类似于这样的事情：
 
-```py
-instance = MyClass()
-MyClass.method(instance, ...)
-```
+[PRE43]
 
 请注意，这只是 Python 在内部处理的一种语法转换。这种工作方式是通过描述符实现的。
 
 由于函数在调用方法之前实现了描述符协议（请参见以下清单），因此首先调用`__get__()`方法，然后在运行内部可调用对象的代码之前进行一些转换：
 
-```py
->>> def function(): pass
-...
->>> function.__get__
-<method-wrapper '__get__' of function object at 0x...>
-```
+[PRE44]
 
 在`instance.method(...)`语句中，在处理括号内可调用对象的所有参数之前，会先评估`"instance.method"`部分。
 
@@ -969,34 +499,15 @@ MyClass.method(instance, ...)
 
 我们将在类内部定义一个可调用对象，它将充当我们想要定义的函数或方法，以便在外部调用。`Method`类的一个实例应该是在不同类内部使用的函数或方法。这个函数将只打印它的三个参数——它接收到的`instance`（它将是在定义它的类中的`self`参数），以及另外两个参数。请注意，在`__call__()`方法中，`self`参数不代表`MyClass`的实例，而是`Method`的一个实例。名为`instance`的参数应该是`MyClass`类型的对象：
 
-```py
-class Method:
-    def __init__(self, name):
-        self.name = name
-
-    def __call__(self, instance, arg1, arg2):
-        print(f"{self.name}: {instance} called with {arg1} and {arg2}")
-
-class MyClass:
-    method = Method("Internal call")
-```
+[PRE45]
 
 在考虑这些因素并创建对象之后，根据前面的定义，以下两个调用应该是等效的：
 
-```py
-instance = MyClass()
-Method("External call")(instance, "first", "second")
-instance.method("first", "second")
-```
+[PRE46]
 
 然而，只有第一个按预期工作，因为第二个会出错：
 
-```py
-Traceback (most recent call last):
-File "file", line , in <module>
-    instance.method("first", "second")
-TypeError: __call__() missing 1 required positional argument: 'arg2'
-```
+[PRE47]
 
 我们看到了与第五章中装饰器面临的相同错误，*使用装饰器改进我们的代码*。参数向左移动了一个位置，`instance`取代了`self`，`arg1`将成为`instance`，而`arg2`没有提供任何内容。
 
@@ -1004,28 +515,11 @@ TypeError: __call__() missing 1 required positional argument: 'arg2'
 
 这样，当我们首先调用`instance.method`时，我们将调用它的`__get__()`，然后将这个可调用对象绑定到对象上（绕过对象作为第一个参数），然后继续：
 
-```py
-from types import MethodType
-
-class Method:
-    def __init__(self, name):
-        self.name = name
-
-    def __call__(self, instance, arg1, arg2):
-        print(f"{self.name}: {instance} called with {arg1} and {arg2}")
-
-    def __get__(self, instance, owner):
-        if instance is None:
-            return self
-        return MethodType(self, instance)
-```
+[PRE48]
 
 现在，这两个调用都按预期工作：
 
-```py
-External call: <MyClass object at 0x...> called with fist and second
-Internal call: <MyClass object at 0x...> called with first and second
-```
+[PRE49]
 
 我们所做的是通过使用`types`模块中的`MethodType`将`function`（实际上是我们定义的可调用对象）转换为方法。这个类的第一个参数应该是一个可调用对象（在这种情况下是`self`，因为它实现了`__call__`），第二个参数是要将这个函数绑定到的对象。
 
@@ -1039,35 +533,13 @@ Internal call: <MyClass object at 0x...> called with first and second
 
 我们已经多次提到，当从类直接调用时，惯用法使描述符返回自身。由于属性实际上是描述符，这就是为什么当我们从类中获取它时，我们得到的不是计算属性的结果，而是整个`property object`：
 
-```py
->>> class MyClass:
-... @property
-... def prop(self): pass
-...
->>> MyClass.prop
-<property object at 0x...>
-```
+[PRE50]
 
 对于类方法，在描述符中的`__get__`函数将确保类是传递给被装饰的函数的第一个参数，无论是直接从类调用还是从实例调用。对于静态方法，它将确保除了函数定义的参数之外不绑定任何参数，即撤消`__get__()`在使`self`成为该函数的第一个参数的函数上所做的绑定。
 
 让我们举个例子；我们创建一个`@classproperty`装饰器，它的工作方式与常规的`@property`装饰器相同，但是用于类。有了这样一个装饰器，以下代码应该能够工作：
 
-```py
-class TableEvent:
-    schema = "public"
-    table = "user"
-
-    @classproperty
-    def topic(cls):
-        prefix = read_prefix_from_config()
-        return f"{prefix}{cls.schema}.{cls.table}"
-
->>> TableEvent.topic
-'public.user'
-
->>> TableEvent().topic
-'public.user'
-```
+[PRE51]
 
 # Slots
 
@@ -1077,17 +549,7 @@ class TableEvent:
 
 那么，如果不是从对象的字典中检索它的属性，它的属性是如何检索的呢？通过使用描述符。在 slot 中定义的每个名称都将有自己的描述符，它将存储值以便以后检索：
 
-```py
-class Coordinate2D:
-    __slots__ = ("lat", "long")
-
-    def __init__(self, lat, long):
-        self.lat = lat
-        self.long = long
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}({self.lat}, {self.long})"
-```
+[PRE52]
 
 虽然这是一个有趣的特性，但必须谨慎使用，因为它会剥夺 Python 的动态特性。一般来说，这应该只用于我们知道是静态的对象，并且如果我们绝对确定在代码的其他部分动态地添加任何属性到它们。
 

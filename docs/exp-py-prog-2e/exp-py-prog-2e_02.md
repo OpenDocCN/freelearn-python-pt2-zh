@@ -34,39 +34,21 @@ Python 中的字符串是序列。这一事实应该足以将它们包括在涵�
 
 `字节`及其可变替代品（`bytearray`）与`str`的不同之处在于只允许字节作为序列值——范围在`0 <= x < 256`的整数。这可能会在开始时造成困惑，因为打印时它们可能看起来与字符串非常相似：
 
-```py
-**>>> print(bytes([102, 111, 111]))**
-**b'foo'**
-
-```
+[PRE0]
 
 当将`bytes`和`bytearray`转换为另一种序列类型（如`list`或`tuple`）时，它们的真实性质就显露出来了：
 
-```py
-**>>> list(b'foo bar')**
-**[102, 111, 111, 32, 98, 97, 114]**
-**>>> tuple(b'foo bar')**
-**(102, 111, 111, 32, 98, 97, 114)**
-
-```
+[PRE1]
 
 Python 3 的许多争议都是关于打破字符串字面量的向后兼容性以及如何处理 Unicode。从 Python 3.0 开始，每个未加前缀的字符串字面量都是 Unicode。因此，用单引号（`'`）、双引号（`"`）或三引号（单引号或双引号）括起来的字面量代表`str`数据类型：
 
-```py
-**>>> type("some string")**
-**<class 'str'>**
-
-```
+[PRE2]
 
 在 Python 2 中，Unicode 字面量需要`u`前缀（如`u"some string"`）。这个前缀仍然允许用于向后兼容（从 Python 3.3 开始），但在 Python 3 中没有任何语法意义。
 
 在之前的一些示例中已经介绍了字节字面量，但为了保持一致，让我们明确介绍其语法。字节字面量也可以用单引号、双引号或三引号括起来，但必须以`b`或`B`前缀开头：
 
-```py
-**>>> type(b"some bytes")**
-**<class 'bytes'>**
-
-```
+[PRE3]
 
 请注意，Python 语法中没有`bytearray`字面量。
 
@@ -96,25 +78,15 @@ Python 字符串是不可变的。这也适用于字节序列。这是一个重�
 
 知道 Python 字符串是不可变的这个事实会在需要连接多个字符串实例时带来一些问题。如前所述，连接任何不可变序列都会导致创建一个新的序列对象。考虑到通过多个字符串的重复连接构建新字符串，如下所示：
 
-```py
-s = ""
-for substring in substrings:
-    s += substring
-```
+[PRE4]
 
 这将导致总字符串长度的二次运行时成本。换句话说，这是非常低效的。为了处理这种情况，有`str.join()`方法可用。它接受字符串的可迭代对象作为参数并返回一个连接的字符串。因为它是方法，实际的习惯用法使用空字符串文字作为方法的来源：
 
-```py
-s = "".join(substrings)
-```
+[PRE5]
 
 提供此方法的字符串将用作连接的子字符串之间的分隔符；请考虑以下示例：
 
-```py
-**>>> ','.join(['some', 'comma', 'separated', 'values'])**
-**'some,comma,separated,values'**
-
-```
+[PRE6]
 
 值得记住的是，仅仅因为它更快（特别是对于大型列表），并不意味着在每个需要连接两个字符串的情况下都应该使用`join()`方法。尽管它是一个广泛认可的习惯用法，但它并不会提高代码的可读性 - 可读性很重要！还有一些情况下，`join()`可能不如普通的加法连接表现得好。以下是一些例子：
 
@@ -188,16 +160,7 @@ Python 中最基本的两种集合类型是列表和元组，它们都表示对�
 
 正如您可能知道的，编写这样的代码是痛苦的：
 
-```py
-**>>> evens = []**
-**>>> for i in range(10):**
-**...     if i % 2 == 0:**
-**...         evens.append(i)**
-**...** 
-**>>> evens**
-**[0, 2, 4, 6, 8]**
-
-```
+[PRE7]
 
 这对于 C 语言可能有效，但实际上对于 Python 来说会使事情变慢，因为：
 
@@ -209,11 +172,7 @@ Python 中最基本的两种集合类型是列表和元组，它们都表示对�
 
 列表推导是这种模式的正确答案。它使用了自动化前一种语法的部分的奇怪特性：
 
-```py
-**>>> [i for i in range(10) if i % 2 == 0]**
-**[0, 2, 4, 6, 8]**
-
-```
+[PRE8]
 
 除了这种写法更有效外，它更短，涉及的元素更少。在更大的程序中，这意味着更少的错误和更容易阅读和理解的代码。
 
@@ -229,111 +188,37 @@ Python 中最基本的两种集合类型是列表和元组，它们都表示对�
 
 Python 习惯用法的另一个典型例子是使用`enumerate`。这个内置函数提供了一种方便的方法，在循环中使用序列时获得索引。考虑以下代码片段作为例子：
 
-```py
-**>>> i = 0**
-**>>> for element in ['one', 'two', 'three']:**
-**...     print(i, element)**
-**...     i += 1**
-**...**
-**0 one**
-**1 two**
-**2 three**
-
-```
+[PRE9]
 
 这可以被以下更短的代码替换：
 
-```py
-**>>> for i, element in enumerate(['one', 'two', 'three']):**
-**...     print(i, element)**
-**...**
-**0 one**
-**1 two**
-**2 three**
-
-```
+[PRE10]
 
 当需要将多个列表（或任何可迭代对象）的元素以一对一的方式聚合时，可以使用内置的`zip()`函数。这是对两个相同大小的可迭代对象进行统一迭代的非常常见的模式：
 
-```py
-**>>> for item in zip([1, 2, 3], [4, 5, 6]):**
-**...     print(item)**
-**...** 
-**(1, 4)**
-**(2, 5)**
-**(3, 6)**
-
-```
+[PRE11]
 
 请注意，`zip()`的结果可以通过另一个`zip()`调用进行反转：
 
-```py
-**>>> for item in zip(*zip([1, 2, 3], [4, 5, 6])):**
-**...     print(item)**
-**...** 
-**(1, 2, 3)**
-**(4, 5, 6)**
-
-```
+[PRE12]
 
 另一个流行的语法元素是序列解包。它不仅限于列表和元组，而且适用于任何序列类型（甚至字符串和字节序列）。它允许您将一系列元素解包到另一组变量中，只要在赋值运算符的左侧有与序列中元素数量相同的变量：
 
-```py
-**>>> first, second, third = "foo", "bar", 100**
-**>>> first**
-**'foo'**
-**>>> second**
-**'bar'**
-**>>> third**
-**100**
-
-```
+[PRE13]
 
 解包还允许您使用星号表达式捕获单个变量中的多个元素，只要它可以被明确解释。解包也可以在嵌套序列上执行。当在由序列构建的一些复杂数据结构上进行迭代时，这可能会很方便。以下是一些更复杂解包的示例：
 
-```py
-**>>> # starred expression to capture rest of the sequence**
-**>>> first, second, *rest = 0, 1, 2, 3**
-**>>> first**
-**0**
-**>>> second**
-**1**
-**>>> rest**
-**[2, 3]**
-
-**>>> # starred expression to capture middle of the sequence**
-**>>> first, *inner, last = 0, 1, 2, 3**
-**>>> first**
-**0**
-**>>> inner**
-**[1, 2]**
-**>>> last**
-**3**
-
-**>>> # nested unpacking**
-**>>> (a, b), (c, d) = (1, 2), (3, 4)**
-**>>> a, b, c, d**
-**(1, 2, 3, 4)**
-
-```
+[PRE14]
 
 ### 字典
 
 字典是 Python 中最通用的数据结构之一。`dict`允许将一组唯一的键映射到值，如下所示：
 
-```py
-{
-    1: ' one',
-    2: ' two',
-    3: ' three',
-}
-```
+[PRE15]
 
 字典文字是一件非常基本的事情，你应该已经知道它们。无论如何，Python 允许程序员使用类似于前面提到的列表推导的推导来创建一个新的字典。这是一个非常简单的例子：
 
-```py
-squares = {number: number**2 for number in range(100)}
-```
+[PRE16]
 
 重要的是，使用列表推导的相同好处也适用于字典推导。因此，在许多情况下，它们更有效、更短、更清晰。对于更复杂的代码，当需要许多`if`语句或函数调用来创建字典时，简单的`for`循环可能是更好的选择，特别是如果它提高了可读性。
 
@@ -347,14 +232,7 @@ squares = {number: number**2 for number in range(100)}
 
 视图对象以动态方式查看字典内容，因此每次字典发生更改，视图都会反映这些更改，如下例所示：
 
-```py
-**>>> words = {'foo': 'bar', 'fizz': 'bazz'}**
-**>>> items = words.items()**
-**>>> words['spam'] = 'eggs'**
-**>>> items**
-**dict_items([('spam', 'eggs'), ('fizz', 'bazz'), ('foo', 'bar')])**
-
-```
+[PRE17]
 
 视图对象将旧方法的返回列表的行为与它们的“iter”对应方法返回的迭代器相结合。视图不需要在内存中冗余存储所有值（像列表一样），但仍然允许获取它们的长度（使用`len`）和测试成员资格（使用`in`子句）。视图当然是可迭代的。
 
@@ -388,32 +266,17 @@ CPython 使用伪随机探测的哈希表作为字典的底层数据结构。这
 
 使用字典的一个常见陷阱是它们不保留添加新键的顺序。在某些情况下，当字典键使用连续的键，其哈希值也是连续的值（例如使用整数）时，由于字典的内部实现，结果顺序可能是相同的：
 
-```py
-**>>> {number: None for number in range(5)}.keys()**
-**dict_keys([0, 1, 2, 3, 4])**
-
-```
+[PRE18]
 
 然而，使用其他哈希方式不同的数据类型表明顺序不会被保留。以下是 CPython 的一个例子：
 
-```py
-**>>> {str(number): None for number in range(5)}.keys()**
-**dict_keys(['1', '2', '4', '0', '3'])**
-**>>> {str(number): None for number in reversed(range(5))}.keys()**
-**dict_keys(['2', '3', '1', '4', '0'])**
-
-```
+[PRE19]
 
 如前面的代码所示，结果顺序既取决于对象的哈希，也取决于添加元素的顺序。这是不可靠的，因为它可能会随着不同的 Python 实现而变化。
 
 然而，在某些情况下，开发人员可能需要保留添加顺序的字典。幸运的是，Python 标准库在`collections`模块中提供了一个有序字典`OrderedDict`。它可以选择接受一个可迭代对象作为初始化参数：
 
-```py
-**>>> from collections import OrderedDict**
-**>>> OrderedDict((str(number), None) for number in range(5)).keys()**
-**odict_keys(['0', '1', '2', '3', '4'])**
-
-```
+[PRE20]
 
 它还具有一些额外的功能，比如使用`popitem()`方法从两端弹出项，或者使用`move_to_end()`方法将指定的元素移动到其中一个端点。有关该集合的完整参考，请参阅 Python 文档（参见[`docs.python.org/3/library/collections.html`](https://docs.python.org/3/library/collections.html)）。
 
@@ -429,23 +292,11 @@ CPython 使用伪随机探测的哈希表作为字典的底层数据结构。这
 
 `frozenset()`的不可变性使其可以用作字典键，也可以用作其他`set()`和`frozenset()`元素。普通的可变`set()`不能在另一个集合或 frozenset 内容中使用，否则会引发`TypeError`：
 
-```py
-**>>> set([set([1,2,3]), set([2,3,4])])**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
-**TypeError: unhashable type: 'set'**
-
-```
+[PRE21]
 
 以下的集合初始化是完全正确的：
 
-```py
-**>>> set([frozenset([1,2,3]), frozenset([2,3,4])])**
-**{frozenset({1, 2, 3}), frozenset({2, 3, 4})}**
-**>>> frozenset([frozenset([1,2,3]), frozenset([2,3,4])])**
-**frozenset({frozenset({1, 2, 3}), frozenset({2, 3, 4})})**
-
-```
+[PRE22]
 
 可变集合可以通过三种方式创建：
 
@@ -507,49 +358,15 @@ CPython 使用伪随机探测的哈希表作为字典的底层数据结构。这
 
 可以使用`iter`内置函数从序列创建迭代器。考虑以下示例：
 
-```py
-**>>> i = iter('abc')**
-**>>> next(i)**
-**'a'**
-**>>> next(i)**
-**'b'**
-**>>> next(i)**
-**'c'**
-**>>> next(i)**
-**Traceback (most recent call last):**
- **File "<input>", line 1, in <module>**
-**StopIteration**
-
-```
+[PRE23]
 
 当序列耗尽时，会引发`StopIteration`异常。它使迭代器与循环兼容，因为它们捕获此异常以停止循环。要创建自定义迭代器，可以编写一个具有`__next__`方法的类，只要它提供返回迭代器实例的特殊方法`__iter__`：
 
-```py
-class CountDown:def __init__(self, step):
-        self.step = step
-    def __next__(self):
-        """Return the next element."""
-        if self.step <= 0:
-            raise StopIteration
-        self.step -= 1
-        return self.step
-    def __iter__(self):
-        """Return the iterator itself."""
-        return self
-```
+[PRE24]
 
 以下是这种迭代器的示例用法：
 
-```py
-**>>> for element in CountDown(4):**
-**...     print(element)**
-**...** 
-**3**
-**2**
-**1**
-**0**
-
-```
+[PRE25]
 
 迭代器本身是一个低级特性和概念，程序可以没有它们。但是它们为一个更有趣的特性 - 生成器提供了基础。
 
@@ -559,28 +376,11 @@ class CountDown:def __init__(self, step):
 
 例如，斐波那契数列可以用迭代器编写（这是关于迭代器的 PEP 中提供的示例）：
 
-```py
-def fibonacci():
-    a, b = 0, 1
-    while True:
-        yield b
-        a, b = b, a + b
-```
+[PRE26]
 
 您可以像使用`next()`函数或`for`循环一样从生成器中检索新值：
 
-```py
-**>>> fib = fibonacci()**
-**>>> next(fib)**
-**1**
-**>>> next(fib)**
-**1**
-**>>> next(fib)**
-**2**
-**>>> [next(fib) for i in range(10)]**
-**[3, 5, 8, 13, 21, 34, 55, 89, 144, 233]**
-
-```
+[PRE27]
 
 这个函数返回一个`generator`对象，一个特殊的迭代器，它知道如何保存执行上下文。它可以被无限调用，每次产生套件的下一个元素。语法简洁，算法的无限性不再影响代码的可读性。它不必提供一种使函数可停止的方法。事实上，它看起来类似于伪代码中设计系列的方式。
 
@@ -590,57 +390,17 @@ def fibonacci():
 
 例如，标准库中的`tokenize`模块可以从文本流中生成标记，并为每个处理的行返回一个`iterator`，可以传递给某些处理：
 
-```py
-**>>> import tokenize**
-**>>> reader = open('hello.py').readline**
-**>>> tokens = tokenize.generate_tokens(reader)**
-**>>> next(tokens)**
-**TokenInfo(type=57 (COMMENT), string='# -*- coding: utf-8 -*-', start=(1, 0), end=(1, 23), line='# -*- coding: utf-8 -*-\n')**
-**>>> next(tokens)**
-**TokenInfo(type=58 (NL), string='\n', start=(1, 23), end=(1, 24), line='# -*- coding: utf-8 -*-\n')**
-**>>> next(tokens)**
-**TokenInfo(type=1 (NAME), string='def', start=(2, 0), end=(2, 3), line='def hello_world():\n')**
-
-```
+[PRE28]
 
 在这里，我们可以看到`open`迭代文件的行，`generate_tokens`在管道中迭代它们，执行额外的工作。生成器还可以帮助打破复杂性，并提高基于几个套件的一些数据转换算法的效率。将每个套件视为`iterator`，然后将它们组合成一个高级函数是避免一个庞大、丑陋和难以阅读的函数的好方法。此外，这可以为整个处理链提供实时反馈。
 
 在下面的例子中，每个函数定义了对序列的转换。然后它们被链接并应用。每个函数调用处理一个元素并返回其结果：
 
-```py
-def power(values):
-    for value in values:
-        print('powering %s' % value)
-        yield value
-
-def adder(values):
-    for value in values:
-        print('adding to %s' % value)
-        if value % 2 == 0:
-            yield value + 3
-        else:
-            yield value + 2
-```
+[PRE29]
 
 以下是使用这些生成器的可能结果：
 
-```py
-**>>> elements = [1, 4, 7, 9, 12, 19]**
-**>>> results = adder(power(elements))**
-**>>> next(results)**
-**powering 1**
-**adding to 1**
-**3**
-**>>> next(results)**
-**powering 4**
-**adding to 4**
-**7**
-**>>> next(results)**
-**powering 7**
-**adding to 7**
-**9**
-
-```
+[PRE30]
 
 ### 提示
 
@@ -650,34 +410,11 @@ def adder(values):
 
 关于`generators`，Python 中另一个重要的功能是能够使用`next`函数与代码进行交互。`yield`变成了一个表达式，可以通过一个称为`send`的新方法传递一个值：
 
-```py
-def psychologist():
-    print('Please tell me your problems')
-    while True:
-        answer = (yield)
-        if answer is not None:
-            if answer.endswith('?'):
-                print("Don't ask yourself too much questions")
-            elif 'good' in answer:
-                print("Ahh that's good, go on")
-            elif 'bad' in answer:
-                print("Don't be so negative")
-```
+[PRE31]
 
 以下是使用我们的`psychologist()`函数的示例会话：
 
-```py
-**>>> free = psychologist()**
-**>>> next(free)**
-**Please tell me your problems**
-**>>> free.send('I feel bad')**
-**Don't be so negative**
-**>>> free.send("Why I shouldn't ?")**
-**Don't ask yourself too much questions**
-**>>> free.send("ok then i should find what is good for me")**
-**Ahh that's good, go on**
-
-```
+[PRE32]
 
 `send`的作用类似于`next`，但使`yield`返回函数定义内传递的值。因此，函数可以根据客户端代码改变其行为。为了完成这种行为，还添加了另外两个函数——`throw`和`close`。它们将错误引发到生成器中：
 
@@ -693,29 +430,11 @@ def psychologist():
 
 Python 中添加装饰器是为了使函数和方法包装（接收一个函数并返回一个增强的函数）更易于阅读和理解。最初的用例是能够在其定义的头部将方法定义为类方法或静态方法。没有装饰器语法，这将需要一个相当稀疏和重复的定义：
 
-```py
-class WithoutDecorators:
-    def some_static_method():
-        print("this is static method")
-    some_static_method = staticmethod(some_static_method)
-
-    def some_class_method(cls):
-        print("this is class method")
-    some_class_method = classmethod(some_class_method)
-```
+[PRE33]
 
 如果装饰器语法用于相同的目的，代码会更短，更容易理解：
 
-```py
-class WithDecorators:
-    @staticmethod
-    def some_static_method():
-        print("this is static method")
-
-    @classmethod
-    def some_class_method(cls):
-        print("this is class method")
-```
+[PRE34]
 
 ### 一般语法和可能的实现
 
@@ -723,19 +442,11 @@ class WithDecorators:
 
 装饰器语法只是一种语法糖。考虑以下装饰器的用法：
 
-```py
-@some_decorator
-def decorated_function():
-    pass
-```
+[PRE35]
 
 这总是可以被显式的装饰器调用和函数重新分配替代：
 
-```py
-def decorated_function():
-    pass
-decorated_function = some_decorator(decorated_function)
-```
+[PRE36]
 
 然而，后者不太可读，而且如果在单个函数上使用多个装饰器，很难理解。
 
@@ -751,18 +462,7 @@ decorated_function = some_decorator(decorated_function)
 
 通用模式如下：
 
-```py
-def mydecorator(function):
-    def wrapped(*args, **kwargs):     
-        # do some stuff before the original
-        # function gets called
-        result = function(*args, **kwargs)
-        # do some stuff after function call and
-        # return the result
-        return result
-    # return wrapper as a decorated function
-    return wrapped
-```
+[PRE37]
 
 #### 作为类
 
@@ -770,82 +470,25 @@ def mydecorator(function):
 
 作为类的非参数化装饰器的通用模式如下：
 
-```py
-class DecoratorAsClass:
-    def __init__(self, function):
-        self.function = function
-
-    def __call__(self, *args, **kwargs):
-        # do some stuff before the original
-        # function gets called
-        result = self.function(*args, **kwargs)
-        # do some stuff after function call and
-        # return the result
-        return result
-```
+[PRE38]
 
 #### 参数化装饰器
 
 在实际代码中，通常需要使用可以带参数的装饰器。当函数用作装饰器时，解决方案很简单——必须使用第二层包装。这是装饰器的一个简单示例，它重复执行装饰函数指定的次数，每次调用时：
 
-```py
-def repeat(number=3):
-    """Cause decorated function to be repeated a number of times.
-
-    Last value of original function call is returned as a result
-    :param number: number of repetitions, 3 if not specified
-    """
-    def actual_decorator(function):
-        def wrapper(*args, **kwargs):
-            result = None
-            for _ in range(number):
-                result = function(*args, **kwargs)
-            return result
-        return wrapper
-    return actual_decorator
-```
+[PRE39]
 
 这种方式定义的装饰器可以接受参数：
 
-```py
-**>>> @repeat(2)**
-**... def foo():**
-**...     print("foo")**
-**...** 
-**>>> foo()**
-**foo**
-**foo**
-
-```
+[PRE40]
 
 请注意，即使带有默认值的参数化装饰器，其名称后面的括号也是必需的。使用具有默认参数的前述装饰器的正确方法如下：
 
-```py
-**>>> @repeat()**
-**... def bar():**
-**...     print("bar")**
-**...** 
-**>>> bar()**
-**bar**
-**bar**
-**bar**
-
-```
+[PRE41]
 
 如果省略这些括号，当调用装饰函数时将导致以下错误：
 
-```py
-**>>> @repeat**
-**... def bar():**
-**...     pass**
-**...** 
-**>>> bar()**
-**Traceback (most recent call last):**
- **File "<input>", line 1, in <module>**
-**TypeError: actual_decorator() missing 1 required positional**
-**argument: 'function'**
-
-```
+[PRE42]
 
 #### 保留内省的装饰器
 
@@ -853,54 +496,19 @@ def repeat(number=3):
 
 但让我们详细看一下。假设我们有一些虚拟装饰器，除了装饰和一些其他函数被装饰以外，什么都不做：
 
-```py
-def dummy_decorator(function):
-    def wrapped(*args, **kwargs):
-        """Internal wrapped function documentation."""
-        return function(*args, **kwargs)
-    return wrapped
-
-@dummy_decorator
-def function_with_important_docstring():
-    """This is important docstring we do not want to lose."""
-```
+[PRE43]
 
 如果我们在 Python 交互会话中检查`function_with_important_docstring()`，我们会注意到它已经失去了原始名称和文档字符串：
 
-```py
-**>>> function_with_important_docstring.__name__**
-**'wrapped'**
-**>>> function_with_important_docstring.__doc__**
-**'Internal wrapped function documentation.'**
-
-```
+[PRE44]
 
 解决这个问题的一个合适的方法是使用`functools`模块提供的内置`wraps()`装饰器：
 
-```py
-from functools import wraps
-
-def preserving_decorator(function):
-    @wraps(function)
-    def wrapped(*args, **kwargs):
-        """Internal wrapped function documentation."""
-        return function(*args, **kwargs)
-    return wrapped
-
-@preserving_decorator
-def function_with_important_docstring():
-    """This is important docstring we do not want to lose."""
-```
+[PRE45]
 
 通过这种方式定义的装饰器，重要的函数元数据得到了保留：
 
-```py
-**>>> function_with_important_docstring.__name__**
-**'function_with_important_docstring.'**
-**>>> function_with_important_docstring.__doc__**
-**'This is important docstring we do not want to lose.'**
-
-```
+[PRE46]
 
 ### 用法和有用的示例
 
@@ -928,79 +536,17 @@ XML-RPC 协议是一种轻量级的**远程过程调用**协议，它使用 XML 
 
 自定义装饰器可以提供这种类型的签名。它还可以确保输入和输出符合定义的签名参数：
 
-```py
-rpc_info = {}
-
-def xmlrpc(in_=(), out=(type(None),)):
-    def _xmlrpc(function):
-        # registering the signature
-        func_name = function.__name__
-        rpc_info[func_name] = (in_, out)
-        def _check_types(elements, types):
-            """Subfunction that checks the types."""
-            if len(elements) != len(types):
-                raise TypeError('argument count is wrong')
-            typed = enumerate(zip(elements, types))
-            for index, couple in typed:
-                arg, of_the_right_type = couple
-                if isinstance(arg, of_the_right_type):
-                    continue
-                raise TypeError(
-                    'arg #%d should be %s' % (index, of_the_right_type))
-
-        # wrapped function
-        def __xmlrpc(*args):  # no keywords allowed
-            # checking what goes in
-            checkable_args = args[1:]  # removing self
-            _check_types(checkable_args, in_)
-            # running the function
-            res = function(*args)
-            # checking what goes out
-            if not type(res) in (tuple, list):
-                checkable_res = (res,)
-            else:
-                checkable_res = res
-            _check_types(checkable_res, out)
-
-            # the function and the type
-            # checking succeeded
-            return res
-        return __xmlrpc
-    return _xmlrpc
-```
+[PRE47]
 
 装饰器将函数注册到全局字典中，并保留其参数和返回值的类型列表。请注意，示例被大大简化以演示参数检查装饰器。
 
 使用示例如下：
 
-```py
-class RPCView:
-    @xmlrpc((int, int))  # two int -> None
-    def meth1(self, int1, int2):
-        print('received %d and %d' % (int1, int2))
-
-    @xmlrpc((str,), (int,))  # string -> int
-    def meth2(self, phrase):
-        print('received %s' % phrase)
-        return 12
-```
+[PRE48]
 
 当它被读取时，这个类定义会填充`rpc_infos`字典，并且可以在特定环境中使用，其中检查参数类型：
 
-```py
-**>>> rpc_info**
-**{'meth2': ((<class 'str'>,), (<class 'int'>,)), 'meth1': ((<class 'int'>, <class 'int'>), (<class 'NoneType'>,))}**
-**>>> my = RPCView()**
-**>>> my.meth1(1, 2)**
-**received 1 and 2**
-**>>> my.meth2(2)**
-**Traceback (most recent call last):**
- **File "<input>", line 1, in <module>**
- **File "<input>", line 26, in __xmlrpc**
- **File "<input>", line 20, in _check_types**
-**TypeError: arg #0 should be <class 'str'>**
-
-```
+[PRE49]
 
 #### 缓存
 
@@ -1008,76 +554,13 @@ class RPCView:
 
 因此，缓存装饰器可以将输出与计算所需的参数一起保留，并在后续调用时直接返回。这种行为称为**记忆化**（参考[`en.wikipedia.org/wiki/Memoizing`](http://en.wikipedia.org/wiki/Memoizing)），作为装饰器实现起来非常简单：
 
-```py
-import time
-import hashlib
-import pickle
-
-cache = {}
-
-def is_obsolete(entry, duration):
-    return time.time() - entry['time']> duration
-
-def compute_key(function, args, kw):
-    key = pickle.dumps((function.__name__, args, kw))
-    return hashlib.sha1(key).hexdigest()
-
-def memoize(duration=10):
-    def _memoize(function):
-        def __memoize(*args, **kw):
-            key = compute_key(function, args, kw)
-
-            # do we have it already ?
-            if (key in cache and
-                not is_obsolete(cache[key], duration)):
-                print('we got a winner')
-                return cache[key]['value']
-
-            # computing
-            result = function(*args, **kw)
-            # storing the result
-            cache[key] = {
-                'value': result,
-                'time': time.time()
-            }
-            return result
-        return __memoize
-    return _memoize
-```
+[PRE50]
 
 使用有序参数值构建`SHA`哈希键，并将结果存储在全局字典中。哈希是使用 pickle 制作的，这是一个冻结传递的所有对象状态的快捷方式，确保所有参数都是良好的候选者。例如，如果线程或套接字被用作参数，将会发生`PicklingError`。（参见[`docs.python.org/3/library/pickle.html`](https://docs.python.org/3/library/pickle.html)。）`duration`参数用于在上次函数调用后经过太长时间后使缓存值无效。
 
 以下是一个使用示例：
 
-```py
-**>>> @memoize()**
-**... def very_very_very_complex_stuff(a, b):**
-**...     # if your computer gets too hot on this calculation**
-**...     # consider stopping it**
-**...     return a + b**
-**...**
-**>>> very_very_very_complex_stuff(2, 2)**
-**4**
-**>>> very_very_very_complex_stuff(2, 2)**
-**we got a winner**
-**4**
-**>>> @memoize(1) # invalidates the cache after 1 second**
-**... def very_very_very_complex_stuff(a, b):**
-**...     return a + b**
-**...**
-**>>> very_very_very_complex_stuff(2, 2)**
-**4**
-**>>> very_very_very_complex_stuff(2, 2)**
-**we got a winner**
-**4**
-**>>> cache**
-**{'c2727f43c6e39b3694649ee0883234cf': {'value': 4, 'time':**
-**1199734132.7102251)}**
-**>>> time.sleep(2)**
-**>>> very_very_very_complex_stuff(2, 2)**
-**4**
-
-```
+[PRE51]
 
 缓存昂贵的函数可以显著提高程序的整体性能，但必须小心使用。缓存的值也可以与函数本身绑定，以管理其范围和生命周期，而不是集中的字典。但无论如何，一个更有效的装饰器会使用基于高级缓存算法的专用缓存库。
 
@@ -1089,71 +572,19 @@ def memoize(duration=10):
 
 代理装饰器用于标记和注册具有全局机制的函数。例如，一个保护代码访问的安全层，取决于当前用户，可以使用一个带有可调用的关联权限的集中检查器来实现。
 
-```py
-class User(object):
-    def __init__(self, roles):
-        self.roles = roles
-
-class Unauthorized(Exception):
-    pass
-
-def protect(role):
-    def _protect(function):
-        def __protect(*args, **kw):
-            user = globals().get('user')
-            if user is None or role not in user.roles:
-                raise Unauthorized("I won't tell you")
-            return function(*args, **kw)
-        return __protect
-    return _protect
-```
+[PRE52]
 
 这个模型经常被用在 Python 的 web 框架中来定义可发布类的安全性。例如，Django 提供了装饰器来保护函数的访问。
 
 这是一个例子，其中当前用户保存在全局变量中。装饰器在访问方法时检查他或她的角色：
 
-```py
-**>>> tarek = User(('admin', 'user'))**
-**>>> bill = User(('user',))**
-**>>> class MySecrets(object):**
-**...     @protect('admin')**
-**...     def waffle_recipe(self):**
-**...         print('use tons of butter!')**
-**...**
-**>>> these_are = MySecrets()**
-**>>> user = tarek**
-**>>> these_are.waffle_recipe()**
-**use tons of butter!**
-**>>> user = bill**
-**>>> these_are.waffle_recipe()**
-**Traceback (most recent call last):**
-**File "<stdin>", line 1, in <module>**
-**File "<stdin>", line 7, in wrap**
-**__main__.Unauthorized: I won't tell you**
-
-```
+[PRE53]
 
 #### 上下文提供程序
 
 上下文装饰器确保函数可以在正确的上下文中运行，或在函数之前和之后运行一些代码。换句话说，它设置并取消特定的执行环境。例如，当一个数据项必须在多个线程之间共享时，必须使用锁来确保它受到多重访问的保护。这个锁可以编码在装饰器中，如下所示：
 
-```py
-from threading import RLock
-lock = RLock()
-
-def synchronized(function):
-    def _synchronized(*args, **kw):
-        lock.acquire()
-        try:
-            return function(*args, **kw)
-        finally:
-            lock.release()
-    return _synchronized
-
-@synchronized
-def thread_safe():  # make sure it locks the resource
-    pass
-```
+[PRE54]
 
 上下文装饰器更多地被上下文管理器（`with`语句）的使用所取代，这也在本章后面描述。
 
@@ -1171,21 +602,7 @@ def thread_safe():  # make sure it locks the resource
 
 `with`语句通过提供一种简单的方式来包装一段代码来因素化这些用例。这允许您在块执行之前和之后调用一些代码，即使这个块引发异常。例如，通常是这样处理文件的：
 
-```py
-**>>> hosts = open('/etc/hosts')**
-**>>> try:**
-**...     for line in hosts:**
-**...         if line.startswith('#'):**
-**...             continue**
-**...         print(line.strip())**
-**... finally:**
-**...     hosts.close()**
-**...**
-**127.0.0.1       localhost**
-**255.255.255.255 broadcasthost**
-**::1             localhost**
-
-```
+[PRE55]
 
 ### 注意
 
@@ -1193,18 +610,7 @@ def thread_safe():  # make sure it locks the resource
 
 通过使用`with`语句，可以重写成这样：
 
-```py
-**>>> with open('/etc/hosts') as hosts:**
-**...     for line in hosts:**
-**...         if line.startswith('#'):**
-**...             continue**
-**...         print(line.strip )**
-**...**
-**127.0.0.1       localhost**
-**255.255.255.255 broadcasthost**
-**::1             localhost**
-
-```
+[PRE56]
 
 在上面的例子中，`open`作为上下文管理器确保在执行`for`循环后文件将被关闭，即使发生异常。
 
@@ -1224,34 +630,19 @@ def thread_safe():  # make sure it locks the resource
 
 最简单形式的`with`语句的一般语法是：
 
-```py
-with context_manager:
-    # block of code
-    ...
-```
+[PRE57]
 
 此外，如果上下文管理器提供一个上下文变量，可以使用`as`子句在本地存储它：
 
-```py
-with context_manager as context:
-    # block of code
-    ...
-```
+[PRE58]
 
 请注意，可以同时使用多个上下文管理器，如下所示：
 
-```py
-with A() as a, B() as b:
-    ...
-```
+[PRE59]
 
 这相当于将它们嵌套，如下所示：
 
-```py
-with A() as a:
-    with B() as b:
-        ...
-```
+[PRE60]
 
 #### 作为一个类
 
@@ -1273,70 +664,21 @@ with A() as a:
 
 以下是一个实现了这个协议的一些上下文管理器的示例，以更好地说明它是如何工作的：
 
-```py
-class ContextIllustration:
-    def __enter__(self):
-        print('entering context')
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        print('leaving context')
-
-        if exc_type is None:
-            print('with no error')
-        else:
-            print('with an error (%s)' % exc_value)
-```
+[PRE61]
 
 当没有引发异常时，输出如下：
 
-```py
-**>>> with ContextIllustration():**
-**...     print("inside")**
-**...** 
-**entering context**
-**inside**
-**leaving context**
-**with no error**
-
-```
+[PRE62]
 
 当引发异常时，输出如下：
 
-```py
-**>>> with ContextIllustration():**
-**...     raise RuntimeError("raised within 'with'")**
-**...** 
-**entering context**
-**leaving context**
-**with an error (raised within 'with')**
-**Traceback (most recent call last):**
- **File "<input>", line 2, in <module>**
-**RuntimeError: raised within 'with'**
-
-```
+[PRE63]
 
 #### 作为函数-上下文管理器模块
 
 使用类似乎是实现 Python 语言中提供的任何协议的最灵活的方式，但对于许多用例来说可能是太多的样板文件。标准库中添加了一个`contextlib`模块，提供了一些与上下文管理器一起使用的帮助器。它最有用的部分是`contextmanager`装饰器。它允许您在单个函数中提供`__enter__`和`__exit__`部分，中间用`yield`语句分隔（请注意，这会使函数成为生成器）。使用这个装饰器编写的前面的示例将如下所示：
 
-```py
-from contextlib import contextmanager
-
-@contextmanager
-def context_illustration():
-    print('entering context')
-
-    try:
-        yield
-    except Exception as e:
-        print('leaving context')
-        print('with an error (%s)' % e)
-        # exception needs to be reraised
-        raise
-    else:
-        print('leaving context')
-        print('with no error')
-```
+[PRE64]
 
 如果发生任何异常，函数需要重新引发它以便传递它。请注意，`context_illustration`如果需要的话可以有一些参数，只要它们在调用中提供。这个小助手与基于类的迭代器 API 一样简化了正常的基于类的上下文 API。
 
@@ -1360,21 +702,7 @@ Python 语法中有一些不太流行且很少使用的元素。这是因为它�
 
 在`for`循环之后使用`else`子句允许您仅在循环以“自然”方式结束而不是用`break`语句终止时执行代码块：
 
-```py
-**>>> for number in range(1):**
-**...     break**
-**... else:**
-**...     print("no break")**
-**...**
-**>>>**
-**>>> for number in range(1):**
-**...     pass**
-**... else:**
-**...     print("break")**
-**...**
-**break**
-
-```
+[PRE65]
 
 在某些情况下，这很方便，因为它有助于消除可能需要的一些“标记”变量，如果用户想要存储信息，以确定是否发生了`break`。这使得代码更清晰，但可能会让不熟悉这种语法的程序员感到困惑。有人说`else`子句的这种含义是违反直觉的，但这里有一个简单的提示，可以帮助您记住它的工作原理-记住`for`循环后的`else`子句只是表示“没有 break”。
 
@@ -1386,14 +714,7 @@ Python 语法中有一些不太流行且很少使用的元素。这是因为它�
 
 Python 文档中略微修改的示例最好地展示了如何定义和检索函数注释：
 
-```py
-**>>> def f(ham: str, eggs: str = 'eggs') -> str:**
-**...     pass**
-**...** 
-**>>> print(f.__annotations__)**
-**{'return': <class 'str'>, 'eggs': <class 'str'>, 'ham': <class 'str'>}**
-
-```
+[PRE66]
 
 如所示，参数注释由表达式定义，该表达式评估为注释值，并在冒号之前。返回注释由冒号后的`def`语句结束和参数列表后面的`->`之间的表达式定义。
 
@@ -1401,13 +722,7 @@ Python 文档中略微修改的示例最好地展示了如何定义和检索函�
 
 任何表达式都可以用作注释，并且它位于默认参数旁边，这允许创建一些令人困惑的函数定义，如下所示：
 
-```py
-**>>> def square(number: 0<=3 and 1=0) -> (\**
-**...     +9000): return number**2**
-**>>> square(10)**
-**100**
-
-```
+[PRE67]
 
 然而，这种注释的用法除了混淆之外没有其他目的，即使没有它们，编写难以阅读和维护的代码也相对容易。
 

@@ -122,17 +122,7 @@
 
 甚至可以编写一些断言，设置一些速度目标。为了防止速度回归，这些测试可以在代码优化后留下：
 
-```py
-**>>> def test_speed():**
-**...     import time**
-**...     start = time.time()**
-**...     the_code()**
-**...     end = time.time() - start**
-**...     assert end < 10, \**
-**...     "sorry this code should not take 10 seconds !"**
-**...** 
-
-```
+[PRE0]
 
 ### 注意
 
@@ -172,115 +162,23 @@
 
 这两种工具具有相同的接口和用法，因此我们将只使用其中一个来展示它们的工作原理。以下是一个`myapp.py`模块，其中包含一个我们将使用`cProfile`测试的主函数：
 
-```py
-import time
-
-def medium():
-    time.sleep(0.01)
-
-def light():
-    time.sleep(0.001)
-
-def heavy():
-    for i in range(100):
-        light()
-        medium()
-        medium()
-    time.sleep(2)
-
-def main():
-    for i in range(2):
-        heavy()
-
-if __name__ == '__main__':
-    main()
-```
+[PRE1]
 
 该模块可以直接从提示符中调用，并在此处总结结果：
 
-```py
-**$ python3 -m cProfile myapp.py**
- **1208 function calls in 8.243 seconds**
-
- **Ordered by: standard name**
-
- **ncalls  tottime  percall  cumtime  percall filename:lineno(function)**
- **2    0.001    0.000    8.243    4.121 myapp.py:13(heavy)**
- **1    0.000    0.000    8.243    8.243 myapp.py:2(<module>)**
- **1    0.000    0.000    8.243    8.243 myapp.py:21(main)**
- **400    0.001    0.000    4.026    0.010 myapp.py:5(medium)**
- **200    0.000    0.000    0.212    0.001 myapp.py:9(light)**
- **1    0.000    0.000    8.243    8.243 {built-in method exec}**
- **602    8.241    0.014    8.241    0.014 {built-in method sleep}**
-
-```
+[PRE2]
 
 提供的统计数据是由分析器填充的统计对象的打印视图。可以手动调用该工具：
 
-```py
-**>>> import cProfile**
-**>>> from myapp import main**
-**>>> profiler = cProfile.Profile()**
-**>>> profiler.runcall(main)**
-**>>> profiler.print_stats()**
- **1206 function calls in 8.243 seconds**
-
- **Ordered by: standard name**
-
- **ncalls  tottime  percall  cumtime  percall file:lineno(function)**
- **2    0.001    0.000    8.243    4.121 myapp.py:13(heavy)**
- **1    0.000    0.000    8.243    8.243 myapp.py:21(main)**
- **400    0.001    0.000    4.026    0.010 myapp.py:5(medium)**
- **200    0.000    0.000    0.212    0.001 myapp.py:9(light)**
- **602    8.241    0.014    8.241    0.014 {built-in method sleep}**
-
-```
+[PRE3]
 
 统计数据也可以保存在文件中，然后由`pstats`模块读取。该模块提供了一个知道如何处理分析文件并提供一些辅助功能的类的调用：
 
-```py
-**>>> import pstats**
-**>>> import cProfile**
-**>>> from myapp import main**
-**>>> cProfile.run('main()', 'myapp.stats')**
-**>>> stats = pstats.Stats('myapp.stats')**
-**>>> stats.total_calls**
-**1208**
-**>>> stats.sort_stats('time').print_stats(3)**
-**Mon Apr  4 21:44:36 2016    myapp.stats**
-
- **1208 function calls in 8.243 seconds**
-
- **Ordered by: internal time**
- **List reduced from 8 to 3 due to restriction <3>**
-
- **ncalls  tottime  percall  cumtime  percall file:lineno(function)**
- **602    8.241    0.014    8.241    0.014 {built-in method sleep}**
- **400    0.001    0.000    4.025    0.010 myapp.py:5(medium)**
- **2    0.001    0.000    8.243    4.121 myapp.py:13(heavy)**
-
-```
+[PRE4]
 
 从那里，您可以通过打印每个函数的调用者和被调用者来浏览代码：
 
-```py
-**>>> stats.print_callees('medium')**
- **Ordered by: internal time**
- **List reduced from 8 to 1 due to restriction <'medium'>**
-
-**Function           called...**
- **ncalls  tottime  cumtime**
-**myapp.py:5(medium) ->  400    4.025    4.025  {built-in method sleep}**
-
-**>>> stats.print_callees('light')**
- **Ordered by: internal time**
- **List reduced from 8 to 1 due to restriction <'light'>**
-
-**Function           called...**
- **ncalls  tottime  cumtime**
-**myapp.py:9(light)  ->  200    0.212    0.212  {built-in method sleep}**
-
-```
+[PRE5]
 
 能够对输出进行排序可以在不同的视图上查找瓶颈。例如，考虑以下情景：
 
@@ -290,10 +188,7 @@ if __name__ == '__main__':
 
 从分析数据中可视化瓶颈的另一个好方法是将它们转换成图表（见*图 1*）。**Gprof2Dot**（[`github.com/jrfonseca/gprof2dot`](https://github.com/jrfonseca/gprof2dot)）可以将分析器数据转换为点图。您可以使用`pip`从 PyPI 下载这个简单的脚本，并在安装了 Graphviz（参见[`www.graphviz.org/`](http://www.graphviz.org/)）的环境中使用它：
 
-```py
-**$ gprof2dot.py -f pstats myapp.stats | dot -Tpng -o output.png**
-
-```
+[PRE6]
 
 `gprof2dot`的优势在于它试图成为一种语言无关的工具。它不仅限于 Python `profile`或`cProfile`的输出，还可以从多个其他配置文件中读取，比如 Linux perf、xperf、gprof、Java HPROF 等等。
 
@@ -309,73 +204,13 @@ if __name__ == '__main__':
 
 例如，可以使用`cProfile`模块作为装饰器：
 
-```py
-**>>> import tempfile, os, cProfile, pstats**
-**>>> def profile(column='time', list=5):**
-**...     def _profile(function):**
-**...         def __profile(*args, **kw):**
-**...             s = tempfile.mktemp()**
-**...             profiler = cProfile.Profile()**
-**...             profiler.runcall(function, *args, **kw)**
-**...             profiler.dump_stats(s)**
-**...             p = pstats.Stats(s)**
-**...             p.sort_stats(column).print_stats(list)**
-**...         return __profile**
-**...     return _profile**
-**...**
-**>>> from myapp import main**
-**>>> @profile('time', 6)**
-**... def main_profiled():**
-**...     return main()**
-**...**
-**>>> main_profiled()**
-**Mon Apr  4 22:01:01 2016    /tmp/tmpvswuovz_**
-
- **1207 function calls in 8.243 seconds**
-
- **Ordered by: internal time**
- **List reduced from 7 to 6 due to restriction <6>**
-
- **ncalls  tottime  percall  cumtime  percall file:lineno(function)**
- **602    8.241    0.014    8.241    0.014 {built-in method sleep}**
- **400    0.001    0.000    4.026    0.010 myapp.py:5(medium)**
- **2    0.001    0.000    8.243    4.121 myapp.py:13(heavy)**
- **200    0.000    0.000    0.213    0.001 myapp.py:9(light)**
- **1    0.000    0.000    8.243    8.243 myapp.py:21(main)**
- **1    0.000    0.000    8.243    8.243 <stdin>:1(main_profiled)**
-
-**>>> from myapp import light**
-**>>> stats = profile()(light)**
-**>>> stats()**
-**Mon Apr  4 22:01:57 2016    /tmp/tmpnp_zk7dl**
-
- **3 function calls in 0.001 seconds**
-
- **Ordered by: internal time**
-
- **ncalls  tottime  percall  cumtime  percall file:lineno(function)**
- **1    0.001    0.001    0.001    0.001 {built-in method sleep}**
- **1    0.000    0.000    0.001    0.001 myapp.py:9(light)**
-
-```
+[PRE7]
 
 这种方法允许测试应用程序的部分，并锐化统计输出。但在这个阶段，拥有一个调用者列表可能并不有趣，因为函数已经被指出为需要优化的函数。唯一有趣的信息是知道它有多快，然后加以改进。
 
 `timeit`更适合这种需求，它提供了一种简单的方法来测量小代码片段的执行时间，使用主机系统提供的最佳底层计时器（`time.time`或`time.clock`）：
 
-```py
-**>>> from myapp import light**
-**>>> import timeit**
-**>>> t = timeit.Timer('main()')**
-**>>> t.timeit(number=5)**
-**10000000 loops, best of 3: 0.0269 usec per loop**
-**10000000 loops, best of 3: 0.0268 usec per loop**
-**10000000 loops, best of 3: 0.0269 usec per loop**
-**10000000 loops, best of 3: 0.0268 usec per loop**
-**10000000 loops, best of 3: 0.0269 usec per loop**
-**5.6196951866149902**
-
-```
+[PRE8]
 
 该模块允许您重复调用，并且旨在尝试独立的代码片段。这在应用程序上下文之外非常有用，比如在提示符中，但在现有应用程序中使用起来并不方便。
 
@@ -385,29 +220,11 @@ if __name__ == '__main__':
 
 但`timeit`的结果应该谨慎使用。它是一个非常好的工具，可以客观比较两个短代码片段，但也容易让您犯下危险的错误，导致令人困惑的结论。例如，使用`timeit`模块比较两个无害的代码片段，可能会让您认为通过加法进行字符串连接比`str.join()`方法更快：
 
-```py
-**$ python3 -m timeit -s 'a = map(str, range(1000))' '"".join(a)'**
-**1000000 loops, best of 3: 0.497 usec per loop**
-
-**$ python3 -m timeit -s 'a = map(str, range(1000)); s=""' 'for i in a: s += i'**
-**10000000 loops, best of 3: 0.0808 usec per loop**
-
-```
+[PRE9]
 
 从第二章 *语法最佳实践 - 类级别以下*，我们知道通过加法进行字符串连接不是一个好的模式。尽管有一些微小的 CPython 微优化专门为这种用例设计，但最终会导致二次运行时间。问题在于`timeit`的`setup`参数（命令行中的`-s`参数）以及 Python 3 中范围的工作方式的细微差别。我不会讨论问题的细节，而是留给您作为练习。无论如何，以下是在 Python 3 中使用`str.join()`习惯用法来比较字符串连接的正确方法：
 
-```py
-**$ python3 -m timeit -s 'a = [str(i) for i in range(10000)]' 's="".join(a)'**
-**10000 loops, best of 3: 128 usec per loop**
-
-**$ python3 -m timeit -s 'a = [str(i) for i in range(10000)]' '**
-**>s = ""**
-**>for i in a:**
-**>    s += i**
-**>'**
-**1000 loops, best of 3: 1.38 msec per loop**
-
-```
+[PRE10]
 
 ### 测量 Pystones
 
@@ -419,30 +236,11 @@ if __name__ == '__main__':
 
 Python 在其`test`包中提供了一个基准测试工具，用于测量一系列精心选择的操作的持续时间。结果是计算机每秒能够执行的**pystones**数量，以及执行基准测试所用的时间，通常在现代硬件上大约为一秒：
 
-```py
-**>>> from test import pystone**
-**>>> pystone.pystones()**
-**(1.0500000000000007, 47619.047619047589)**
-
-```
+[PRE11]
 
 速率可以用来将配置持续时间转换为一定数量的 pystones：
 
-```py
-**>>> from test import pystone**
-**>>> benchtime, pystones = pystone.pystones()**
-**>>> def seconds_to_kpystones(seconds):**
-**...     return (pystones*seconds) / 1000** 
-**...** 
-**...** 
-**>>> seconds_to_kpystones(0.03)**
-**1.4563106796116512**
-**>>> seconds_to_kpystones(1)**
-**48.543689320388381**
-**>>> seconds_to_kpystones(2)**
-**97.087378640776762**
-
-```
+[PRE12]
 
 `seconds_to_kpystones`返回**千 pystones**的数量。如果您想对执行速度进行编码，这种转换可以包含在您的测试中。
 
@@ -474,41 +272,11 @@ CPython 实现中的额外微优化也使得预测实际内存使用变得更加
 
 要小心**参数** **入站** **出站**的边缘情况。如果在参数中创建了一个对象，如果函数返回该对象，则参数引用仍然存在。如果将其用作默认值，可能会导致意外结果：
 
-```py
-**>>> def my_function(argument={}):  # bad practice**
-**...     if '1' in argument:**
-**...         argument['1'] = 2**
-**...     argument['3'] = 4**
-**...     return argument**
-**...** 
-**>>> my_function()**
-**{'3': 4}**
-**>>> res = my_function()**
-**>>> res['4'] = 'I am still alive!'**
-**>>> print my_function()**
-**{'3': 4, '4': 'I am still alive!'}**
-
-```
+[PRE13]
 
 这就是为什么应该始终使用不可变对象的原因，就像这样：
 
-```py
-**>>> def my_function(argument=None):  # better practice**
-**...     if argument is None:**
-**...         argument = {}  # a fresh dict is created everytime**
-**...     if '1' in argument:**
-**...         argument['1'] = 2**
-**...     argument['3'] = 4**
-**...     return argument**
-**...** 
-**>>> my_function()**
-**{'3': 4}**
-**>>> res = my_function()**
-**>>> res['4'] = 'I am still alive!'**
-**>>> print my_function()**
-**{'3': 4}**
-
-```
+[PRE14]
 
 Python 中的引用计数很方便，可以免除手动跟踪对象引用和手动销毁对象的义务。尽管这引入了另一个问题，即开发人员从不清理内存中的实例，如果开发人员不注意使用数据结构的方式，它可能会以不受控制的方式增长。
 
@@ -552,51 +320,13 @@ Python 中的引用计数很方便，可以免除手动跟踪对象引用和手�
 
 `objgraph` 提供了多种实用工具，允许您列出和打印有关内存使用和对象计数的各种统计信息。以下是一个使用这些实用程序的示例，显示了解释器会话的转录。
 
-```py
-**>>> import objgraph**
-**>>> objgraph.show_most_common_types()**
-**function                   1910**
-**dict                       1003**
-**wrapper_descriptor         989**
-**tuple                      837**
-**weakref                    742**
-**method_descriptor          683**
-**builtin_function_or_method 666**
-**getset_descriptor          338**
-**set                        323**
-**member_descriptor          305**
-**>>> objgraph.count('list')**
-**266**
-**>>> objgraph.typestats(objgraph.get_leaking_objects())**
-**{'Gt': 1, 'AugLoad': 1, 'GtE': 1, 'Pow': 1, 'tuple': 2, 'AugStore': 1, 'Store': 1, 'Or': 1, 'IsNot': 1, 'RecursionError': 1, 'Div': 1, 'LShift': 1, 'Mod': 1, 'Add': 1, 'Invert': 1, 'weakref': 1, 'Not': 1, 'Sub': 1, 'In': 1, 'NotIn': 1, 'Load': 1, 'NotEq': 1, 'BitAnd': 1, 'FloorDiv': 1, 'Is': 1, 'RShift': 1, 'MatMult': 1, 'Eq': 1, 'Lt': 1, 'dict': 341, 'list': 7, 'Param': 1, 'USub': 1, 'BitOr': 1, 'BitXor': 1, 'And': 1, 'Del': 1, 'UAdd': 1, 'Mult': 1, 'LtE': 1}**
-
-```
+[PRE15]
 
 如前所述，`objgraph`允许您创建内存使用模式和交叉引用的图表。该库最有用的图表工具是`objgraph.show_refs()`和`objgraph.show_backrefs()`。它们都接受对被检查对象的引用，并使用 Graphviz 包将图表图像保存到文件中。这些图的示例在*图 2*和*图 3*中呈现。
 
 以下是用于创建这些图表的代码：
 
-```py
-import objgraph
-
-def example():
-    x = []
-    y = [x, [x], dict(x=x)]
-
-    objgraph.show_refs(
-        (x, y),
-        filename='show_refs.png',
-        refcounts=True
-    )
-    objgraph.show_backrefs(
-        (x, y),
-        filename='show_backrefs.png',
-        refcounts=True
-    )
-
-if __name__ == "__main__":
-    example()
-```
+[PRE16]
 
 *图 2*显示了由`x`和`y`对象持有的所有引用的图表。从上到下，从左到右，它确切地呈现了四个对象：
 
@@ -620,11 +350,7 @@ if __name__ == "__main__":
 
 为了展示`objgraph`如何在实践中使用，让我们回顾一些实际的例子。正如我们在本书中已经多次提到的，CPython 有自己的垃圾收集器，它独立于其引用计数方法存在。它不用于一般的内存管理，而仅用于解决循环引用的问题。在许多情况下，对象可能以一种使得使用简单的基于跟踪引用数量的技术无法删除它们的方式相互引用。以下是最简单的例子：
 
-```py
-x = []
-y = [x]
-x.append(y)
-```
+[PRE17]
 
 这种情况在*图 4*中以可视化方式呈现。在前面的情况下，即使所有对`x`和`y`对象的外部引用都将被移除（例如，通过从函数的局部范围返回），这两个对象也不能被移除，因为这两个对象仍然拥有的两个交叉引用。这是 Python 垃圾收集器介入的情况。它可以检测到对象的循环引用并在循环外没有其他有效引用时触发它们的释放。
 
@@ -634,86 +360,19 @@ x.append(y)
 
 当这样的循环中至少有一个对象定义了自定义的`__del__()`方法时，真正的问题开始。这是一个自定义的释放处理程序，当对象的引用计数最终变为零时将被调用。它可以执行任意的 Python 代码，因此也可以创建对特色对象的新引用。这就是为什么在 Python 3.4 版本之前的垃圾收集器无法打破引用循环的原因，如果其中至少有一个对象提供了自定义的`__del__()`方法实现。PEP 442 引入了对 Python 的安全对象最终化，并成为 Python 3.4 版本开始的标准的一部分。无论如何，这对于担心向后兼容性并针对广泛的 Python 解释器版本的软件包仍可能是一个问题。以下代码片段向您展示了不同 Python 版本中循环垃圾收集器行为的差异：
 
-```py
-import gc
-import platform
-import objgraph
-
-class WithDel(list):
-    """ list subclass with custom __del__ implementation """
-    def __del__(self):
-        pass
-
-def main():
-    x = WithDel()
-    y = []
-    z = []
-
-    x.append(y)
-    y.append(z)
-    z.append(x)
-
-    del x, y, z
-
-    print("unreachable prior collection: %s" % gc.collect())
-    print("unreachable after collection: %s" % len(gc.garbage))
-    print("WithDel objects count:        %s" %
-          objgraph.count('WithDel'))
-
-if __name__ == "__main__":
-    print("Python version: %s" % platform.python_version())
-    print()
-    main()
-```
+[PRE18]
 
 在 Python 3.3 下执行上述代码的输出显示，旧版本的 Python 中的循环垃圾收集器无法收集定义了`__del__()`方法的对象：
 
-```py
-**$ python3.3 with_del.py** 
-**Python version: 3.3.5**
-
-**unreachable prior collection: 3**
-**unreachable after collection: 1**
-**WithDel objects count:        1**
-
-```
+[PRE19]
 
 在较新版本的 Python 中，垃圾收集器可以安全地处理对象的最终化，即使它们定义了`__del__()`方法：
 
-```py
-**$ python3.5 with_del.py** 
-**Python version: 3.5.1**
-
-**unreachable prior collection: 3**
-**unreachable after collection: 0**
-**WithDel objects count:        0**
-
-```
+[PRE20]
 
 尽管在最新的 Python 版本中自定义最终化不再棘手，但对于需要在不同环境下工作的应用程序仍然是一个问题。如前所述，`objgraph.show_refs()`和`objgraph.show_backrefs()`函数允许您轻松地发现有问题的类实例。例如，我们可以轻松修改`main()`函数以显示对`WithDel`实例的所有反向引用，以查看是否存在泄漏资源：
 
-```py
-def main():
-    x = WithDel()
-    y = []
-    z = []
-
-    x.append(y)
-    y.append(z)
-    z.append(x)
-
-    del x, y, z
-
-    print("unreachable prior collection: %s" % gc.collect())
-    print("unreachable after collection: %s" % len(gc.garbage))
-    print("WithDel objects count:        %s" %
-          objgraph.count('WithDel'))
-
-    objgraph.show_backrefs(
-        objgraph.by_type('WithDel'),
-        filename='after-gc.png'
-    )
-```
+[PRE21]
 
 在 Python 3.3 下运行上述示例将导致一个图表（见*图 5*），显示`gc.collect()`无法成功移除`x`、`y`和`z`对象实例。此外，`objgraph`突出显示了所有定义了自定义`__del__()`方法的对象，以便更容易地发现此类问题。
 

@@ -78,21 +78,11 @@ Python 提供了许多高阶函数。像`map()`、`filter()`和`functools.reduce
 
 代码块设置如下：
 
-```py
-GIMP Palette
-Name: Crayola
-Columns: 16
-#
-```
+[PRE0]
 
 任何命令行输入或输出都是这样写的：
 
-```py
-**def max(a, b):**
- **f = {a >= b: lambda: a, b >= a: lambda: b}[True]**
- **return f()**
-
-```
+[PRE1]
 
 ### 注意
 

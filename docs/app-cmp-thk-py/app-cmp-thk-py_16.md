@@ -120,12 +120,7 @@
 
 ch13_diabetesA.py
 
-```py
-import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
-dataset = pd.read_csv('diabetes.csv')
-```
+[PRE0]
 
 正如您从前面的片段中所看到的，我们正在上传名为`diabetes.csv`的数据集（来自 Kaggle）。如果您需要提醒如何保存文件并找到所需的路径，请参阅*第十二章*，*在*使用 Python 进行实验和数据分析问题*中，*了解使用 Python 进行数据分析*部分。有许多上传数据集的方法。
 
@@ -145,9 +140,7 @@ dataset = pd.read_csv('diabetes.csv')
 
 但是假设你不知道你将需要什么类型的学习。您可以在控制台中键入此函数，以获得数据和输出的完整图片：
 
-```py
-dataset.describe(include='all')
-```
+[PRE1]
 
 以下截图显示了我们在算法中使用上述代码行后收到的信息：
 
@@ -157,9 +150,7 @@ dataset.describe(include='all')
 
 从上图可以看出，我们能够获得所有数值特征，并知道没有分类数据。我们希望获得这些信息，因此可以使用以下代码行来查看变量之间的相关性：
 
-```py
-dataset.corr()
-```
+[PRE2]
 
 这一行简单的代码帮助我们获得以下截图中显示的信息。请注意，以下截图可能会因您使用的环境而有所不同。在运行此代码时，使用**Spyder**或**Jupyter**等环境时，根据您的主题设置和选择，表格可能会有所不同，具有不同的颜色方案（或没有颜色方案）：
 
@@ -171,18 +162,11 @@ dataset.corr()
 
 现在我们对数据集有了更好的理解，让我们将输入变量和输出变量分开放入模型。让我们看一下我们的`ch13_diabetesA.py`文件中的以下代码片段，这为我们提供了示例：
 
-```py
-#Split dataset into input(x) and output(y) variables 
-x_variables = dataset.iloc[:,0:8]
-y_variable = dataset.iloc[:,8]
-```
+[PRE3]
 
 我们使用`print`函数来检查我们的值：
 
-```py
-print(x_variables)
-print(y_variable)
-```
+[PRE4]
 
 运行上述代码片段后，输出数据将如下截图所示。请注意，结果显示了我们定义为变量`x_variables`和`y_variable`，这些变量又被定义为数据集的一部分，如前面的代码中所述：
 
@@ -198,12 +182,7 @@ print(y_variable)
 
 在处理数据和机器学习时，另一个重要的库是`scikit-learn`（`sklearn`）库。该库特别适用于分类、回归、聚类、模型选择、降维等。您可能还记得*第十二章*，*在实验和数据分析问题中使用 Python*，在*在 Python 中使用数据库*部分中，您可以使用**命令提示符**窗口中的`pip install`来安装所需的库。一旦您有了库，就可以将其导入到代码中，如下面的代码片段所示，该代码片段使用`sklearn`来拆分数据。需要注意的是，此代码片段是较大的`ch13_diabetesA.py`文件的一部分：
 
-```py
-from sklearn.model_selection import train_test_split
-X_train,X_test, y_train,y_test = train_test_split(
-    x_variables, y_variable, test_size = 0.20, 
-    random_state = 10)
-```
+[PRE5]
 
 以下是已知的参数：
 
@@ -239,16 +218,7 @@ Keras 建立在 TensorFlow 之上，并使其更容易与 Python 编程语言交
 
 ch13_diabetesB.py
 
-```py
-from sklearn.model_selection import train_test_split
-from keras import Sequential from keras.layers import Dense
-#Defining the Model
-model = Sequential()
-model.add(Dense(12, input_dim=8, activation='relu'))
-model.add(Dense(15, activation='relu'))
-model.add(Dense(8, activation='relu'))
-model.add(Dense(1, activation='sigmoid'))
-```
+[PRE6]
 
 从前面的代码片段中，我们可以看到我们添加了四个密集连接的层。
 
@@ -262,18 +232,7 @@ model.add(Dense(1, activation='sigmoid'))
 
 如您所见，我们已经添加了多个模型并对其进行了定义。为了编译模型，我们使用了同一代码文件中包含的以下代码片段。我们还可以设置`model.fit`来使用我们的库和以下代码，这是我们的`ch13_diabetesB.py`文件的一部分：
 
-```py
-#Compile the model
-model.compile(loss='binary_crossentropy', optimizer='adam', 
-    metrics=['accuracy'])
-#Fit the model on the dataset
-model.fit(x_variables, y_variable, epochs=95, 
-    batch_size=25)
-#Evaluate the model
-_, accuracy = model.evaluate(x_variables, y_variable)
-print('Accuracy: %.2f' % (accuracy*100))
-model.summary()
-```
+[PRE7]
 
 前面的代码编译了 Adam 优化器。Adam 优化器用于随机梯度下降，并使用训练数据迭代更新网络权重。一旦我们运行我们的代码，输出会提供以下信息：
 
@@ -337,24 +296,7 @@ Adam 算法是一种**随机优化**方法。当函数中存在随机性以最�
 
 ch13_syntheticDataset.py
 
-```py
-from numpy import where
-from sklearn.datasets import make_classification
-from matplotlib import pyplot
-#Create a synthetic dataset
-X, y = make_classification(n_samples = 1800, 
-    n_features = 2, n_informative = 2, n_redundant = 0, 
-    n_clusters_per_class = 1, random_state=4)
-#Scatterplot
-for class_value in range(2):
-	row_ix = where(y == class_value)
-	pyplot.scatter(X[row_ix, 0], X[row_ix, 1])
-#Display plot
-pyplot.xlabel('variable 1')
-pyplot.ylabel('variable 2')
-pyplot.title('Synthetic data graph')
-pyplot.show()
-```
+[PRE8]
 
 从前面的代码片段中可以看到，我们确定了样本数量、特征数量和簇的数量等等。此外，我们还创建了合成数据的散点图并绘制了结果。下面的图展示了我们的合成数据集作为散点图的结果：
 
@@ -378,36 +320,13 @@ pyplot.show()
 
 ch13_BIRCH.py
 
-```py
-from numpy import unique
-from numpy import where
-from sklearn.datasets import make_classification
-from sklearn.cluster import Birch
-from matplotlib import pyplot
-#Synthetic dataset definition
-X, _ = make_classification(n_samples = 1800, 
-    n_features = 2, n_informative = 2, n_redundant = 0, 
-    n_clusters_per_class = 1, random_state = 4)
-#Define the BIRCH model
-model = Birch(threshold = 0.01, n_clusters = 2)
-model.fit(X)
-yhat = model.predict(X)
-#Clusters
-clusters = unique(yhat)
-#Display
-for cluster in clusters:
-	row_ix = where(yhat == cluster)
-	pyplot.scatter(X[row_ix, 0], X[row_ix, 1])
-pyplot.show()
-```
+[PRE9]
 
 请注意，在这个示例中我们任意选择了两个簇，就像你在代码行`model = Birch(threshold = 0.01, n_clusters = 2)`中看到的一样。我们坚持使用我们的 1800 个样本，这样我们可以比较我们的输出图。下面的截图展示了两个样本的 BIRCH 模型。第一个（*左侧*）展示了前面代码片段中提供的算法运行的情况。第二个（*右侧*）展示了相同的算法运行，但是为了三个簇。
 
 为了运行第二个图，我们将模型行代码更改为以下内容：
 
-```py
-model = Birch(threshold = 0.01, n_clusters = 3) 
-```
+[PRE10]
 
 看一下下面的图，显示了`n_clusters = 2`和`n_clusters = 3`的情况：
 
@@ -425,28 +344,7 @@ K 均值聚类算法是最常用的聚类算法之一。该算法将示例分配
 
 ch13_KMeans.py
 
-```py
-from numpy import unique
-from numpy import where
-from sklearn.datasets import make_classification
-from sklearn.cluster import KMeans
-from matplotlib import pyplot
-#Dataset definition
-X, _ = make_classification(n_samples = 1800, 
-    n_features = 2, n_informative = 2, n_redundant = 0, 
-    n_clusters_per_class = 1, random_state = 4)
-#Model identification and fit
-model = KMeans(n_clusters = 2)
-model.fit(X)
-#Clusters
-yhat = model.predict(X)
-clusters = unique(yhat)
-#Display
-for cluster in clusters:
-	row_ix = where(yhat == cluster)
-	pyplot.scatter(X[row_ix, 0], X[row_ix, 1])
-pyplot.show()
-```
+[PRE11]
 
 再次注意，我们使用相同数量的聚类（`2`）和样本数量（`1800`），以便进行比较。以下屏幕截图显示了前述算法产生的 K 均值散点图输出：
 

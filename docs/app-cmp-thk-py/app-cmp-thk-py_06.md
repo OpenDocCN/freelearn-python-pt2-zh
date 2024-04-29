@@ -86,22 +86,13 @@
 
 ch5_storeDictionary.py
 
-```py
-online_store = {
-    'keychain': 0.75,
-    'tshirt': 8.50,
-    'bottle': 10.00
-    }
-print(online_store)
-```
+[PRE0]
 
 从前面的代码片段中，请记住这里不需要`print()`函数，但我经常使用它来确保代码在我继续构建算法的同时能正常工作。还要注意变量的名称——`keychain`、`tshirt`和`bottle`——都是简化的。
 
 这是输出的样子：
 
-```py
-{'keychain': 0.75, 'tshirt': 8.5, 'bottle': 10.0}
-```
+[PRE1]
 
 输出显示给我的是每个变量的价格都被正确保存了。我使用`print`函数来测试我的字典，并确保它在我开始从字典中获取所需内容之前能够正确运行。
 
@@ -151,31 +142,13 @@ print(online_store)
 
 ch5_storeQuantities.py
 
-```py
-online_store = {
-    'keychain': 0.75,
-    'tshirt': 8.50,
-    'bottle': 10.00
-    }
-keychain = online_store['keychain']
-tshirt = online_store['tshirt']
-bottle = online_store['bottle']
-choicekey = int(input('How many keychains will you be purchasing? If not purchasing keychains, enter 0\. '))
-choicetshirt = int(input('How many t-shirts will you be purchasing? If not purchasing t-shirts, enter 0\. '))
-choicebottle = int(input('How many t-shirts will you be purchasing? If not purchasing water bottles, enter 0\. '))
-print('You are purchasing ' + str(choicekey) + ' keychains, ' + str(choicetshirt) + ' t-shirts, and ' + str(choicebottle) + ' water bottles.')
-```
+[PRE2]
 
 从前面的代码片段中可以看到，我们在字典下添加了变量。这将在以后很有用。这些变量被命名为`choicekey`、`choicetshirt`和`choicebottle`。命名变量使我们能够返回并根据需要更改代码。在这种情况下，每个变量都要求从运行程序的人那里获取输入，以获取他们订购的钥匙扣、T 恤和水瓶的数量。再次强调，解决这个问题有多种方法，但我们正在利用到目前为止学到的知识来创建一个算法解决方案。
 
 当我们对`3`个钥匙扣、`0`件 T 恤和`10`个水瓶运行前面的代码时，这是我们的输出：
 
-```py
-How many keychains will you be purchasing? If not purchasing keychains, enter 0\. 3
-How many t-shirts will you be purchasing? If not purchasing t-shirts, enter 0\. 0
-How many t-shirts will you be purchasing? If not purchasing water bottles, enter 0\. 10
-You are purchasing 3 keychains, 0 t-shirts, and 10 water bottles.
-```
+[PRE3]
 
 正如您所看到的，我们有一个接受用户输入的程序，然后向用户确认他们为每件物品所做的选择。
 
@@ -195,37 +168,11 @@ You are purchasing 3 keychains, 0 t-shirts, and 10 water bottles.
 
 ch5_storeCost.py
 
-```py
-online_store = {
-    'keychain': 0.75,
-    'tshirt': 8.50,
-    'bottle': 10.00
-    }
-choicekey = int(input('How many keychains will you be purchasing? If not purchasing keychains, enter 0\. '))
-choicetshirt = int(input('How many t-shirts will you be purchasing? If not purchasing t-shirts, enter 0\. '))
-choicebottle = int(input('How many t-shirts will you be purchasing? If not purchasing water bottles, enter 0\. '))
-print('You are purchasing ' + str(choicekey) + ' keychains, ' + str(choicetshirt) + ' t-shirts, and ' + str(choicebottle) + ' water bottles.')
-if choicekey > 9:
-    online_store['keychain'] = 0.65
-if choicetshirt > 9:
-    online_store['tshirt'] = 8.00
-if choicebottle > 9:
-    online_store['bottle'] = 8.75
-keychain = online_store['keychain']
-tshirt = online_store['tshirt']
-bottle = online_store['bottle']
-print(online_store)
-```
+[PRE4]
 
 现在我们已经更新了代码，我想打印出我的进展，以确保代码正常工作并进行更改。在这种情况下，我想确保如果总数大于 10，成本会更新。(也就是说，当顾客订购超过 10 件物品时，它会将每件物品的成本更新为更低的成本。)前面代码的输出如下：
 
-```py
-How many keychains will you be purchasing? If not purchasing keychains, enter 0\. 10
-How many t-shirts will you be purchasing? If not purchasing t-shirts, enter 0\. 14
-How many t-shirts will you be purchasing? If not purchasing water bottles, enter 0\. 10
-You are purchasing 10 keychains, 14 t-shirts, and 10 water bottles.
-{'keychain': 0.65, 'tshirt': 8.0, 'bottle': 8.75}
-```
+[PRE5]
 
 您现在可以从前面的输出中看到，字典已根据用户提供的总数进行了更新。
 
@@ -233,12 +180,7 @@ You are purchasing 10 keychains, 14 t-shirts, and 10 water bottles.
 
 ch5_storeTotals.py
 
-```py
-keychain = online_store['keychain']
-tshirt = online_store['tshirt']
-bottle = online_store['bottle']
-print('You are purchasing ' + str(choicekey) + ' keychains, ' + str(choicetshirt) + ' t-shirts, and ' + str(choicebottle) + ' water bottles.')
-```
+[PRE6]
 
 前面的代码片段被添加，以便我们可以有一个`print`语句来确认用户的输入。通过在代码末尾打印该语句，我们正在与用户核对程序是否能正确读取数字，以及用户是否输入了正确的数字。
 
@@ -246,29 +188,11 @@ print('You are purchasing ' + str(choicekey) + ' keychains, ' + str(choicetshirt
 
 ch5_storeTotals.py
 
-```py
-totalkey = choicekey * keychain
-totaltshirt = choicetshirt * tshirt
-totalbottle = choicebottle * bottle
-grandtotal = totalkey + totaltshirt + totalbottle
-print('Keychain total: $' + str(totalkey))
-print('T-shirt total: $' + str(totaltshirt))
-print('Water bottle total: $' + str(totalbottle))
-print('Your order total: $' + str(grandtotal))
-```
+[PRE7]
 
 在前面的代码片段的末尾的`print`语句提供了每件物品的总成本以及整个订单的总成本的细目。在询问所有物品的输入后，代码然后打印每件物品成本的小计。前面代码的结果如下：
 
-```py
-How many keychains will you be purchasing? If not purchasing keychains, enter 0\. 10
-How many t-shirts will you be purchasing? If not purchasing t-shirts, enter 0\. 7
-How many t-shirts will you be purchasing? If not purchasing water bottles, enter 0\. 14
-You are purchasing 10 keychains, 7 t-shirts, and 14 water bottles.
-Keychain total: $6.5
-T-shirt total: $59.5
-Water bottle total: $122.5
-Your order total: $188.5
-```
+[PRE8]
 
 现在我们已经有了没有个性化的物品总数，我们需要考虑如果订购了个性化，需要考虑个性化的成本。
 
@@ -290,33 +214,11 @@ Your order total: $188.5
 
 ch5_storePersonalize.py
 
-```py
-perskey = input('Will you personalize the keychains for an additional $1.00 each? Type yes or no. ')
-perstshirt = input('Will you personalize the t-shirts for an additional $5.00 each? Type yes or no. ')
-persbottle = input('Will you personalize the water bottles for an additional $7.50 each? Type yes or no. ')
-if perskey == ('yes' or 'Yes'):
-    online_store['keychain'] = online_store['keychain'] + 1.00
-if perstshirt == ('yes' or 'Yes'):
-    online_store['tshirt'] = online_store['tshirt'] + 5.00
-if persbottle == ('yes' or 'Yes'):
-    online_store['bottle'] = online_store['bottle'] + 7.50
-keychain = online_store['keychain']
-tshirt = online_store['tshirt']
-bottle = online_store['bottle']
-totalkey = choicekey * keychain
-totaltshirt = choicetshirt * tshirt
-totalbottle = choicebottle * bottle
-grandtotal = totalkey + totaltshirt + totalbottle
-```
+[PRE9]
 
 前面的代码片段询问用户关于个性化的二进制问题。在获取输入后，代码根据用户输入做出一些决策，并定义`keychain`、`tshirt`和`bottle`变量以及选择的总数。接下来的代码片段使用总数打印出每个购买物品的信息以及最终总数：
 
-```py
-print('Keychain total: $' + str(totalkey))
-print('T-shirt total: $' + str(totaltshirt))
-print('Water bottle total: $' + str(totalbottle))
-print('Your order total: $' + str(grandtotal))
-```
+[PRE10]
 
 从前面的代码中可以注意到，`keychain`、`tshirt`和`bottle`变量是在基于总数和个性化的自定义之后定义的。记住，在算法设计中，顺序很重要。如果我们在程序中较早地定位这些变量，随后的个性化等条件将不会影响这些变量。
 
@@ -412,13 +314,7 @@ print('Your order total: $' + str(grandtotal))
 
 ch5_guess1.py
 
-```py
-import random as rand
-compnumber = rand.randint(1, 100)
-print(compnumber)
-usernumber = int(input('Choose a number between 1 and 100\. You'll get 5 guesses or you lose! '))
-print(usernumber)
-```
+[PRE11]
 
 你会注意到前面的代码中导入了`random`模块。我们还将其导入为`rand`。这只是为了节省时间和空间。在 Python 中，当你导入一个模块时，你可以给它重命名。`random`模块给了我们一个在我们选择的范围内生成数字的方法。
 
@@ -428,31 +324,19 @@ print(usernumber)
 
 +   以下是前面代码的测试案例 1：
 
-```py
-27
-Choose a number between 1 and 100\. You'll get 5 guesses or you lose! 10
-10
-```
+[PRE12]
 
 如你从前面的输出中看到的，`27`是计算机生成的随机数，而`10`是用户输入的数字。
 
 +   以下是前面代码的测试案例 2 的结果：
 
-```py
-68
-Choose a number between 1 and 100\. You'll get 5 guesses or you lose! 65
-65
-```
+[PRE13]
 
 如你从前面代码的输出中看到的，`68`是`compnumber`变量的值，而用户（我）输入的数字是`65`。如此接近，但又如此遥远！
 
 +   以下是测试案例 3 的输出：
 
-```py
-50
-Choose a number between 1 and 100\. You'll get 5 guesses or you lose! 23
-23
-```
+[PRE14]
 
 正如你从前面的输出中看到的，计算机选择了数字`50`，而用户输入了`23`。
 
@@ -462,22 +346,11 @@ Choose a number between 1 and 100\. You'll get 5 guesses or you lose! 23
 
 ch5_guess2.py
 
-```py
-import random as rand
-compnumber = rand.randint(1, 100)
-usernumber = int(input('Choose a number between 1 and 100\. You'll get 5 guesses or you lose! '))
-if compnumber == usernumber:
-    print('You win!')
-else:
-    print('You lose!')
-```
+[PRE15]
 
 让我们说我在第一次尝试时失败了。但是我不会放弃，因为这可能需要 100 次或更多次。当你运行程序时，它看起来像这样：
 
-```py
-Choose a number between 1 and 100\. You'll get 5 guesses or you lose! 35
-You lose!
-```
+[PRE16]
 
 现在让我们谈谈重复一行代码。我们给用户 5 次猜测。*我们如何在 Python 中做到这一点？*
 
@@ -485,93 +358,31 @@ You lose!
 
 ch5_guess3.py
 
-```py
-import random as rand
-compnumber = rand.randint(1, 100)
-i = 5
-for number in range(5):
-    usernumber = int(input('Choose a number between 1 and 100\. You have ' + str(i) + ' guesses left. '))
-    if compnumber == usernumber:
-        print('You win!')
-    else:
-        i = i - 1
-print('You're out of guesses! You lose! ')
-```
+[PRE17]
 
 从前面的代码中，*你注意到*`i`*变量了吗？*我们使用这个变量，这样用户就知道他们还剩下多少次猜测。所以如果我们有 5 次猜测，代码将从`i = 5`开始；然后，如果用户猜错了，它将使用`i = i - 1`这一行，提醒用户他们现在还剩下 4 次猜测，依此类推。看看我们运行该程序时会发生什么：
 
-```py
-Choose a number between 1 and 100\. You have 5 guesses left. 14
-Choose a number between 1 and 100\. You have 4 guesses left. 98
-Choose a number between 1 and 100\. You have 3 guesses left. 48
-Choose a number between 1 and 100\. You have 2 guesses left. 12
-Choose a number between 1 and 100\. You have 1 guesses left. 54
-You're out of guesses! You lose!
-```
+[PRE18]
 
 现在，我们并不是真的很公平。如前所述，我们希望每次用户尝试猜测时都给出一个提示。现在我们有了检查它们是否相等的条件，我们可以添加一个`elif`条件来检查它是大还是小。下面的代码显示了这一点：
 
 ch5_guess4.py
 
-```py
-import random as rand
-compnumber = rand.randint(1, 100)
-i = 5
-for number in range(5):
-    usernumber = int(input('Choose a number between 1 and 100\. You have ' + str(i) + ' guesses left. '))
-    if compnumber == usernumber:
-        print('You win!')
-        exit()
-    elif compnumber > usernumber:
-        print('Your number is too small!')
-        i = i - 1
-    elif compnumber < usernumber:
-        print('Your number is too large!')
-        i = i - 1
-print('You're out of guesses! You lose! ')
-```
+[PRE19]
 
 前面的代码现在为用户提供了一些反馈。如果数字大于计算机生成的数字，用户会收到反馈`'你的数字太大了！'`，如果用户的数字小于计算机生成的数字，那么他们会收到反馈`'你的数字太小了！'`。如果用户赢了，我们还使用了`exit()`代码。这是因为我们希望游戏在我们赢了时停止。
 
 这给了我们一个战胜这个游戏的机会，看看现在的输出是什么样子：
 
-```py
-Choose a number between 1 and 100\. You have 5 guesses left. 50
-Your number is too small!
-Choose a number between 1 and 100\. You have 4 guesses left. 75
-Your number is too large!
-Choose a number between 1 and 100\. You have 3 guesses left. 65
-Your number is too small!
-Choose a number between 1 and 100\. You have 2 guesses left. 70
-Your number is too large!
-Choose a number between 1 and 100\. You have 1 guesses left. 68
-You win!
-```
+[PRE20]
 
 现在看看当我们输掉游戏时会发生什么：
 
-```py
-Choose a number between 1 and 100\. You have 5 guesses left. 10
-Your number is too small!
-Choose a number between 1 and 100\. You have 4 guesses left. 40
-Your number is too large!
-Choose a number between 1 and 100\. You have 3 guesses left. 20
-Your number is too small!
-Choose a number between 1 and 100\. You have 2 guesses left. 30
-Your number is too small!
-Choose a number between 1 and 100\. You have 1 guesses left. 35
-Your number is too large!
-You're out of guesses! You lose!
-```
+[PRE21]
 
 正如你所看到的，你得到了一个不同的最终消息。我承认我尝试了很多次才赢得了一场比赛，所以我才得到了下面的输出，但你可以看到第二次猜测是正确的游戏：
 
-```py
-Choose a number between 1 and 100\. You have 5 guesses left. 10
-Your number is too small!
-Choose a number between 1 and 100\. You have 4 guesses left. 90
-You win!
-```
+[PRE22]
 
 我们将用最后一个算法来停止这个游戏。如果我们愿意，我们实际上可以让这个游戏变得更好，但它完成了我们需要它完成的工作。你可以考虑对你的游戏进行一些改变，如下所示：
 

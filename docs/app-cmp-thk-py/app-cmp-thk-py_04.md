@@ -52,9 +52,7 @@
 
 作为用户，当给出提示时，我会输入`Sofia`，这给了我以下结果：
 
-```py
-"Hello Sofia. Welcome to the adventure!"
-```
+[PRE0]
 
 正如你所看到的，游戏将产生一个输出，并在该输出中使用我的名字。
 
@@ -62,20 +60,13 @@
 
 ch3_nameprompt.py
 
-```py
-name = input("Hello traveler. What is your name? ")
-salutation = "Hello %s. Welcome to the adventure!" % name
-print(salutation)
-```
+[PRE1]
 
 请注意，我们在这里使用了`%s`和`%`符号。这里的语法是我们所谓的 f-string。我们使用`%s`语法来让程序知道我们想要插入信息的位置，然后我们通过使用`%`符号来调用该信息。在这种情况下，我们将输入保存到`name`变量中，然后在`salutation`变量中调用它。
 
 运行时，程序看起来是这样的：
 
-```py
-Hello traveler. What is your name? Sofia
-Hello Sofia. Welcome to the adventure!
-```
+[PRE2]
 
 这个简单的算法允许我们将名字保存为一个变量。该变量仅在这个简单代码的输出中使用了一次。然而，在游戏中，该名字变量可能会在多个实例中使用，比如在与游戏中的角色对话时等。
 
@@ -87,27 +78,17 @@ Hello Sofia. Welcome to the adventure!
 
 1.  定义一个变量`i`，并将其设置为等于`0`：
 
-```py
-i = 0
-```
+[PRE3]
 
 1.  增加值`1`。我们可以以几种不同的方式来做到这一点：
 
-```py
-i = i + 1
-i += 1 
-```
+[PRE4]
 
 前面两行代码都会将`i`的值增加`1`。
 
 1.  *添加一个错误！*我们即将在有限性中创建一个错误。再次强调，我只是为了证明一个观点，但这是一个你要避免的错误：
 
-```py
-i = 0
-while i >= 0:
-    i += 1
-    print(i)
-```
+[PRE5]
 
 在这个算法中，我告诉程序继续将`i`增加`1`，只要它大于`0`，然后计算机应该打印这个值。这将永远继续下去，永远不会停止，因为条件将始终成立。因此，程序的输出将从 1 开始，但将继续打印序列中的下一个项目，如 2、3、4、5 等。程序根本没有结束的方法。
 
@@ -115,12 +96,7 @@ while i >= 0:
 
 ch3_finiteness.py
 
-```py
-i = 0
-while i < 15:
-    i += 1
-    print(i)
-```
+[PRE6]
 
 前面的程序是一个终止程序。现在它只适用于`i`小于`15`的所有值（不包括 15）。我们将得到如下所示的输出：
 
@@ -212,30 +188,15 @@ while i < 15:
 
 ch3_officelunch.py
 
-```py
-#Ask the user for the number of sandwich meals ordered and save as variable.
-number_of_sandwiches = int(input("How many sandwich lunches were ordered? "))
-#Ask the user for the number of salad meals ordered and save as variable.
-number_of_salads = int(input("How many salad lunches were ordered? "))
-#Create total_cost variable and save the algorithm for total the new variables.
-total_cost = 8.50 * number_of_sandwiches + 7.95 * number_of_salads
-#Print the total cost. Don't forget to convert the total_cost to string. 
-print("The total cost for the employee lunch is $" + str(total_cost) + ".")
-```
+[PRE7]
 
 运行代码时，用户可以输入办公午餐的各种选项的数量。代码首先询问用户三明治的数量，如下所示：
 
-```py
-How many sandwich lunches were ordered? 
-```
+[PRE8]
 
 然后代码将要求输入沙拉午餐的数量，并提供总费用。以下示例输入 12 份三明治午餐和 23 份沙拉午餐，总费用为 284.85 美元：
 
-```py
-How many sandwich lunches were ordered? 12
-How many salad lunches were ordered? 23
-The total cost for the employee lunch is $284.85.
-```
+[PRE9]
 
 现在让我们从不同的角度来看一个类似的问题。
 
@@ -247,74 +208,43 @@ The total cost for the employee lunch is $284.85.
 
 ch3_cateringdict.py
 
-```py
-catering_menu = {
-    "sandwiches": 8.50,
-    "salads": 7.95
-    }
-print(catering_menu)
-```
+[PRE10]
 
 现在，字典是常见的，而且非常有用，原因有很多：主要是它们易于阅读，并且它们提供了根据需要更改数据的方法。
 
 当打印时，字典代码看起来像这样：
 
-```py
-{'salads': 7.95, 'sandwiches': 8.5}
-```
+[PRE11]
 
 现在你有了一个字典，让我们谈谈它对你的餐饮公司的用处。假设你的沙拉配料成本增加了，你想通过改变沙拉的价格来进行核算。你可以通过几种不同的方式来做到这一点。你可以在原始程序中进行更改，因为它非常简短，或者你可以告诉程序你想要根据键值来进行更改。这很重要，因为现在你可能有两种出售的物品，*但是当你的菜单选项变得更加广泛时会发生什么？* *每次更改价格时，你是否想要搜索每个项目？* Python 使得识别你想要更改的内容然后进行更改变得很容易。
 
 为此，你可以使用以下代码：
 
-```py
-catering_menu["salads"] = 9.50
-```
+[PRE12]
 
 你的新 Python 代码看起来像这样：
 
 ch3_cateringdict2.py
 
-```py
-catering_menu = {
-    "sandwiches": 8.50,
-    "salads": 7.95
-    }
-catering_menu["salads"] = 9.50
-print(catering_menu)
-```
+[PRE13]
 
 当打印时，沙拉的新价值将被显示：
 
-```py
-{'salads': 9.5, 'sandwiches': 8.5}
-```
+[PRE14]
 
 *但是，如果你想添加一个菜单项目会发生什么？* 比如说你想添加一个售价为 3.75 美元的汤选项。在这种情况下，你可以通过一行简单的代码将菜单选项添加到你的字典中，如下所示：
 
-```py
-catering_menu["soup"] = 3.75
-```
+[PRE15]
 
 当你把所有东西放在一起时，初始代码和更改将看起来像下面的代码块。请注意，你有初始字典，然后是下面的两个更改。当你打印字典时，它将包括所有更改以及添加汤选项：
 
 ch3_cateringdict3.py
 
-```py
-catering_menu = {
-    "sandwiches": 8.50,
-    "salads": 7.95
-    }
-catering_menu["salads"] = 9.50
-catering_menu["soup"] = 3.75
-print(catering_menu)
-```
+[PRE16]
 
 现在你已经添加了`soup`项目，你可以打印你的字典来查看你的完整菜单：
 
-```py
-{'soup': 3.75, 'salads': 9.5, 'sandwiches': 8.5}
-```
+[PRE17]
 
 我们可以使用字典中的信息来创建更健壮的程序，比如在线菜单、点餐菜单选项等等。在本节中，我们学习了如何设计算法，并解决了两个问题。
 
@@ -352,12 +282,7 @@ print(catering_menu)
 
 ch3_statecapitals1.py
 
-```py
-Ohio = "Columbus"
-Alabama = "Montgomery"
-Arkansas = "Little Rock"
-print(Ohio)
-```
+[PRE18]
 
 这个程序很简单，但使用起来并不容易，也不在运行时提供帮助。*它包含所需的信息吗？*是的。*我们可以以不同的方式组织它，以便以其他方式调用信息吗？*可以。
 
@@ -365,42 +290,21 @@ print(Ohio)
 
 ch3_statecapitals2.py
 
-```py
-state_capitals = {
-    "Ohio" : "Columbus",
-    "Alabama" : "Montgomery",
-    "Arkansas" : "Little Rock"
-    }
-print(state_capitals["Ohio"])
-```
+[PRE19]
 
 注意，现在我们可以通过简单地给出州名来访问州首都的信息。这段代码的输出只是`哥伦布`。*但是如果你只想运行程序并要求用户输入他们选择的州呢？*我们也可以用现有的字典在一行代码中编写。看一下以下代码：
 
 ch3_statecapitals3.py
 
-```py
-state_capitals = {
-    "Ohio" : "Columbus",
-    "Alabama" : "Montgomery",
-    "Arkansas" : "Little Rock"
-    }
-state = input("What state's capital are you looking for today? ")
-capital = state_capitals[state]
-print("The capital of " + state + " is " + capital + ".")
-```
+[PRE20]
 
 在这段代码中，用户输入他们想要查找首都的州。这很有帮助，因为你可以每次运行代码而不必进入代码中去更改要打印的代码行，这是我们在`ch3_statecapitals2.py`文件中的算法中不得不做的。运行时，代码看起来像这样：
 
-```py
-What state's capital are you looking for today? Alabama
-The capital of Alabama is Montgomery.
-```
+[PRE21]
 
 现在让我们看一下首先需要这个算法的原因。学生想要继续向程序中添加州。由于这个程序是基于字典的，她只需在需要添加另一个州时添加一行代码。例如，如果她想要添加**爱荷华州**，其首都是得梅因，她需要使用以下代码：
 
-```py
-state_capitals["Iowa"] = "Des Moines"
-```
+[PRE22]
 
 看一下以下代码块。注意代码在程序中的放置位置。很重要的是我们把新代码放在新变量之前，否则，如果你尝试运行程序并输入`爱荷华州`，代码将返回一个错误而不是提供爱荷华州的首都。
 
@@ -408,17 +312,7 @@ state_capitals["Iowa"] = "Des Moines"
 
 ch3_statecapitals4.py
 
-```py
-state_capitals = {
-    "Ohio" : "Columbus",
-    "Alabama" : "Montgomery",
-    "Arkansas" : "Little Rock"
-    }
-state_capitals["Iowa"] = "Des Moines"
-state = input("What state's capital are you looking for today? ")
-capital = state_capitals[state]
-print("The capital of " + state + " is " + capital + ".")
-```
+[PRE23]
 
 正如你所看到的，我们可以调整和修改代码以更好地满足我们的需求。现在让我们看一下一些算法，确定它们是否会运行；也就是说，它们是否会产生错误或正确运行。
 
@@ -426,12 +320,7 @@ print("The capital of " + state + " is " + capital + ".")
 
 正如我们在本章前面讨论过的那样，算法应该是终止的。也就是说，它们必须有一种结束的方式，否则会导致许多错误。让我们看一个算法并分析它，确定它是否会终止：
 
-```py
-x = 0
-while x >= 3:
-x += 1
-print(x)
-```
+[PRE24]
 
 首先，让我们看一下`x`变量的值。`x`变量以`0`的值开始程序。`while`循环规定了`x`值将发生变化的条件，当`x`值大于`3`时，它会增加`1`的值。
 
@@ -439,23 +328,13 @@ print(x)
 
 现在让我们看一下以下算法：
 
-```py
-j = 0
-while j >= 0:
-	j -= 1
-	print(j)
-```
+[PRE25]
 
 在这种情况下，变量条件得到满足，因为`j`必须大于或等于 0 才能使程序运行。一旦条件得到满足，变量的值就会减少 1，因此`print`命令将产生一个输出为`-1`。代码不会再次运行，因为变量的值不再大于或等于 0。这个算法是终止的，产生了输出，并且是可行的。
 
 最后，让我们来看一下以下具有改变条件的算法：
 
-```py
-j = 0
-while j <= 0:
-	j -= 1
-	print(j)
-```
+[PRE26]
 
 在这种情况下，算法是不终止的。因为我们将`while`循环改为小于或等于 0，这个算法现在将永远继续运行。
 

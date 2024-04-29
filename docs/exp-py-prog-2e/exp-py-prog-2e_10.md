@@ -28,87 +28,33 @@
 
 例如，一个被要求编写一个检查给定数字是否为质数的函数的开发人员，会写一些关于如何使用它以及预期结果的示例：
 
-```py
-assert is_prime(5)
-assert is_prime(7)
-assert not is_prime(8)
-```
+[PRE0]
 
 实现功能的开发人员不需要是唯一负责提供测试的人。示例也可以由其他人提供。例如，网络协议或密码算法的官方规范经常提供旨在验证实现正确性的测试向量。这些是测试用例的完美基础。
 
 从那里，函数可以被实现，直到前面的示例起作用：
 
-```py
-def is_prime(number):
-    for element in range(2, number):
-        if number % element == 0:
-            return False
-    return True
-```
+[PRE1]
 
 错误或意外结果是函数应该能够处理的新用法示例：
 
-```py
-**>>> assert not is_prime(1)**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
-**AssertionError**
-
-```
+[PRE2]
 
 代码可以相应地更改，直到新的测试通过：
 
-```py
-def is_prime(number):
-    if number in (0, 1):
-        return False
-
-    for element in range(2, number):
-        if number % element == 0:
-            return False
-
-    return True
-```
+[PRE3]
 
 还有更多情况表明实现仍然不完整：
 
-```py
-**>>> assert not is_prime(-3)** 
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
-**AssertionError**
-
-```
+[PRE4]
 
 更新后的代码如下：
 
-```py
-def is_prime(number):
-    if number < 0 or number in (0, 1):
-        return False
-
-    for element in range(2, number):
-        if number % element == 0:
-            return False
-
-    return True
-```
+[PRE5]
 
 从那里，所有测试可以被收集在一个测试函数中，每当代码发展时运行：
 
-```py
-def test_is_prime():
-    assert is_prime(5)
-    assert is_prime(7)
-
-    assert not is_prime(8)
-    assert not is_prime(0)
-    assert not is_prime(1)
-
-    assert not is_prime(-1)
-    assert not is_prime(-3)
-    assert not is_prime(-6)
-```
+[PRE6]
 
 每当我们提出一个新的需求时，“test_is_prime（）”函数应该首先更新以定义“is_prime（）”函数的预期行为。然后，运行测试以检查实现是否提供了期望的结果。只有当已知测试失败时，才需要更新经过测试的函数的代码。
 
@@ -238,66 +184,17 @@ Python 提供了标准库中的两个主要模块来编写测试：
 
 使用`unittest`为模块编写简单的单元测试是通过子类化`TestCase`并编写以`test`前缀开头的方法来完成的。*测试驱动开发原则*部分的最终示例将如下所示：
 
-```py
-import unittest
-
-from primes import is_prime
-
-class MyTests(unittest.TestCase):
-    def test_is_prime(self):
-        self.assertTrue(is_prime(5))
-        self.assertTrue(is_prime(7))
-
-        self.assertFalse(is_prime(8))
-        self.assertFalse(is_prime(0))
-        self.assertFalse(is_prime(1))
-
-        self.assertFalse(is_prime(-1))
-        self.assertFalse(is_prime(-3))
-        self.assertFalse(is_prime(-6))
-
-if __name__ == "__main__":
-    unittest.main()
-```
+[PRE7]
 
 `unittest.main()`函数是一个实用程序，允许将整个模块作为测试套件来执行：
 
-```py
-**$ python test_is_prime.py -v**
-**test_is_prime (__main__.MyTests) ... ok**
-
-**----------------------------------------------------------------------**
-**Ran 1 test in 0.000s**
-
-**OK**
-
-```
+[PRE8]
 
 `unittest.main()`函数扫描当前模块的上下文，并寻找子类为`TestCase`的类。它实例化它们，然后运行所有以`test`前缀开头的方法。
 
 一个良好的测试套件遵循常见和一致的命名约定。例如，如果`is_prime`函数包含在`primes.py`模块中，测试类可以被称为`PrimesTests`，并放入`test_primes.py`文件中：
 
-```py
-import unittest
-
-from primes import is_prime
-
-class PrimesTests(unittest.TestCase):
-    def test_is_prime(self):
-        self.assertTrue(is_prime(5))
-        self.assertTrue(is_prime(7))
-
-        self.assertFalse(is_prime(8))
-        self.assertFalse(is_prime(0))
-        self.assertFalse(is_prime(1))
-
-        self.assertFalse(is_prime(-1))
-        self.assertFalse(is_prime(-3))
-        self.assertFalse(is_prime(-6))
-
-if __name__ == '__main__':
-    unittest.main()
-```
+[PRE9]
 
 从那时起，每当`utils`模块发展时，`test_utils`模块就会得到更多的测试。
 
@@ -307,68 +204,15 @@ if __name__ == '__main__':
 
 在 Python 的过去，有一个约定，测试模块提供一个返回`TestSuite`实例的`test_suite`函数，该实例在模块被命令提示符调用时在`__main__`部分中使用，或者由测试运行器使用：
 
-```py
-import unittest
-
-from primes import is_prime
-
-class PrimesTests(unittest.TestCase):
-    def test_is_prime(self):
-        self.assertTrue(is_prime(5))
-
-        self.assertTrue(is_prime(7))
-
-        self.assertFalse(is_prime(8))
-        self.assertFalse(is_prime(0))
-        self.assertFalse(is_prime(1))
-
-        self.assertFalse(is_prime(-1))
-        self.assertFalse(is_prime(-3))
-        self.assertFalse(is_prime(-6))
-
-class OtherTests(unittest.TestCase):
-    def test_true(self):
-        self.assertTrue(True)
-
-def test_suite():
-    """builds the test suite."""
-    suite = unittest.TestSuite()
-    suite.addTests(unittest.makeSuite(PrimesTests))
-    suite.addTests(unittest.makeSuite(OtherTests))
-
-    return suite
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')
-```
+[PRE10]
 
 从 shell 中运行这个模块将打印测试运行结果：
 
-```py
-**$ python test_primes.py -v**
-**test_is_prime (__main__.PrimesTests) ... ok**
-**test_true (__main__.OtherTests) ... ok**
-
-**----------------------------------------------------------------------**
-**Ran 2 tests in 0.001s**
-
-**OK**
-
-```
+[PRE11]
 
 在旧版本的 Python 中，当`unittest`模块没有适当的测试发现工具时，需要使用前面的方法。通常，所有测试的运行是由一个全局脚本完成的，该脚本浏览代码树寻找测试并运行它们。这称为**测试发现**，稍后在本章中将更详细地介绍。现在，您只需要知道`unittest`提供了一个简单的命令，可以从带有`test`前缀的模块和包中发现所有测试：
 
-```py
-**$ python -m unittest -v**
-**test_is_prime (test_primes.PrimesTests) ... ok**
-**test_true (test_primes.OtherTests) ... ok**
-
-**----------------------------------------------------------------------**
-**Ran 2 tests in 0.001s**
-
-**OK**
-
-```
+[PRE12]
 
 如果您使用了前面的命令，那么就不需要手动定义`__main__`部分并调用`unittest.main()`函数。
 
@@ -378,31 +222,11 @@ if __name__ == '__main__':
 
 例如，以下内容的文本文件可以作为测试运行：
 
-```py
-Check addition of integers works as expected::
-
->>> 1 + 1
-2
-```
+[PRE13]
 
 假设这个文档文件存储在文件系统中，文件名为`test.rst`。`doctest`模块提供了一些函数，用于从这样的文档中提取并运行测试：
 
-```py
-**>>> import doctest**
-**>>> doctest.testfile('test.rst', verbose=True)**
-**Trying:**
- **1 + 1**
-**Expecting:**
- **2**
-**ok**
-**1 items passed all tests:**
- **1 tests in test.rst**
-**1 tests in 1 items.**
-**1 passed and 0 failed.**
-**Test passed.**
-**TestResults(failed=0, attempted=1)**
-
-```
+[PRE14]
 
 使用`doctest`有很多优点：
 
@@ -476,27 +300,13 @@ Python 维基提供了各种测试实用工具和框架的非常长的列表（�
 
 它不是标准库的一部分，但可以在 PyPI 上找到，并可以使用 pip 轻松安装：
 
-```py
-**pip install nose**
-
-```
+[PRE15]
 
 #### 测试运行器
 
 安装 nose 后，一个名为`nosetests`的新命令可以在提示符下使用。可以直接使用它来运行本章第一节中介绍的测试：
 
-```py
-**nosetests -v**
-**test_true (test_primes.OtherTests) ... ok**
-**test_is_prime (test_primes.PrimesTests) ... ok**
-**builds the test suite. ... ok**
-
-**----------------------------------------------------------------------**
-**Ran 3 tests in 0.009s**
-
-**OK**
-
-```
+[PRE16]
 
 `nose`通过递归浏览当前目录并自行构建测试套件来发现测试。乍一看，前面的例子看起来并不像简单的`python -m unittest`有什么改进。如果你使用`--help`开关运行此命令，你会注意到 nose 提供了数十个参数，允许你控制测试的发现和执行。
 
@@ -506,19 +316,7 @@ Python 维基提供了各种测试实用工具和框架的非常长的列表（�
 
 例如，这个`test_ok.py`模块将被`nose`识别并运行：
 
-```py
-**$ more test_ok.py**
-**def test_ok():**
- **print('my test')**
-**$ nosetests -v**
-**test_ok.test_ok ... ok**
-
-**-----------------------------------------------------------------**
-**Ran 1 test in 0.071s**
-
-**OK**
-
-```
+[PRE17]
 
 还会执行常规的`TestCase`类和`doctests`。
 
@@ -536,34 +334,13 @@ Python 维基提供了各种测试实用工具和框架的非常长的列表（�
 
 例如，要在模块和测试级别设置测试装置，请使用以下代码：
 
-```py
-def setup():
-    # setup code, launched for the whole module
-    ...
-
-def teardown():
-    # teardown code, launched for the whole module
-    ... 
-
-def set_ok():
-    # setup code launched only for test_ok
-    ...
-
-@with_setup(set_ok)
-def test_ok():
-    print('my test')
-```
+[PRE18]
 
 #### 与 setuptools 的集成和插件系统
 
 最后，`nose`与`setuptools`完美集成，因此可以使用`test`命令（`python setup.py test`）。这种集成是通过在`setup.py`脚本中添加`test_suite`元数据来完成的：
 
-```py
-setup(
-    #...
-    test_suite='nose.collector',
-)
-```
+[PRE19]
 
 `nose`还使用`setuptool's`入口机制，供开发人员编写`nose`插件。这允许你从测试发现到输出格式化覆盖或修改工具的每个方面。
 
@@ -581,12 +358,7 @@ setup(
 
 如果您的测试工作流程需要覆盖很多 nose 参数，您可以在主目录或项目根目录中轻松添加`.noserc`或`nose.cfg`文件。它将指定`nosetests`命令的默认选项集。例如，一个很好的做法是在测试运行期间自动查找 doctests。启用运行 doctests 的`nose`配置文件示例如下：
 
-```py
-**[nosetests]**
-**with-doctest=1**
-**doctest-extension=.txt**
-
-```
+[PRE20]
 
 ### py.test
 
@@ -594,10 +366,7 @@ setup(
 
 像本书中提到的每个第三方软件包一样，`py.test`可以在 PyPI 上获得，并且可以通过`pip`安装为`pytest`：
 
-```py
-**$ pip install pytest**
-
-```
+[PRE21]
 
 从那里，一个新的`py.test`命令在提示符下可用，可以像`nosetests`一样使用。该工具使用类似的模式匹配和测试发现算法来捕获要运行的测试。该模式比`nose`使用的模式更严格，只会捕获：
 
@@ -621,38 +390,7 @@ setup(
 
 `py.test`支持两种处理 fixtures 的机制。第一种是模仿 xUnit 框架的，类似于`nose`。当然，语义有些不同。`py.test`将在每个测试模块中查找三个级别的 fixtures，如下例所示：
 
-```py
-def setup_module(module): 
-    """ Setup up any state specific to the execution 
-        of the given module.
-    """
-
-def teardown_module(module):    
-    """ Teardown any state that was previously setup
-        with a setup_module method.
-    """
-
-def setup_class(cls):    
-    """ Setup up any state specific to the execution
-        of the given class (which usually contains tests).
-    """
-
-def teardown_class(cls):    
-    """ Teardown any state that was previously setup
-        with a call to setup_class.
-    """
-
-def setup_method(self, method):
-    """ Setup up any state tied to the execution of the given
-        method in a class. setup_method is invoked for every
-        test method of a class.
-    """
-
-def teardown_method(self, method):
-    """ Teardown any state that was previously setup
-        with a setup_method call.
-    """
-```
+[PRE22]
 
 每个函数将以当前模块、类或方法作为参数。因此，测试 fixture 将能够在上下文中工作，而无需查找它，就像`nose`一样。
 
@@ -660,83 +398,21 @@ def teardown_method(self, method):
 
 fixtures 的最简单实现采用了使用`pytest.fixture()`装饰器声明的命名函数的形式。要将 fixture 标记为在测试中使用，需要将其声明为函数或方法参数。为了更清楚，考虑使用`py.test` fixtures 重写`is_prime`函数的测试模块的先前示例：
 
-```py
-import pytest
-
-from primes import is_prime
-
-@pytest.fixture()
-def prime_numbers():
-    return [3, 5, 7]
-
-@pytest.fixture()
-def non_prime_numbers():
-    return [8, 0, 1]
-
-@pytest.fixture()
-def negative_numbers():
-    return [-1, -3, -6]
-
-def test_is_prime_true(prime_numbers):
-    for number in prime_numbers:
-        assert is_prime(number)
-
-def test_is_prime_false(non_prime_numbers, negative_numbers):
-    for number in non_prime_numbers:
-        assert not is_prime(number)
-
-    for number in non_prime_numbers:
-        assert not is_prime(number)
-```
+[PRE23]
 
 #### 禁用测试函数和类
 
 `py.test` 提供了一个简单的机制，可以在特定条件下禁用一些测试。这称为跳过，`pytest` 包提供了 `.skipif` 装饰器来实现这一目的。如果需要在特定条件下跳过单个测试函数或整个测试类装饰器，就需要使用这个装饰器，并提供一些值来验证是否满足了预期条件。以下是官方文档中跳过在 Windows 上运行整个测试用例类的示例：
 
-```py
-import pytest
-
-@pytest.mark.skipif(
-    sys.platform == 'win32',
-    reason="does not run on windows"
-)
-class TestPosixCalls:
-
-    def test_function(self):
-        """will not be setup or run under 'win32' platform"""
-```
+[PRE24]
 
 当然，您可以预先定义跳过条件，以便在测试模块之间共享：
 
-```py
-import pytest
-
-skipwindows = pytest.mark.skipif(
-    sys.platform == 'win32',
-    reason="does not run on windows"
-)
-
-@skip_windows
-class TestPosixCalls:
-
-    def test_function(self):
-        """will not be setup or run under 'win32' platform"""
-```
+[PRE25]
 
 如果一个测试以这种方式标记，它将根本不会被执行。然而，在某些情况下，您希望运行这样的测试，并希望执行它，但是您知道，在已知条件下它应该失败。为此，提供了一个不同的装饰器。它是 `@mark.xfail`，确保测试始终运行，但如果预定义条件发生，它应该在某个时候失败：
 
-```py
-import pytest
-
-@pytest.mark.xfail(
-sys.platform == 'win32',
-    reason="does not run on windows"
-)
-class TestPosixCalls:
-
-    def test_function(self):
-        """it must fail under windows"""
-```
+[PRE26]
 
 使用 `xfail` 比 `skipif` 更严格。测试始终会被执行，如果在预期情况下没有失败，那么整个 `py.test` 运行将会失败。
 
@@ -760,54 +436,19 @@ class TestPosixCalls:
 
 最流行的代码覆盖工具简称为 coverage，并且可以在 PyPI 上免费获得。使用非常简单，只有两个步骤。第一步是在您的 shell 中运行 coverage run 命令，并将运行所有测试的脚本/程序的路径作为参数：
 
-```py
-**$ coverage run --source . `which py.test` -v**
-**===================== test session starts ======================**
-**platformdarwin -- Python 3.5.1, pytest-2.8.7, py-1.4.31, pluggy-0.3.1 -- /Users/swistakm/.envs/book/bin/python3**
-**cachedir: .cache**
-**rootdir: /Users/swistakm/dev/book/chapter10/pytest, inifile:** 
-**plugins: capturelog-0.7, codecheckers-0.2, cov-2.2.1, timeout-1.0.0**
-**collected 6 items** 
-
-**primes.py::pyflakes PASSED**
-**primes.py::pep8 PASSED**
-**test_primes.py::pyflakes PASSED**
-**test_primes.py::pep8 PASSED**
-**test_primes.py::test_is_prime_true PASSED**
-**test_primes.py::test_is_prime_false PASSED**
-
-**========= 6 passed, 1 pytest-warnings in 0.10 seconds ==========**
-
-```
+[PRE27]
 
 coverage run 还接受 `-m` 参数，该参数指定可运行的模块名称，而不是程序路径，这对于某些测试框架可能更好：
 
-```py
-**$ coverage run -m unittest**
-**$ coverage run -m nose**
-**$ coverage run -m pytest**
-
-```
+[PRE28]
 
 下一步是从 `.coverage` 文件中缓存的结果生成可读的代码覆盖报告。`coverage` 包支持几种输出格式，最简单的一种只在您的终端中打印 ASCII 表格：
 
-```py
-**$ coverage report**
-**Name             StmtsMiss  Cover**
-**------------------------------------**
-**primes.py            7      0   100%**
-**test_primes.py      16      0   100%**
-**------------------------------------**
-**TOTAL               23      0   100%**
-
-```
+[PRE29]
 
 另一个有用的覆盖报告格式是 HTML，可以在您的 Web 浏览器中浏览：
 
-```py
-**$ coverage html**
-
-```
+[PRE30]
 
 此 HTML 报告的默认输出文件夹是您的工作目录中的 `htmlcov/`。`coverage html` 输出的真正优势在于您可以浏览项目的带有缺失测试覆盖部分的注释源代码（如 *图 1* 所示）：
 
@@ -837,29 +478,7 @@ coverage run 还接受 `-m` 参数，该参数指定可运行的模块名称，�
 
 让我们以一个名为`mailer`的模块中的名为`send`的函数为例，该函数发送电子邮件：
 
-```py
-import smtplib
-import email.message
-
-def send(
-    sender, to,
-    subject='None',
-    body='None',
-    server='localhost'
-):
-    """sends a message."""
-    message = email.message.Message()
-    message['To'] = to
-    message['From'] = sender
-    message['Subject'] = subject
-    message.set_payload(body)
-
-    server = smtplib.SMTP(server)
-    try:
-        return server.sendmail(sender, to, message.as_string())
-    finally:
-        server.quit()
-```
+[PRE31]
 
 ### 注意
 
@@ -867,158 +486,29 @@ def send(
 
 相应的测试可以是：
 
-```py
-from mailer import send
-
-def test_send():
-    res = send(
-        'john.doe@example.com', 
-        'john.doe@example.com', 
-        'topic',
-        'body'
-    )
-    assert res == {}
-```
+[PRE32]
 
 只要本地主机上有 SMTP 服务器，这个测试就会通过并工作。如果没有，它会失败，就像这样：
 
-```py
-**$ py.test --tb=short**
-**========================= test session starts =========================**
-**platform darwin -- Python 3.5.1, pytest-2.8.7, py-1.4.31, pluggy-0.3.1**
-**rootdir: /Users/swistakm/dev/book/chapter10/mailer, inifile:** 
-**plugins: capturelog-0.7, codecheckers-0.2, cov-2.2.1, timeout-1.0.0**
-**collected 5 items** 
-
-**mailer.py ..**
-**test_mailer.py ..F**
-
-**============================== FAILURES ===============================**
-**______________________________ test_send ______________________________**
-**test_mailer.py:10: in test_send**
- **'body'**
-**mailer.py:19: in send**
- **server = smtplib.SMTP(server)**
-**.../smtplib.py:251: in __init__**
- **(code, msg) = self.connect(host, port)**
-**.../smtplib.py:335: in connect**
- **self.sock = self._get_socket(host, port, self.timeout)**
-**.../smtplib.py:306: in _get_socket**
- **self.source_address)**
-**.../socket.py:711: in create_connection**
- **raise err**
-**.../socket.py:702: in create_connection**
- **sock.connect(sa)**
-**E   ConnectionRefusedError: [Errno 61] Connection refused**
-**======== 1 failed, 4 passed, 1 pytest-warnings in 0.17 seconds ========**
-
-```
+[PRE33]
 
 可以添加一个补丁来伪造 SMTP 类：
 
-```py
-import smtplib
-import pytest
-from mailer import send
-
-class FakeSMTP(object):
-    pass
-
-@pytest.yield_fixture()
-def patch_smtplib():
-    # setup step: monkey patch smtplib
-    old_smtp = smtplib.SMTP
-    smtplib.SMTP = FakeSMTP
-
-    yield
-
-    # teardown step: bring back smtplib to 
-    # its former state
-    smtplib.SMTP = old_smtp
-
-def test_send(patch_smtplib):
-    res = send(
-        'john.doe@example.com',
-        'john.doe@example.com',
-        'topic',
-        'body'
-    )
-    assert res == {}
-```
+[PRE34]
 
 在前面的代码中，我们使用了一个新的`pytest.yield_fixture()`装饰器。它允许我们使用生成器语法在单个 fixture 函数中提供设置和拆卸过程。现在我们的测试套件可以使用`smtplib`的修补版本再次运行：
 
-```py
-**$ py.test --tb=short -v**
-**======================== test session starts ========================**
-**platform darwin -- Python 3.5.1, pytest-2.8.7, py-1.4.31, pluggy-0.3.1 -- /Users/swistakm/.envs/book/bin/python3**
-**cachedir: .cache**
-**rootdir: /Users/swistakm/dev/book/chapter10/mailer, inifile:** 
-**plugins: capturelog-0.7, codecheckers-0.2, cov-2.2.1, timeout-1.0.0**
-**collected 5 items** 
-
-**mailer.py::pyflakes PASSED**
-**mailer.py::pep8 PASSED**
-**test_mailer.py::pyflakes PASSED**
-**test_mailer.py::pep8 PASSED**
-**test_mailer.py::test_send FAILED**
-
-**============================= FAILURES ==============================**
-**_____________________________ test_send _____________________________**
-**test_mailer.py:29: in test_send**
- **'body'**
-**mailer.py:19: in send**
- **server = smtplib.SMTP(server)**
-**E   TypeError: object() takes no parameters**
-**======= 1 failed, 4 passed, 1 pytest-warnings in 0.09 seconds =======**
-
-```
+[PRE35]
 
 从前面的对话记录中可以看出，我们的`FakeSMTP`类实现并不完整。我们需要更新其接口以匹配原始的 SMTP 类。根据鸭子类型原则，我们只需要提供被测试的`send()`函数所需的接口：
 
-```py
-class FakeSMTP(object):
-    def __init__(self, *args, **kw):
-        # arguments are not important in our example
-        pass
-
-    def quit(self):
-        pass
-
-    def sendmail(self, *args, **kw):
-        return {}
-```
+[PRE36]
 
 当然，虚假类可以随着新的测试而发展，以提供更复杂的行为。但它应该尽可能短小简单。相同的原则可以用于更复杂的输出，通过记录它们来通过虚假 API 返回它们。这通常用于 LDAP 或 SQL 等第三方服务器。
 
 当猴子补丁任何内置或第三方模块时，需要特别小心。如果操作不当，这种方法可能会留下意想不到的副作用，会在测试之间传播。幸运的是，许多测试框架和工具提供了适当的实用工具，使得对任何代码单元进行补丁变得安全且容易。在我们的例子中，我们手动完成了所有操作，并提供了一个自定义的`patch_smtplib()` fixture 函数，其中包括了分离的设置和拆卸步骤。在`py.test`中的典型解决方案要简单得多。这个框架带有一个内置的猴子补丁 fixture，应该满足我们大部分的补丁需求。
 
-```py
-import smtplib
-from mailer import send
-
-class FakeSMTP(object):
-    def __init__(self, *args, **kw):
-        # arguments are not important in our example
-        pass
-
-    def quit(self):
-        pass
-
-    def sendmail(self, *args, **kw):
-        return {}
-
-def test_send(monkeypatch):
-    monkeypatch.setattr(smtplib, 'SMTP', FakeSMTP)
-
-    res = send(
-        'john.doe@example.com',
-        'john.doe@example.com',
-        'topic',
-        'body'
-    )
-    assert res == {}
-```
+[PRE37]
 
 您应该知道，*虚假*有真正的局限性。如果决定虚假一个外部依赖，可能会引入真实服务器不会有的错误或意外行为，反之亦然。
 
@@ -1028,34 +518,11 @@ def test_send(monkeypatch):
 
 Python 中有很多模拟库可用，但最受认可的是`unittest.mock`，它是标准库中提供的。它最初是作为第三方包创建的，而不是作为 Python 发行版的一部分，但很快就被包含到标准库中作为一个临时包（参见[`docs.python.org/dev/glossary.html#term-provisional-api`](https://docs.python.org/dev/glossary.html#term-provisional-api)）。对于早于 3.3 版本的 Python，您需要从 PyPI 安装它：
 
-```py
-**pip install Mock**
-
-```
+[PRE38]
 
 在我们的例子中，使用`unittest.mock`来补丁 SMTP 比从头开始创建一个虚假对象要简单得多。
 
-```py
-import smtplib
-from unittest.mock import MagicMock
-from mailer import send
-
-def test_send(monkeypatch):
-    smtp_mock = MagicMock()
-    smtp_mock.sendmail.return_value = {}
-
-    monkeypatch.setattr(
-        smtplib, 'SMTP', MagicMock(return_value=smtp_mock)
-    )
-
-    res = send(
-        'john.doe@example.com',
-        'john.doe@example.com',
-        'topic',
-        'body'
-    )
-    assert res == {}
-```
+[PRE39]
 
 模拟对象或方法的`return_value`参数允许您定义调用返回的值。当使用模拟对象时，每次代码调用属性时，它都会即时为属性创建一个新的模拟对象。因此，不会引发异常。这就是我们之前编写的`quit`方法的情况，它不需要再定义了。
 
@@ -1067,22 +534,7 @@ def test_send(monkeypatch):
 
 在我们的例子中，我们使用了`py.test`框架提供的猴子补丁实用程序，但`unittest.mock`提供了自己的补丁实用程序。在某些情况下（比如补丁类对象），使用它们可能比使用特定于框架的工具更简单更快。以下是使用`unittest.mock`模块提供的`patch()`上下文管理器进行猴子补丁的示例：
 
-```py
-from unittest.mock import patch
-from mailer import send
-
-def test_send():
-    with patch('smtplib.SMTP') as mock:
-        instance = mock.return_value
-        instance.sendmail.return_value = {}
-        res = send(
-            'john.doe@example.com',
-            'john.doe@example.com',
-            'topic',
-            'body'
-        )
-        assert res == {}
-```
+[PRE40]
 
 ## 测试环境和依赖兼容性
 
@@ -1096,96 +548,13 @@ def test_send():
 
 但是测试矩阵的维度不仅仅局限于系统和 Python 版本。提供与其他软件集成的包，比如缓存、数据库或系统服务，往往应该在各种集成应用的版本上进行测试。一个很好的工具，可以让这样的测试变得容易，是 tox（参考[`tox.readthedocs.org`](http://tox.readthedocs.org)）。它提供了一种简单的方式来配置多个测试环境，并通过单个`tox`命令运行所有测试。它是一个非常强大和灵活的工具，但也非常容易使用。展示其用法的最佳方式是向您展示一个配置文件的示例，实际上这个配置文件是 tox 的核心。以下是 django-userena 项目的`tox.ini`文件（参考[`github.com/bread-and-pepper/django-userena`](https://github.com/bread-and-pepper/django-userena)）：
 
-```py
-[tox]
-downloadcache = {toxworkdir}/cache/
-
-envlist =
-    ; py26 support was dropped in django1.7
-    py26-django{15,16},
-    ; py27 still has the widest django support
-    py27-django{15,16,17,18,19},
-    ; py32, py33 support was officially introduced in django1.5
-    ; py32, py33 support was dropped in django1.9
-    py32-django{15,16,17,18},
-    py33-django{15,16,17,18},
-    ; py34 support was officially introduced in django1.7
-    py34-django{17,18,19}
-    ; py35 support was officially introduced in django1.8
-    py35-django{18,19}
-
-[testenv]
-usedevelop = True
-deps =
-    django{15,16}: south
-    django{15,16}: django-guardian<1.4.0
-    django15: django==1.5.12
-    django16: django==1.6.11
-    django17: django==1.7.11
-    django18: django==1.8.7
-    django19: django==1.9
-    coverage: django==1.9
-    coverage: coverage==4.0.3
-    coverage: coveralls==1.1
-
-basepython =
-    py35: python3.5
-    py34: python3.4
-    py33: python3.3
-    py32: python3.2
-    py27: python2.7
-    py26: python2.6
-
-commands={envpython} userena/runtests/runtests.py userenaumessages {posargs}
-
-[testenv:coverage]
-basepython = python2.7
-passenv = TRAVIS TRAVIS_JOB_ID TRAVIS_BRANCH
-commands=
-    coverage run --source=userena userena/runtests/runtests.py userenaumessages {posargs}
-    coveralls
-```
+[PRE41]
 
 这个配置允许在五个不同版本的 Django 和六个版本的 Python 上测试`django-userena`。并非每个 Django 版本都能在每个 Python 版本上运行，`tox.ini`文件使得定义这样的依赖约束相对容易。实际上，整个构建矩阵包括 21 个独特的环境（包括一个用于代码覆盖收集的特殊环境）。手动创建每个测试环境，甚至使用 shell 脚本，都需要巨大的工作量。
 
 Tox 很棒，但是如果我们想要更改不是纯 Python 依赖的测试环境的其他元素，它的使用就会变得更加复杂。这是一个情况，当我们需要在不同版本的系统软件包和后备服务下进行测试时。解决这个问题的最佳方法是再次使用良好的持续集成系统，它允许您轻松地定义环境变量的矩阵，并在虚拟机上安装系统软件。使用 Travis CI 进行这样做的一个很好的例子是`ianitor`项目（参见[`github.com/ClearcodeHQ/ianitor/`](https://github.com/ClearcodeHQ/ianitor/)），它已经在第九章中提到过，*记录您的项目*。这是 Consul 发现服务的一个简单实用程序。Consul 项目有一个非常活跃的社区，每年都会发布许多新版本的代码。这使得对该服务的各种版本进行测试非常合理。这确保了`ianitor`项目仍然与该软件的最新版本保持最新，但也不会破坏与以前的 Consul 版本的兼容性。以下是 Travis CI 的`.travis.yml`配置文件的内容，它允许您对三个不同的 Consul 版本和四个 Python 解释器版本进行测试：
 
-```py
-language: python
-
-install: pip install tox --use-mirrors
-env:
-  matrix:
-    # consul 0.4.1
-    - TOX_ENV=py27     CONSUL_VERSION=0.4.1
-    - TOX_ENV=py33     CONSUL_VERSION=0.4.1
-    - TOX_ENV=py34     CONSUL_VERSION=0.4.1
-    - TOX_ENV=py35     CONSUL_VERSION=0.4.1
-
-    # consul 0.5.2
-    - TOX_ENV=py27     CONSUL_VERSION=0.5.2
-    - TOX_ENV=py33     CONSUL_VERSION=0.5.2
-    - TOX_ENV=py34     CONSUL_VERSION=0.5.2
-    - TOX_ENV=py35     CONSUL_VERSION=0.5.2
-
-    # consul 0.6.4
-    - TOX_ENV=py27     CONSUL_VERSION=0.6.4
-    - TOX_ENV=py33     CONSUL_VERSION=0.6.4
-    - TOX_ENV=py34     CONSUL_VERSION=0.6.4
-    - TOX_ENV=py35     CONSUL_VERSION=0.6.4
-
-    # coverage and style checks
-    - TOX_ENV=pep8     CONSUL_VERSION=0.4.1
-    - TOX_ENV=coverage CONSUL_VERSION=0.4.1
-
-before_script:
-  - wget https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip
-  - unzip consul_${CONSUL_VERSION}_linux_amd64.zip
-  - start-stop-daemon --start --background --exec `pwd`/consul -- agent -server -data-dir /tmp/consul -bootstrap-expect=1
-
-script:
-  - tox -e $TOX_ENV
-```
+[PRE42]
 
 前面的例子为`ianitor`代码提供了 14 个独特的测试环境（包括`pep8`和`coverage`构建）。这个配置还使用 tox 在 Travis VM 上创建实际的测试虚拟环境。这实际上是将 tox 与不同的 CI 系统集成的一种非常流行的方法。通过尽可能多地将测试环境配置移动到 tox，您可以减少将自己锁定到单个供应商的风险。像安装新服务或定义系统环境变量这样的事情，大多数 Travis CI 的竞争对手都支持，因此如果市场上有更好的产品可用，或者 Travis 会改变其针对开源项目的定价模式，切换到不同的服务提供商应该相对容易。
 
@@ -1201,43 +570,7 @@ script:
 
 要看一个实际的文档测试的例子，让我们看一下`atomisator`软件包（参见[`bitbucket.org/tarek/atomisator`](https://bitbucket.org/tarek/atomisator)）。其`atomisator.parser`子软件包的文档文本（位于`packages/atomisator.parser/atomisator/parser/docs/README.txt`）如下：
 
-```py
-=================
-atomisator.parser
-=================
-
-The parser knows how to return a feed content, with
-the `parse` function, available as a top-level function::
-
->>> from atomisator.parser import Parser
-
-This function takes the feed url and returns an iterator
-over its content. A second parameter can specify a maximum
-number of entries to return. If not given, it is fixed to 10::
-
->>> import os
->>> res = Parser()(os.path.join(test_dir, 'sample.xml'))
->>> res
-<itertools.imap ...>
-
-Each item is a dictionary that contain the entry::
-
->>> entry = res.next()
->>> entry['title']
-u'CSSEdit 2.0 Released'
-
-The keys available are:
-
->>> keys = sorted(entry.keys())
->>> list(keys)
-    ['id', 'link', 'links', 'summary', 'summary_detail', 'tags', 
-     'title', 'title_detail']
-
-Dates are changed into datetime::
-
->>> type(entry['date'])
->>>
-```
+[PRE43]
 
 随后，文档测试将会发展，以考虑新元素或所需的更改。这个文档测试也是开发人员想要使用该软件包的良好文档，并且应该根据这种用法进行更改。
 

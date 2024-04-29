@@ -70,38 +70,15 @@ Python 很棒！
 
 一块代码设置如下：
 
-```py
-[print("hello world")
-print "goodbye python2"
-```
+[PRE0]
 
 当我们希望引起您对代码块的特定部分的注意时，相关行或项目以粗体设置：
 
-```py
-**cdef long long fibonacci_cc(unsigned int n) nogil:**
-    if n < 2:
-        return n
-    else:
-        return fibonacci_cc(n - 1) + fibonacci_cc(n - 2)
-```
+[PRE1]
 
 任何命令行输入或输出都以以下方式编写：
 
-```py
-**$ pip show pip**
-**---**
-**Metadata-Version: 2.0**
-**Name: pip**
-**Version: 7.1.2**
-**Summary: The PyPA recommended tool for installing Python packages.**
-**Home-page: https://pip.pypa.io/**
-**Author: The pip developers**
-**Author-email: python-virtualenv@groups.google.com**
-**License: MIT**
-**Location: /usr/lib/python2.7/site-packages**
-**Requires:**
-
-```
+[PRE2]
 
 **新术语**和**重要单词**以粗体显示。您在屏幕上看到的单词，例如在菜单或对话框中出现在文本中，就像这样：“单击**下一步**按钮将您移动到下一个屏幕。”
 

@@ -30,21 +30,13 @@
 
 例如，如果我们有一个名为`original`的函数，然后我们有一个在其上更改`original`行为的函数，称为`modifier`，我们必须编写类似以下的内容：
 
-```py
-def original(...):
-    ...
-original = modifier(original)
-```
+[PRE0]
 
 注意我们如何更改函数并将其重新分配给相同的名称。这很令人困惑，容易出错（想象有人忘记重新分配函数，或者确实重新分配了函数，但不是在函数定义后的下一行，而是在更远的地方），而且很麻烦。因此，语言中添加了一些语法支持。
 
 前面的示例可以这样重写：
 
-```py
-@modifier
-def original(...):
-   ...
-```
+[PRE1]
 
 这意味着装饰器只是调用装饰器后面的内容作为装饰器本身的第一个参数的语法糖，结果将是装饰器返回的内容。
 
@@ -60,37 +52,13 @@ def original(...):
 
 例如，我们将创建一个实现“重试”机制的基本装饰器，控制特定领域级别的异常并重试一定次数：
 
-```py
-# decorator_function_1.py
-class ControlledException(Exception):
-    """A generic exception on the program's domain."""
-
-def retry(operation):
-    @wraps(operation)
-    def wrapped(*args, **kwargs):
-        last_raised = None
-        RETRIES_LIMIT = 3
-        for _ in range(RETRIES_LIMIT):
-            try:
-                return operation(*args, **kwargs)
-            except ControlledException as e:
-                logger.info("retrying %s", operation.__qualname__)
-                last_raised = e
-        raise last_raised
-
-    return wrapped
-```
+[PRE2]
 
 现在可以忽略`@wraps`的使用，因为它将在名为*有效装饰器-避免常见错误*的部分中进行介绍。在 for 循环中使用`_`，意味着这个数字被赋值给一个我们目前不感兴趣的变量，因为它在 for 循环内没有被使用（在 Python 中命名`_`的值被忽略是一个常见的习惯）。
 
 `retry`装饰器不接受任何参数，因此可以轻松地应用到任何函数，如下所示：
 
-```py
-@retry
-def run_operation(task):
-    """Run a particular task, simulating some failures on its execution."""
-    return task.run()
-```
+[PRE3]
 
 正如在开头解释的那样，在`run_operation`的顶部定义`@retry`只是 Python 提供的语法糖，实际上执行`run_operation = retry(run_operation)`。
 
@@ -116,32 +84,7 @@ def run_operation(task):
 
 特别是，登录的`event`可能包含诸如我们想要隐藏的凭据之类的敏感信息。其他字段，比如`timestamp`，也可能需要一些转换，因为我们想以特定格式显示它们。满足这些要求的第一次尝试可能就像有一个映射到每个特定`event`的类，并且知道如何对其进行序列化：
 
-```py
-class LoginEventSerializer:
-    def __init__(self, event):
-        self.event = event
-
-    def serialize(self) -> dict:
-        return {
-            "username": self.event.username,
-            "password": "**redacted**",
-            "ip": self.event.ip,
-            "timestamp": self.event.timestamp.strftime("%Y-%m-%d 
-             %H:%M"),
-        }
-
-class LoginEvent:
-    SERIALIZER = LoginEventSerializer
-
-    def __init__(self, username, password, ip, timestamp):
-        self.username = username
-        self.password = password
-        self.ip = ip
-        self.timestamp = timestamp
-
-    def serialize(self) -> dict:
-        return self.SERIALIZER(self).serialize()
-```
+[PRE4]
 
 在这里，我们声明了一个类，它将直接与登录事件进行映射，包含了它的逻辑——隐藏`password`字段，并按要求格式化`timestamp`。
 
@@ -157,53 +100,7 @@ class LoginEvent:
 
 有了这个对象后，我们可以装饰类以添加`serialize()`方法，它将只调用这些`Serialization`对象本身：
 
-```py
-
-def hide_field(field) -> str:
-    return "**redacted**"
-
-def format_time(field_timestamp: datetime) -> str:
-    return field_timestamp.strftime("%Y-%m-%d %H:%M")
-
-def show_original(event_field):
-    return event_field
-
-class EventSerializer:
-    def __init__(self, serialization_fields: dict) -> None:
-        self.serialization_fields = serialization_fields
-
-    def serialize(self, event) -> dict:
-        return {
-            field: transformation(getattr(event, field))
-            for field, transformation in 
-            self.serialization_fields.items()
-        }
-
-class Serialization:
-
-    def __init__(self, **transformations):
-        self.serializer = EventSerializer(transformations)
-
-    def __call__(self, event_class):
-        def serialize_method(event_instance):
-            return self.serializer.serialize(event_instance)
-        event_class.serialize = serialize_method
-        return event_class
-
-@Serialization(
-    username=show_original,
-    password=hide_field,
-    ip=show_original,
-    timestamp=format_time,
-)
-class LoginEvent:
-
-    def __init__(self, username, password, ip, timestamp):
-        self.username = username
-        self.password = password
-        self.ip = ip
-        self.timestamp = timestamp
-```
+[PRE5]
 
 请注意，装饰器使用户更容易知道每个字段将如何处理，而无需查看另一个类的代码。只需阅读传递给类装饰器的参数，我们就知道`username`和 IP 地址将保持不变，`password`将被隐藏，`timestamp`将被格式化。
 
@@ -213,23 +110,7 @@ class LoginEvent:
 
 通过使用 Python 3.7+中的（PEP-557）中的这个类装饰器，可以以更紧凑的方式重写先前的示例，而不需要`init`的样板代码，如下所示：
 
-```py
-from dataclasses import dataclass
-from datetime import datetime
-
-@Serialization(
-    username=show_original,
-    password=hide_field,
-    ip=show_original,
-    timestamp=format_time,
-)
-@dataclass
-class LoginEvent:
-    username: str
-    password: str
-    ip: str
-    timestamp: datetime
-```
+[PRE6]
 
 # 其他类型的装饰器
 
@@ -261,64 +142,19 @@ class LoginEvent:
 
 这是因为我们现在将有以下形式的东西：
 
-```py
- @retry(arg1, arg2,... )
-```
+[PRE7]
 
 并且必须返回一个装饰器，因为`@`语法将该计算的结果应用于要装饰的对象。从语义上讲，它将转换为以下内容：
 
-```py
-  <original_function> = retry(arg1, arg2, ....)(<original_function>)
-```
+[PRE8]
 
 除了所需的重试次数，我们还可以指示我们希望控制的异常类型。支持新要求的代码的新版本可能如下所示：
 
-```py
-RETRIES_LIMIT = 3
-
-def with_retry(retries_limit=RETRIES_LIMIT, allowed_exceptions=None):
-    allowed_exceptions = allowed_exceptions or (ControlledException,)
-
-    def retry(operation):
-
-        @wraps(operation)
-        def wrapped(*args, **kwargs):
-            last_raised = None
-            for _ in range(retries_limit):
-                try:
-                    return operation(*args, **kwargs)
-                except allowed_exceptions as e:
-                    logger.info("retrying %s due to %s", operation, e)
-                    last_raised = e
-            raise last_raised
-
-        return wrapped
-
-    return retry
-```
+[PRE9]
 
 以下是如何将此装饰器应用于函数的一些示例，显示它接受的不同选项：
 
-```py
-# decorator_parametrized_1.py
-@with_retry()
-def run_operation(task):
-    return task.run()
-
-@with_retry(retries_limit=5)
-def run_with_custom_retries_limit(task):
-    return task.run()
-
-@with_retry(allowed_exceptions=(AttributeError,))
-def run_with_custom_exceptions(task):
-    return task.run()
-
-@with_retry(
-    retries_limit=4, allowed_exceptions=(ZeroDivisionError, AttributeError)
-)
-def run_with_custom_parameters(task):
-    return task.run()
-```
+[PRE10]
 
 # 装饰器对象
 
@@ -328,37 +164,11 @@ def run_with_custom_parameters(task):
 
 装饰器的代码看起来像以下示例中的样子：
 
-```py
-class WithRetry:
-
-    def __init__(self, retries_limit=RETRIES_LIMIT, allowed_exceptions=None):
-        self.retries_limit = retries_limit
-        self.allowed_exceptions = allowed_exceptions or (ControlledException,)
-
-    def __call__(self, operation):
-
-        @wraps(operation)
-        def wrapped(*args, **kwargs):
-            last_raised = None
-
-            for _ in range(self.retries_limit):
-                try:
-                    return operation(*args, **kwargs)
-                except self.allowed_exceptions as e:
-                    logger.info("retrying %s due to %s", operation, e)
-                    last_raised = e
-            raise last_raised
-
-        return wrapped
-```
+[PRE11]
 
 这个装饰器可以应用得和之前的一个差不多，像这样：
 
-```py
-@WithRetry(retries_limit=5)
-def run_with_custom_retries_limit(task):
-    return task.run()
-```
+[PRE12]
 
 重要的是要注意 Python 语法在这里的作用。首先，我们创建对象，因此在应用`@`操作之前，对象已经被创建，并且其参数传递给它。这将创建一个新对象，并使用`init`方法中定义的这些参数进行初始化。之后，调用`@`操作，因此这个对象将包装名为`run_with_custom_reries_limit`的函数，这意味着它将被传递给`call`魔术方法。
 
@@ -412,26 +222,11 @@ def run_with_custom_retries_limit(task):
 
 为了说明这一点，我们展示了一个负责记录函数即将运行时的装饰器：
 
-```py
-# decorator_wraps_1.py
-
-def trace_decorator(function):
-    def wrapped(*args, **kwargs):
-        logger.info("running %s", function.__qualname__)
-        return function(*args, **kwargs)
-
-    return wrapped
-```
+[PRE13]
 
 现在，让我们想象一下，我们有一个应用了这个装饰器的函数。我们可能最初会认为该函数的任何部分都没有修改其原始定义：
 
-```py
-@trace_decorator
-def process_account(account_id):
-    """Process an account by Id."""
-    logger.info("processing account %s", account_id)
-    ...
-```
+[PRE14]
 
 但也许有一些变化。
 
@@ -439,19 +234,11 @@ def process_account(account_id):
 
 让我们尝试为这个函数获取`help`：
 
-```py
->>> help(process_account)
-Help on function wrapped in module decorator_wraps_1:
-
-wrapped(*args, **kwargs) 
-```
+[PRE15]
 
 让我们检查它是如何被调用的：
 
-```py
->>> process_account.__qualname__
-'trace_decorator.<locals>.wrapped'
-```
+[PRE16]
 
 我们可以看到，由于装饰器实际上是将原始函数更改为一个新函数（称为`wrapped`），我们实际上看到的是这个函数的属性，而不是原始函数的属性。
 
@@ -461,46 +248,21 @@ wrapped(*args, **kwargs)
 
 修复很简单。我们只需在内部函数（`wrapped`）中应用`wraps`装饰器，告诉它实际上是在包装`function`：
 
-```py
-# decorator_wraps_2.py
-def trace_decorator(function):
-    @wraps(function)
-    def wrapped(*args, **kwargs):
-        logger.info("running %s", function.__qualname__)
-        return function(*args, **kwargs)
-
-    return wrapped
-```
+[PRE17]
 
 现在，如果我们检查属性，我们将得到我们最初期望的结果。像这样检查函数的`help`：
 
-```py
->>> Help on function process_account in module decorator_wraps_2:
-
-process_account(account_id)
-    Process an account by Id. 
-```
+[PRE18]
 
 并验证其合格的名称是否正确，如下所示：
 
-```py
->>> process_account.__qualname__
-'process_account'
-```
+[PRE19]
 
 最重要的是，我们恢复了可能存在于文档字符串中的单元测试！通过使用`wraps`装饰器，我们还可以在`__wrapped__`属性下访问原始的未修改的函数。虽然不应该在生产中使用，但在一些单元测试中，当我们想要检查函数的未修改版本时，它可能会派上用场。
 
 通常，对于简单的装饰器，我们使用`functools.wraps`的方式通常遵循以下一般公式或结构：
 
-```py
-def decorator(original_function):
-    @wraps(original_function)
-    def decorated_function(*args, **kwargs):
-        # modifications done by the decorator ...
-        return original_function(*args, **kwargs)
-
-    return decorated_function
-```
+[PRE20]
 
 在创建装饰器时，通常对包装的函数应用`functools.wraps`，如前面的公式所示。
 
@@ -518,86 +280,35 @@ def decorator(original_function):
 
 让我们想象一个创建目的是在函数开始运行时记录日志，然后记录其运行时间的装饰器的情况：
 
-```py
-def traced_function_wrong(function):
-    logger.info("started execution of %s", function)
-    start_time = time.time()
-
-    @functools.wraps(function)
-    def wrapped(*args, **kwargs):
-        result = function(*args, **kwargs)
-        logger.info(
-            "function %s took %.2fs",
-            function,
-            time.time() - start_time
-        )
-        return result
-    return wrapped
-```
+[PRE21]
 
 现在，我们将装饰器应用到一个常规函数上，认为它会正常工作：
 
-```py
-@traced_function_wrong
-def process_with_delay(callback, delay=0):
-    time.sleep(delay)
-    return callback()
-```
+[PRE22]
 
 这个装饰器有一个微妙但关键的错误。
 
 首先，让我们导入函数，多次调用它，看看会发生什么：
 
-```py
->>> from decorator_side_effects_1 import process_with_delay
-INFO:started execution of <function process_with_delay at 0x...>
-```
+[PRE23]
 
 通过导入函数，我们会注意到有些地方不对劲。日志行不应该出现在那里，因为函数没有被调用。
 
 现在，如果我们运行函数，看看运行需要多长时间？实际上，我们期望多次调用相同的函数会得到类似的结果：
 
-```py
->>> main()
-...
-INFO:function <function process_with_delay at 0x> took 8.67s
-
->>> main()
-...
-INFO:function <function process_with_delay at 0x> took 13.39s
-
->>> main()
-...
-INFO:function <function process_with_delay at 0x> took 17.01s
-```
+[PRE24]
 
 每次运行相同的函数，都会花费更长的时间！此时，您可能已经注意到（现在显而易见的）错误。
 
 除了装饰的函数之外，装饰器需要做的一切都应该放在最内部的函数定义中，否则在导入时会出现问题。
 
-```py
-process_with_delay = traced_function_wrong(process_with_delay)
-```
+[PRE25]
 
 这将在模块导入时运行。因此，函数中设置的时间将是模块导入时的时间。连续调用将计算从运行时间到原始开始时间的时间差。它还将在错误的时刻记录，而不是在实际调用函数时。
 
 幸运的是，修复也很简单——我们只需将代码移到`wrapped`函数内部以延迟其执行：
 
-```py
-def traced_function(function):
-    @functools.wraps(function)
-    def wrapped(*args, **kwargs):
-        logger.info("started execution of %s", function.__qualname__)
-        start_time = time.time()
-        result = function(*args, **kwargs)
-        logger.info(
-            "function %s took %.2fs",
-            function.__qualname__,
-            time.time() - start_time
-        )
-        return result
-    return wrapped
-```
+[PRE26]
 
 记住装饰器的语法。`@traced_function_wrong`实际上意味着以下内容：
 
@@ -615,40 +326,11 @@ def traced_function(function):
 
 在这种情况下，我们有一个与用户活动相关的所有事件的类。然而，这只是我们实际想要的事件类型的中间表，即`UserLoginEvent`和`UserLogoutEvent`：
 
-```py
-EVENTS_REGISTRY = {}
-
-def register_event(event_cls):
-    """Place the class for the event into the registry to make it 
-    accessible in
-    the module.
-    """
-    EVENTS_REGISTRY[event_cls.__name__] = event_cls
-    return event_cls
-
-class Event:
-    """A base event object"""
-
-class UserEvent:
-    TYPE = "user"
-
-@register_event
-class UserLoginEvent(UserEvent):
-    """Represents the event of a user when it has just accessed the system."""
-
-@register_event
-class UserLogoutEvent(UserEvent):
-    """Event triggered right after a user abandoned the system."""
-```
+[PRE27]
 
 当我们查看前面的代码时，似乎`EVENTS_REGISTRY`是空的，但在从这个模块导入一些内容之后，它将被填充为所有在`register_event`装饰器下的类。
 
-```py
->>> from decorator_side_effects_2 import EVENTS_REGISTRY
->>> EVENTS_REGISTRY
-{'UserLoginEvent': decorator_side_effects_2.UserLoginEvent,
- 'UserLogoutEvent': decorator_side_effects_2.UserLogoutEvent}
-```
+[PRE28]
 
 这可能看起来很难阅读，甚至具有误导性，因为`EVENTS_REGISTRY`将在运行时具有其最终值，就在模块导入后，我们无法仅通过查看代码来轻松预测其值。
 
@@ -678,57 +360,19 @@ class UserLogoutEvent(UserEvent):
 
 在下一个清单中展示了在函数中使用这个的例子：
 
-```py
-import logging
-from functools import wraps
-
-logger = logging.getLogger(__name__)
-
-class DBDriver:
-    def __init__(self, dbstring):
-        self.dbstring = dbstring
-
-    def execute(self, query):
-        return f"query {query} at {self.dbstring}"
-
-def inject_db_driver(function):
-    """This decorator converts the parameter by creating a ``DBDriver``
-    instance from the database dsn string.
-    """
-    @wraps(function)
-    def wrapped(dbstring):
-        return function(DBDriver(dbstring))
-    return wrapped
-
-@inject_db_driver
-def run_query(driver):
-    return driver.execute("test_function")
-```
+[PRE29]
 
 很容易验证，如果我们将一个字符串传递给函数，我们会得到一个`DBDriver`实例完成的结果，所以装饰器的工作是符合预期的：
 
-```py
->>> run_query("test_OK")
-'query test_function at test_OK'
-```
+[PRE30]
 
 但现在，我们想在类方法中重用这个相同的装饰器，我们发现了同样的问题：
 
-```py
-class DataHandler:
-    @inject_db_driver
-    def run_query(self, driver):
-        return driver.execute(self.__class__.__name__)
-```
+[PRE31]
 
 我们尝试使用这个装饰器，只是意识到它不起作用：
 
-```py
->>> DataHandler().run_query("test_fails")
-Traceback (most recent call last):
- ...
-TypeError: wrapped() takes 1 positional argument but 2 were given
-```
+[PRE32]
 
 问题是什么？
 
@@ -744,26 +388,7 @@ TypeError: wrapped() takes 1 positional argument but 2 were given
 
 解决方案是将装饰器实现为一个类对象，并使该对象成为一个描述符，通过实现`__get__`方法。
 
-```py
-from functools import wraps
-from types import MethodType
-
-class inject_db_driver:
-    """Convert a string to a DBDriver instance and pass this to the 
-       wrapped function."""
-
-    def __init__(self, function):
-        self.function = function
-        wraps(self.function)(self)
-
-    def __call__(self, dbstring):
-        return self.function(DBDriver(dbstring))
-
-    def __get__(self, instance, owner):
-        if instance is None:
-            return self
-        return self.__class__(MethodType(self.function, instance))
-```
+[PRE33]
 
 描述符的详细信息将在第六章中解释，*使用描述符更充分地利用我们的对象*，但是对于这个例子的目的，我们现在可以说它实际上是将它装饰的可调用对象重新绑定到一个方法，这意味着它将函数绑定到对象，然后使用这个新的可调用对象重新创建装饰器。
 
@@ -797,54 +422,17 @@ class inject_db_driver:
 
 为了向您展示这意味着什么，让我们回顾一下我们在先前示例中使用的装饰器之一。我们创建了一个装饰器，用类似以下代码的方式跟踪了某些函数的执行：
 
-```py
-def traced_function(function):
-    @functools.wraps(function)
-    def wrapped(*args, **kwargs):
-        logger.info("started execution of %s", function.__qualname__)
-        start_time = time.time()
-        result = function(*args, **kwargs)
-        logger.info(
-            "function %s took %.2fs",
-            function.__qualname__,
-            time.time() - start_time
-        )
-        return result
-    return wrapped
-```
+[PRE34]
 
 现在，这个装饰器虽然有效，但存在一个问题——它做了不止一件事。它记录了特定函数的调用，并记录了运行所花费的时间。每次使用这个装饰器，我们都要承担这两个责任，即使我们只想要其中一个。
 
 这应该被分解成更小的装饰器，每个装饰器都有更具体和有限的责任：
 
-```py
-def log_execution(function):
-    @wraps(function)
-    def wrapped(*args, **kwargs):
-        logger.info("started execution of %s", function.__qualname__)
-        return function(*kwargs, **kwargs)
-    return wrapped
-
-def measure_time(function):
- @wraps(function)
- def wrapped(*args, **kwargs):
- start_time = time.time()
- result = function(*args, **kwargs)
-
- logger.info("function %s took %.2f", function.__qualname__,
- time.time() - start_time)
- return result
- return wrapped
-```
+[PRE35]
 
 请注意，我们之前所拥有的相同功能可以通过简单地将它们结合起来来实现：
 
-```py
-@measure_time
-@log_execution
-def operation():
-    ....
-```
+[PRE36]
 
 注意装饰器的应用顺序也很重要。
 
@@ -864,21 +452,13 @@ def operation():
 
 装饰器的一个很好的例子可以在 Celery 项目中找到，其中通过将应用程序的`task`装饰器应用到一个函数来定义`task`：
 
-```py
-@app.task
-def mytask():
-   ....
-```
+[PRE37]
 
 这是一个好的装饰器的原因之一是因为它在封装方面非常出色。库的用户只需要定义函数体，装饰器就会自动将其转换为一个任务。`"@app.task"`装饰器肯定包含了大量的逻辑和代码，但这些对`"mytask()"`的主体来说都不相关。这是完全的封装和关注点分离——没有人需要查看装饰器在做什么，因此它是一个不泄漏任何细节的正确抽象。
 
 装饰器的另一个常见用法是在 Web 框架（例如 Pyramid，Flask 和 Sanic 等）中，通过装饰器将视图的处理程序注册到 URL：
 
-```py
-@route("/", method=["GET"])
-def view_handler(request):
- ...
-```
+[PRE38]
 
 这些类型的装饰器与之前的考虑相同；它们也提供了完全的封装，因为 Web 框架的用户很少（如果有的话）需要知道`"@route"`装饰器在做什么。在这种情况下，我们知道装饰器正在做更多的事情，比如将这些函数注册到 URL 的映射器上，并且它还改变了原始函数的签名，以便为我们提供一个更好的接口，接收一个已经设置好所有信息的请求对象。
 

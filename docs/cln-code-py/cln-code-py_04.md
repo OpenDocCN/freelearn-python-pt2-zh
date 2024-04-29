@@ -50,18 +50,7 @@ SRP 与软件设计中的内聚概念密切相关，我们在第三章中已经�
 
 不考虑实现，该类的代码可能如下所示：
 
-```py
-# srp_1.py
-class SystemMonitor:
-    def load_activity(self):
-        """Get the events from a source, to be processed."""
-
-    def identify_events(self):
-        """Parse the source raw data into events (domain objects)."""
-
-    def stream_events(self):
-        """Send the parsed events to an external agent."""
-```
+[PRE0]
 
 这个类的问题在于它定义了一个接口，其中包含一组与彼此正交的动作对应的方法：每个动作都可以独立于其他动作完成。
 
@@ -107,57 +96,11 @@ class SystemMonitor:
 
 解决这个问题的第一次尝试可能看起来像这样：
 
-```py
-# openclosed_1.py
-class Event:
-    def __init__(self, raw_data):
-        self.raw_data = raw_data
-
-class UnknownEvent(Event):
-    """A type of event that cannot be identified from its data."""
-
-class LoginEvent(Event):
-    """A event representing a user that has just entered the system."""
-
-class LogoutEvent(Event):
-    """An event representing a user that has just left the system."""
-
-class SystemMonitor:
-    """Identify events that occurred in the system."""
-
-    def __init__(self, event_data):
-        self.event_data = event_data
-
-    def identify_event(self):
-        if (
-            self.event_data["before"]["session"] == 0
-            and self.event_data["after"]["session"] == 1
-        ):
-            return LoginEvent(self.event_data)
-        elif (
-            self.event_data["before"]["session"] == 1
-            and self.event_data["after"]["session"] == 0
-        ):
-            return LogoutEvent(self.event_data)
-
-        return UnknownEvent(self.event_data)
-```
+[PRE1]
 
 以下是前述代码的预期行为：
 
-```py
->>> l1 = SystemMonitor({"before": {"session": 0}, "after": {"session": 1}})
->>> l1.identify_event().__class__.__name__
-'LoginEvent'
-
->>> l2 = SystemMonitor({"before": {"session": 1}, "after": {"session": 0}})
->>> l2.identify_event().__class__.__name__
-'LogoutEvent'
-
->>> l3 = SystemMonitor({"before": {"session": 1}, "after": {"session": 1}})
->>> l3.identify_event().__class__.__name__
-'UnknownEvent'
-```
+[PRE2]
 
 我们可以清楚地注意到事件类型的层次结构，以及一些构造它们的业务逻辑。例如，当会话之前没有标志，但现在有了，我们将该记录标识为登录事件。相反，当相反情况发生时，这意味着它是一个注销事件。如果无法识别事件，则返回类型未知的事件。这是为了通过遵循空对象模式（而不是返回`None`，它检索具有一些默认逻辑的相应类型的对象）来保持多态性。空对象模式在第九章中有描述，*常见设计模式*。
 
@@ -181,50 +124,7 @@ class SystemMonitor:
 
 新代码应该如下所示：
 
-```py
-# openclosed_2.py
-class Event:
-    def __init__(self, raw_data):
-        self.raw_data = raw_data
-
-    @staticmethod
-    def meets_condition(event_data: dict):
-        return False
-
-class UnknownEvent(Event):
-    """A type of event that cannot be identified from its data"""
-
-class LoginEvent(Event):
-    @staticmethod
-    def meets_condition(event_data: dict):
-        return (
-            event_data["before"]["session"] == 0
-            and event_data["after"]["session"] == 1
-        )
-
-class LogoutEvent(Event):
-    @staticmethod
-    def meets_condition(event_data: dict):
-        return (
-            event_data["before"]["session"] == 1
-            and event_data["after"]["session"] == 0
-        )
-
-class SystemMonitor:
-    """Identify events that occurred in the system."""
-
-    def __init__(self, event_data):
-        self.event_data = event_data
-
-    def identify_event(self):
-        for event_cls in Event.__subclasses__():
-            try:
-                if event_cls.meets_condition(self.event_data):
-                    return event_cls(self.event_data)
-            except KeyError:
-                continue
-        return UnknownEvent(self.event_data)
-```
+[PRE3]
 
 请注意，现在交互是针对抽象的（在这种情况下，它将是通用基类`Event`，甚至可能是一个抽象基类或接口，但对于这个例子来说，拥有一个具体的基类就足够了）。该方法不再使用特定类型的事件，而只是使用遵循通用接口的通用事件 - 它们在`meets_condition`方法方面都是多态的。
 
@@ -240,77 +140,11 @@ class SystemMonitor:
 
 只需添加到这个新类的代码，逻辑就能按预期工作：
 
-```py
-# openclosed_3.py
-class Event:
-    def __init__(self, raw_data):
-        self.raw_data = raw_data
-
-    @staticmethod
-    def meets_condition(event_data: dict):
-        return False
-
-class UnknownEvent(Event):
-    """A type of event that cannot be identified from its data"""
-
-class LoginEvent(Event):
-    @staticmethod
-    def meets_condition(event_data: dict):
-        return (
-            event_data["before"]["session"] == 0
-            and event_data["after"]["session"] == 1
-        )
-
-class LogoutEvent(Event):
-    @staticmethod
-    def meets_condition(event_data: dict):
-        return (
-            event_data["before"]["session"] == 1
-            and event_data["after"]["session"] == 0
-        )
-
-class TransactionEvent(Event):
-    """Represents a transaction that has just occurred on the system."""
-
-    @staticmethod
-    def meets_condition(event_data: dict):
-        return event_data["after"].get("transaction") is not None
-
-class SystemMonitor:
-    """Identify events that occurred in the system."""
-
-    def __init__(self, event_data):
-        self.event_data = event_data
-
-    def identify_event(self):
-        for event_cls in Event.__subclasses__():
-            try:
-                if event_cls.meets_condition(self.event_data):
-                    return event_cls(self.event_data)
-            except KeyError:
-                continue
-        return UnknownEvent(self.event_data)
-```
+[PRE4]
 
 我们可以验证以前的情况仍然像以前一样工作，并且新事件也被正确识别：
 
-```py
->>> l1 = SystemMonitor({"before": {"session": 0}, "after": {"session": 1}})
->>> l1.identify_event().__class__.__name__
-'LoginEvent'
-
->>> l2 = SystemMonitor({"before": {"session": 1}, "after": {"session": 0}})
->>> l2.identify_event().__class__.__name__
-'LogoutEvent'
-
->>> l3 = SystemMonitor({"before": {"session": 1}, "after": {"session": 1}})
->>> l3.identify_event().__class__.__name__
-'UnknownEvent'
-
->>> l4 = SystemMonitor({"after": {"transaction": "Tx001"}})
->>> l4.identify_event().__class__.__name__
-'TransactionEvent'
-```
+[PRE5]
 
 请注意，当我们添加新的事件类型时，`SystemMonitor.identify_event()`方法根本没有改变。因此，我们说这个方法对于新类型的事件是封闭的。
 
@@ -354,22 +188,11 @@ LSP 背后的主要思想是，对于任何类，客户端应该能够无法区�
 
 如果`Event`类的一个子类以不兼容的方式覆盖了一个方法，Mypy 会通过检查注释来注意到这一点：
 
-```py
-class Event:
-    ...
-    def meets_condition(self, event_data: dict) -> bool:
-        return False
-
-class LoginEvent(Event):
-    def meets_condition(self, event_data: list) -> bool:
-        return bool(event_data)
-```
+[PRE6]
 
 当我们在这个文件上运行 Mypy 时，将会得到一个错误消息，内容如下：
 
-```py
-error: Argument 1 of "meets_condition" incompatible with supertype "Event"
-```
+[PRE7]
 
 LSP 的违反是明显的——因为派生类使用了与基类定义的类型不同的`event_data`参数类型，我们不能指望它们能够同样工作。请记住，根据这个原则，这个层次结构的任何调用者都必须能够透明地使用`Event`或`LoginEvent`，而不会注意到任何差异。这两种类型的对象可以互换，不应该使应用程序失败。如果不能做到这一点，将会破坏层次结构上的多态性。
 
@@ -387,20 +210,11 @@ LSP 的另一个严重违规是，与其在层次结构中变化参数的类型�
 
 在存在一个违反层次结构定义的类的情况下（例如，通过更改方法的签名，添加额外参数等），如下所示：
 
-```py
-# lsp_1.py
-class LogoutEvent(Event):
-    def meets_condition(self, event_data: dict, override: bool) -> bool:
-        if override:
-            return True
-        ...
-```
+[PRE8]
 
 Pylint 将检测到它，并打印出一个信息性的错误：
 
-```py
-Parameters differ from overridden 'meets_condition' method (arguments-differ)
-```
+[PRE9]
 
 再次，就像在先前的情况下一样，不要压制这些错误。注意工具给出的警告和错误，并相应地调整代码。
 
@@ -424,87 +238,23 @@ Parameters differ from overridden 'meets_condition' method (arguments-differ)
 
 这种设计可以通过代码中的以下更改来表示：
 
-```py
-# lsp_2.py
-
-class Event:
-    def __init__(self, raw_data):
-        self.raw_data = raw_data
-
-    @staticmethod
-    def meets_condition(event_data: dict):
-        return False
-
-    @staticmethod
-    def meets_condition_pre(event_data: dict):
-        """Precondition of the contract of this interface.
-
-        Validate that the ``event_data`` parameter is properly formed.
-        """
-        assert isinstance(event_data, dict), f"{event_data!r} is not a dict"
-        for moment in ("before", "after"):
-            assert moment in event_data, f"{moment} not in {event_data}"
-            assert isinstance(event_data[moment], dict)
-```
+[PRE10]
 
 现在尝试检测正确事件类型的代码只检查前提条件一次，然后继续找到正确类型的事件：
 
-```py
-# lsp_2.py
-class SystemMonitor:
-    """Identify events that occurred in the system."""
-
-    def __init__(self, event_data):
-        self.event_data = event_data
-
-    def identify_event(self):
-        Event.meets_condition_pre(self.event_data)
-        event_cls = next(
-            (
-                event_cls
-                for event_cls in Event.__subclasses__()
-                if event_cls.meets_condition(self.event_data)
-            ),
-            UnknownEvent,
-        )
-        return event_cls(self.event_data)
-```
+[PRE11]
 
 合同只规定顶层键`"before"`和`"after"`是必须的，它们的值也应该是字典。在子类中试图要求更严格的参数将会失败。
 
 交易事件的类最初设计是正确的。看看代码如何不对内部名为`"transaction"`的键施加限制；它只在那里使用它的值，但这不是强制性的：
 
-```py
-# lsp_2.py
-class TransactionEvent(Event):
-    """Represents a transaction that has just occurred on the system."""
-
-    @staticmethod
-    def meets_condition(event_data: dict):
-        return event_data["after"].get("transaction") is not None
-```
+[PRE12]
 
 然而，原始的两个方法是不正确的，因为它们要求存在一个名为`"session"`的键，这不是原始合同的一部分。这违反了合同，现在客户端无法像使用其他类一样使用这些类，因为它会引发`KeyError`。
 
 在修复这个问题之后（更改了`.get()`方法的方括号），LSP 的顺序已经恢复，多态性占优势：
 
-```py
->>> l1 = SystemMonitor({"before": {"session": 0}, "after": {"session": 1}})
->>> l1.identify_event().__class__.__name__
-'LoginEvent'
-
->>> l2 = SystemMonitor({"before": {"session": 1}, "after": {"session": 0}})
->>> l2.identify_event().__class__.__name__
-'LogoutEvent'
-
->>> l3 = SystemMonitor({"before": {"session": 1}, "after": {"session": 1}})
->>> l3.identify_event().__class__.__name__
-'UnknownEvent'
-
->>> l4 = SystemMonitor({"before": {}, "after": {"transaction": "Tx001"}})
->>> l4.identify_event().__class__.__name__
-'TransactionEvent'
-```
+[PRE13]
 
 期望自动化工具（无论它们有多好和有用）能够检测到这种情况是不合理的。在设计类时，我们必须小心，不要意外地改变方法的输入或输出，以使其与客户端最初期望的不兼容。
 

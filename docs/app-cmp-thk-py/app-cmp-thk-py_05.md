@@ -102,38 +102,7 @@
 
 ch4_inductiveP1.py
 
-```py
-#We need the math module, so don't forget to import it.
-import math
-#Ask the user if they will input pencils or erasers first.
-item1 = input("Will you be entering pencils or erasers? ")
-if item1 == "pencils":
-    pencils = int(input("How many pencils will you purchase? "))
-    if pencils * 1.75 < 150:
-        pencilstotal = pencils * 1.75
-        total = 150 - pencilstotal
-        total = total / 1.50
-        erasers = math.floor(total)
-        total2 = pencilstotal + erasers * 1.50
-        print("You will be able to purchase " + str(pencils) + " pencils and " + str(erasers) + " erasers for a total cost of $" + str(total2) + ".")
-    else:
-        print("That's too many pencils.")
-elif item1 == "erasers":
-    erasers = int(input("How many erasers will you purchase? "))
-    if erasers * 1.50 < 150:
-        eraserstotal = erasers * 1.50
-        total = 150 - eraserstotal
-        total = total / 1.75
-        pencils = math.floor(total)
-        total2 = pencils * 1.75 + eraserstotal
-        print("You will be able to purchase " + str(pencils) + " pencils and " + str(erasers) + " erasers for a total cost of $" + str(total2) + ".")
-#If the input given is too large based on the budget, this line of code alerts the user.
-    else:
-        print("That's too many erasers.")
-#If the input is incorrect, the program will print a statement to alert the person that they need to use pencils and erasers as input first.
-else:
-    print("Please run the program again and enter erasers or pencils as your input.")
-```
+[PRE0]
 
 请记住，上述程序将按顺序运行代码行（顺序）。因此，如果用户首先输入 `橡皮擦`，那么第一个 `if` 语句和嵌套的 `if` 语句将被忽略。如果用户首先输入 `铅笔`，那么算法将从第一个 `if` 语句正常运行，并通过剩余条件。以下是程序的顺序操作：
 
@@ -207,26 +176,17 @@ else:
 
 ch4_ifStatement.py
 
-```py
-number = int(input("What's your favorite number? "))
-if number < 100:
-    print("That's not a very large number.")
-```
+[PRE1]
 
 现在，上述代码是一个简单的程序，只检查一个条件。我们可以添加条件来测试`number`是否等于`100`。如果`number`大于`100`，我们可以添加另一个条件，依此类推。在这种情况下，我们只关心`number`是否小于`100`。
 
 如果我们输入数字`53`，我们将得到以下输出：
 
-```py
-What's your favorite number? 53
-That's not a very large number.
-```
+[PRE2]
 
 如果我们输入数字`100`，我们将得不到任何消息，程序将结束：
 
-```py
-What's your favorite number? 100
-```
+[PRE3]
 
 正如您所看到的，程序没有任何要添加的内容。条件没有满足，所以它结束了。这就是为什么`if-else`语句会派上用场的原因。
 
@@ -236,20 +196,11 @@ What's your favorite number? 100
 
 ch4_if-elseStatement.py
 
-```py
-number = int(input("What's your favorite number? "))
-if number < 100:
-    print("That's not a very large number.")
-else:
-    print("I guess you like large numbers.")
-```
+[PRE4]
 
 前面的程序现在无论用户输入什么数字，都会打印出一条消息。让我们再次测试`100`：
 
-```py
-What's your favorite number? 100
-I guess you like large numbers.
-```
+[PRE5]
 
 如您所见，`100`包括在大数字类别中，因为我们的条件是数字小于`100`。这意味着`100`不包括在条件中。测试条件是我们在 Python 中得出结论的方式。我们编写算法从程序本身或用户输入中收集信息，然后测试条件以做出决定。
 
@@ -281,36 +232,19 @@ I guess you like large numbers.
 
 ch4_if-elif-elseStatement.py
 
-```py
-number = int(input("Pick a number between 1 and 20\. "))
-if number < 10:
-    print("That's less than 10.")
-elif number < 21:
-    print("That's between 10 and 20.")
-else:
-    print("That number isn't between 0 and 20\. Run the program and try again.")
-```
+[PRE6]
 
 让我们尝试用一个小于`10`的数字进行测试。如果我们用数字`8`运行程序，我们会看到以下输出：
 
-```py
-Pick a number between 1 and 20\. 8
-That's less than 10.
-```
+[PRE7]
 
 如果我们用数字`10`运行程序，我们会看到以下输出：
 
-```py
-Pick a number between 1 and 20\. 10
-That's between 10 and 20.
-```
+[PRE8]
 
 最后，如果我们用数字`21`运行程序，我们会看到：
 
-```py
-Pick a number between 1 and 20\. 21
-That number isn't between 0 and 20\. Run the program and try again.
-```
+[PRE9]
 
 如您所见，每个条件都为我们提供了该条件的答案。这是`if-elif-else`语句的流程图：
 
@@ -326,22 +260,7 @@ Python 中我们使用的另一种逻辑语句类型涉及嵌套语句。在嵌�
 
 ch4_nestedStatements.py
 
-```py
-number = int(input("Pick a number between 1 and 20\. "))
-if number < 10:
-    if number < 6:
-        print("Why such a small number?")
-    else:
-        print("Well, less than 10 but greater than 5\. I'll take it.")
-elif number < 21:
-    if number < 16:
-        print("You like values that are greater than 10, but not too much greater. I guess that's fine.")
-    else:
-        print("I like larger numbers myself too.")
-else:
-#Sometimes we make mistakes when providing input in programs. If you choose a number that's not between 0 and 20, the program will print this message.
-    print("That number isn't between 0 and 20\. Run the program and try again.")
-```
+[PRE10]
 
 在上面的代码片段中，代码对于我们输入不符合规定的数字时有一条消息。例如，要求输入的数字在`1`到`20`之间。*但是如果用户输入 0 或 21，或者其他不在这个范围内的数字会发生什么？*然后，`print()`语句会提供一条消息，要求用户重新运行程序。
 
@@ -349,31 +268,19 @@ else:
 
 +   当我们输入`4`时，我们看到以下输出：
 
-```py
-Pick a number between 1 and 20\. 4
-Why such a small number?
-```
+[PRE11]
 
 +   当我们输入`6`时，我们看到以下内容：
 
-```py
-Pick a number between 1 and 20\. 6
-Well, less than 10 but greater than 5\. I'll take it.
-```
+[PRE12]
 
 +   当我们输入`11`时，我们得到如下结果：
 
-```py
-Pick a number between 1 and 20\. 11
-You like values that are greater than 10, but not too much greater. I guess that's fine.
-```
+[PRE13]
 
 +   当我们输入`18`时，我们得到以下输出：
 
-```py
-Pick a number between 1 and 20\. 18
-I like larger numbers myself too.
-```
+[PRE14]
 
 从上面的测试案例中可以看出，我们根据程序中给定的条件有更多的输出。虽然这是一个简单的数字程序，但在解决更复杂的问题时，我们可以使用类似的逻辑。
 
@@ -425,40 +332,21 @@ I like larger numbers myself too.
 
 ch4_andOperator.py
 
-```py
-number = int(input("Give a number between 1 and 200\. "))
-if number > 99 and number % 2 == 0:
-    print("That's a large, even number.")
-elif number > 99 and number % 2 != 0:
-    print("That's a large, odd number.")
-elif number < 100 and number % 2 == 0:
-    print("That's a small, even number.")
-else:
-    print("That's a small, odd number.")
-```
+[PRE15]
 
 现在，我知道我们已经讨论了编写算法的不同方法。*我需要为这个使用 AND 运算符吗？* 可能不需要。我本可以只将其写成嵌套语句，`if-elif-else`语句等。一些测试用例和算法的结果如下所示：
 
 +   当我们输入`104`时，我们看到以下输出：
 
-```py
-Give a number between 1 and 200\. 104
-That's a large, even number.
-```
+[PRE16]
 
 +   当我们输入`80`时，我们看到以下输出：
 
-```py
-Give a number between 1 and 200\. 80
-That's a small, even number.
-```
+[PRE17]
 
 +   当我们输入`31`时，我们得到以下输出：
 
-```py
-Give a number between 1 and 200\. 31
-That's a small, odd number.
-```
+[PRE18]
 
 从前面的测试用例中可以看出，程序测试了我们的情况，并根据满足的条件提供了打印消息。现在，让我们来看一下`or`运算符。
 
@@ -470,29 +358,13 @@ That's a small, odd number.
 
 ch4_orOperator.py
 
-```py
-A = True
-B = False
-C = A and B
-D = A or B
-if C == True:
-    print("A and B is True.")
-else:
-    print("A and B is False.")
-if D == True:
-    print("A or B is True.")
-else:
-    print("A or B is False.")
-```
+[PRE19]
 
 现在，我添加了一些条件，以便我们得到输出，并且您可以看到我所说的逻辑是正确的，但我们不需要做所有这些。我们本可以只打印`C`和`D`。
 
 当我们运行这个程序时，结果如下：
 
-```py
-A and B is False.
-A or B is True.
-```
+[PRE20]
 
 正如您所看到的，`A and B`是`False`，因为其中一个陈述是`False`，这意味着整个事情是`False`。`A or B`是`True`，因为其中一个是`True`，所以条件是`True`。现在，让我们看看最后一个运算符（暂时），**not**运算符。
 
@@ -502,14 +374,7 @@ A or B is True.
 
 ch4_notOperator.py
 
-```py
-A = True
-B = False
-print(not A)
-print(not B)
-print(not (A and B))
-print(not (A or B))
-```
+[PRE21]
 
 从前面的代码中，我们已经讨论了这里的第一个打印语句。由于`A`是`True`，`not` `A`是`False`。对于第二个`print`语句，我们期望结果是`True`，因为`B`是`False`。现在，我们之前做了`A and B`和`A or B`语句。我们知道`A and B`是`False`，所以`not` `(A and B)`是`True`。我们也知道`A or B`是`True`，所以`not` `(A or B)`是`False`。
 
@@ -517,27 +382,19 @@ print(not (A or B))
 
 +   对于`not A`，它打印如下内容：
 
-```py
-False
-```
+[PRE22]
 
 +   同样，对于`not B`，它打印如下内容：
 
-```py
-True
-```
+[PRE23]
 
 +   此外，对于`not (A and B)`，它打印如下内容：
 
-```py
-True
-```
+[PRE24]
 
 +   最后，对于`not (A or B)`，它打印如下内容：
 
-```py
-False
-```
+[PRE25]
 
 在本节中，您已经了解了一些布尔运算符。使用布尔运算符，我们可以编写测试用例的算法，并根据这些情况提供输出。如前所述，程序将根据我们在算法中编写的指令运行。
 
@@ -563,37 +420,21 @@ False
 
 ch4_Error1.py
 
-```py
-number = int(input("Type the number of fries you are ordering: "))
-cost = 1.50
-total = number * number
-print("Your total cost is $" + str(total) + ".")
-```
+[PRE26]
 
 如果我们运行上述程序，程序将无问题/错误地运行，并为`12`份薯条显示以下输出：
 
-```py
-Type the number of fries you are ordering: 12
-Your total cost is $144.
-```
+[PRE27]
 
 现在，如果我们注意到，我们会意识到 12 份薯条的费用为 144 美元太高了。这是因为我们的算法中存在错误。算法应该包含`total = cost * number`公式，如下所示：
 
 ch4_Error1_fixed.py
 
-```py
-number = int(input("Type the number of fries you are ordering: "))
-cost = 1.50
-total = cost * number
-print("Your total cost is $" + str(total) + ".")
-```
+[PRE28]
 
 现在我们已经修复了该公式，输出是正确的：
 
-```py
-Type the number of fries you are ordering: 12
-Your total cost is $18.0.
-```
+[PRE29]
 
 如您所见，12 份薯条每份 1.50 美元，总共 18.0 美元更合理。
 
@@ -603,63 +444,31 @@ Your total cost is $18.0.
 
 ch4_Error2.py
 
-```py
-number = int(input("Give a number between 1 and 200\. "))
-if number > 99 and number % 2 == 0:
-    print("That's a large, even number.")
-elif number > 99 and number % 2 != 0:
-    print("That's a large, odd number.")
-elif number < 100 or number % 2 == 0:
-    print("That's a small, even number.")
-else:
-    print("That's a small, odd number.")
-```
+[PRE30]
 
 在上面的代码中，算法中存在一个错误，导致我们在输入一些奇数时得到错误的反馈。看看第二个`elif`语句。那个`or`将产生一个错误。
 
 如果我们运行这个程序，我们会得到一个输出。让我们用数字`99`来运行它：
 
-```py
-Give a number between 1 and 200\. 99
-That's a small, even number.
-```
+[PRE31]
 
 现在，问题在于`99`不是一个偶数。在算法的某个地方，我们在条件中引入了一个错误。在这种情况下，我们使用了`or`而不是`and`运算符：
 
-```py
-elif number < 100 or number % 2 == 0:
-    print("That's a small, even number.")
-```
+[PRE32]
 
 一旦我们用`and`替换`or`，我们就可以再次运行程序：
 
 ch4_Error2_fixed.py
 
-```py
-number = int(input("Give a number between 1 and 200\. "))
-if number > 99 and number % 2 == 0:
-    print("That's a large, even number.")
-elif number > 99 and number % 2 != 0:
-    print("That's a large, odd number.")
-elif number < 100 and number % 2 == 0:
-    print("That's a small, even number.")
-else:
-    print("That's a small, odd number.")
-```
+[PRE33]
 
 使用`99`作为输入，我们得到以下输出：
 
-```py
-Give a number between 1 and 200\. 99
-That's a small, odd number.
-```
+[PRE34]
 
 使用`98`作为输入运行程序，我们得到以下结果：
 
-```py
-Give a number between 1 and 200\. 98
-That's a small, even number.
-```
+[PRE35]
 
 如您所见，除非我们注意，否则我们可能会忽略条件和逻辑运算符中的错误。因为程序能够在我们的算法中运行这些错误，所以要捕捉到我们犯了错误的地方比起纳入会导致程序停止运行的错误要困难得多。
 
@@ -667,17 +476,7 @@ That's a small, even number.
 
 ch4_Error3.py
 
-```py
-number = int(input("Give a number between 1 and 200\. "))
-if number > 99 and number % 2 == 0:
-    print("That's a large, even number.")
-elif number > 99 and number % 2 != 0:
-    print("That's a large, odd number.")
-    elif number < 100 and number % 2 == 0:
-        print("That's a small, even number.")
-else:
-    print("That's a small, odd number.")
-```
+[PRE36]
 
 在这种情况下，我们无法运行程序。第二个`elif`语句的缩进不正确。当我们尝试运行程序时，我们会收到一个“无效语法”错误消息。单击消息上的**确定**将带我们到代码，缩进错误会被突出显示，如下面的屏幕截图所示：
 

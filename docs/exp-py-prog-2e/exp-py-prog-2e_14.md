@@ -20,17 +20,7 @@
 
 但是在 Python 中，运行时创建新类型非常简单。内置的`type`函数允许您通过代码定义一个新的类型对象：
 
-```py
-**>>> MyType = type('MyType', (object,), {'a': 1})**
-**>>> ob = MyType()**
-**>>> type(ob)**
-**<class '__main__.MyType'>**
-**>>> ob.a**
-**1**
-**>>> isinstance(ob, object)**
-**True**
-
-```
+[PRE0]
 
 类和类型是内置的工厂。我们已经处理了新类对象的创建，您可以使用元类与类和对象生成进行交互。这些功能是实现**工厂**设计模式的基础，但我们不会在本节进一步描述它，因为我们已经在第三章中广泛涵盖了类和对象创建的主题，*语法最佳实践 - 类级别以上*。
 
@@ -46,92 +36,35 @@
 
 在 Python 中，有一种流行的半成语是通过覆盖类的`__new__()`方法来创建单例：
 
-```py
-class Singleton:
-    _instance = None
-
-    def __new__(cls, *args, **kwargs):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls, *args, **kwargs)
-
-        return cls._instance
-```
+[PRE1]
 
 如果您尝试创建该类的多个实例并比较它们的 ID，您会发现它们都代表同一个对象：
 
-```py
-**>>> instance_a = Singleton()**
-**>>> instance_b = Singleton()**
-**>>> id(instance_a) == id(instance_b)**
-**True**
-**>>> instance_a == instance_b**
-**True**
-
-```
+[PRE2]
 
 我将其称为半成语，因为这是一个非常危险的模式。问题在于当您尝试对基本单例类进行子类化并创建此新子类的实例时，如果您已经创建了基类的实例，则问题就开始了。
 
-```py
-**>>> class ConcreteClass(Singleton): pass**
-**>>> Singleton()**
-**<Singleton object at 0x000000000306B470>**
-**>>> ConcreteClass()**
-**<Singleton object at 0x000000000306B470>**
-
-```
+[PRE3]
 
 这可能会变得更加棘手，当你注意到这种行为受到实例创建顺序的影响时。根据你的类使用顺序，你可能会得到相同的结果，也可能不会。让我们看看如果你首先创建子类实例，然后创建基类的实例，结果会是什么样的：
 
-```py
-**>>> class ConcreteClass(Singleton): pass**
-**>>> ConcreteClass()**
-**<ConcreteClass object at 0x00000000030615F8>**
-**>>> Singleton()**
-**<Singleton object at 0x000000000304BCF8>**
-
-```
+[PRE4]
 
 正如你所看到的，行为完全不同，非常难以预测。在大型应用程序中，这可能导致非常危险且难以调试的问题。根据运行时上下文，您可能会或者不会使用您本来打算使用的类。由于这种行为真的很难预测和控制，应用程序可能会因为改变的导入顺序甚至用户输入而崩溃。如果您的单例不打算被子类化，那么以这种方式实现可能相对安全。无论如何，这是一个定时炸弹。如果将来有人忽视风险并决定从您的单例对象创建一个子类，一切都可能会爆炸。避免使用这种特定的实现，使用另一种替代方案会更安全。
 
 使用更高级的技术——元类是更安全的。通过重写元类的`__call__()`方法，您可以影响自定义类的创建。这允许创建可重用的单例代码：
 
-```py
-class Singleton(type):
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super().__call__(*args, **kwargs)
-        return cls._instances[cls]
-```
+[PRE5]
 
 通过将`Singleton`用作自定义类的元类，您可以获得安全的可子类化的单例，并且不受实例创建顺序的影响：
 
-```py
-**>>> ConcreteClass() == ConcreteClass()**
-**True**
-**>>> ConcreteSubclass() == ConcreteSubclass()**
-**True**
-**>>> ConcreteClass()**
-**<ConcreteClass object at 0x000000000307AF98>**
-**>>> ConcreteSubclass()**
-**<ConcreteSubclass object at 0x000000000307A3C8>**
-
-```
+[PRE6]
 
 克服单例实现问题的另一种方法是使用 Alex Martelli 提出的方法。他提出了一种与单例类似但在结构上完全不同的方法。这不是来自 GoF 书籍的经典设计模式，但似乎在 Python 开发人员中很常见。它被称为**Borg**或**Monostate**。
 
 这个想法非常简单。单例模式中真正重要的不是一个类有多少个实例，而是它们始终共享相同的状态。因此，Alex Martelli 提出了一个使类的所有实例共享相同`__dict__`的类：
 
-```py
-class Borg(object):
-    _state = {}
-
-    def __new__(cls, *args, **kwargs):
-        ob = super().__new__(cls, *args, **kwargs)
-        ob.__dict__ = cls._state
-        return ob
-```
+[PRE7]
 
 这解决了子类化问题，但仍取决于子类代码的工作方式。例如，如果重写了`__getattr__`，则可能会破坏模式。
 
@@ -175,17 +108,7 @@ Python 已经通过其语法提供了一些流行的结构模式。例如，类�
 
 适配器模式基于这种哲学，定义了一种包装机制，其中一个类或对象被包装以使其在最初不打算用于它的上下文中工作。`StringIO`就是一个典型的例子，因为它适应了`str`类型，所以它可以被用作`file`类型：
 
-```py
-**>>> from io import StringIO**
-**>>> my_file = StringIO('some content')**
-**>>> my_file.read()**
-**'some content'**
-**>>> my_file.seek(0)**
-**>>> my_f**
-**ile.read(1)**
-**'s'**
-
-```
+[PRE8]
 
 让我们举另一个例子。`DublinCoreInfos`类知道如何显示给定文档的一些 Dublin Core 信息子集的摘要（参见[`dublincore.org/`](http://dublincore.org/)），并提供为`dict`提供。它读取一些字段，比如作者的名字或标题，并打印它们。为了能够显示文件的 Dublin Core，它必须以与`StringIO`相同的方式进行适配。下图显示了这种适配器模式实现的类似 UML 的图。
 
@@ -195,42 +118,11 @@ Python 已经通过其语法提供了一些流行的结构模式。例如，类�
 
 `DublinCoreAdapter`包装了一个文件实例，并提供了对其元数据的访问：
 
-```py
-from os.path import split, splitext
-
-class DublinCoreAdapter:
-    def __init__(self, filename):
-        self._filename = filename
-
-    @property
-    def title(self):
-        return splitext(split(self._filename)[-1])[0]
-
-    @property
-    def languages(self):
-        return ('en',)
-
-    def __getitem__(self, item):
-        return getattr(self, item, 'Unknown')
-
-class DublinCoreInfo(object):
-    def summary(self, dc_dict):
-        print('Title: %s' % dc_dict['title'])
-        print('Creator: %s' % dc_dict['creator'])
-        print('Languages: %s' % ', '.join(dc_dict['languages']))
-```
+[PRE9]
 
 以下是示例用法：
 
-```py
-**>>> adapted = DublinCoreAdapter('example.txt')**
-**>>> infos = DublinCoreInfo()**
-**>>> infos.summary(adapted)**
-**Title: example**
-**Creator: Unknown**
-**Languages: en**
-
-```
+[PRE10]
 
 除了允许替换的事实之外，适配器模式还可以改变开发人员的工作方式。将对象适应特定上下文的假设是对象的类根本不重要。重要的是这个类实现了`DublinCoreInfo`等待的内容，并且这种行为由适配器固定或完成。因此，代码可以简单地告诉它是否与实现特定行为的对象兼容。这可以通过*接口*来表达。
 
@@ -256,21 +148,7 @@ Python 对接口的类型哲学与 Java 完全不同，因此它没有原生支�
 
 `zope.interface`包的核心类是`Interface`类。它允许您通过子类化来明确定义一个新的接口。假设我们想为矩形的每个实现定义一个强制性接口：
 
-```py
-from zope.interface import Interface, Attribute
-
-class IRectangle(Interface):
-    width = Attribute("The width of rectangle")
-    height = Attribute("The height of rectangle")
-
-    def area():
-        """ Return area of rectangle
-        """
-
-    def perimeter():
-        """ Return perimeter of rectangle
-        """
-```
+[PRE11]
 
 使用`zope.interface`定义接口时需要记住的一些重要事项如下：
 
@@ -284,43 +162,7 @@ class IRectangle(Interface):
 
 当您定义了这样的合同后，您可以定义提供`IRectangle`接口实现的新具体类。为此，您需要使用`implementer()`类装饰器并实现所有定义的方法和属性：
 
-```py
-@implementer(IRectangle)
-class Square:
-    """ Concrete implementation of square with rectangle interface
-    """
-
-    def __init__(self, size):
-        self.size = size
-
-    @property
-    def width(self):
-        return self.size
-
-    @property
-    def height(self):
-        return self.size
-
-    def area(self):
-        return self.size ** 2
-
-    def perimeter(self):
-        return 4 * self.size
-
-@implementer(IRectangle)
-class Rectangle:
-    """ Concrete implementation of rectangle
-    """
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
-
-    def area(self):
-        return self.width * self.height
-
-    def perimeter(self):
-        return self.width * 2 + self.height * 2
-```
+[PRE12]
 
 通常说接口定义了具体实现需要满足的合同。这种设计模式的主要好处是能够在对象被使用之前验证合同和实现之间的一致性。使用普通的鸭子类型方法，只有在运行时缺少属性或方法时才会发现不一致性。使用`zope.interface`，您可以使用`zope.interface.verify`模块的两种方法来提前检查实际实现中的不一致性：
 
@@ -330,73 +172,19 @@ class Rectangle:
 
 由于我们已经定义了我们的接口和两个具体的实现，让我们在交互式会话中验证它们的契约：
 
-```py
-**>>> from zope.interface.verify import verifyClass, verifyObject**
-**>>> verifyObject(IRectangle, Square(2))**
-**True**
-**>>> verifyClass(IRectangle, Square)**
-**True**
-**>>> verifyObject(IRectangle, Rectangle(2, 2))**
-**True**
-**>>> verifyClass(IRectangle, Rectangle)**
-**True**
-
-```
+[PRE13]
 
 没有什么令人印象深刻的。`Rectangle`和`Square`类仔细遵循了定义的契约，因此除了成功的验证外，没有更多的东西可见。但是当我们犯错时会发生什么？让我们看一个未能提供完整`IRectangle`接口实现的两个类的示例：
 
-```py
-@implementer(IRectangle)
-class Point:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
-@implementer(IRectangle)
-class Circle:
-    def __init__(self, radius):
-        self.radius = radius
-
-    def area(self):
-        return math.pi * self.radius ** 2
-
-    def perimeter(self):
-        return 2 * math.pi * self.radius
-```
+[PRE14]
 
 `Point`类没有提供`IRectangle`接口的任何方法或属性，因此它的验证将在类级别上显示不一致性：
 
-```py
-**>>> verifyClass(IRectangle, Point)**
-
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
- **File "zope/interface/verify.py", line 102, in verifyClass**
- **return _verify(iface, candidate, tentative, vtype='c')**
- **File "zope/interface/verify.py", line 62, in _verify**
- **raise BrokenImplementation(iface, name)**
-**zope.interface.exceptions.BrokenImplementation: An object has failed to implement interface <InterfaceClass __main__.IRectangle>**
-
- **The perimeter attribute was not provided.**
-
-```
+[PRE15]
 
 `Circle`类有点棘手。它定义了所有接口方法，但在实例属性级别上违反了契约。这就是为什么在大多数情况下，您需要使用`verifyObject()`函数来完全验证接口实现的原因：
 
-```py
-**>>> verifyObject(IRectangle, Circle(2))**
-
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
- **File "zope/interface/verify.py", line 105, in verifyObject**
- **return _verify(iface, candidate, tentative, vtype='o')**
- **File "zope/interface/verify.py", line 62, in _verify**
- **raise BrokenImplementation(iface, name)**
-**zope.interface.exceptions.BrokenImplementation: An object has failed to implement interface <InterfaceClass __main__.IRectangle>**
-
- **The width attribute was not provided.**
-
-```
+[PRE16]
 
 使用`zope.inteface`是一种有趣的解耦应用程序的方式。它允许您强制执行正确的对象接口，而无需多重继承的过度复杂性，并且还可以及早捕获不一致性。然而，这种方法最大的缺点是要求您明确定义给定类遵循某个接口才能进行验证。如果您需要验证来自内置库的外部类的实例，这将特别麻烦。`zope.interface`为该问题提供了一些解决方案，当然您也可以使用适配器模式或甚至猴子补丁来处理这些问题。无论如何，这些解决方案的简单性至少是值得商榷的。
 
@@ -416,21 +204,15 @@ class Circle:
 
 如您可能知道的那样，直接的类型比较被认为是有害的，而且不是*pythonic*。您应该始终避免以下比较：
 
-```py
-assert type(instance) == list
-```
+[PRE17]
 
 在函数或方法中比较类型的方式完全破坏了将类子类型作为参数传递给函数的能力。稍微更好的方法是使用`isinstance()`函数，它会考虑继承关系：
 
-```py
-assert isinstance(instance, list)
-```
+[PRE18]
 
 `isinstance()`的额外优势是您可以使用更广泛的类型来检查类型兼容性。例如，如果您的函数期望接收某种序列作为参数，您可以与基本类型的列表进行比较：
 
-```py
-assert isinstance(instance, (list, tuple, range))
-```
+[PRE19]
 
 这种类型兼容性检查的方式在某些情况下是可以的，但仍然不完美。它将适用于`list`、`tuple`或`range`的任何子类，但如果用户传递的是与这些序列类型完全相同但不继承自任何一个的东西，它将失败。例如，让我们放宽要求，说你想接受任何类型的可迭代对象作为参数。你会怎么做？可迭代的基本类型列表实际上相当长。你需要涵盖 list、tuple、range、str、bytes、dict、set、生成器等等。适用的内置类型列表很长，即使你覆盖了所有这些类型，它仍然不允许你检查是否与定义了`__iter__()`方法的自定义类兼容，而是直接继承自`object`。
 
@@ -444,230 +226,63 @@ assert isinstance(instance, (list, tuple, range))
 
 因此，让我们假设我们想定义一个接口，确保一个类具有`push()`方法。我们需要使用特殊的`ABCMeta`元类和标准`abc`模块中的`abstractmethod()`装饰器创建一个新的抽象基类：
 
-```py
-from abc import ABCMeta, abstractmethod
-
-class Pushable(metaclass=ABCMeta):
-
-    @abstractmethod
-    def push(self, x):
-        """ Push argument no matter what it means
-        """
-```
+[PRE20]
 
 `abc`模块还提供了一个可以用来代替元类语法的 ABC 基类：
 
-```py
-from abc import ABCMeta, abstractmethod
-
-class Pushable(metaclass=ABCMeta):
-    @abstractmethod
-    def push(self, x):
-        """ Push argument no matter what it means
-        """
-```
+[PRE21]
 
 一旦完成，我们可以将`Pushable`类用作具体实现的基类，并且它将阻止我们实例化具有不完整实现的对象。让我们定义`DummyPushable`，它实现了所有接口方法和`IncompletePushable`，它违反了预期的合同：
 
-```py
-class DummyPushable(Pushable):
-    def push(self, x):
-        return
-
-class IncompletePushable(Pushable):
-    pass
-```
+[PRE22]
 
 如果你想获得`DummyPushable`实例，那就没有问题，因为它实现了唯一需要的`push()`方法：
 
-```py
-**>>> DummyPushable()**
-**<__main__.DummyPushable object at 0x10142bef0>**
-
-```
+[PRE23]
 
 但是，如果你尝试实例化`IncompletePushable`，你会得到`TypeError`，因为缺少`interface()`方法的实现：
 
-```py
-**>>> IncompletePushable()**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
-**TypeError: Can't instantiate abstract class IncompletePushable with abstract methods push**
-
-```
+[PRE24]
 
 前面的方法是确保基类实现完整性的好方法，但与`zope.interface`替代方案一样明确。`DummyPushable`实例当然也是`Pushable`的实例，因为 Dummy 是`Pushable`的子类。但是其他具有相同方法但不是`Pushable`的后代的类呢？让我们创建一个并看看：
 
-```py
-**>>> class SomethingWithPush:**
-**...     def push(self, x):**
-**...         pass**
-**...** 
-**>>> isinstance(SomethingWithPush(), Pushable)**
-**False**
-
-```
+[PRE25]
 
 还有一些东西缺失。`SomethingWithPush`类明确具有兼容的接口，但尚未被视为`Pushable`的实例。那么，缺少什么？答案是`__subclasshook__(subclass)`方法，它允许你将自己的逻辑注入到确定对象是否是给定类的实例的过程中。不幸的是，你需要自己提供它，因为`abc`的创建者不希望限制开发人员覆盖整个`isinstance()`机制。我们对它有完全的控制权，但我们被迫写一些样板代码。
 
 虽然你可以做任何你想做的事情，但通常在`__subclasshook__()`方法中唯一合理的事情是遵循常见的模式。标准程序是检查定义的方法集是否在给定类的 MRO 中的某个地方可用：
 
-```py
-from abc import ABCMeta, abstractmethod
-
-class Pushable(metaclass=ABCMeta):
-
-    @abstractmethod
-    def push(self, x):
-        """ Push argument no matter what it means
-        """
-
-    @classmethod
-    def __subclasshook__(cls, C):
-        if cls is Pushable:
-            if any("push" in B.__dict__ for B in C.__mro__):
-                return True
-        return NotImplemented
-```
+[PRE26]
 
 通过这种方式定义`__subclasshook__()`方法，现在可以确认隐式实现接口的实例也被视为接口的实例：
 
-```py
-**>>> class SomethingWithPush:**
-**...     def push(self, x):**
-**...         pass**
-**...** 
-**>>> isinstance(SomethingWithPush(), Pushable)**
-**True**
-
-```
+[PRE27]
 
 不幸的是，这种验证类型兼容性和实现完整性的方法并未考虑类方法的签名。因此，如果实现中预期的参数数量不同，它仍将被视为兼容。在大多数情况下，这不是问题，但如果您需要对接口进行如此精细的控制，`zope.interface`包允许这样做。正如前面所说，`__subclasshook__()`方法不会限制您在`isinstance()`函数的逻辑中添加更多复杂性，以实现类似的控制水平。
 
 补充抽象基类的另外两个特性是函数注释和类型提示。函数注释是在第二章中简要描述的语法元素，*语法最佳实践-类级别以下*。它允许您使用任意表达式对函数及其参数进行注释。正如第二章中所解释的，*语法最佳实践-类级别以下*，这只是一个不提供任何语法意义的功能存根。标准库中没有使用此功能来强制执行任何行为。无论如何，您可以将其用作通知开发人员预期参数接口的便捷且轻量级的方式。例如，考虑从`zope.interface`重写的`IRectangle`接口以抽象基类的形式：
 
-```py
-from abc import (
-    ABCMeta,
-    abstractmethod,
-    abstractproperty
-)
-
-class IRectangle(metaclass=ABCMeta):
-
-    @abstractproperty
-    def width(self):
-        return
-
-    @abstractproperty
-    def height(self):
-        return
-
-    @abstractmethod
-    def area(self):
-        """ Return rectangle area
-        """
-
-    @abstractmethod
-    def perimeter(self):
-        """ Return rectangle perimeter
-        """
-
-    @classmethod
-    def __subclasshook__(cls, C):
-        if cls is IRectangle:
-            if all([
-                any("area" in B.__dict__ for B in C.__mro__),
-                any("perimeter" in B.__dict__ for B in C.__mro__),
-                any("width" in B.__dict__ for B in C.__mro__),
-                any("height" in B.__dict__ for B in C.__mro__),
-            ]):
-                return True
-        return NotImplemented
-```
+[PRE28]
 
 如果您有一个仅适用于矩形的函数，比如`draw_rectangle()`，您可以将预期参数的接口注释如下：
 
-```py
-def draw_rectangle(rectangle: IRectange):
-    ...
-```
+[PRE29]
 
 这只是为开发人员提供有关预期信息的信息。即使这是通过非正式合同完成的，因为正如我们所知，裸注释不包含任何语法意义。但是，它们在运行时是可访问的，因此我们可以做更多的事情。以下是一个通用装饰器的示例实现，它能够验证函数注释中提供的接口是否使用抽象基类：
 
-```py
-def ensure_interface(function):
-    signature = inspect.signature(function)
-    parameters = signature.parameters
-
-    @wraps(function)
-    def wrapped(*args, **kwargs):
-        bound = signature.bind(*args, **kwargs)
-        for name, value in bound.arguments.items():
-            annotation = parameters[name].annotation
-
-            if not isinstance(annotation, ABCMeta):
-                continue
-
-            if not isinstance(value, annotation):
-                raise TypeError(
-                    "{} does not implement {} interface"
-                    "".format(value, annotation)
-                )
-
-        function(*args, **kwargs)
-
-    return wrapped
-```
+[PRE30]
 
 一旦完成，我们可以创建一些具体的类，它们隐式地实现了`IRectangle`接口（而不是继承自`IRectangle`），并更新`draw_rectangle()`函数的实现，以查看整个解决方案的工作原理：
 
-```py
-class ImplicitRectangle:
-    def __init__(self, width, height):
-        self._width = width
-        self._height = height
-
-    @property
-    def width(self):
-        return self._width
-
-    @property
-    def height(self):
-        return self._height
-
-    def area(self):
-        return self.width * self.height
-
-    def perimeter(self):
-        return self.width * 2 + self.height * 2
-
-@ensure_interface
-def draw_rectangle(rectangle: IRectangle):
-    print(
-        "{} x {} rectangle drawing"
-        "".format(rectangle.width, rectangle.height)
-    )
-```
+[PRE31]
 
 如果我们使用不兼容的对象来调用`draw_rectangle()`函数，它现在将引发`TypeError`并提供有意义的解释：
 
-```py
-**>>> draw_rectangle('foo')**
-**Traceback (most recent call last):**
- **File "<input>", line 1, in <module>**
- **File "<input>", line 101, in wrapped**
-**TypeError: foo does not implement <class 'IRectangle'> interface**
-
-```
+[PRE32]
 
 但是，如果我们使用`ImplicitRectangle`或任何其他类似`IRectangle`接口的对象，该函数将按预期执行：
 
-```py
-**>>> draw_rectangle(ImplicitRectangle(2, 10))**
-**2 x 10 rectangle drawing**
-
-```
+[PRE33]
 
 我们的`ensure_interface()`的示例实现是基于`typeannotations`项目中的`typechecked()`装饰器，该项目试图提供运行时检查功能（请参阅[`github.com/ceronman/typeannotations`](https://github.com/ceronman/typeannotations)）。它的源代码可能会给您一些有趣的想法，关于如何处理类型注释以确保运行时接口检查。
 
@@ -707,29 +322,11 @@ def draw_rectangle(rectangle: IRectangle):
 
 `urllib.request`模块提供了一个例子。`urlopen`是一个代理，用于访问远程 URL 上的内容。当它被创建时，可以独立于内容本身检索头部，而无需读取响应的其余部分：
 
-```py
-**>>> class Url(object):**
-**...     def __init__(self, location):**
-**...         self._url = urlopen(location)**
-**...     def headers(self):**
-**...         return dict(self._url.headers.items())**
-**...     def get(self):**
-**...         return self._url.read()**
-**...** 
-**>>> python_org = Url('http://python.org')**
-**>>> python_org.headers().keys()**
-**dict_keys(['Accept-Ranges', 'Via', 'Age', 'Public-Key-Pins', 'X-Clacks-Overhead', 'X-Cache-Hits', 'X-Cache', 'Content-Type', 'Content-Length', 'Vary', 'X-Served-By', 'Strict-Transport-Security', 'Server', 'Date', 'Connection', 'X-Frame-Options'])**
-
-```
+[PRE34]
 
 这可以用来决定在获取页面主体之前是否已经更改了页面，通过查看`last-modified`头部。让我们用一个大文件举个例子：
 
-```py
-**>>> ubuntu_iso = Url('http://ubuntu.mirrors.proxad.net/hardy/ubuntu-8.04-desktop-i386.iso')**
-**>>> ubuntu_iso.headers()['Last-Modified']**
-**'Wed, 23 Apr 2008 01:03:34 GMT'**
-
-```
+[PRE35]
 
 代理的另一个用例是**数据唯一性**。
 
@@ -785,62 +382,15 @@ Facade 简化了您的包的使用。在几次迭代后，通常会添加 Facade
 
 可以通过在类级别上工作来实现 Python 中观察者的注册的`Event`类：
 
-```py
-class Event:
-    _observers = []
-
-    def __init__(self, subject):
-        self.subject = subject
-
-    @classmethod
-    def register(cls, observer):
-        if observer not in cls._observers:
-            cls._observers.append(observer)
-
-    @classmethod
-    def unregister(cls, observer):
-        if observer in cls._observers:
-            cls._observers.remove(observer)
-
-    @classmethod
-    def notify(cls, subject):
-        event = cls(subject)
-        for observer in cls._observers:
-            observer(event)
-```
+[PRE36]
 
 观察者使用`Event`类方法注册自己，并通过携带触发它们的主题的`Event`实例得到通知。以下是一个具体的`Event`子类的示例，其中一些观察者订阅了它的通知：
 
-```py
-class WriteEvent(Event):
-    def __repr__(self):
-        return 'WriteEvent'
-
-def log(event):
-    print(
-        '{!r} was fired with subject "{}"'
-        ''.format(event, event.subject)
-    )
-
-class AnotherObserver(object):
-    def __call__(self, event):
-        print(
-            "{!r} trigerred {}'s action"
-            "".format(event, self.__class__.__name__)
-        )
-
-WriteEvent.register(log)
-WriteEvent.register(AnotherObserver())
-```
+[PRE37]
 
 这里是使用`WriteEvent.notify()`方法触发事件的示例结果：
 
-```py
-**>>> WriteEvent.notify("something happened")**
-**WriteEvent was fired with subject "something happened"**
-**WriteEvent trigerred AnotherObserver's action**
-
-```
+[PRE38]
 
 这个实现很简单，只是作为说明目的。要使其完全功能，可以通过以下方式加以增强：
 
@@ -862,88 +412,23 @@ WriteEvent.register(AnotherObserver())
 
 `Visitable`类决定如何调用`Visitor`类，例如，决定调用哪个方法。例如，负责打印内置类型内容的访问者可以实现`visit_TYPENAME()`方法，每个这些类型可以在其`accept()`方法中调用给定的方法：
 
-```py
-class VisitableList(list):
-    def accept(self, visitor):
-        visitor.visit_list(self)
-
-class VisitableDict(dict):
-    def accept(self, visitor):
-        visitor.visit_dict(self)
-
-class Printer(object):
-    def visit_list(self, instance):
-        print('list content: {}'.format(instance))
-
-    def visit_dict(self, instance):
-        print('dict keys: {}'.format(
-            ', '.join(instance.keys()))
-        )
-```
+[PRE39]
 
 这是在下面的例子中所做的：
 
-```py
-**>>> visitable_list = VisitableList([1, 2, 5])**
-**>>> visitable_list.accept(Printer())**
-**list content: [1, 2, 5]**
-**>>> visitable_dict = VisitableDict({'one': 1, 'two': 2, 'three': 3})**
-**>>> visitable_dict.accept(Printer())**
-**dict keys: two, one, three**
-
-```
+[PRE40]
 
 但这种模式意味着每个被访问的类都需要有一个`accept`方法来被访问，这是相当痛苦的。
 
 由于 Python 允许代码内省，一个更好的主意是自动链接访问者和被访问的类：
 
-```py
-**>>> def visit(visited, visitor):**
-**...     cls = visited.__class__.__name__**
-**...     method_name = 'visit_%s' % cls**
-**...     method = getattr(visitor, method_name, None)**
-**...     if isinstance(method, Callable):**
-**...         method(visited)**
-**...     else:**
-**...         raise AttributeError(**
-**...             "No suitable '{}' method in visitor"**
-**...             "".format(method_name)**
-**...         )**
-**...** 
-**>>> visit([1,2,3], Printer())**
-**list content: [1, 2, 3]**
-**>>> visit({'one': 1, 'two': 2, 'three': 3}, Printer())**
-**dict keys: two, one, three**
-**>>> visit((1, 2, 3), Printer())**
-**Traceback (most recent call last):**
- **File "<input>", line 1, in <module>**
- **File "<input>", line 10, in visit**
-**AttributeError: No suitable 'visit_tuple' method in visitor**
-
-```
+[PRE41]
 
 这种模式在`ast`模块中以这种方式使用，例如，通过`NodeVisitor`类调用编译代码树的每个节点的访问者。这是因为 Python 没有像 Haskell 那样的匹配操作符。
 
 另一个例子是一个目录遍历器，根据文件扩展名调用访问者方法：
 
-```py
-**>>> def visit(directory, visitor):**
-**...     for root, dirs, files in os.walk(directory):**
-**...         for file in files:**
-**...             # foo.txt → .txt**
-**...             ext = os.path.splitext(file)[-1][1:]**
-**...             if hasattr(visitor, ext):**
-**...                 getattr(visitor, ext)(file)**
-**...**
-**>>> class FileReader(object):**
-**...     def pdf(self, filename):**
-**...         print('processing: {}'.format(filename))**
-**...**
-**>>> walker = visit('/Users/tarek/Desktop', FileReader())**
-**processing slides.pdf**
-**processing sholl23.pdf**
-
-```
+[PRE42]
 
 如果您的应用程序具有多个算法访问的数据结构，则访问者模式将有助于分离关注点。数据容器最好只专注于提供对数据的访问和保存，而不做其他事情。
 
@@ -975,65 +460,15 @@ class Printer(object):
 
 一个玩具实现可以是：
 
-```py
-from collections import Counter
-
-class Indexer:
-    def process(self, text):
-        text = self._normalize_text(text)
-        words = self._split_text(text)
-        words = self._remove_stop_words(words)
-        stemmed_words = self._stem_words(words)
-
-        return self._frequency(stemmed_words)
-
-    def _normalize_text(self, text):
-        return text.lower().strip()
-
-    def _split_text(self, text):
-        return text.split()
-
-    def _remove_stop_words(self, words):
-        raise NotImplementedError
-
-    def _stem_words(self, words):
-        raise NotImplementedError
-
-    def _frequency(self, words):
-        return Counter(words)
-```
+[PRE43]
 
 从那里，`BasicIndexer`实现可以是：
 
-```py
-class BasicIndexer(Indexer):
-    _stop_words = {'he', 'she', 'is', 'and', 'or', 'the'}
-
-    def _remove_stop_words(self, words):
-        return (
-            word for word in words
-            if word not in self._stop_words
-        )
-
-    def _stem_words(self, words):
-        return (
-            (
-                len(word) > 3 and
-                word.rstrip('aeiouy') or
-                word
-            )
-            for word in words
-        )
-```
+[PRE44]
 
 而且，像往常一样，这是前面示例代码的一个使用示例：
 
-```py
-**>>> indexer = BasicIndexer()**
-**>>> indexer.process("Just like Johnny Flynn said\nThe breath I've taken and the one I must to go on")**
-**Counter({"i'v": 1, 'johnn': 1, 'breath': 1, 'to': 1, 'said': 1, 'go': 1, 'flynn': 1, 'taken': 1, 'on': 1, 'must': 1, 'just': 1, 'one': 1, 'i': 1, 'lik': 1})**
-
-```
+[PRE45]
 
 应该考虑模板，以便设计可能变化并可以表达为孤立子步骤的算法。这可能是 Python 中最常用的模式，并且不总是需要通过子类实现。例如，许多内置的 Python 函数处理算法问题，接受允许您将部分实现委托给外部实现的参数。例如，“sorted（）”函数允许使用后续由排序算法使用的可选`key`关键字参数。对于在给定集合中查找最小值和最大值的“min（）”和“max（）”函数也是如此。
 

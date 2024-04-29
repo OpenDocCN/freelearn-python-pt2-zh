@@ -26,12 +26,7 @@
 
 基本的 HTTP 协议理想上是无状态的。用户代理或客户端可以从功能性的角度看待协议。我们可以使用`http.client`或`urllib`库构建客户端。HTTP 用户代理基本上执行类似于以下内容的操作：
 
-```py
-**import urllib.request**
-**with urllib.request.urlopen(""http://slott-softwarearchitect.blogspot.com"") as response:**
- **print(response.read())**
-
-```
+[PRE0]
 
 像**wget**或**curl**这样的程序在命令行上执行此操作；URL 是从参数中获取的。浏览器响应用户的指向和点击执行此操作；URL 是从用户的操作中获取的，特别是点击链接文本或图像的操作。
 
@@ -45,15 +40,7 @@
 
 我们可以使用`http.server`库如下：
 
-```py
-**from http.server import HTTPServer, SimpleHTTPRequestHandler**
-**running = True**
-**httpd = HTTPServer(('localhost',8080), SimpleHTTPRequestHandler)**
-**while running:**
- **httpd.handle_request()**
-**httpd.shutdown()**
-
-```
+[PRE1]
 
 我们创建了一个服务器对象，并将其分配给`httpd`变量。我们提供了地址和端口号，以便监听连接请求。TCP/IP 协议将在一个单独的端口上生成一个连接。HTTP 协议将从这个其他端口读取请求并创建一个处理程序的实例。
 
@@ -79,10 +66,7 @@
 
 HTTP 的一个核心理念是守护程序的响应是请求的函数。从概念上讲，一个 Web 服务应该有一个可以总结如下的顶层实现：
 
-```py
-**response = httpd(request)**
-
-```
+[PRE2]
 
 然而，这是不切实际的。事实证明，HTTP 请求并不是一个简单的、整体的数据结构。它实际上有一些必需的部分和一些可选的部分。一个请求可能有头部，有一个方法和一个路径，还可能有附件。附件可能包括表单或上传的文件或两者都有。
 
@@ -92,10 +76,7 @@ HTTP 的一个核心理念是守护程序的响应是请求的函数。从概念
 
 HTTP 响应和请求都有头部和正文。请求可以有一些附加的表单数据。因此，我们可以将 Web 服务器看作是这样的：
 
-```py
-**headers, content = httpd(headers, request, [uploads])**
-
-```
+[PRE3]
 
 请求头可能包括 cookie 值，这可以被视为添加更多参数。此外，Web 服务器通常依赖于其运行的操作系统环境。这个操作系统环境数据可以被视为作为请求的一部分提供的更多参数。
 
@@ -111,10 +92,7 @@ HTTP 响应和请求都有头部和正文。请求可以有一些附加的表单
 
 先前解释的函数的概念视图大致如下：
 
-```py
-**response= content(authentication(csrf(session(headers, request, [forms]))))**
-
-```
+[PRE4]
 
 这里的想法是每个函数都可以建立在前一个函数的结果之上。每个函数要么丰富请求，要么拒绝请求，因为它是无效的。例如，`session`函数可以使用标头来确定这是一个现有会话还是一个新会话。`csrf`函数将检查表单输入，以确保使用了正确的令牌。CSRF 处理需要一个有效的会话。`authentication`函数可以为缺乏有效凭据的会话返回错误响应；当存在有效凭据时，它可以丰富请求的用户信息。
 
@@ -124,19 +102,7 @@ HTTP 响应和请求都有头部和正文。请求可以有一些附加的表单
 
 我们真的希望更像这样：
 
-```py
-**def session(headers, request, forms):**
- **pre-process: determine session**
- **content= csrf(headers, request, forms)**
- **post-processes the content**
- **return the content**
-**def csrf(headers, request, forms):**
- **pre-process: validate csrf tokens**
- **content=  authenticate(headers, request, forms)**
- **post-processes the content**
- **return the content**
-
-```
+[PRE5]
 
 这个概念指向了通过一系列嵌套的函数来创建丰富输入或丰富输出或两者的功能设计。通过一点巧妙，我们应该能够定义一个简单的标准接口，各种函数可以使用。一旦我们标准化了接口，我们就可以以不同的方式组合函数并添加功能。我们应该能够满足我们的函数式编程目标，编写简洁而富有表现力的程序，提供 Web 内容。
 
@@ -146,11 +112,7 @@ HTTP 响应和请求都有头部和正文。请求可以有一些附加的表单
 
 每个 WSGI“应用程序”都具有相同的接口：
 
-```py
-**def some_app(environ, start_response):**
- **return content**
-
-```
+[PRE6]
 
 `environ`是一个包含请求参数的字典，具有统一的结构。标头、请求方法、路径、表单或文件上传的任何附件都将在环境中。除此之外，还提供了操作系统级别的上下文以及一些属于 WSGI 请求处理的项目。
 
@@ -162,19 +124,7 @@ HTTP 响应和请求都有头部和正文。请求可以有一些附加的表单
 
 这是一个非常简单的路由应用程序：
 
-```py
-**SCRIPT_MAP = {**
- **""demo"": demo_app,**
- **""static"": static_app,**
- **"""": welcome_app,**
-**}**
-**def routing(environ, start_response):**
- **top_level= wsgiref.util.shift_path_info(environ)**
- **app= SCRIPT_MAP.get(top_level, SCRIPT_MAP[''])**
- **content= app(environ, start_response)**
- **return content**
-
-```
+[PRE7]
 
 此应用程序将使用`wsgiref.util.shift_path_info()`函数来调整环境。这将对请求路径中的项目进行“头/尾拆分”，可在`environ['PATH_INFO']`字典中找到。路径的头部——直到第一个“拆分`”——将被移动到环境中的`SCRIPT_NAME`项目中；`PATH_INFO`项目将被更新为路径的尾部。返回值也将是路径的头部。在没有要解析的路径的情况下，返回值是`None`，不会进行环境更新。
 
@@ -190,22 +140,7 @@ WSGI 应用程序的一个中心特点是，沿着链的每个阶段都负责过
 
 我们可以定义一个 WSGI 应用程序，提供静态内容如下：
 
-```py
-**def static_app(environ, start_response):**
- **try:**
- **with open(CONTENT_HOME+environ['PATH_INFO']) as static:**
- **content= static.read().encode(""utf-8"")**
- **headers= [**
- **(""Content-Type"",'text/plain; charset=""utf-8""'),(""Content-Length"",str(len(content))),]**
- **start_response('200 OK', headers)**
- **return [content]**
- **except IsADirectoryError as e:**
- **return index_app(environ, start_response)**
- **except FileNotFoundError as e:**
- **start_response('404 NOT FOUND', [])**
- **return([repr(e).encode(""utf-8"")])**
-
-```
+[PRE8]
 
 在这种情况下，我们只是尝试打开所请求的路径作为文本文件。我们无法打开给定文件的两个常见原因，这两种情况都作为异常处理：
 
@@ -257,10 +192,7 @@ WSGI 定义的一个后果是配置要么使用全局变量，要么使用请求
 
 我们可以使用的 URL 看起来像这样：
 
-```py
-**http://localhost:8080/anscombe/III/?form=csv**
-
-```
+[PRE9]
 
 这将请求第三个数据集的 CSV 下载。
 
@@ -268,81 +200,29 @@ WSGI 定义的一个后果是配置要么使用全局变量，要么使用请求
 
 首先，我们将使用一个简单的 URL 模式匹配表达式来定义我们应用程序中唯一的路由。在一个更大或更复杂的应用程序中，我们可能会有多个这样的模式：
 
-```py
-**import re**
-**path_pat= re.compile(r""^/anscombe/(?P<dataset>.*?)/?$"")**
-
-```
+[PRE10]
 
 这种模式允许我们在路径的顶层定义一个整体的 WSGI 意义上的“脚本”。在这种情况下，脚本是“anscombe”。我们将路径的下一个级别作为要从 Anscombe Quartet 中选择的数据集。数据集值应该是`I`、`II`、`III`或`IV`中的一个。
 
 我们对选择条件使用了一个命名参数。在许多情况下，RESTful API 使用以下语法进行描述：
 
-```py
-**/anscombe/{dataset}/**
-
-```
+[PRE11]
 
 我们将这种理想化的模式转化为一个适当的正则表达式，并在路径中保留了数据集选择器的名称。
 
 这是演示这种模式如何工作的单元测试的一种类型：
 
-```py
-**test_pattern= """"""**
-**>>> m1= path_pat.match(""/anscombe/I"")**
-**>>> m1.groupdict()**
-**{'dataset': 'I'}**
-**>>> m2= path_pat.match(""/anscombe/II/"")**
-**>>> m2.groupdict()**
-**{'dataset': 'II'}**
-**>>> m3= path_pat.match(""/anscombe/"")**
-**>>> m3.groupdict()**
-**{'dataset': ''}**
-**""""""**
-
-```
+[PRE12]
 
 我们可以使用以下命令将三个先前提到的示例包含在整个 doctest 中：
 
-```py
-**__test__ = {**
- **""test_pattern"": test_pattern,**
-**}**
-
-```
+[PRE13]
 
 这将确保我们的路由按预期工作。能够从 WSGI 应用程序的其余部分单独测试这一点非常重要。测试完整的 Web 服务器意味着启动服务器进程，然后尝试使用浏览器或测试工具（如 Postman 或 Selenium）进行连接。访问[`www.getpostman.com`](http://www.getpostman.com)或[`www.seleniumhq.org`](http://www.seleniumhq.org)以获取有关 Postman 和 Selenium 用法的更多信息。我们更喜欢单独测试每个功能。
 
 以下是整个 WSGI 应用程序，其中突出显示了两行命令：
 
-```py
-**import traceback**
-**import urllib**
-**def anscombe_app(environ, start_response):**
- **log= environ['wsgi.errors']**
- **try:**
- **match= path_pat.match(environ['PATH_INFO'])**
- **set_id= match.group('dataset').upper()**
- **query= urllib.parse.parse_qs(environ['QUERY_STRING'])**
- **print(environ['PATH_INFO'], environ['QUERY_STRING'],match.groupdict(), file=log)**
- **log.flush()**
- **dataset= anscombe_filter(set_id, raw_data())**
- **content, mime= serialize(query['form'][0], set_id, dataset)**
- **headers= [**
- **('Content-Type', mime),('Content-Length', str(len(content))),        ]**
- **start_response(""200 OK"", headers)**
- **return [content]**
- **except Exception as e:**
- **traceback.print_exc(file=log)**
- **tb= traceback.format_exc()**
- **page= error_page.substitute(title=""Error"", message=repr(e), traceback=tb)**
- **content= page.encode(""utf-8"")**
- **headers = [**
- **('Content-Type', ""text/html""),('Content-Length', str(len(content))),]**
- **start_response(""404 NOT FOUND"", headers)**
- **return [content]**
-
-```
+[PRE14]
 
 此应用程序将从请求中提取两个信息：`PATH_INFO`和`QUERY_STRING`方法。`PATH_INFO`请求将定义要提取的集合。`QUERY_STRING`请求将指定输出格式。
 
@@ -360,21 +240,7 @@ WSGI 定义的一个后果是配置要么使用全局变量，要么使用请求
 
 `raw_data()`函数在很大程度上是从第三章*函数，迭代器和生成器*中复制的。我们包含了一些重要的更改。以下是我们用于此应用程序的内容：
 
-```py
-**from Chapter_3.ch03_ex5 import series, head_map_filter, row_iter, Pair**
-**def raw_data():**
- **""""""**
- **>>> raw_data()['I'] #doctest: +ELLIPSIS**
- **(Pair(x=10.0, y=8.04), Pair(x=8.0, y=6.95), ...**
- **""""""**
- **with open(""Anscombe.txt"") as source:**
- **data = tuple(head_map_filter(row_iter(source)))**
- **mapping = dict((id_str, tuple(series(id_num,data)))**
- **for id_num, id_str in enumerate(['I', 'II', 'III', 'IV'])**
- **)**
- **return mapping**
-
-```
+[PRE15]
 
 我们打开了本地数据文件，并应用了一个简单的`row_iter()`函数，以将文件的每一行解析为一个单独的行。我们应用了`head_map_filter()`函数来从文件中删除标题。结果创建了一个包含所有数据的元组结构。
 
@@ -390,15 +256,7 @@ WSGI 定义的一个后果是配置要么使用全局变量，要么使用请求
 
 在这个应用程序中，我们使用了一个非常简单的过滤器。整个过滤过程体现在下面的函数中：
 
-```py
-**def anscombe_filter(set_id, raw_data):**
- **""""""**
- **>>> anscombe_filter(""II"", raw_data()) #doctest: +ELLIPSIS**
- **(Pair(x=10.0, y=9.14), Pair(x=8.0, y=8.14), Pair(x=13.0, y=8.74), ...**
- **""""""**
- **return raw_data[set_id]**
-
-```
+[PRE16]
 
 我们将这个微不足道的表达式转换成一个函数有三个原因：
 
@@ -418,23 +276,7 @@ WSGI 定义的一个后果是配置要么使用全局变量，要么使用请求
 
 序列化是将 Python 数据转换为适合传输的字节流的过程。每种格式最好由一个简单的函数来描述，该函数只序列化这一种格式。然后，顶层通用序列化程序可以从特定序列化程序列表中进行选择。序列化程序的选择导致以下一系列函数：
 
-```py
-**serializers = {**
- **'xml': ('application/xml', serialize_xml),**
- **'html': ('text/html', serialize_html),**
- **'json': ('application/json', serialize_json),**
- **'csv': ('text/csv', serialize_csv),**
-**}**
-**def serialize(format, title, data):**
- **""""""json/xml/csv/html serialization.**
- **>>> data = [Pair(2,3), Pair(5,7)]**
- **>>> serialize(""json"", ""test"", data)**
- **(b'[{""x"": 2, ""y"": 3}, {""x"": 5, ""y"": 7}]', 'application/json')**
- **""""""**
- **mime, function = serializers.get(format.lower(), ('text/html', serialize_html))**
- **return function(title, data), mime**
-
-```
+[PRE17]
 
 整体`serialize()`函数找到必须在响应中使用的特定序列化程序和特定 MIME 类型。然后调用其中一个特定的序列化程序。我们还在这里展示了一个`doctest`测试用例。我们没有耐心测试每个序列化程序，因为显示一个工作似乎就足够了。
 
@@ -442,30 +284,13 @@ WSGI 定义的一个后果是配置要么使用全局变量，要么使用请求
 
 对于生成字符串的序列化器，我们需要使用标准的转换为字节的函数组合。我们可以使用装饰器进行函数组合。以下是我们如何将转换为字节标准化：
 
-```py
-**from functools import wraps**
-**def to_bytes(function):**
- **@wraps(function)**
- **def decorated(*args, **kw):**
- **text= function(*args, **kw)**
- **return text.encode(""utf-8"")**
- **return decorated**
-
-```
+[PRE18]
 
 我们创建了一个名为`@to_bytes`的小装饰器。这将评估给定的函数，然后使用 UTF-8 对结果进行编码以获得字节。我们将展示如何将其与 JSON、CSV 和 HTML 序列化器一起使用。XML 序列化器直接产生字节，不需要与此额外函数组合。
 
 我们还可以在`serializers`映射的初始化中进行函数组合。我们可以装饰函数定义的引用，而不是装饰函数对象的引用。
 
-```py
-**serializers = {**
- **'xml': ('application/xml', serialize_xml),**
- **'html': ('text/html', to_bytes(serialize_html)),**
- **'json': ('application/json', to_bytes(serialize_json)),**
- **'csv': ('text/csv', to_bytes(serialize_csv)),**
-**}**
-
-```
+[PRE19]
 
 虽然这是可能的，但这似乎并不有用。产生字符串和产生字节的序列化器之间的区别并不是配置的重要部分。
 
@@ -475,42 +300,13 @@ JSON 和 CSV 序列化器是类似的函数，因为两者都依赖于 Python �
 
 这是 JSON 序列化器：
 
-```py
-**import json**
-**@to_bytes**
-**def serialize_json(series, data):**
- **""""""**
- **>>> data = [Pair(2,3), Pair(5,7)]**
- **>>> serialize_json(""test"", data)**
- **b'[{""x"": 2, ""y"": 3}, {""x"": 5, ""y"": 7}]'**
- **""""""**
- **obj= [dict(x=r.x, y=r.y) for r in data]**
- **text= json.dumps(obj, sort_keys=True)**
- **return text**
-
-```
+[PRE20]
 
 我们创建了一个字典结构的列表，并使用`json.dumps()`函数创建了一个字符串表示。JSON 模块需要一个具体化的`list`对象；我们不能提供一个惰性生成器函数。`sort_keys=True`参数值对于单元测试是必不可少的。但对于应用程序并不是必需的，而且代表了一些额外的开销。
 
 这是 CSV 序列化器：
 
-```py
-**import csv, io**
-**@to_bytes**
-**def serialize_csv(series, data):**
- **""""""**
-
- **>>> data = [Pair(2,3), Pair(5,7)]**
- **>>> serialize_csv(""test"", data)**
- **b'x,y\\r\\n2,3\\r\\n5,7\\r\\n'**
- **""""""**
- **buffer= io.StringIO()**
- **wtr= csv.DictWriter(buffer, Pair._fields)**
- **wtr.writeheader()**
- **wtr.writerows(r._asdict() for r in data)**
- **return buffer.getvalue()**
-
-```
+[PRE21]
 
 CSV 模块的读取器和写入器是命令式和函数式元素的混合。我们必须创建写入器，并严格按顺序创建标题。我们使用了`Pair`命名元组的`_fields`属性来确定写入器的列标题。
 
@@ -522,24 +318,7 @@ CSV 模块的读取器和写入器是命令式和函数式元素的混合。我�
 
 这是我们的 XML 序列化：
 
-```py
-**import xml.etree.ElementTree as XML**
-**def serialize_xml(series, data):**
- **""""""**
- **>>> data = [Pair(2,3), Pair(5,7)]**
- **>>> serialize_xml(""test"", data)**
- **b'<series name=""test""><row><x>2</x><y>3</y></row><row><x>5</x><y>7</y></row></series>'**
- **""""""**
- **doc= XML.Element(""series"", name=series)**
- **for row in data:**
- **row_xml= XML.SubElement(doc, ""row"")**
- **x= XML.SubElement(row_xml, ""x"")**
- **x.text= str(row.x)**
- **y= XML.SubElement(row_xml, ""y"")**
- **y.text= str(row.y)**
- **return XML.tostring(doc, encoding='utf-8')**
-
-```
+[PRE22]
 
 我们创建了一个顶级元素`<series>`，并将`<row>`子元素放在该顶级元素下面。在每个`<row>`子元素中，我们创建了`<x>`和`<y>`标签，并为每个标签分配了文本内容。
 
@@ -551,19 +330,7 @@ CSV 模块的读取器和写入器是命令式和函数式元素的混合。我�
 
 在我们最后一个序列化示例中，我们将看到创建 HTML 文档的复杂性。复杂性的原因是在 HTML 中，我们需要提供一个带有一些上下文信息的整个网页。以下是解决这个 HTML 问题的一种方法：
 
-```py
-**import string**
-**data_page = string.Template(""""""<html><head><title>Series ${title}</title></head><body><h1>Series ${title}</h1><table><thead><tr><td>x</td><td>y</td></tr></thead><tbody>${rows}</tbody></table></body></html>"""""")**
-**@to_bytes**
-**def serialize_html(series, data):**
- **"""""">>> data = [Pair(2,3), Pair(5,7)]>>> serialize_html(""test"", data) #doctest: +ELLIPSISb'<html>...<tr><td>2</td><td>3</td></tr>\\n<tr><td>5</td><td>7</td></tr>...""""""**
- **text= data_page.substitute(title=series,rows=""\n"".join(**
- **""<tr><td>{0.x}</td><td>{0.y}</td></tr>"".format(row)**
- **for row in data)**
- **)**
- **return text**
-
-```
+[PRE23]
 
 我们的序列化函数有两个部分。第一部分是一个`string.Template()`函数，其中包含了基本的 HTML 页面。它有两个占位符，可以将数据插入模板中。`${title}`方法显示了标题信息可以插入的位置，`${rows}`方法显示了数据行可以插入的位置。
 
@@ -583,16 +350,7 @@ API 密钥用于验证访问。它也可以用于授权特定功能。最后，�
 
 创建 API 密钥的一种简单方法是使用加密随机数来生成难以预测的密钥字符串。像下面这样的一个小函数应该足够好：
 
-```py
-**import random**
-**rng= random.SystemRandom()**
-**import base64**
-**def make_key_1(rng=rng, size=1):**
- **key_bytes= bytes(rng.randrange(0,256) for i in range(18*size))**
- **key_string= base64.urlsafe_b64encode(key_bytes)**
- **return key_string**
-
-```
+[PRE24]
 
 我们使用了`random.SystemRandom`类作为我们安全随机数生成器的类。这将使用`os.urandom()`字节来初始化生成器，确保了一个可靠的不可预测的种子值。我们单独创建了这个对象，以便每次请求密钥时都可以重复使用。最佳做法是使用单个随机种子从生成器获取多个密钥。
 
@@ -604,11 +362,7 @@ API 密钥用于验证访问。它也可以用于授权特定功能。最后，�
 
 有多少随机密钥？看一下以下命令及其输出：
 
-```py
-**>>> 2**(18*8)**
-**22300745198530623141535718272648361505980416**
-
-```
+[PRE25]
 
 成功伪造其他人的密钥的几率很小。
 

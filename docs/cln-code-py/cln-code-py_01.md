@@ -78,17 +78,11 @@
 
 为了更好地理解这一点，让我们举个例子。假设我们正在调试，我们需要找到将值传递给名为`location`的参数的地方。我们可以运行以下`grep`命令，结果将告诉我们我们正在寻找的文件和行：
 
-```py
-$ grep -nr "location=" . 
-./core.py:13: location=current_location,
-```
+[PRE0]
 
 现在，我们想知道这个变量是在哪里被赋予这个值，下面的命令也会给我们提供我们正在寻找的信息：
 
-```py
-$ grep -nr "location =" .
-./core.py:10: current_location = get_location()
-```
+[PRE1]
 
 PEP-8 规定，当通过关键字将参数传递给函数时，我们不使用空格，但在赋值变量时使用。因此，我们可以调整我们的搜索标准（在第一次搜索时不使用`=`周围的空格，在第二次搜索时使用一个空格），并且在我们的搜索中更加高效。这是遵循约定的优势之一。
 
@@ -124,34 +118,17 @@ PEP-8 规定，当通过关键字将参数传递给函数时，我们不使用�
 
 考虑一下标准库中的这个很好的例子：
 
-```py
-In [1]: dict.update??
-Docstring:
-D.update([E, ]**F) -> None. Update D from dict/iterable E and F.
-If E is present and has a .keys() method, then does: for k in E: D[k] = E[k]
-If E is present and lacks a .keys() method, then does: for k, v in E: D[k] = v
-In either case, this is followed by: for k in F: D[k] = F[k]
-Type: method_descriptor
-```
+[PRE2]
 
 在这里，字典上`update`方法的文档字符串为我们提供了有用的信息，并告诉我们可以以不同的方式使用它：
 
 1.  我们可以传递一个具有`.keys()`方法的对象（例如，另一个字典），它将使用传递的对象的键更新原始字典：
 
-```py
->>> d = {}
->>> d.update({1: "one", 2: "two"})
->>> d
-{1: 'one', 2: 'two'}
-```
+[PRE3]
 
 1.  我们可以传递一个键和值的对的可迭代对象，并将它们解包到`update`中：
 
-```py
->>> d.update([(3, "three"), (4, "four")])
->>> d
-{1: 'one', 2: 'two', 3: 'three', 4: 'four'}
-```
+[PRE4]
 
 在任何情况下，字典将使用传递给它的其余关键字参数进行更新。
 
@@ -161,14 +138,7 @@ Type: method_descriptor
 
 文档字符串不是与代码分离或孤立的东西。它成为代码的一部分，您可以访问它。当对象有定义的文档字符串时，这通过其`__doc__`属性成为其一部分：
 
-```py
->>> def my_function():
- ... """Run some computation"""
- ... return None
- ...
- >>> my_function.__doc__
- 'Run some computation'
-```
+[PRE5]
 
 这意味着甚至可以在运行时访问它，甚至可以从源代码生成或编译文档。实际上，有工具可以做到这一点。如果运行 Sphinx，它将为项目的文档创建基本的框架。特别是使用`autodoc`扩展（`sphinx.ext.autodoc`），该工具将从代码中获取文档字符串，并将其放置在记录函数的页面中。
 
@@ -186,15 +156,7 @@ PEP-3107 引入了注解的概念。它们的基本想法是向代码的读者�
 
 考虑以下示例：
 
-```py
-class Point:
-    def __init__(self, lat, long):
-        self.lat = lat
-        self.long = long
-
-def locate(latitude: float, longitude: float) -> Point:
-    """Find an object in the map by its coordinates"""
-```
+[PRE6]
 
 在这里，我们使用`float`来指示`latitude`和`longitude`的预期类型。这仅仅是为了让函数的读者了解这些预期类型。Python 不会检查这些类型，也不会强制执行它们。
 
@@ -204,10 +166,7 @@ def locate(latitude: float, longitude: float) -> Point:
 
 随着注解的引入，还包括了一个新的特殊属性，即`__annotations__`。这将使我们能够访问一个字典，将注解的名称（作为字典中的键）与它们的对应值进行映射，这些值是我们为它们定义的。在我们的示例中，这将如下所示：
 
-```py
->>> locate.__annotations__
- {'latitude': float, 'longitue': float, 'return': __main__.Point}
-```
+[PRE7]
 
 如果我们认为有必要，我们可以使用这些来生成文档，运行验证，或者在我们的代码中强制检查。
 
@@ -223,14 +182,7 @@ Python 将保持为一种动态类型的语言，作者们也不希望通过约�
 
 在编写本书时，关于注释方面进行了一项额外的改进，那就是从 Python 3.6 开始，可以直接注释变量，而不仅仅是函数参数和返回类型。这是在 PEP-526 中引入的，其想法是可以声明一些变量的类型，而不一定给它们赋值，如下面的清单所示：
 
-```py
-class Point:
-    lat: float
-    long: float
-
->>> Point.__annotations__
-{'lat': <class 'float'>, 'long': <class 'float'>} 
-```
+[PRE8]
 
 # 注释是否取代了 docstrings？
 
@@ -242,41 +194,13 @@ class Point:
 
 考虑以下示例。假设我们有一个函数，它期望一个字典来验证一些数据：
 
-```py
-def data_from_response(response: dict) -> dict:
-    if response["status"] != 200:
-        raise ValueError
-    return {"data": response["payload"]}
-```
+[PRE9]
 
 在这里，我们可以看到一个接受字典并返回另一个字典的函数。可能会在键`"status"`下的值不是预期值时引发异常。但是，我们对此了解不多。例如，`response`对象的正确实例是什么样的？`result`的实例会是什么样的？为了回答这两个问题，最好是记录预期由参数传入并由此函数返回的数据的示例。
 
 让我们看看是否可以通过 docstring 更好地解释这一点：
 
-```py
-def data_from_response(response: dict) -> dict:
-    """If the response is OK, return its payload.
-
-    - response: A dict like::
-
-    {
-        "status": 200, # <int>
-        "timestamp": "....", # ISO format string of the current
-        date time
-        "payload": { ... } # dict with the returned data
-    }
-
-    - Returns a dictionary like::
-
-    {"data": { .. } }
-
-    - Raises:
-    - ValueError if the HTTP status is != 200
-    """
-    if response["status"] != 200:
-        raise ValueError
-    return {"data": response["payload"]}
-```
+[PRE10]
 
 现在，我们对这个函数预期接收和返回的内容有了更好的了解。文档不仅作为理解和了解传递内容的宝贵输入，还是单元测试的宝贵来源。我们可以从中获取数据作为输入，并知道测试时应该使用的正确和不正确的值。实际上，测试也可以作为我们代码的可执行文档，但这将在更详细地解释。
 
@@ -304,15 +228,11 @@ Mypy ([`mypy-lang.org/`](http://mypy-lang.org/)) 是 Python 中可选的静态�
 
 你可以使用 `pip` 安装它，并建议将其包含在项目的设置文件中作为依赖项：
 
-```py
-$ pip install mypy
-```
+[PRE11]
 
 一旦它安装在虚拟环境中，你只需运行上述命令，它将报告类型检查的所有发现。尽量遵循它的报告，因为大多数时候，它提供的见解有助于避免可能会滑入生产中的错误。然而，该工具并不完美，所以如果你认为它报告了一个误报，你可以用以下标记忽略该行作为注释：
 
-```py
-type_to_ignore = "something" # type: ignore
-```
+[PRE12]
 
 # 使用 Pylint 检查代码
 
@@ -320,9 +240,7 @@ type_to_ignore = "something" # type: ignore
 
 再次强调，您只需在虚拟环境中使用`pip`安装它：
 
-```py
-$ pip install pylint
-```
+[PRE13]
 
 然后，只需运行`pylint`命令就足以检查代码。
 
@@ -336,26 +254,11 @@ $ pip install pylint
 
 一个好的方法是为测试设置目标，每个特定的测试，然后再设置一个将所有测试一起运行的目标。例如：
 
-```py
-typehint:
-mypy src/ tests/
-
-test:
-pytest tests/
-
-lint:
-pylint src/ tests/
-
-checklist: lint typehint test
-
-.PHONY: typehint test lint checklist
-```
+[PRE14]
 
 在这里，我们应该运行的命令（无论是在我们的开发机器上还是在持续集成环境构建中）是以下命令：
 
-```py
-make checklist
-```
+[PRE15]
 
 这将按以下步骤运行所有内容：
 
@@ -375,31 +278,15 @@ make checklist
 
 以下代码符合 PEP-8 规范，但不符合`black`的约定：
 
-```py
-def my_function(name):
- """
- >>> my_function('black')
- 'received Black'
- """
- return 'received {0}'.format(name.title())
-```
+[PRE16]
 
 现在，我们可以运行以下命令来格式化文件：
 
-```py
-black -l 79 *.py
-```
+[PRE17]
 
 现在，我们可以看到工具写了什么：
 
-```py
-def my_function(name):
- """
- >>> my_function('black')
- 'received Black'
- """
- return "received {0}".format(name.title())
-```
+[PRE18]
 
 在更复杂的代码中，会有更多的变化（尾随逗号等），但这个想法可以清楚地看到。再次强调，这是一种主观看法，但对于我们来说，拥有一个处理细节的工具也是一个好主意。这也是 Golang 社区很久以前就学会的东西，以至于有一个标准的工具库`got fmt`，可以根据语言的约定自动格式化代码。Python 现在也有这样的东西，这是件好事。
 

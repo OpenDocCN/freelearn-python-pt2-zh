@@ -102,23 +102,11 @@
 
 代码块设置如下：
 
-```py
-def encrypt(message, key):
-    encryptedM = ''
-    for letts in message:
-        if letts in LETTERS:
-            num = LETTERS.find(letts)
-            num += key
-            encryptedM +=  LETTERS[num]
-    return encryptedM
-```
+[PRE0]
 
 任何命令行输入或输出都以以下方式编写：
 
-```py
-There once was a citizen in the town of Narnia, whose name was Malena. Malena loved to hang with their trusty dog, King Kong.
-You could always see them strolling through the market in the morning, wearing their favorite blue attire.
-```
+[PRE1]
 
 **粗体**：表示一个新术语，一个重要的词，或者屏幕上看到的词。例如，菜单或对话框中的单词会以这种方式出现在文本中。这是一个例子：“正如您从前面的截图中所看到的，**死亡**列继续上升，病例数量也在增加，我们稍后会在这个问题中再看一下。”
 
