@@ -1,4 +1,4 @@
-# 第二章。Pythonic 语法，常见陷阱和风格指南
+# 第二章：Pythonic 语法，常见陷阱和风格指南
 
 Python 编程语言的设计和开发一直由其原始作者 Guido van Rossum 掌握，他常常被亲切地称为**终身仁慈独裁者**（**BDFL**）。尽管 van Rossum 被认为拥有一台时光机（他曾多次回答功能请求说“我昨晚刚实现了这个”：[`www.catb.org/jargon/html/G/Guido.html`](http://www.catb.org/jargon/html/G/Guido.html)），但他仍然只是一个人，需要帮助来维护和发展 Python。为了方便这一点，**Python Enhancement Proposal**（**PEP**）流程已经被开发出来。这个流程允许任何人提交一个带有功能技术规范和为其有用性辩护的理由的 PEP。在 Python 邮件列表上进行讨论并可能进行一些改进后，BDFL 将做出接受或拒绝提案的决定。
 
