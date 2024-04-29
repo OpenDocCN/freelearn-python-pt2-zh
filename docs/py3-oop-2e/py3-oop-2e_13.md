@@ -50,10 +50,10 @@ print("while you typed '{}'".format(thread.line_of_text))
 如果我们运行示例并输入字符串"hello world"，输出如下：
 
 ```py
-**Enter some text and press enter:**
-**hello world**
-**calculated squares up to 1044477 * 1044477 = 1090930114576**
-**while you typed 'hello world'**
+Enter some text and press enter:
+hello world
+calculated squares up to 1044477 * 1044477 = 1090930114576
+while you typed 'hello world'
 
 ```
 
@@ -62,10 +62,10 @@ print("while you typed '{}'".format(thread.line_of_text))
 只有当我们调用`start`方法时，线程才以并发模式开始运行。如果我们想要去掉并发调用以查看它的比较，我们可以在原来调用`thread.start()`的地方调用`thread.run()`。输出如下：
 
 ```py
-**Enter some text and press enter:**
-**hello world**
-**calculated squares up to 1 * 1 = 1**
-**while you typed 'hello world'**
+Enter some text and press enter:
+hello world
+calculated squares up to 1 * 1 = 1
+while you typed 'hello world'
 
 ```
 
@@ -86,9 +86,9 @@ CITIES = [
 ]
 
 class TempGetter(Thread):
- **def __init__(self, city):**
- **super().__init__()**
- **self.city = city**
+ **def __init__(self, city):
+ **super().__init__()
+ **self.city = city
 
     def run(self):
         url_template = (
@@ -98,13 +98,13 @@ class TempGetter(Thread):
         data = json.loads(response.read().decode())
         self.temperature = data['main']['temp']
 
-**threads = [TempGetter(c) for c in CITIES]**
+threads = [TempGetter(c) for c in CITIES]
 start = time.time()
 for thread in threads:
     thread.start()
 
-**for thread in threads:**
- **thread.join()**
+for thread in threads:
+ **thread.join()
 
 for thread in threads:
     print(
@@ -123,17 +123,17 @@ print(
 在我的 100 兆比特连接上执行这段代码大约需要 0.2 秒：
 
 ```py
-**it is 5°C in Edmonton**
-**it is 11°C in Victoria**
-**it is 0°C in Winnipeg**
-**it is -10°C in Fredericton**
-**it is -12°C in St. John's**
-**it is -8°C in Halifax**
-**it is -6°C in Toronto**
-**it is -13°C in Charlottetown**
-**it is -12°C in Quebec City**
-**it is 2°C in Regina**
- **Got 10 temps in 0.18970298767089844 seconds**
+it is 5°C in Edmonton
+it is 11°C in Victoria
+it is 0°C in Winnipeg
+it is -10°C in Fredericton
+it is -12°C in St. John's
+it is -8°C in Halifax
+it is -6°C in Toronto
+it is -13°C in Charlottetown
+it is -12°C in Quebec City
+it is 2°C in Regina
+ **Got 10 temps in 0.18970298767089844 seconds
 
 ```
 
@@ -180,19 +180,19 @@ from multiprocessing import Process, cpu_count
 import time
 import os
 
-**class MuchCPU(Process):**
+class MuchCPU(Process):
     def run(self):
- **print(os.getpid())**
+ **print(os.getpid())
         for i in range(200000000):
             pass
 
 if __name__ == '__main__':
- **procs =  [MuchCPU() for f in range(cpu_count())]**
+ **procs =  [MuchCPU() for f in range(cpu_count())]
     t = time.time()
     for p in procs:
- **p.start()**
+ **p.start()
     for p in procs:
- **p.join()**
+ **p.join()
     print('work took {} seconds'.format(time.time() - t))
 ```
 
@@ -205,11 +205,11 @@ API 应该是熟悉的；我们实现`Process`的子类（而不是`Thread`）�
 我们为机器上的每个处理器核心构建一个进程，然后启动和加入每个进程。在我 2014 年的四核笔记本上，输出如下：
 
 ```py
-**6987**
-**6988**
-**6989**
-**6990**
-**work took 12.96659541130066 seconds**
+6987
+6988
+6989
+6990
+work took 12.96659541130066 seconds
 
 ```
 
@@ -218,11 +218,11 @@ API 应该是熟悉的；我们实现`Process`的子类（而不是`Thread`）�
 如果我们在`MuchCPU`中使用`threading.Thread`而不是`multiprocessing.Process`进行子类化，输出如下：
 
 ```py
-**7235**
-**7235**
-**7235**
-**7235**
-**work took 28.577413082122803 seconds**
+7235
+7235
+7235
+7235
+work took 28.577413082122803 seconds
 
 ```
 
@@ -254,7 +254,7 @@ API 应该是熟悉的；我们实现`Process`的子类（而不是`Thread`）�
 
 ```py
 import random
-**from multiprocessing.pool import Pool**
+from multiprocessing.pool import Pool
 
 def prime_factor(value):
     factors = []
@@ -269,13 +269,13 @@ def prime_factor(value):
     return factors
 
 if __name__ == '__main__':
- **pool = Pool()**
+ **pool = Pool()
 
     to_factor = [
         random.randint(100000, 50000000) for i in range(20)
     ]
- **results = pool.map(prime_factor, to_factor)**
- **for value, factors in zip(to_factor, results):**
+ **results = pool.map(prime_factor, to_factor)
+ **for value, factors in zip(to_factor, results):
         print("The factors of {} are {}".format(value, factors))
 ```
 
@@ -298,15 +298,15 @@ if __name__ == '__main__':
 这个特定的搜索引擎并行扫描当前目录中的所有文件。为 CPU 上的每个核心构建一个进程。每个进程都被指示将一些文件加载到内存中。让我们来看看执行加载和搜索的函数：
 
 ```py
-**def search(paths, query_q, results_q):**
+def search(paths, query_q, results_q):
     lines = []
     for path in paths:
         lines.extend(l.strip() for l in path.open())
 
- **query = query_q.get()**
+ **query = query_q.get()
     while query:
- **results_q.put([l for l in lines if query in l])**
- **query = query_q.get()**
+ **results_q.put([l for l in lines if query in l])
+ **query = query_q.get()
 
 ```
 
@@ -323,13 +323,13 @@ if __name__ == '__main__':
     cpus = cpu_count()
     pathnames = [f for f in path('.').listdir() if f.isfile()]
     paths = [pathnames[i::cpus] for i in range(cpus)]
- **query_queues = [Queue() for p in range(cpus)]**
- **results_queue = Queue()**
+ **query_queues = [Queue() for p in range(cpus)]
+ **results_queue = Queue()
 
- **search_procs = [**
- **Process(target=search, args=(p, q, results_queue))**
- **for p, q in zip(paths, query_queues)**
- **]**
+ **search_procs = [
+ **Process(target=search, args=(p, q, results_queue))
+ **for p, q in zip(paths, query_queues)
+ **]
     for proc in search_procs: proc.start()
 ```
 
@@ -339,11 +339,11 @@ if __name__ == '__main__':
 
 ```py
     for q in query_queues:
- **q.put("def")**
- **q.put(None)  # Signal process termination**
+ **q.put("def")
+ **q.put(None)  # Signal process termination
 
     for i in range(cpus):
- **for match in results_queue.get():**
+ **for match in results_queue.get():
             print(match)
     for proc in search_procs: proc.join()
 ```
@@ -389,7 +389,7 @@ query = '.py'
 futures = deque()
 basedir = Path(pathsep).absolute()
 
-**with ThreadPoolExecutor(max_workers=10) as executor:**
+with ThreadPoolExecutor(max_workers=10) as executor:
     futures.append(
         executor.submit(find_files, basedir, query))
     while futures:
@@ -438,27 +438,27 @@ basedir = Path(pathsep).absolute()
 一个典型的阻塞函数的例子是`time.sleep`调用。让我们使用这个调用的异步版本来说明异步 IO 事件循环的基础知识：
 
 ```py
-**import asyncio**
+import asyncio
 import random
 
-**@asyncio.coroutine**
+@asyncio.coroutine
 def random_sleep(counter):
     delay = random.random() * 5
     print("{} sleeps for {:.2f} seconds".format(counter, delay))
- **yield from asyncio.sleep(delay)**
+ **yield from asyncio.sleep(delay)
     print("{} awakens".format(counter))
 
-**@asyncio.coroutine**
+@asyncio.coroutine
 def five_sleepers():
     print("Creating five tasks")
- **tasks = [**
- **asyncio.async(random_sleep(i)) for i in range(5)]**
+ **tasks = [
+ **asyncio.async(random_sleep(i)) for i in range(5)]
     print("Sleeping after starting five tasks")
- **yield from asyncio.sleep(2)**
+ **yield from asyncio.sleep(2)
     print("Waking and waiting for five tasks")
- **yield from asyncio.wait(tasks)**
+ **yield from asyncio.wait(tasks)
 
-**asyncio.get_event_loop().run_until_complete(five_sleepers())**
+asyncio.get_event_loop().run_until_complete(five_sleepers())
 print("Done five tasks")
 ```
 
@@ -520,28 +520,28 @@ def create_response(data, ip):
     for x in ip.split('.'): packet.append(int(x))
     return packet
 
-**class DNSProtocol(asyncio.DatagramProtocol):**
+class DNSProtocol(asyncio.DatagramProtocol):
     def connection_made(self, transport):
         self.transport = transport
 
- **def datagram_received(self, data, addr):**
+ **def datagram_received(self, data, addr):
         print("Received request from {}".format(addr[0]))
         domain, ip = lookup_dns(data)
         print("Sending IP {} for {} to {}".format(
             domain.decode(), ip, addr[0]))
- **self.transport.sendto(**
- **create_response(data, ip), addr)**
+ **self.transport.sendto(
+ **create_response(data, ip), addr)
 
 loop = asyncio.get_event_loop()
-**transport, protocol = loop.run_until_complete(**
- **loop.create_datagram_endpoint(**
- **DNSProtocol, local_addr=('127.0.0.1', 4343)))**
+transport, protocol = loop.run_until_complete(
+ **loop.create_datagram_endpoint(
+ **DNSProtocol, local_addr=('127.0.0.1', 4343)))
 print("DNS Server running")
 
 with suppress(KeyboardInterrupt):
- **loop.run_forever()**
-**transport.close()**
-**loop.close()**
+ **loop.run_forever()
+transport.close()
+loop.close()
 
 ```
 
@@ -550,7 +550,7 @@ with suppress(KeyboardInterrupt):
 您可以通过在另一个终端中运行以下命令来测试此服务：
 
 ```py
-**nslookup -port=4343 facebook.com localhost**
+nslookup -port=4343 facebook.com localhost
 
 ```
 
@@ -596,25 +596,25 @@ def sort_in_process(data):
 @asyncio.coroutine
 def sort_request(reader, writer):
     print("Received connection")
- **length = yield from reader.read(8)**
- **data = yield from reader.readexactly(**
- **int.from_bytes(length, 'big'))**
- **result = yield from asyncio.get_event_loop().run_in_executor(**
- **None, sort_in_process, data)**
+ **length = yield from reader.read(8)
+ **data = yield from reader.readexactly(
+ **int.from_bytes(length, 'big'))
+ **result = yield from asyncio.get_event_loop().run_in_executor(
+ **None, sort_in_process, data)
     print("Sorted list")
     writer.write(result)
     writer.close()   
     print("Connection closed")     
 
 loop = asyncio.get_event_loop()
-**loop.set_default_executor(ProcessPoolExecutor())**
-**server = loop.run_until_complete(**
- **asyncio.start_server(sort_request, '127.0.0.1', 2015))**
+loop.set_default_executor(ProcessPoolExecutor())
+server = loop.run_until_complete(
+ **asyncio.start_server(sort_request, '127.0.0.1', 2015))
 print("Sort Service running")
 
 loop.run_forever()
 server.close()
-**loop.run_until_complete(server.wait_closed())**
+loop.run_until_complete(server.wait_closed())
 loop.close()
 ```
 
@@ -711,12 +711,12 @@ def split_bits(bits, width):
 def compress_in_executor(executor, bits, width):
     row_compressors = []
     for row in split_bits(bits, width):
- **compressor = executor.submit(compress_row, row)**
+ **compressor = executor.submit(compress_row, row)
         row_compressors.append(compressor)
 
     compressed = bytearray()
     for compressor in row_compressors:
- **compressed.extend(compressor.result())**
+ **compressed.extend(compressor.result())
     return compressed
 ```
 
@@ -742,7 +742,7 @@ def compress_image(in_filename, out_filename, executor=None):
 def single_image_main():
     in_filename, out_filename = sys.argv[1:3]
     #executor = ThreadPoolExecutor(4)
- **executor = ProcessPoolExecutor()**
+ **executor = ProcessPoolExecutor()
     compress_image(in_filename, out_filename, executor)
 ```
 
@@ -760,12 +760,12 @@ def compress_dir(in_dir, out_dir):
     if not out_dir.exists():
         out_dir.mkdir()
 
- **executor = ProcessPoolExecutor()**
+ **executor = ProcessPoolExecutor()
     for file in (
             f for f in in_dir.iterdir() if f.suffix == '.bmp'):
         out_file = (out_dir / file.name).with_suffix('.rle')
- **executor.submit(**
- **compress_image, str(file), str(out_file))**
+ **executor.submit(
+ **compress_image, str(file), str(out_file))
 
 def dir_images_main():
     in_dir, out_dir = (Path(p) for p in sys.argv[1:3])

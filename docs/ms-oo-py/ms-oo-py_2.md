@@ -956,9 +956,9 @@ s1, s2 = Hand5.split( h, d.pop(), d.pop() )
 ```py
 class Player:
     def __init__( self, table, bet_strategy, game_strategy ):
- **self.bet_strategy = bet_strategy**
- **self.game_strategy = game_strategy**
- **self.table= table**
+ **self.bet_strategy = bet_strategy
+ **self.game_strategy = game_strategy
+ **self.table= table
     def game( self ):
         self.table.place_bet( self.bet_strategy.bet() )
         self.hand= self.table.get_hand()
@@ -4437,9 +4437,9 @@ class BettingMartingale2( BettingStrategy ):
 ```py
 import gzip
 import csv
-**with open("subset.csv", "w") as target:**
+with open("subset.csv", "w") as target:
     wtr= csv.writer( target )
-    **with gzip.open(path) as source:**
+    **with gzip.open(path) as source:
         line_iter= (b.decode() for b in source)
         match_iter = (format_1_pat.match( line ) for line in line_iter)
         wtr.writerows( (m.groups() for m in match_iter if m is not None) )
@@ -4561,9 +4561,9 @@ print( tuple(random.randint(-1,36) for i in range(5)) )
 
 ```py
 (12, 0, 8, 21, 6)
-**(23, 25, 1, 15, 31)**
+(23, 25, 1, 15, 31)
 (6, 36, 1, 34, 8)
-**(23, 25, 1, 15, 31)**
+(23, 25, 1, 15, 31)
 (9, 7, 13, 22, 29)
 ```
 
@@ -5066,13 +5066,13 @@ options = ChainMap(vars(cmdline), config_file, os.environ, defaults)
 from collections import OrderedDict
 import xml.etree.ElementTree as etree
 
-doc= etree.XML( source ) # **Parse**
+doc= etree.XML( source ) # **Parse
 
-topics= OrderedDict() # **Gather**
+topics= OrderedDict() # **Gather
 for topic in doc.findall( "topics/entry" ):
     topics[topic.attrib['ID']] = topic
 
-for topic in topics: # **Display**
+for topic in topics: # **Display
     print( topic, topics[topic].find("title").text )
 ```
 
@@ -6529,7 +6529,7 @@ class FixedPoint( numbers.Rational ):
         else:
             # Fermat's Little Theorem: pow(n, P-1, P) is 1, so
             # pow(n, P-2, P) gives the inverse of n modulo P.
-            **hash_ = (abs(m) % P) * pow(n, P - 2, P) % P**
+            **hash_ = (abs(m) % P) * pow(n, P - 2, P) % P
         if m < 0:
             hash_ = -hash_
         if hash_ == -1:
@@ -7164,7 +7164,7 @@ def audit( method ):
 class Hand:
     def __init__( self, *cards ):
         self._cards = list(cards)
-    **@audit**
+    **@audit
     def __iadd__( self, card ):
         self._cards.append( card )
         return self

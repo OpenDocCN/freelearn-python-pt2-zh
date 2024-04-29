@@ -134,15 +134,74 @@
 
 地理编码简单地意味着将地址或地点转换为坐标。我们将尝试将预定义的各种城市列表转换为纬度/经度元组，并在标准输出上显示结果与`python-gmaps`。就像下面的代码所示一样简单：
 
-[PRE0]
+```py
+>>> from gmaps import Geocoding
+>>> api = Geocoding()
+>>> geocoded = api.geocode('Warsaw')[0]
+>>> print("{:>25s}, {:6.2f}, {:6.2f}".format(
+...         geocoded['formatted_address'],
+...         geocoded['geometry']['location']['lat'],
+...         geocoded['geometry']['location']['lng'],
+...     ))
+Warsaw, Poland,  52.23,  21.01
+
+```
 
 由于我们的目标是展示多线程解决并发问题与标准同步解决方案相比的效果，我们将从一个完全不使用线程的实现开始。下面是一个循环遍历城市列表、查询 Google Maps API 并以文本格式表格显示有关它们地址和坐标的信息的程序代码：
 
-[PRE1]
+```py
+import time
+
+from gmaps import Geocoding
+
+api = Geocoding()
+
+PLACES = (
+    'Reykjavik', 'Vien', 'Zadar', 'Venice',
+    'Wrocław', 'Bolognia', 'Berlin', 'Słubice',
+    'New York', 'Dehli',
+)
+
+def fetch_place(place):
+    geocoded = api.geocode(place)[0]
+
+    print("{:>25s}, {:6.2f}, {:6.2f}".format(
+        geocoded['formatted_address'],
+        geocoded['geometry']['location']['lat'],
+        geocoded['geometry']['location']['lng'],
+    ))
+
+def main():
+    for place in PLACES:
+        fetch_place(place)
+
+if __name__ == "__main__":
+    started = time.time()
+    main()
+    elapsed = time.time() - started
+
+    print()
+    print("time elapsed: {:.2f}s".format(elapsed))
+```
 
 在`main()`函数的执行周围，我们添加了一些语句，用于测量完成工作所花费的时间。在我的电脑上，这个程序通常需要大约 2 到 3 秒才能完成任务：
 
-[PRE2]
+```py
+$ python3 synchronous.py
+ **Reykjavík, Iceland,  64.13, -21.82
+ **Vienna, Austria,  48.21,  16.37
+ **Zadar, Croatia,  44.12,  15.23
+ **Venice, Italy,  45.44,  12.32
+ **Wrocław, Poland,  51.11,  17.04
+ **Bologna, Italy,  44.49,  11.34
+ **Berlin, Germany,  52.52,  13.40
+ **Slubice, Poland,  52.35,  14.56
+ **New York, NY, USA,  40.71, -74.01
+ **Dehli, Gujarat, India,  21.57,  73.22
+
+time elapsed: 2.79s
+
+```
 
 ### 注意
 
@@ -154,11 +213,38 @@
 
 那么让我们从最简单的方法开始。Python 提供了清晰且易于使用的抽象，通过`threading`模块可以轻松地操作系统线程。这个标准库的核心是`Thread`类，代表一个单独的线程实例。下面是`main()`函数的修改版本，它为每个地点创建并启动一个新线程，然后等待直到所有线程都完成：
 
-[PRE3]
+```py
+from threading import Thread
+
+def main():
+    threads = []
+    for place in PLACES:
+        thread = Thread(target=fetch_place, args=[place])
+        thread.start()
+        threads.append(thread)
+
+    while threads:
+        threads.pop().join()
+```
 
 这是一个快速而肮脏的改变，它有一些严重的问题，我们稍后会试图解决。它以一种有点轻率的方式解决问题，并不是编写可为成千上万甚至百万用户提供服务的可靠软件的方式。但嘿，它起作用：
 
-[PRE4]
+```py
+$ python3 threaded.py
+ **Wrocław, Poland,  51.11,  17.04
+ **Vienna, Austria,  48.21,  16.37
+ **Dehli, Gujarat, India,  21.57,  73.22
+ **New York, NY, USA,  40.71, -74.01
+ **Bologna, Italy,  44.49,  11.34
+ **Reykjavík, Iceland,  64.13, -21.82
+ **Zadar, Croatia,  44.12,  15.23
+ **Berlin, Germany,  52.52,  13.40
+ **Slubice, Poland,  52.35,  14.56
+ **Venice, Italy,  45.44,  12.32
+
+time elapsed: 1.05s
+
+```
 
 所以当我们知道线程对我们的应用有益时，是时候以稍微理智的方式使用它们了。首先我们需要找出前面代码中的问题：
 
@@ -174,11 +260,60 @@
 
 因此，一般的想法是启动一些预定义数量的线程，这些线程将从队列中消耗工作项，直到完成。当没有其他工作要做时，线程将返回，我们将能够退出程序。用于与工作线程通信的结构的一个很好的候选是内置`queue`模块中的`Queue`类。它是一个先进先出（FIFO）队列实现，非常类似于`collections`模块中的`deque`集合，并且专门设计用于处理线程间通信。以下是一个修改后的`main()`函数的版本，它只启动了有限数量的工作线程，并使用一个新的`worker()`函数作为目标，并使用线程安全的队列与它们进行通信：
 
-[PRE5]
+```py
+from queue import Queue, Empty
+from threading import Thread
+
+THREAD_POOL_SIZE = 4
+
+def worker(work_queue):
+    while not work_queue.empty():
+        try:
+            item = work_queue.get(block=False)
+        except Empty:
+            break
+        else:
+            fetch_place(item)
+            work_queue.task_done()
+
+def main():
+    work_queue = Queue()
+
+    for place in PLACES:
+        work_queue.put(place)
+
+    threads = [
+        Thread(target=worker, args=(work_queue,))
+        for _ in range(THREAD_POOL_SIZE)
+    ]
+
+    for thread in threads:
+        thread.start()
+
+    work_queue.join()
+
+    while threads:
+        threads.pop().join()
+```
 
 运行修改后的程序的结果与之前的类似：
 
-[PRE6]
+```py
+$ python threadpool.py** 
+ **Reykjavík, Iceland,  64.13, -21.82
+ **Venice, Italy,  45.44,  12.32
+ **Vienna, Austria,  48.21,  16.37
+ **Zadar, Croatia,  44.12,  15.23
+ **Wrocław, Poland,  51.11,  17.04
+ **Bologna, Italy,  44.49,  11.34
+ **Slubice, Poland,  52.35,  14.56
+ **Berlin, Germany,  52.52,  13.40
+ **New York, NY, USA,  40.71, -74.01
+ **Dehli, Gujarat, India,  21.57,  73.22
+
+time elapsed: 1.20s
+
+```
 
 运行时间将比每个参数一个线程的情况慢，但至少现在不可能用任意长的输入耗尽所有的计算资源。此外，我们可以调整`THREAD_POOL_SIZE`参数以获得更好的资源/时间平衡。
 
@@ -186,11 +321,95 @@
 
 我们现在能够解决的另一个问题是线程中输出的潜在问题。最好将这样的责任留给启动其他线程的主线程。我们可以通过提供另一个队列来处理这个问题，该队列将负责从我们的工作线程中收集结果。以下是将所有内容与主要更改放在一起的完整代码：
 
-[PRE7]
+```py
+import time
+from queue import Queue, Empty
+from threading import Thread
+
+from gmaps import Geocoding
+
+api = Geocoding()
+
+PLACES = (
+    'Reykjavik', 'Vien', 'Zadar', 'Venice',
+    'Wrocław', 'Bolognia', 'Berlin', 'Słubice',
+    'New York', 'Dehli',
+)
+
+THREAD_POOL_SIZE = 4
+
+def fetch_place(place):
+    return api.geocode(place)[0]
+
+def present_result(geocoded):
+ **print("{:>25s}, {:6.2f}, {:6.2f}".format(
+ **geocoded['formatted_address'],
+ **geocoded['geometry']['location']['lat'],
+ **geocoded['geometry']['location']['lng'],
+ **))
+
+def worker(work_queue, results_queue):
+    while not work_queue.empty():
+        try:
+            item = work_queue.get(block=False)
+        except Empty:
+            break
+        else:
+ **results_queue.put(
+ **fetch_place(item)
+ **)
+            work_queue.task_done()
+
+def main():
+    work_queue = Queue()
+ **results_queue = Queue()
+
+    for place in PLACES:
+        work_queue.put(place)
+
+    threads = [
+ **Thread(target=worker, args=(work_queue, results_queue))
+        for _ in range(THREAD_POOL_SIZE)
+    ]
+
+    for thread in threads:
+        thread.start()
+
+    work_queue.join()
+
+    while threads:
+        threads.pop().join()
+
+ **while not results_queue.empty():
+ **present_result(results_queue.get())
+
+if __name__ == "__main__":
+    started = time.time()
+    main()
+    elapsed = time.time() - started
+
+    print()
+    print("time elapsed: {:.2f}s".format(elapsed))
+```
 
 这消除了输出格式不正确的风险，如果`present_result()`函数执行更多的`print()`语句或执行一些额外的计算，我们可能会遇到这种情况。我们不希望从这种方法中获得任何性能改进，但实际上，由于`print()`执行缓慢，我们还减少了线程串行化的风险。这是我们的最终输出：
 
-[PRE8]
+```py
+$ python threadpool_with_results.py** 
+ **Vienna, Austria,  48.21,  16.37
+ **Reykjavík, Iceland,  64.13, -21.82
+ **Zadar, Croatia,  44.12,  15.23
+ **Venice, Italy,  45.44,  12.32
+ **Wrocław, Poland,  51.11,  17.04
+ **Bologna, Italy,  44.49,  11.34
+ **Slubice, Poland,  52.35,  14.56
+ **Berlin, Germany,  52.52,  13.40
+ **New York, NY, USA,  40.71, -74.01
+ **Dehli, Gujarat, India,  21.57,  73.22
+
+time elapsed: 1.30s
+
+```
 
 #### 处理错误和速率限制
 
@@ -200,15 +419,98 @@
 
 让我们对我们的代码进行一些微小的更改，以便为可能发生的任何问题做好准备。在工作线程中出现异常的情况下，我们可以将错误实例放入`results_queue`队列，并将当前任务标记为已完成，就像没有错误时一样。这样我们可以确保主线程在`work_queue.join()`中等待时不会无限期地锁定。然后主线程可能检查结果并重新引发在结果队列中找到的任何异常。以下是可以更安全地处理异常的`worker()`和`main()`函数的改进版本：
 
-[PRE9]
+```py
+def worker(work_queue, results_queue):
+    while True:
+        try:
+            item = work_queue.get(block=False)
+        except Empty:
+            break
+        else:
+ **try:
+ **result = fetch_place(item)
+ **except Exception as err:
+ **results_queue.put(err)
+ **else:
+ **results_queue.put(result)
+ **finally:
+ **work_queue.task_done()
+
+def main():
+    work_queue = Queue()
+    results_queue = Queue()
+
+    for place in PLACES:
+        work_queue.put(place)
+
+    threads = [
+        Thread(target=worker, args=(work_queue, results_queue))
+        for _ in range(THREAD_POOL_SIZE)
+    ]
+
+    for thread in threads:
+        thread.start()
+
+    work_queue.join()
+
+    while threads:
+        threads.pop().join()
+
+ **while not results_queue.empty():
+ **result = results_queue.get()
+
+ **if isinstance(result, Exception):
+ **raise result
+
+        present_result(result)
+```
 
 当我们准备处理异常时，就是我们的代码中断并超过速率限制的时候了。我们可以通过修改一些初始条件来轻松实现这一点。让我们增加地理编码的位置数量和线程池的大小：
 
-[PRE10]
+```py
+PLACES = (
+    'Reykjavik', 'Vien', 'Zadar', 'Venice',
+    'Wrocław', 'Bolognia', 'Berlin', 'Słubice',
+    'New York', 'Dehli',
+) * 10
+
+THREAD_POOL_SIZE = 10
+```
 
 如果您的执行环境足够快，您应该很快就会收到类似的错误：
 
-[PRE11]
+```py
+$ python3 threadpool_with_errors.py
+ **New York, NY, USA,  40.71, -74.01
+ **Berlin, Germany,  52.52,  13.40
+ **Wrocław, Poland,  51.11,  17.04
+ **Zadar, Croatia,  44.12,  15.23
+ **Vienna, Austria,  48.21,  16.37
+ **Bologna, Italy,  44.49,  11.34
+ **Reykjavík, Iceland,  64.13, -21.82
+ **Venice, Italy,  45.44,  12.32
+ **Dehli, Gujarat, India,  21.57,  73.22
+ **Slubice, Poland,  52.35,  14.56
+ **Vienna, Austria,  48.21,  16.37
+ **Zadar, Croatia,  44.12,  15.23
+ **Venice, Italy,  45.44,  12.32
+ **Reykjavík, Iceland,  64.13, -21.82
+Traceback (most recent call last):
+ **File "threadpool_with_errors.py", line 83, in <module>
+ **main()
+ **File "threadpool_with_errors.py", line 76, in main
+ **raise result
+ **File "threadpool_with_errors.py", line 43, in worker
+ **result = fetch_place(item)
+ **File "threadpool_with_errors.py", line 23, in fetch_place
+ **return api.geocode(place)[0]
+ **File "...\site-packages\gmaps\geocoding.py", line 37, in geocode
+ **return self._make_request(self.GEOCODE_URL, parameters, "results")
+ **File "...\site-packages\gmaps\client.py", line 89, in _make_request
+ **)(response)
+gmaps.errors.RateLimitExceeded: {'status': 'OVER_QUERY_LIMIT', 'results': [], 'error_message': 'You have exceeded your rate-limit for this API.', 'url': 'https://maps.googleapis.com/maps/api/geocode/json?address=Wroc%C5%82aw&sensor=false'}
+
+```
 
 前面的异常当然不是由于错误的代码造成的。这个程序对于这个免费服务来说太快了。它发出了太多的并发请求，为了正确工作，我们需要有一种限制它们速率的方法。
 
@@ -232,11 +534,71 @@
 
 两个重要的事情是始终用零令牌初始化令牌桶，并且永远不允许它填充的令牌数量超过其速率可用的令牌数量，按照我们标准的时间量表达。如果我们不遵循这些预防措施，我们可能会以超过速率限制的突发方式释放令牌。因为在我们的情况下，速率限制以每秒请求的数量来表示，所以我们不需要处理任意的时间量。我们假设我们的测量基准是一秒，因此我们永远不会存储比该时间量允许的请求数量更多的令牌。以下是一个使用令牌桶算法进行节流的类的示例实现：
 
-[PRE12]
+```py
+From threading import Lock
+
+class Throttle:
+    def __init__(self, rate):
+        self._consume_lock = Lock()
+        self.rate = rate
+        self.tokens = 0
+        self.last = 0
+
+    def consume(self, amount=1):
+        with self._consume_lock:
+            now = time.time()
+
+            # time measument is initialized on first
+            # token request to avoid initial bursts
+            if self.last == 0:
+                self.last = now
+
+            elapsed = now - self.last
+
+            # make sure that quant of passed time is big
+            # enough to add new tokens
+            if int(elapsed * self.rate):
+                self.tokens += int(elapsed * self.rate)
+                self.last = now
+
+            # never over-fill the bucket
+            self.tokens = (
+                self.rate
+                if self.tokens > self.rate
+                else self.tokens
+            )
+
+            # finally dispatch tokens if available
+            if self.tokens >= amount:
+                self.tokens -= amount
+            else:
+                amount = 0
+
+            return amount
+```
 
 使用这个类非常简单。假设我们在主线程中只创建了一个`Throttle`实例（例如`Throttle(10)`），并将其作为位置参数传递给每个工作线程。在不同的线程中使用相同的数据结构是安全的，因为我们使用`threading`模块中的`Lock`类的实例来保护其内部状态的操作。现在我们可以更新`worker()`函数的实现，以便在每个项目之前等待节流释放一个新的令牌：
 
-[PRE13]
+```py
+def worker(work_queue, results_queue, throttle):
+    while True:
+        try:
+            item = work_queue.get(block=False)
+        except Empty:
+            break
+        else:
+ **while not throttle.consume():
+ **pass
+
+            try:
+                result = fetch_place(item)
+            except Exception as err:
+                results_queue.put(err)
+            else:
+                results_queue.put(result)
+            finally:
+                work_queue.task_done()
+```
 
 # 多进程
 
@@ -250,11 +612,45 @@
 
 在任何编程语言中启动新进程的最基本的方法通常是在某个时候**fork**程序。在 POSIX 系统（Unix、Mac OS 和 Linux）上，fork 是一个系统调用，在 Python 中通过`os.fork()`函数暴露出来，它将创建一个新的子进程。然后这两个进程在分叉后继续程序。下面是一个自我分叉一次的示例脚本：
 
-[PRE14]
+```py
+import os
+
+pid_list = []
+
+def main():
+    pid_list.append(os.getpid())
+    child_pid = os.fork()
+
+    if child_pid == 0:
+        pid_list.append(os.getpid())
+        print()
+        print("CHLD: hey, I am the child process")
+        print("CHLD: all the pids i know %s" % pid_list)
+
+    else:
+        pid_list.append(os.getpid())
+        print()
+        print("PRNT: hey, I am the parent")
+        print("PRNT: the child is pid %d" % child_pid)
+        print("PRNT: all the pids i know %s" % pid_list)
+
+if __name__ == "__main__":
+    main()
+```
 
 以下是在终端中运行它的示例：
 
-[PRE15]
+```py
+$ python3 forks.py
+
+PRNT: hey, I am the parent
+PRNT: the child is pid 21916
+PRNT: all the pids i know [21915, 21915]
+
+CHLD: hey, I am the child process
+CHLD: all the pids i know [21915, 21916]
+
+```
 
 请注意，在`os.fork()`调用之前，这两个进程的数据状态完全相同。它们都有相同的 PID 号（进程标识符）作为`pid_list`集合的第一个值。后来，两个状态分歧，我们可以看到子进程添加了`21916`的值，而父进程复制了它的`21915` PID。这是因为这两个进程的内存上下文是不共享的。它们有相同的初始条件，但在`os.fork()`调用后不能相互影响。
 
@@ -268,11 +664,42 @@
 
 这个模块包含一个`Process`类，它与`Thread`类非常相似，可以在任何平台上使用：
 
-[PRE16]
+```py
+from multiprocessing import Process
+import os
+
+def work(identifier):
+    print(
+        'hey, i am a process {}, pid: {}'
+        ''.format(identifier, os.getpid())
+    )
+
+def main():
+    processes = [
+        Process(target=work, args=(number,))
+        for number in range(5)
+    ]
+    for process in processes:
+        process.start()
+
+    while processes:
+        processes.pop().join()
+
+if __name__ == "__main__":
+    main()
+```
 
 执行前述脚本将得到以下结果：
 
-[PRE17]
+```py
+$ python3 processing.py
+hey, i am a process 1, pid: 9196
+hey, i am a process 0, pid: 8356
+hey, i am a process 3, pid: 9524
+hey, i am a process 2, pid: 3456
+hey, i am a process 4, pid: 6576
+
+```
 
 当进程被创建时，内存被分叉（在 POSIX 系统上）。进程的最有效使用方式是让它们在创建后独立工作，以避免开销，并从主线程检查它们的状态。除了复制的内存状态，`Process`类还在其构造函数中提供了额外的`args`参数，以便传递数据。
 
@@ -288,19 +715,88 @@
 
 现在提供的更有趣的模式是`Pipe`类。它是一个双工（双向）通信通道，概念上与 Unix 管道非常相似。Pipe 的接口也非常类似于内置`socket`模块中的简单套接字。与原始系统管道和套接字的区别在于它允许您发送任何可挑选的对象（使用`pickle`模块）而不仅仅是原始字节。这使得进程之间的通信变得更加容易，因为您可以发送几乎任何基本的 Python 类型：
 
-[PRE18]
+```py
+from multiprocessing import Process, Pipe
+
+class CustomClass:
+    pass
+
+def work(connection):
+    while True:
+        instance = connection.recv()
+
+        if instance:
+            print("CHLD: {}".format(instance))
+
+        else:
+            return
+
+def main():
+    parent_conn, child_conn = Pipe()
+
+    child = Process(target=work, args=(child_conn,))
+
+    for item in (
+        42,
+        'some string',
+        {'one': 1},
+        CustomClass(),
+        None,
+    ):
+        print("PRNT: send {}:".format(item))
+        parent_conn.send(item)
+
+    child.start()
+    child.join()
+
+if __name__ == "__main__":
+    main()
+```
 
 当查看前面脚本的示例输出时，您会发现您可以轻松传递自定义类实例，并且它们根据进程具有不同的地址：
 
-[PRE19]
+```py
+PRNT: send: 42
+PRNT: send: some string
+PRNT: send: {'one': 1}
+PRNT: send: <__main__.CustomClass object at 0x101cb5b00>
+PRNT: send: None
+CHLD: recv: 42
+CHLD: recv: some string
+CHLD: recv: {'one': 1}
+CHLD: recv: <__main__.CustomClass object at 0x101cba400>
+
+```
 
 在进程之间共享状态的另一种方法是使用`multiprocessing.sharedctypes`中提供的类在共享内存池中使用原始类型。最基本的是`Value`和`Array`。以下是`multiprocessing`模块官方文档中的示例代码：
 
-[PRE20]
+```py
+from multiprocessing import Process, Value, Array
+
+def f(n, a):
+    n.value = 3.1415927
+    for i in range(len(a)):
+        a[i] = -a[i]
+
+if __name__ == '__main__':
+    num = Value('d', 0.0)
+    arr = Array('i', range(10))
+
+    p = Process(target=f, args=(num, arr))
+    p.start()
+    p.join()
+
+    print(num.value)
+    print(arr[:])
+```
 
 这个例子将打印以下输出：
 
-[PRE21]
+```py
+3.1415927
+[0, -1, -2, -3, -4, -5, -6, -7, -8, -9]
+
+```
 
 在使用`multiprocessing.sharedctypes`时，您需要记住您正在处理共享内存，因此为了避免数据损坏的风险，您需要使用锁定原语。多进程提供了一些可用于线程的类，例如`Lock`、`RLock`和`Semaphore`，来做到这一点。`sharedctypes`类的缺点是它们只允许您共享`ctypes`模块中的基本 C 类型。如果您需要传递更复杂的结构或类实例，则需要使用 Queue、Pipe 或其他进程间通信通道。在大多数情况下，理应避免使用`sharedctypes`中的类型，因为它们会增加代码复杂性，并带来来自多线程的所有已知危险。
 
@@ -312,7 +808,41 @@
 
 `multiprocessing`模块最好的地方是它提供了一个现成的`Pool`类，可以为你处理管理多个进程工作者的所有复杂性。这个池实现大大减少了所需的样板代码量和与双向通信相关的问题数量。你也不需要手动使用`join()`方法，因为`Pool`可以作为上下文管理器使用（使用`with`语句）。以下是我们以前的一个线程示例，重写为使用`multiprocessing`模块中的`Pool`类：
 
-[PRE22]
+```py
+from multiprocessing import Pool
+
+from gmaps import Geocoding
+
+api = Geocoding()
+
+PLACES = (
+    'Reykjavik', 'Vien', 'Zadar', 'Venice',
+    'Wrocław', 'Bolognia', 'Berlin', 'Słubice',
+    'New York', 'Dehli',
+)
+
+POOL_SIZE = 4
+
+def fetch_place(place):
+    return api.geocode(place)[0]
+
+def present_result(geocoded):
+    print("{:>25s}, {:6.2f}, {:6.2f}".format(
+        geocoded['formatted_address'],
+        geocoded['geometry']['location']['lat'],
+        geocoded['geometry']['location']['lng'],
+    ))
+
+def main():
+    with Pool(POOL_SIZE) as pool:
+        results = pool.map(fetch_place, PLACES)
+
+    for result in results:
+        present_result(result)
+
+if __name__ == "__main__":
+    main()
+```
 
 正如你所看到的，现在代码要短得多。这意味着在出现问题时，现在更容易维护和调试。实际上，现在只有两行代码明确处理多进程。这是一个很大的改进，因为我们以前必须从头开始构建处理池。现在我们甚至不需要关心通信通道，因为它们是在`Pool`实现内部隐式创建的。
 
@@ -324,7 +854,22 @@
 
 这使你可以减少代码中的样板，并且使接口更加可插拔。例如，让我们再次看一下我们以前示例中的`main()`函数。如果我们想要让用户控制他想要使用哪种处理后端（进程或线程），我们可以简单地替换`Pool`类：
 
-[PRE23]
+```py
+from multiprocessing import Pool as ProcessPool
+from multiprocessing.dummy import Pool as ThreadPool
+
+def main(use_threads=False):
+    if use_threads:
+        pool_cls = ThreadPool
+    else:
+        pool_cls = ProcessPool
+
+    with pool_cls(POOL_SIZE) as pool:
+        results = pool.map(fetch_place, PLACES)
+
+    for result in results:
+        present_result(result)
+```
 
 # 异步编程
 
@@ -362,25 +907,74 @@
 
 在`def`语句之前使用的`async`关键字定义了一个新的协程。协程函数的执行可能在严格定义的情况下被暂停和恢复。它的语法和行为与生成器非常相似（参见第二章，“语法最佳实践-类级别下面”）。实际上，生成器需要在 Python 的旧版本中使用以实现协程。这是一个使用`async`关键字的函数声明的示例：
 
-[PRE24]
+```py
+async def async_hello():
+    print("hello, world!")
+```
 
 使用`async`关键字定义的函数是特殊的。当调用时，它们不执行内部的代码，而是返回一个协程对象：
 
-[PRE25]
+```py
+>>> async def async_hello():
+...     print("hello, world!")
+...** 
+>>> async_hello()
+<coroutine object async_hello at 0x1014129e8>
+
+```
 
 协程对象在其执行被安排在事件循环中之前不会执行任何操作。`asyncio`模块可用于提供基本的事件循环实现，以及许多其他异步实用程序：
 
-[PRE26]
+```py
+>>> import asyncio
+>>> async def async_hello():
+...     print("hello, world!")
+...** 
+>>> loop = asyncio.get_event_loop()
+>>> loop.run_until_complete(async_hello())
+hello, world!
+>>> loop.close()
+
+```
 
 显然，由于我们只创建了一个简单的协程，所以在我们的程序中没有涉及并发。为了真正看到一些并发，我们需要创建更多的任务，这些任务将由事件循环执行。
 
 可以通过调用`loop.create_task()`方法或使用`asyncio.wait()`函数提供另一个对象来等待来添加新任务到循环中。我们将使用后一种方法，并尝试异步打印使用`range()`函数生成的一系列数字：
 
-[PRE27]
+```py
+import asyncio
+
+async def print_number(number):
+    print(number)
+
+if __name__ == "__main__":
+    loop = asyncio.get_event_loop()
+
+    loop.run_until_complete(
+        asyncio.wait([
+            print_number(number)
+            for number in range(10)
+        ])
+    )
+    loop.close()
+```
 
 `asyncio.wait()`函数接受一个协程对象的列表并立即返回。结果是一个生成器，产生表示未来结果（futures）的对象。正如其名称所示，它用于等待所有提供的协程完成。它返回生成器而不是协程对象的原因是为了与 Python 的先前版本向后兼容，这将在后面解释。运行此脚本的结果可能如下：
 
-[PRE28]
+```py
+$ python asyncprint.py** 
+0
+7
+8
+3
+9
+4
+1
+5
+2
+6
+
+```
 
 正如我们所看到的，数字的打印顺序与我们创建协程的顺序不同。但这正是我们想要实现的。
 
@@ -394,21 +988,81 @@ Python 3.5 中添加的第二个重要关键字是`await`。它用于等待协�
 
 让我们从一个简单的实现开始，它存在一些并发问题，我们稍后将尝试使用额外的`await`使用来改进它：
 
-[PRE29]
+```py
+import time
+import random
+import asyncio
+
+async def waiter(name):
+    for _ in range(4):
+        time_to_sleep = random.randint(1, 3) / 4
+        time.sleep(time_to_sleep)
+        print(
+            "{} waited {} seconds"
+            "".format(name, time_to_sleep)
+        )
+
+async def main():
+    await asyncio.wait([waiter("foo"), waiter("bar")])
+
+if __name__ == "__main__":
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main())
+    loop.close()
+```
 
 在终端中执行（使用`time`命令来测量时间），可能会得到以下输出：
 
-[PRE30]
+```py
+$ time python corowait.py** 
+bar waited 0.25 seconds
+bar waited 0.25 seconds
+bar waited 0.5 seconds
+bar waited 0.5 seconds
+foo waited 0.75 seconds
+foo waited 0.75 seconds
+foo waited 0.25 seconds
+foo waited 0.25 seconds
+
+real	0m3.734s
+user	0m0.153s
+sys	0m0.028s
+
+```
 
 正如我们所看到的，这两个协程都完成了它们的执行，但不是以异步的方式。原因是它们都使用了`time.sleep()`函数，这是阻塞的，但没有释放控制给事件循环。这在多线程设置中可能效果更好，但我们现在不想使用线程。那么我们该如何解决这个问题呢？
 
 答案是使用`asyncio.sleep()`，这是`time.sleep()`的异步版本，并使用`await`关键字等待其结果。我们已经在`main()`函数的第一个版本中使用了这个语句，但这只是为了提高代码的清晰度。显然，这并没有使我们的实现更加并发。让我们看一个改进的`waiter()`协程的版本，它使用`await asyncio.sleep()`：
 
-[PRE31]
+```py
+async def waiter(name):
+    for _ in range(4):
+        time_to_sleep = random.randint(1, 3) / 4
+        await asyncio.sleep(time_to_sleep)
+        print(
+            "{} waited {} seconds"
+            "".format(name, time_to_sleep)
+        )
+```
 
 如果我们运行更新后的脚本，我们可以看到两个函数的输出如何交错：
 
-[PRE32]
+```py
+$ time python corowait_improved.py** 
+bar waited 0.25 seconds
+foo waited 0.25 seconds
+bar waited 0.25 seconds
+foo waited 0.5 seconds
+foo waited 0.25 seconds
+bar waited 0.75 seconds
+foo waited 0.25 seconds
+bar waited 0.5 seconds
+
+real  0m1.953s
+user  0m0.149s
+sys   0m0.026s
+
+```
 
 这个简单改进的额外优势是代码运行得更快。总体执行时间小于所有睡眠时间的总和，因为协程合作地释放控制。
 
@@ -420,11 +1074,18 @@ Python 3.5 中添加的第二个重要关键字是`await`。它用于等待协�
 
 从 Python 3.5 开始，你可以使用`async`和`await`：
 
-[PRE33]
+```py
+async def main():
+    await asyncio.sleep(0)
+```
 
 但对于 Python 3.4，你需要使用`asyncio.coroutine`装饰器和`yield from`语句：
 
-[PRE34]
+```py
+@asyncio.couroutine
+def main():
+    yield from asyncio.sleep(0)
+```
 
 另一个有用的事实是，`yield from`语句是在 Python 3.3 中引入的，并且在 PyPI 上有一个`asyncio`的后备。这意味着你也可以在 Python 3.3 中使用这个协作式多任务处理的实现。
 
@@ -442,7 +1103,23 @@ Python 3.5 中添加的第二个重要关键字是`await`。它用于等待协�
 
 知道在前面的示例中很容易使用的库的限制，我们需要构建一些填补这一空白的东西。Google Maps API 非常容易使用，所以我们将构建一个快速而简陋的异步实用程序，仅用于说明目的。Python 3.5 版本的标准库仍然缺少一个使异步 HTTP 请求像调用`urllib.urlopen()`一样简单的库。我们绝对不想从头开始构建整个协议支持，所以我们将从 PyPI 上可用的`aiohttp`包中得到一点帮助。这是一个非常有前途的库，为异步 HTTP 添加了客户端和服务器实现。这是一个建立在`aiohttp`之上的小模块，它创建了一个名为`geocode()`的辅助函数，用于向 Google Maps API 服务发出地理编码请求：
 
-[PRE35]
+```py
+import aiohttp
+
+session = aiohttp.ClientSession()
+
+async def geocode(place):
+    params = {
+        'sensor': 'false',
+        'address': place
+    }
+    async with session.get(
+        'https://maps.googleapis.com/maps/api/geocode/json',
+        params=params
+    ) as response:
+        result = await response.json()
+        return result['results']
+```
 
 假设这段代码存储在名为`asyncgmaps`的模块中，我们稍后会用到它。现在我们准备重写在讨论多线程和多进程时使用的示例。以前，我们习惯将整个操作分为两个独立的步骤：
 
@@ -452,7 +1129,43 @@ Python 3.5 中添加的第二个重要关键字是`await`。它用于等待协�
 
 但是，因为协作式多任务处理与使用多个进程或线程完全不同，我们可以稍微修改我们的方法。在“使用一个线程处理一个项目”部分提出的大部分问题不再是我们的关注点。协程是非抢占式的，因此我们可以在等待 HTTP 响应后立即显示结果。这将简化我们的代码并使其更清晰。
 
-[PRE36]
+```py
+import asyncio
+# note: local module introduced earlier
+from asyncgmaps import geocode, session
+
+PLACES = (
+    'Reykjavik', 'Vien', 'Zadar', 'Venice',
+    'Wrocław', 'Bolognia', 'Berlin', 'Słubice',
+    'New York', 'Dehli',
+)
+
+async def fetch_place(place):
+    return (await geocode(place))[0]
+
+async def present_result(result):
+    geocoded = await result
+    print("{:>25s}, {:6.2f}, {:6.2f}".format(
+        geocoded['formatted_address'],
+        geocoded['geometry']['location']['lat'],
+        geocoded['geometry']['location']['lng'],
+    ))
+
+async def main():
+    await asyncio.wait([
+        present_result(fetch_place(place))
+        for place in PLACES
+    ])
+
+if __name__ == "__main__":
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main())
+
+    # aiohttp will raise issue about unclosed
+    # ClientSession so we perform cleanup manually
+    loop.run_until_complete(session.close())
+    loop.close()
+```
 
 ## 使用期货将非异步代码与异步集成
 
@@ -500,11 +1213,33 @@ Python 3.5 中添加的第二个重要关键字是`await`。它用于等待协�
 
 最有趣的方法是`submit()`，因为它返回一个`Future`对象。它代表一个可调用的异步执行，间接代表它的结果。为了获得提交的可调用的实际返回值，你需要调用`Future.result()`方法。如果可调用已经完成，`result()`方法不会阻塞它，只会返回函数的输出。如果不是这样，它会阻塞直到结果准备好。把它当作一个结果的承诺（实际上它和 JavaScript 中的 promise 概念是一样的）。你不需要立即在接收到它后解包它（用`result()`方法），但如果你试图这样做，它保证最终会返回一些东西：
 
-[PRE37]
+```py
+>>> def loudy_return():
+...     print("processing")
+...     return 42
+...** 
+>>> from concurrent.futures import ThreadPoolExecutor
+>>> with ThreadPoolExecutor(1) as executor:
+...     future = executor.submit(loudy_return)
+...** 
+processing
+>>> future
+<Future at 0x33cbf98 state=finished returned int>
+>>> future.result()
+42
+
+```
 
 如果你想使用`Executor.map()`方法，它在用法上与`multiprocessing`模块的`Pool`类的`map()`方法没有区别：
 
-[PRE38]
+```py
+def main():
+    with ThreadPoolExecutor(POOL_SIZE) as pool:
+        results = pool.map(fetch_place, PLACES)
+
+    for result in results:
+        present_result(result)
+```
 
 ### 在事件循环中使用执行者
 
@@ -516,7 +1251,12 @@ Python 3.5 中添加的第二个重要关键字是`await`。它用于等待协�
 
 因此，让我们假设我们不想重写导致我们头疼的`python-gmaps`包的有问题的部分。我们可以通过`loop.run_in_executor()`调用轻松地将阻塞调用推迟到单独的线程，同时将`fetch_place()`函数保留为可等待的协程：
 
-[PRE39]
+```py
+async def fetch_place(place):
+    coro = loop.run_in_executor(None, api.geocode, place)
+    result = await coro
+    return result[0]
+```
 
 这样的解决方案并不像拥有完全异步库来完成工作那样好，但您知道*半瓶水总比没有水好*。
 

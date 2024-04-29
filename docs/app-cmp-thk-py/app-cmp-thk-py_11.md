@@ -38,21 +38,33 @@ Python 有一个主要的用户提示，即`input()`函数。此函数用于接�
 
 ch9_input1.py
 
-[PRE0]
+```py
+name = input("What is your name? ")
+print("Nice to meet you " + name + ".")
+```
 
 片段要求用户输入他们的名字，然后使用输入的信息打印一个声明。这段代码的结果如下：
 
-[PRE1]
+```py
+What is your name? Mikayla
+Nice to meet you Mikayla.
+```
 
 现在，我们可以只要求输入而不使用任何提示问题，但用户将不知道正在被问及什么或者它将如何被使用。看看没有提示的片段，如下所示：
 
 ch9_input2.py
 
-[PRE2]
+```py
+name = input()
+print("Nice to meet you " + name + ".")
+```
 
 当我们运行上述程序时，在我们的 shell 中没有打印任何内容。然而，我知道我需要输入一些东西，所以看看当我只输入一个字母时发生了什么：
 
-[PRE3]
+```py
+d
+Nice to meet you d.
+```
 
 正如你所看到的，用户不会知道该怎么做，因为窗口没有询问任何事情；它只是给了一个空白的空间，用户必须假设那是输入的地方。但这可能会导致很多混乱，因为没有告诉用户是否需要输入，或者他们需要输入什么样的东西。
 
@@ -62,21 +74,63 @@ ch9_input2.py
 
 ch9_input3.py
 
-[PRE4]
+```py
+#Create the list
+names = []
+
+#Ask user how many names will be added
+name = int(input("How many names will be in the list? ")) 
+
+#Iterate to add each name to the list
+for i in range(0, name): 
+    people = str(input()) 
+
+    names.append(people) 
+
+print(names)
+```
 
 在上面的片段中，我们首先创建了列表，这不会显示给用户。然后询问用户将有多少个名字添加到列表中。之后，我们遍历列表，以便用户可以分别输入每个名字。最后，名字被添加到列表中并打印出来。看一下这个算法的输出：
 
-[PRE5]
+```py
+How many names will be in the list? 4
+Manny
+Lisa
+John
+Katya
+['Manny', 'Lisa', 'John', 'Katya']
+```
 
 注意，名字没有提示，所以算法假设用户在输入值 `4` 后会知道该怎么做。这可以通过在迭代中简单添加来减轻。看一下下面的代码片段：
 
 ch9_input4.py
 
-[PRE6]
+```py
+#Create the list
+names = []
+
+#Ask user how many names will be added
+name = int(input("How many names will be in the list? ")) 
+
+#Iterate to add each name to the list
+for i in range(0, name): 
+    people = input("Type the next name on the list. ") 
+
+    names.append(people) 
+
+print(names)
+```
 
 正如你所看到的，每个名字现在都有一个提示，要求输入下一个名字，当算法运行时，输出看起来像下面的样子：
 
-[PRE7]
+```py
+How many names will be in the list? 4
+Type the next name on the list. Milo
+Type the next name on the list. Sonya
+Type the next name on the list. Gabriel
+Type the next name on the list. Maxine
+['Milo', 'Sonya', 'Gabriel', 'Maxine']
+```
 
 上面的输出显示了完成的列表以及添加到该列表中的每个名字的提示。在算法中对这些提示进行简单的添加可以减轻用户在输入时的混乱。
 
@@ -86,11 +140,18 @@ ch9_input4.py
 
 ch9_input5.py
 
-[PRE8]
+```py
+name1, name2 = input("Enter First Name: "), input("Enter Last Name: ")
+print(name1 + " " + name2)
+```
 
 正如你在前面的代码中所看到的，`print()` 命令中的引号(`" "`) 用于分隔输入。看一下这个算法的输出：
 
-[PRE9]
+```py
+Enter First Name: John
+Enter Last Name: Doe
+John Doe
+```
 
 正如你所看到的，程序要求输入名字，这些名字在算法的第一行中被调用。这绝不是我们从用户那里获取输入的唯一方式，也不是我们将使用的唯一输入。
 
@@ -126,13 +187,41 @@ ch9_input5.py
 
 ch9_problem1.py
 
-[PRE10]
+```py
+#Print initial message for the user
+print("This program will take your message and encode it.")
+#Ask for the message
+msg = input("What message would you like to code? ")
+#Ask for shift
+shift = int(input("How many places will you shift your message? "))
+msgCipher = ""
+#Iterate through the letters, adjusting for shift
+for letter in msg:
+  k = ord(letter)
+  if 48 <= k <= 57:
+    newk = (k - 48 + shift)%10 + 48
+  elif 65 <= k <= 90:
+    newk = (k - 65 + shift)%26 + 65
+  elif 97 <= k <=122:
+    newk = (k - 97 + shift)%26 + 97
+  else:
+    newk = k
+  msgCipher += chr(newk)
+print("Your coded message is below.")
+print(msgCipher)
+```
 
 请注意，在迭代中，我们正在进行一些数学运算，以找出字母表中每个字母的值。我们使用一些条件语句来定义在使用用户定义的移位值后，每个字母的值是什么。
 
 让我们看看当我们运行此算法时产生的输出：
 
-[PRE11]
+```py
+This program will take your message and encode it.
+What message would you like to code? Code this message
+How many places will you shift your message? 2
+Your coded message is below.
+Eqfg vjku oguucig
+```
 
 正如您可以从前面的输出中看到的，注意*消息*和*编码消息*中的第一个单词 - `Code`：
 
@@ -160,13 +249,33 @@ ch9_problem1.py
 
 ch9_problem2.py
 
-[PRE12]
+```py
+#Define the list name
+maxList = []
+#Ask user how many numbers will be entered
+quant = int(input("How many data points are you entering? "))
+#Iterate, append points, and find maximum
+for i in range(0, quant):
+    dataPoint = int(input("Enter number: "))
+    maxList.append(dataPoint)
+#Print maximum value
+print("The maximum value is " + str(max(maxList)) + ".")
+```
 
 请注意，从前面的代码中，我们使用了`max()`函数来找到列表中的最大值。此外，我们还必须添加`int()`类型，以便算法正确识别值为数字。代码遍历从`0`到我们从用户输入中收到的数据点数，我们将其定义为`quant`变量。当算法遍历数字时，它会比较它们并找到最大值。
 
 让我们看看输出是什么样子的：
 
-[PRE13]
+```py
+How many data points are you entering? 6
+Enter number: 1
+Enter number: 2
+Enter number: 8
+Enter number: 4
+Enter number: 5
+Enter number: 7
+The maximum value is 8.
+```
 
 正如您可以从前面的输出中看到的，用户声明将输入`6`个数字。然后算法提示用户输入每个值。最后，识别出最大值。
 
@@ -194,21 +303,86 @@ ch9_problem2.py
 
 ch9_problem3.py
 
-[PRE14]
+```py
+import random as rand
+number = rand.randint(1000,10000)
+guess = int(input("What's your first guess? ")) 
+#Algorithm checks if number is correct. 
+if (guess == number): 
+	print("That's right! You win!") 
+else: 
+        i = 0
+```
 
 正如你所看到的，这是我们需要用户输入的一个例子。然而，这只是第一次猜测，所以我们需要从用户那里获取更多的输入，并提供一些提供反馈的输出。看一下来自同一算法的以下代码片段：
 
-[PRE15]
+```py
+#Condition so that user keeps guessing until they win.
+        while (guess != number):
+            i = i + 1
+            #Remember you can also write as i += 1
+            j = 0
+            guess = str(guess) 
+            number = str(number) 
+            #Check which numbers are correct and mark incorrect with 'N'
+            guessY = ['N']*4
+            #Make sure you check each digit, so run loop 4 times 
+            for q in range(0, 4):
+                    if (guess[q] == number[q]): 
+                            j += 1 
+                            guessY[q] = guess[q] 
+                    else: 
+                            continue
+            #If only some digits are correct, run next condition 
+            if (j < 4) and (j != 0): 
+                    print("You have " + str(j) + " digit(s) right.") 
+                    print("These numbers were correct.") 
+                    for m in guessY: 
+                            print(m, end = " ") 
+                    #Ask for next input
+                    guess = int(input("What is your next guess? ")) 
+```
 
 注意，我们需要在每次猜测失败后询问每次猜测。算法需要知道下一次猜测是什么，以便在用户没有识别出正确的四位数时继续运行。这就是为什么猜测输入值在算法中出现在多个地方。
 
 一旦用户猜对了，程序需要打印最终的声明，在这种情况下，我们会让用户知道猜测花了多少次：
 
-[PRE16]
+```py
+            #If only some digits are correct, run next condition 
+            if (j < 4) and (j != 0): 
+                    print("You have " + str(j) + " digit(s) right.") 
+                    print("These numbers were correct.") 
+                    for m in guessY: 
+                            print(m, end = " ") 
+                    #Ask for next input
+                    guess = int(input("What is your next guess? ")) 
+            #No digits correct
+            elif (j == 0): 
+                    print("None of these digits are correct.") 
+                    guess = int(input("What is your next guess? ")) 
+        if guess == number: 
+            print("It took you " + str(i)+ " tries to win!") 
+```
 
 正如你所看到的，这个算法在多个地方基于满足条件的输入，以及输出。输出包括`print`语句和对正确或错误数字的反馈。让我们看看程序执行时输出的样子：
 
-[PRE17]
+```py
+What's your first guess? 1111
+None of these digits are correct.
+What is your next guess? 2222
+None of these digits are correct.
+What is your next guess? 3333
+You have 1 digit(s) right.
+These numbers were correct.
+3 N N N What is your next guess? 3444
+You have 3 digit(s) right.
+These numbers were correct.
+3 4 N 4 What is your next guess? 3454
+You have 3 digit(s) right.
+These numbers were correct.
+3 4 N 4 What is your next guess? 3464
+You won in 6 attempts.
+```
 
 请注意，在第三次尝试后，我们有一个正确的数字，表示为`3` `N N N`。这意味着第一位数字是 3。然后我们需要猜测其余的数字。在程序中提供反馈，或输出，使用户能够继续这个游戏。
 

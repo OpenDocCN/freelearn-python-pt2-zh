@@ -48,11 +48,32 @@
 
 让我们实现一个数据库来记录人们喜欢和讨厌的历史。这意味着当你在历史上某个时刻说你喜欢猫时，你将无法改变那段历史。当你改变主意时（例如，如果你后来讨厌猫），你可以添加新的历史，但这不会改变你过去喜欢它们的事实。因此，我们可以看到在过去你喜欢猫，但现在你讨厌它们。我们希望使这个数据库充满诚信并且安全防止作弊。看一下以下代码块：
 
-[PRE0]
+```py
+class Block:
+    id = None
+    history = None
+    parent_id = None
+
+block_A = Block()
+block_A.id = 1
+block_A.history = 'Nelson likes cat'
+
+block_B = Block()
+block_B.id = 2
+block_B.history = 'Marie likes dog'
+block_B.parent_id = block_A.id
+
+block_C = Block()
+block_C.id = 3
+block_C.history = 'Sky hates dog'
+block_C.parent_id = block_B.id
+```
 
 如果你学过计算机科学，你会认识到这种数据结构，它被称为**链表**。现在，有一个问题。假设玛丽讨厌纳尔逊，并希望给纳尔逊抹黑。玛丽可以通过改变区块 A 的历史来做到这一点：
 
-[PRE1]
+```py
+block_A.history = 'Nelson hates cat'
+```
 
 这对喜欢猫的纳尔逊是不公平的。因此，我们需要添加一种只有纳尔逊才能写下自己偏好历史的方法。这样做的方法是使用私钥和公钥。
 
@@ -68,39 +89,103 @@
 
 让我们生成私钥。为此，我们需要`openssl`软件。您可以通过以下方式安装它：
 
-[PRE2]
+```py
+$ sudo apt-get install openssl
+```
 
 因此，Nelson 生成私钥，即`nelsonkey.pem`文件。他必须保守这个密钥。生成如下：
 
-[PRE3]
+```py
+$ openssl genrsa -out nelsonkey.pem 1024
+```
 
 从私钥中，Nelson 生成公钥：
 
-[PRE4]
+```py
+$ openssl rsa -in nelsonkey.pem -pubout > nelsonkey.pub
+```
 
 Nelson 可以与所有人分享这个公钥`nelsonkey.pub`。现实世界中，我们可以建立一个简单的公钥及其所有者的字典，如下所示：
 
-[PRE5]
+```py
+{
+'Nelson': 'nelsonkey.pub',
+'Marie': 'mariekey.pub',
+'Sky': 'skykey.pub'
+}
+```
 
 我们现在将看一下 Nelson 如何证明他是唯一能够对其历史进行更改的人。
 
 首先，让我们创建一个 Python 虚拟环境：
 
-[PRE6]
+```py
+$ python3 -m venv blockchain
+$ source blockchain/bin/activate
+(blockchain) $
+```
 
 接下来，安装库：
 
-[PRE7]
+```py
+(blockchain) $ pip install --upgrade pip
+(blockchain) $ pip install wheel
+(blockchain) $ pip install cryptography
+```
 
 这是可以用来签署消息的 Python 脚本。将此脚本命名为`verify_message.py`（请参考以下 GitLab 链接中的代码文件获取完整代码：[`gitlab.com/arjunaskykok/hands-on-blockchain-for-python-developers/blob/master/chapter_01/verify_message.py`](https://gitlab.com/arjunaskykok/hands-on-blockchain-for-python-developers/blob/master/chapter_01/verify_message.py)）：
 
-[PRE8]
+```py
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization
+
+# Generate private key
+#private_key = rsa.generate_private_key(
+# public_exponent=65537,
+# key_size=2048,
+# backend=default_backend()
+#)
+...
+...
+
+# Message validation executed by other people
+public_key.verify(
+    signature,
+    message,
+    padding.PSS(mgf=padding.MGF1(hashes.SHA256()),
+                salt_length=padding.PSS.MAX_LENGTH),
+    hashes.SHA256())
+```
 
 执行此脚本时，如预期的那样，不会发生任何事情。这意味着消息已通过公钥的签名进行了验证。签名只能由 Nelson 创建，因为您需要私钥才能创建签名。但是，要使用签名验证消息，您只需要公钥。
 
 让我们看一个案例，Marie 试图使用名为`falsify_message.py`的脚本伪造事实。Marie 试图将`Nelson hates cat`放入历史数据库中，如下所示：
 
-[PRE9]
+```py
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization
+
+message = b'Nelson hates cat'
+signature = b'Fake Signature'
+
+with open("nelsonkey.pub", "rb") as key_file:
+    public_key = serialization.load_pem_public_key(
+        key_file.read(),
+        backend=default_backend())
+
+public_key.verify(
+ signature,
+ message,
+ padding.PSS(mgf=padding.MGF1(hashes.SHA256()),
+                salt_length=padding.PSS.MAX_LENGTH),
+    hashes.SHA256())
+```
 
 这就是验证方法的工作原理。Nelson 计算消息的哈希值，然后用他的私钥对其进行加密。结果就是签名。例如，如果 Sky 想要验证签名，他有消息和签名。他计算消息的哈希值。然后，他使用公钥解密签名。结果与消息的哈希值进行比较。如果相同，那么一切正常。如果不同，要么消息已被更改，要么用于签署消息的私钥不同。
 
@@ -110,7 +195,9 @@ Nelson 可以与所有人分享这个公钥`nelsonkey.pub`。现实世界中，�
 
 那么签名是什么样的？回到`verify_message.py`，并将以下行附加到文件末尾。然后再次运行脚本：
 
-[PRE10]
+```py
+print(signature)
+```
 
 签名看起来像这样：
 
@@ -128,41 +215,118 @@ Nelson 可以与所有人分享这个公钥`nelsonkey.pub`。现实世界中，�
 
 因此，要验证是否是 Nelson 写的`Nelson likes cat`，请输入以下内容（请参考以下 GitLab 链接中的代码文件获取完整代码：[`gitlab.com/arjunaskykok/hands-on-blockchain-for-python-developers/blob/master/chapter_01/validate_message.py`](https://gitlab.com/arjunaskykok/hands-on-blockchain-for-python-developers/blob/master/chapter_01/validate_message.py)）：
 
-[PRE11]
+```py
+# validate_message.py
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization
+
+def fetch_public_key(user):
+    with open(user + "key.pub", "rb") as key_file:
+        public_key = serialization.load_pem_public_key(
+           key_file.read(),
+           backend=default_backend())
+    return public_key
+
+# Message coming from user
+message = b"Nelson likes cat"
+
+# Signature coming from user, this is very specific to public key.
+# Download the public key from Gitlab repository of this code so this signature matches the message.
+# Otherwise, you should generate your own signature.
+signature = 
+...
+...
+    padding.PSS(mgf=padding.MGF1(hashes.SHA256()),
+                salt_length=padding.PSS.MAX_LENGTH),
+    hashes.SHA256())
+```
 
 # 从链表到区块链
 
 现在我们知道只有尼尔森能写`尼尔森喜欢猫`或`尼尔森讨厌猫`，我们可以安心了。然而，为了使教程代码简短，我们不会集成使用私钥和公钥进行验证。我们假设只有授权的人能够在区块中写历史。看一下以下代码块：
 
-[PRE12]
+```py
+>>> block_A.history = 'Nelson likes cat'
+```
 
 当发生这种情况时，我们假设是尼尔森写了那段历史。那么，用链表记录数据的问题是什么呢？
 
 问题在于数据可以很容易地被更改。比如尼尔森想成为一名参议员。如果他的选区有很多人不喜欢猫，他们可能不会喜欢尼尔森喜欢它们的事实。因此，尼尔森想要更改历史：
 
-[PRE13]
+```py
+>>> block_A.history = 'Nelson hates cat'
+```
 
 就像这样，历史已经改变了。我们可以通过每天在区块中记录所有历史的方式来避免这种作弊。因此，当尼尔森改变数据库时，我们可以将今天区块链中的数据与昨天区块链中的数据进行比较。如果不同，我们可以确认发生了可疑的事情。这种方法可能有效，但让我们看看是否能想出更好的办法。
 
 让我们将我们的链表升级为区块链。为此，我们在`Block`类中添加一个新属性，即父哈希：
 
-[PRE14]
+```py
+import hashlib
+import json
+
+class Block:
+    id = None
+    history = None
+    parent_id = None
+    parent_hash = None
+
+block_A = Block()
+block_A.id = 1
+block_A.history = 'Nelson likes cat'
+
+block_B = Block()
+block_B.id = 2
+block_B.history = 'Marie likes dog'
+block_B.parent_id = block_A.id
+block_B.parent_hash = hashlib.sha256(json.dumps(block_A.__dict__).encode('utf-8')).hexdigest()
+
+block_C = Block()
+block_C.id = 3
+block_C.history = 'Marie likes dog'
+block_C.parent_id = block_B.id
+block_C.parent_hash = hashlib.sha256(json.dumps(block_B.__dict__).encode('utf-8')).hexdigest()
+```
 
 让我们演示`hashlib()`函数的作用：
 
-[PRE15]
+```py
+>>> print(block_B.__dict__)
+{'parent_hash': '880baef90c77ae39d49f364ff1074043eccb78717ecec85e5897c282482012f1', 'history': 'Marie likes dog', 'id': 2, 'parent_id': 1}
+>>> print(json.dumps(block_B.__dict__))
+{"parent_hash": "880baef90c77ae39d49f364ff1074043eccb78717ecec85e5897c282482012f1", "parent_id": 1, "history": "Marie likes dog", "id": 2}
+>>> print(json.dumps(block_B.__dict__).encode(‘utf-8'))
+b'{"id": 2, "parent_hash": "69a1db9d3430aea08030058a6bd63788569f1fde05adceb1be6743538b03dadb", "parent_id": 1, "history": "Marie likes dog"}'
+>>> print(hashlib.sha256(json.dumps(block_B.__dict__).encode('utf-8')))
+<sha256 HASH object @ 0x7f58518e3ee0>
+>>> print(hashlib.sha256(json.dumps(block_B.__dict__).encode('utf-8')).hexdigest())
+25a7a88637c507d33ae1402ba6b0ee87eefe9c90e33e75c43d56858358f1704e
+```
 
 如果我们改变`block_A`的历史，以下代码看起来像这样：
 
-[PRE16]
+```py
+>>> block_A.history = 'Nelson hates cat'
+```
 
 再次，历史已经被改变就像那样。然而，这一次有一个转折。我们可以通过打印`block_C`的原始父哈希来验证这一变化已经发生：
 
-[PRE17]
+```py
+>>> print(block_C.parent_hash)
+ca3d23274de8d89ada13fe52b6000afb87ee97622a3edfa3e9a473f76ca60b33
+```
 
 现在，让我们重新计算每个区块的父哈希：
 
-[PRE18]
+```py
+>>> block_B.parent_hash = hashlib.sha256(json.dumps(block_A.__dict__).encode('utf-8')).hexdigest()
+>>> block_C.parent_hash = hashlib.sha256(json.dumps(block_B.__dict__).encode('utf-8')).hexdigest()
+>>> print(block_C.parent_hash)
+10b7d80f3ede91fdffeae4889279f3acbda32a0b9024efccc9c2318e2771e78c
+```
 
 这些区块是不同的。通过观察这些，我们可以非常确定历史已经被更改。因此，尼尔森将被当场抓住。现在，如果尼尔森想要更改历史而不被抓住，仅仅更改`block_A`中的历史已经不够了。尼尔森需要更改每个区块中的`parent_hash`属性（当然除了`block_A`）。这是更难的作弊。仅有三个区块，尼尔森就需要更改两个`parent_hash`属性。有了 1000 个区块，尼尔森就需要更改 999 个`parent_hash`属性！
 
@@ -196,13 +360,17 @@ Nelson 可以与所有人分享这个公钥`nelsonkey.pub`。现实世界中，�
 
 生成两个素数，称为 `p` 和 `q`。它们应该是非常大的数字（至少有数百位数），但是对于这个例子，我们选择了较小的数字：11 和 17。这些是你的私钥。不要让别人知道这些数字：
 
-[PRE19]
+```py
+n = p x q
+```
 
 `n` 是一个合数。在我们的例子中，`n` 是 `187`。
 
 然后，我们找到 `e` 数，它应该与 `(p-1)x(q-1)` 互质：
 
-[PRE20]
+```py
+(p-1) x (q-1) = 160
+```
 
 互质意味着 `e` 和 `(p-1) x (q-1)` 除了 *1* 之外不能被任何数字因数分解。除了 1 之外，没有其他数字可以整除它们而不产生余数。因此，*e* 是 *7*。但是，*e* 也可以是 *11*。在这个例子中，我们选择 *7* 作为 *e*。
 
@@ -212,19 +380,25 @@ Nelson 可以与所有人分享这个公钥`nelsonkey.pub`。现实世界中，�
 
 加密函数是这样的：
 
-[PRE21]
+```py
+encrypted_message = messagee (mod n)
+```
 
 因此，`encrypted_message` 将是 *65 ** 7 % 187 = 142*。
 
 在我们能够解密消息之前，我们需要找到 `d` 数：
 
-[PRE22]
+```py
+e x d = 1 (mod (p-1) x (q-1))
+```
 
 `d` 是 *23*。
 
 解密函数是这样的：
 
-[PRE23]
+```py
+decrypted_message = encrypted_messaged mod n
+```
 
 因此，`decrypted_message` 将是 *142 ** 23 % 187 = 65*。65 在 ASCII 中是 A。
 
@@ -240,15 +414,33 @@ Nelson 可以与所有人分享这个公钥`nelsonkey.pub`。现实世界中，�
 
 哈希是一个函数，它接受任意长度的输入并将其转换为固定长度的输出。因此，为了更清楚地说明这一点，我们可以看下面的代码示例：
 
-[PRE24]
+```py
+>>> import hashlib
+>>> hashlib.sha256(b"hello").hexdigest()
+'2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824'
+>>> hashlib.sha256(b"a").hexdigest()
+'ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb'
+>>> hashlib.sha256(b"hellohellohellohello").hexdigest()
+'25b0b104a66b6a2ad14f899d190b043e45442d29a3c4ce71da2547e37adc68a9'
+```
 
 正如你所看到的，输入的长度可以是*1*、*5*，甚至*20*个字符，但输出始终是*64*个十六进制数字字符的长度。输出看起来是乱码，似乎输入和输出之间没有明显的联系。然而，如果给出相同的输入，它每次都会产生相同的输出：
 
-[PRE25]
+```py
+>>> hashlib.sha256(b"a").hexdigest()
+'ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb'
+>>> hashlib.sha256(b"a").hexdigest()
+'ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb'
+```
 
 即使只改变一个字符的输入，输出也会完全不同：
 
-[PRE26]
+```py
+>>> hashlib.sha256(b"hello1").hexdigest()
+'91e9240f415223982edc345532630710e94a7f52cd5f48f5ee1afc555078f0ab'
+>>> hashlib.sha256(b"hello2").hexdigest()
+'87298cc2f31fba73181ea2a9e6ef10dce21ed95e98bdac9c4e1504ea16f486e4'
+```
 
 现在输出的长度是固定的，这种情况下是 64，当然会有两个不同的输入产生相同的输出。
 
@@ -272,37 +464,72 @@ Nelson 可以与所有人分享这个公钥`nelsonkey.pub`。现实世界中，�
 
 以前，我们有三个区块（`block_A`，`block_B`和`block_C`），但现在我们有一个候选区块（`block_D`），我们希望将其添加到区块链中，如下所示：
 
-[PRE27]
+```py
+block_D = Block()
+block_D.id = 4
+block_D.history = 'Sky loves turtle'
+block_D.parent_id = block_C.id
+```
 
 但是，我们不是直接将`block_D`添加到区块链中，而是首先要求矿工做一些谜题工作。我们对该区块进行序列化，并要求矿工应用一个额外的字符串，当附加到该区块的序列化字符串时，如果进行哈希，将显示前面至少有五个零的哈希输出。
 
 这些都是需要仔细思考的话。首先，我们对区块进行序列化：
 
-[PRE28]
+```py
+import json
+block_serialized = json.dumps(block_D.__dict__).encode('utf-8')
+print(block_serialized)
+b'{"history": "Sky loves turtle", "parent_id": 3, "id": 4}'
+```
 
 如果对序列化的区块进行哈希，如果我们希望哈希输出的前面至少有五个零，那意味着我们希望输出看起来像这样：
 
-[PRE29]
+```py
+00000aa21def23ee175073c6b3c89b96cfe618b6083dae98d2a92c919c1329be
+```
 
 或者，我们希望它看起来像这样：
 
-[PRE30]
+```py
+00000be7b5347509c9df55ca35d27091b41a93acb2afd1447d1cc3e4b70c96ab
+```
 
 因此，这个谜题就像这样：
 
-[PRE31]
+```py
+string serialization + answer = hash output with (at least) 5 leading zeros
+```
 
 矿工需要猜出正确的答案。如果将这个谜题转换为 Python 代码，它会是这样的：
 
-[PRE32]
+```py
+answer = ?
+input = b'{"history": "Sky loves turtle", "parent_id": 3, "id": 4}' + answer
+output = hashlib.sha256(input).hexdigest()
+// output needs to be 00000???????????????????????????????????????????????????????????
+```
 
 那么，矿工如何解决这样的问题呢？我们可以使用穷举法：
 
-[PRE33]
+```py
+import hashlib
+
+payload = b'{"history": "Sky loves turtle", "parent_id": 3, "id": 4}'
+for i in range(10000000):
+  nonce = str(i).encode('utf-8')
+  result = hashlib.sha256(payload + nonce).hexdigest()
+  if result[0:5] == '00000':
+    print(i)
+    print(result)
+    break
+```
 
 因此，结果将如下所示：
 
-[PRE34]
+```py
+184798
+00000ae01f4cd7806e2a1fccd72fb18679cb07ede3a2a7ef028a0ecfd4aec153
+```
 
 这意味着答案是`184798`，或者`{"history": "Sky loves turtle", "parent_id": 3, "id": 4}184798`的哈希输出是前面有五个零的那个。在这个简单的脚本中，我们从 0 迭代到 9999999，并将其附加到输入中。这是一种天真的方法，但它有效。当然，你也可以附加字符而不是数字，比如 a、b 或 c。
 
@@ -322,11 +549,21 @@ Nelson 可以与所有人分享这个公钥`nelsonkey.pub`。现实世界中，�
 
 你从西边得到这个：
 
-[PRE35]
+```py
+block_E = Block()
+block_E.id = 5
+block_E.history = 'Sherly likes fish'
+block_E.parent_id = block_D.id
+```
 
 你从东边得到这个：
 
-[PRE36]
+```py
+block_E = Block()
+block_E.id = 5
+block_E.history = 'Johny likes shrimp'
+block_E.parent_id = block_D.id
+```
 
 因此，我们将保留`block_E`的两个版本。我们的区块链现在有一个分支。然而，不久后，来自东边的其他区块已经到达。现在的情况是这样的：
 
@@ -334,21 +571,61 @@ Nelson 可以与所有人分享这个公钥`nelsonkey.pub`。现实世界中，�
 
 这是来自西边的：
 
-[PRE37]
+```py
+block_E = Block()
+block_E.id = 5
+block_E.history = 'Sherly likes fish'
+block_E.parent_id = block_D.id
+```
 
 这是来自东边的：
 
-[PRE38]
+```py
+block_E = Block()
+block_E.id = 5
+block_E.history = 'Johny likes shrimp'
+block_E.parent_id = block_D.id
+
+block_F = Block()
+block_F.id = 6
+block_F.history = 'Marie hates shark'
+block_F.parent_id = block_E.id
+
+block_G = Block()
+block_G.id = 7
+block_G.history = 'Sarah loves dog'
+block_G.parent_id = block_F.id
+```
 
 到这一点，我们可以摆脱区块链的西侧版本，因为我们选择了更长的版本。
 
 问题来了。假设 Sherly 讨厌鲨鱼，但她想从一个地区获得选票，那里的大多数人只投票给喜欢鲨鱼的候选人。为了获得更多选票，Sherly 广播了一个包含以下谎言的区块：
 
-[PRE39]
+```py
+block_E = Block()
+block_E.id = 5
+block_E.history = 'Sherly loves shark'
+block_E.parent_id = block_D.id
+```
 
 一切都很好。投票会话持续一天。一天过去后，区块链又增加了两个区块：
 
-[PRE40]
+```py
+block_E = Block()
+block_E.id = 5
+block_E.history = 'Sherly loves shark'
+block_E.parent_id = block_D.id
+
+block_F = Block()
+block_F.id = 6
+block_F.history = 'Lin Dan hates crab'
+block_F.parent_id = block_E.id
+
+block_G = Block()
+block_G.id = 7
+block_G.history = 'Bruce Wayne loves bat'
+block_G.parent_id = block_F.id
+```
 
 以下图示了三个区块：
 
@@ -356,7 +633,27 @@ Nelson 可以与所有人分享这个公钥`nelsonkey.pub`。现实世界中，�
 
 现在，Sherly 需要从另一个地区获得选票，那里的大多数人只投票给讨厌鲨鱼的候选人。那么，Sherly 如何篡改区块链以使其对她有利呢？Sherly 可以广播四个区块！
 
-[PRE41]
+```py
+block_E = Block()
+block_E.id = 5
+block_E.history = 'Sherly hates shark'
+block_E.parent_id = block_D.id
+
+block_F = Block()
+block_F.id = 6
+block_F.history = 'Sherly loves dog'
+block_F.parent_id = block_E.id
+
+block_G = Block()
+block_G.id = 7
+block_G.history = 'Sherly loves turtle'
+block_G.parent_id = block_F.id
+
+block_H = Block()
+block_H.id = 8
+block_H.history = 'Sherly loves unicorn'
+block_H.parent_id = block_G.id
+```
 
 以下图示了四个区块：
 
@@ -366,7 +663,20 @@ Nelson 可以与所有人分享这个公钥`nelsonkey.pub`。现实世界中，�
 
 我们可以通过工作证明（添加区块的激励）来防止这种情况。我们在本章前面解释了工作证明，但我们还没有解释激励系统。激励意味着如果矿工成功地将新区块添加到区块链中，系统会给予他们数字奖励。我们可以将其整合到代码中如下：
 
-[PRE42]
+```py
+import hashlib
+
+payload = b'{"history": "Sky loves turtle", "parent_id": 3, "id": 4}'
+for i in range(10000000):
+  nonce = str(i).encode('utf-8')
+  result = hashlib.sha256(payload + nonce).hexdigest()
+  if result[0:5] == '00000':
+ // We made it, time to claim the prize
+ reward[miner_id] += 1
+    print(i)
+    print(result)
+    break
+```
 
 如果 Sherly 想要更改历史（替换一些区块），她需要花费一些资源来在短时间内解决四个难题。等她完成这个过程时，大多数矿工保存的区块链可能已经添加了更多的区块，使得它比 Sherly 的区块链更长。
 
@@ -382,11 +692,15 @@ Nelson 可以与所有人分享这个公钥`nelsonkey.pub`。现实世界中，�
 
 在撰写本书时，最受欢迎的两种加密货币是比特币和以太坊（偶尔，瑞波会占据第二位）。如果您向了解加密货币的人提出一个简单的问题，您可能会得到这样的答案：比特币只是用来发送货币，但您可以在以太坊上创建程序。该程序可以是代币、拍卖或托管等。但这只是半真。您也可以在比特币上创建程序。通常，人们称这个程序为脚本。事实上，在比特币交易中必须提供一个脚本。比特币交易可能很普通，所以如果我想向您发送 1 个比特币（比特币中的货币单位）并且您的比特币地址是 Z，我需要将这样的脚本上传到比特币区块链中：
 
-[PRE43]
+```py
+What's your public key? If the public key is hashed, does it equal Z? If yes, could you provide your private key to prove that you own this public key?
+```
 
 但它可能会更加复杂。假设您想要至少需要四个授权签名中的两个签名来解锁此帐户；您可以使用比特币脚本来实现。发挥创造力，您可以想出类似这样的东西：
 
-[PRE44]
+```py
+This transaction is frozen until 5 years from now. Then business will be as usual, that the spender must provide public key and private key.
+```
 
 但是比特币脚本是用简单的编程语言创建的，甚至无法循环。它是基于堆栈的。因此，您可以放置指令：对公钥进行哈希，检查签名，并检查当前时间。然后，它将在比特币节点上从左到右执行。
 

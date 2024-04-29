@@ -31,52 +31,52 @@
 让我们用几个例子来澄清这一点：
 
 ```py
-**>>> class Spam(object):**
-**>>>     eggs = 'my eggs'**
+>>> class Spam(object):
+>>>     eggs = 'my eggs'
 
-**>>> Spam = type('Spam', (object,), dict(eggs='my eggs'))**
+>>> Spam = type('Spam', (object,), dict(eggs='my eggs'))
 
 ```
 
 前两个`Spam`的定义完全相同；它们都创建了一个具有`eggs`和`object`作为基类的类。让我们测试一下这是否像你期望的那样工作：
 
 ```py
-**>>> class Spam(object):**
-**...     eggs = 'my eggs'**
+>>> class Spam(object):
+...     eggs = 'my eggs'
 
-**>>> spam = Spam()**
-**>>> spam.eggs**
-**'my eggs'**
-**>>> type(spam)**
-**<class '…Spam'>**
-**>>> type(Spam)**
-**<class 'type'>**
+>>> spam = Spam()
+>>> spam.eggs
+'my eggs'
+>>> type(spam)
+<class '…Spam'>
+>>> type(Spam)
+<class 'type'>
 
-**>>> Spam = type('Spam', (object,), dict(eggs='my eggs'))**
+>>> Spam = type('Spam', (object,), dict(eggs='my eggs'))
 
-**>>> spam = Spam()**
-**>>> spam.eggs**
-**'my eggs'**
-**>>> type(spam)**
-**<class '...Spam'>**
-**>>> type(Spam)**
-**<class 'type'>**
+>>> spam = Spam()
+>>> spam.eggs
+'my eggs'
+>>> type(spam)
+<class '...Spam'>
+>>> type(Spam)
+<class 'type'>
 
 ```
 
 如预期的那样，这两个结果是相同的。在创建类时，Python 会悄悄地添加`type`元类，而`custom`元类只是继承`type`的类。一个简单的类定义有一个隐式的元类，使得一个简单的定义如下：
 
 ```py
-**class Spam(object):**
- **pass**
+class Spam(object):
+ **pass
 
 ```
 
 本质上与：
 
 ```py
-**class Spam(object, metaclass=type):**
- **pass**
+class Spam(object, metaclass=type):
+ **pass
 
 ```
 
@@ -87,41 +87,41 @@
 由于元类可以修改任何类属性，你可以做任何你想做的事情。在我们继续讨论更高级的元类之前，让我们看一个基本的例子：
 
 ```py
-**# The metaclass definition, note the inheritance of type instead**
-**# of object**
-**>>> class MetaSpam(type):**
-**...**
-**...     # Notice how the __new__ method has the same arguments**
-**...     # as the type function we used earlier?**
-**...     def __new__(metaclass, name, bases, namespace):**
-**...         name = 'SpamCreatedByMeta'**
-**...         bases = (int,) + bases**
-**...         namespace['eggs'] = 1**
-**...         return type.__new__(metaclass, name, bases, namespace)**
+# The metaclass definition, note the inheritance of type instead
+# of object
+>>> class MetaSpam(type):
+...
+...     # Notice how the __new__ method has the same arguments
+...     # as the type function we used earlier?
+...     def __new__(metaclass, name, bases, namespace):
+...         name = 'SpamCreatedByMeta'
+...         bases = (int,) + bases
+...         namespace['eggs'] = 1
+...         return type.__new__(metaclass, name, bases, namespace)
 
-**# First, the regular Spam:**
-**>>> class Spam(object):**
-**...     pass**
+# First, the regular Spam:
+>>> class Spam(object):
+...     pass
 
-**>>> Spam.__name__**
-**'Spam'**
-**>>> issubclass(Spam, int)**
-**False**
-**>>> Spam.eggs**
-**Traceback (most recent call last):**
- **...**
-**AttributeError: type object 'Spam' has no attribute 'eggs'**
+>>> Spam.__name__
+'Spam'
+>>> issubclass(Spam, int)
+False
+>>> Spam.eggs
+Traceback (most recent call last):
+ **...
+AttributeError: type object 'Spam' has no attribute 'eggs'
 
-**# Now the meta-Spam**
-**>>> class Spam(object, metaclass=MetaSpam):**
-**...     pass**
+# Now the meta-Spam
+>>> class Spam(object, metaclass=MetaSpam):
+...     pass
 
-**>>> Spam.__name__**
-**'SpamCreatedByMeta'**
-**>>> issubclass(Spam, int)**
-**True**
-**>>> Spam.eggs**
-**1**
+>>> Spam.__name__
+'SpamCreatedByMeta'
+>>> issubclass(Spam, int)
+True
+>>> Spam.eggs
+1
 
 ```
 
@@ -132,24 +132,24 @@
 向元类添加参数的可能性是一个鲜为人知但非常有用的特性。在许多情况下，简单地向类定义添加属性或方法就足以检测要做什么，但也有一些情况下更具体的指定是有用的。
 
 ```py
-**>>> class MetaWithArguments(type):**
-**...     def __init__(metaclass, name, bases, namespace, **kwargs):**
-**...         # The kwargs should not be passed on to the**
-**...         # type.__init__**
-**...         type.__init__(metaclass, name, bases, namespace)**
-**...**
-**...     def __new__(metaclass, name, bases, namespace, **kwargs):**
-**...         for k, v in kwargs.items():**
-**...             namespace.setdefault(k, v)**
-**...**
-**...         return type.__new__(metaclass, name, bases, namespace)**
+>>> class MetaWithArguments(type):
+...     def __init__(metaclass, name, bases, namespace, **kwargs):
+...         # The kwargs should not be passed on to the
+...         # type.__init__
+...         type.__init__(metaclass, name, bases, namespace)
+...
+...     def __new__(metaclass, name, bases, namespace, **kwargs):
+...         for k, v in kwargs.items():
+...             namespace.setdefault(k, v)
+...
+...         return type.__new__(metaclass, name, bases, namespace)
 
-**>>> class WithArgument(metaclass=MetaWithArguments, spam='eggs'):**
-**...     pass**
+>>> class WithArgument(metaclass=MetaWithArguments, spam='eggs'):
+...     pass
 
-**>>> with_argument = WithArgument()**
-**>>> with_argument.spam**
-**'eggs'**
+>>> with_argument = WithArgument()
+>>> with_argument.spam
+'eggs'
 
 ```
 
@@ -160,31 +160,31 @@
 在使用元类时，可能会感到困惑，注意到类实际上不仅仅是构造类，它实际上在创建时继承了类。举个例子：
 
 ```py
-**>>> class Meta(type):**
-**...**
-**...     @property**
-**...     def spam(cls):**
-**...         return 'Spam property of %r' % cls**
-**...**
-**...     def eggs(self):**
-**...         return 'Eggs method of %r' % self**
+>>> class Meta(type):
+...
+...     @property
+...     def spam(cls):
+...         return 'Spam property of %r' % cls
+...
+...     def eggs(self):
+...         return 'Eggs method of %r' % self
 
-**>>> class SomeClass(metaclass=Meta):**
-**...     pass**
+>>> class SomeClass(metaclass=Meta):
+...     pass
 
-**>>> SomeClass.spam**
-**"Spam property of <class '...SomeClass'>"**
-**>>> SomeClass().spam**
-**Traceback (most recent call last):**
- **...**
-**AttributeError: 'SomeClass' object has no attribute 'spam'**
+>>> SomeClass.spam
+"Spam property of <class '...SomeClass'>"
+>>> SomeClass().spam
+Traceback (most recent call last):
+ **...
+AttributeError: 'SomeClass' object has no attribute 'spam'
 
-**>>> SomeClass.eggs()**
-**"Eggs method of <class '...SomeClass'>"**
-**>>> SomeClass().eggs()**
-**Traceback (most recent call last):**
- **...**
-**AttributeError: 'SomeClass' object has no attribute 'eggs'**
+>>> SomeClass.eggs()
+"Eggs method of <class '...SomeClass'>"
+>>> SomeClass().eggs()
+Traceback (most recent call last):
+ **...
+AttributeError: 'SomeClass' object has no attribute 'eggs'
 
 ```
 
@@ -199,56 +199,56 @@
 首先，让我们演示常规抽象基类的用法：
 
 ```py
-**>>> import abc**
+>>> import abc
 
-**>>> class Spam(metaclass=abc.ABCMeta):**
-**...**
-**...     @abc.abstractmethod**
-**...     def some_method(self):**
-**...         raise NotImplemented()**
+>>> class Spam(metaclass=abc.ABCMeta):
+...
+...     @abc.abstractmethod
+...     def some_method(self):
+...         raise NotImplemented()
 
-**>>> class Eggs(Spam):**
-**...     def some_new_method(self):**
-**...         pass**
+>>> class Eggs(Spam):
+...     def some_new_method(self):
+...         pass
 
-**>>> eggs = Eggs()**
-**Traceback (most recent call last):**
- **...**
-**TypeError: Can't instantiate abstract class Eggs with abstract**
-**methods some_method**
+>>> eggs = Eggs()
+Traceback (most recent call last):
+ **...
+TypeError: Can't instantiate abstract class Eggs with abstract
+methods some_method
 
-**>>> class Bacon(Spam):**
-**...     def some_method():**
-**...         pass**
+>>> class Bacon(Spam):
+...     def some_method():
+...         pass
 
-**>>> bacon = Bacon()**
+>>> bacon = Bacon()
 
 ```
 
 正如你所看到的，抽象基类阻止我们在继承所有抽象方法之前实例化类。除了常规方法外，还支持 `property`、`staticmethod` 和 `classmethod`。
 
 ```py
-**>>> import abc**
+>>> import abc
 
-**>>> class Spam(object, metaclass=abc.ABCMeta):**
-**...     @property**
-**...     @abc.abstractmethod**
-**...     def some_property(self):**
-**...         raise NotImplemented()**
-**...**
-**...     @classmethod**
-**...     @abc.abstractmethod**
-**...     def some_classmethod(cls):**
-**...         raise NotImplemented()**
-**...**
-**...     @staticmethod**
-**...     @abc.abstractmethod**
-**...     def some_staticmethod():**
-**...         raise NotImplemented()**
-**...**
-**...     @abc.abstractmethod**
-**...     def some_method():**
-**...         raise NotImplemented()**
+>>> class Spam(object, metaclass=abc.ABCMeta):
+...     @property
+...     @abc.abstractmethod
+...     def some_property(self):
+...         raise NotImplemented()
+...
+...     @classmethod
+...     @abc.abstractmethod
+...     def some_classmethod(cls):
+...         raise NotImplemented()
+...
+...     @staticmethod
+...     @abc.abstractmethod
+...     def some_staticmethod():
+...         raise NotImplemented()
+...
+...     @abc.abstractmethod
+...     def some_method():
+...         raise NotImplemented()
 
 ```
 
@@ -257,7 +257,7 @@
 首先，`abc.abstractmethod` 将 `__isabstractmethod__` 属性设置为 `True`。因此，如果你不想使用装饰器，你可以简单地模拟这种行为，做一些类似的事情：
 
 ```py
-**some_method.__isabstractmethod__ = True**
+some_method.__isabstractmethod__ = True
 
 ```
 
@@ -270,81 +270,81 @@
 现在的问题是实际的检查在哪里进行；检查类是否完全实现。这实际上是通过一些 Python 内部功能实现的：
 
 ```py
-**>>> class AbstractMeta(type):**
-**...     def __new__(metaclass, name, bases, namespace):**
-**...         cls = super().__new__(metaclass, name, bases, namespace)**
-**...         cls.__abstractmethods__ = frozenset(('something',))**
-**...         return cls**
+>>> class AbstractMeta(type):
+...     def __new__(metaclass, name, bases, namespace):
+...         cls = super().__new__(metaclass, name, bases, namespace)
+...         cls.__abstractmethods__ = frozenset(('something',))
+...         return cls
 
-**>>> class Spam(metaclass=AbstractMeta):**
-**...     pass**
+>>> class Spam(metaclass=AbstractMeta):
+...     pass
 
-**>>> eggs = Spam()**
-**Traceback (most recent call last):**
- **...**
-**TypeError: Can't instantiate abstract class Spam with ...**
+>>> eggs = Spam()
+Traceback (most recent call last):
+ **...
+TypeError: Can't instantiate abstract class Spam with ...
 
 ```
 
 我们可以很容易地自己使用 `metaclass` 模拟相同的行为，但应该注意 `abc.ABCMeta` 实际上做了更多，我们将在下一节中进行演示。为了模仿内置抽象基类支持的行为，看看下面的例子：
 
 ```py
-**>>> import functools**
+>>> import functools
 
-**>>> class AbstractMeta(type):**
-**...     def __new__(metaclass, name, bases, namespace):**
-**...         # Create the class instance**
-**...         cls = super().__new__(metaclass, name, bases, namespace)**
-**...**
-**...         # Collect all local methods marked as abstract**
-**...         abstracts = set()**
-**...         for k, v in namespace.items():**
-**...             if getattr(v, '__abstract__', False):**
-**...                 abstracts.add(k)**
-**...**
-**...         # Look for abstract methods in the base classes and add**
-**...         # them to the list of abstracts**
-**...         for base in bases:**
-**...             for k in getattr(base, '__abstracts__', ()):**
-**...                 v = getattr(cls, k, None)**
-**...                 if getattr(v, '__abstract__', False):**
-**...                     abstracts.add(k)**
-**...**
-**...         # store the abstracts in a frozenset so they cannot be**
-**...         # modified**
-**...         cls.__abstracts__ = frozenset(abstracts)**
-**...**
-**...         # Decorate the __new__ function to check if all abstract**
-**...         # functions were implemented**
-**...         original_new = cls.__new__**
-**...         @functools.wraps(original_new)**
-**...         def new(self, *args, **kwargs):**
-**...             for k in self.__abstracts__:**
-**...                 v = getattr(self, k)**
-**...                 if getattr(v, '__abstract__', False):**
-**...                     raise RuntimeError(**
-**...                         '%r is not implemented' % k)**
-**...**
-**...             return original_new(self, *args, **kwargs)**
-**...**
-**...         cls.__new__ = new**
-**...         return cls**
+>>> class AbstractMeta(type):
+...     def __new__(metaclass, name, bases, namespace):
+...         # Create the class instance
+...         cls = super().__new__(metaclass, name, bases, namespace)
+...
+...         # Collect all local methods marked as abstract
+...         abstracts = set()
+...         for k, v in namespace.items():
+...             if getattr(v, '__abstract__', False):
+...                 abstracts.add(k)
+...
+...         # Look for abstract methods in the base classes and add
+...         # them to the list of abstracts
+...         for base in bases:
+...             for k in getattr(base, '__abstracts__', ()):
+...                 v = getattr(cls, k, None)
+...                 if getattr(v, '__abstract__', False):
+...                     abstracts.add(k)
+...
+...         # store the abstracts in a frozenset so they cannot be
+...         # modified
+...         cls.__abstracts__ = frozenset(abstracts)
+...
+...         # Decorate the __new__ function to check if all abstract
+...         # functions were implemented
+...         original_new = cls.__new__
+...         @functools.wraps(original_new)
+...         def new(self, *args, **kwargs):
+...             for k in self.__abstracts__:
+...                 v = getattr(self, k)
+...                 if getattr(v, '__abstract__', False):
+...                     raise RuntimeError(
+...                         '%r is not implemented' % k)
+...
+...             return original_new(self, *args, **kwargs)
+...
+...         cls.__new__ = new
+...         return cls
 
-**>>> def abstractmethod(function):**
-**...     function.__abstract__ = True**
-**...     return function**
+>>> def abstractmethod(function):
+...     function.__abstract__ = True
+...     return function
 
-**>>> class Spam(metaclass=AbstractMeta):**
-**...     @abstractmethod**
-**...     def some_method(self):**
-**...         pass**
+>>> class Spam(metaclass=AbstractMeta):
+...     @abstractmethod
+...     def some_method(self):
+...         pass
 
-**# Instantiating the function, we can see that it functions as the**
-**# regular ABCMeta does**
-**>>> eggs = Spam()**
-**Traceback (most recent call last):**
- **...**
-**RuntimeError: 'some_method' is not implemented**
+# Instantiating the function, we can see that it functions as the
+# regular ABCMeta does
+>>> eggs = Spam()
+Traceback (most recent call last):
+ **...
+RuntimeError: 'some_method' is not implemented
 
 ```
 
@@ -359,60 +359,60 @@
 当然，使用抽象基类来定义自己的接口是很好的。但是告诉 Python 你的类实际上类似于什么样的类型也是非常方便的。为此，`abc.ABCMeta` 提供了一个注册函数，允许你指定哪些类型是相似的。例如，一个自定义的列表将列表类型视为相似的：
 
 ```py
-**>>> import abc**
+>>> import abc
 
-**>>> class CustomList(abc.ABC):**
-**...     'This class implements a list-like interface'**
-**...     pass**
+>>> class CustomList(abc.ABC):
+...     'This class implements a list-like interface'
+...     pass
 
-**>>> CustomList.register(list)**
-**<class 'list'>**
+>>> CustomList.register(list)
+<class 'list'>
 
-**>>> issubclass(list, CustomList)**
-**True**
-**>>> isinstance([], CustomList)**
-**True**
-**>>> issubclass(CustomList, list)**
-**False**
-**>>> isinstance(CustomList(), list)**
-**False**
+>>> issubclass(list, CustomList)
+True
+>>> isinstance([], CustomList)
+True
+>>> issubclass(CustomList, list)
+False
+>>> isinstance(CustomList(), list)
+False
 
 ```
 
 正如最后四行所示，这是一个单向关系。反过来通常很容易通过继承列表来实现，但在这种情况下不起作用。`abc.ABCMeta` 拒绝创建继承循环。
 
 ```py
-**>>> import abc**
+>>> import abc
 
-**>>> class CustomList(abc.ABC, list):**
-**...     'This class implements a list-like interface'**
-**...     pass**
+>>> class CustomList(abc.ABC, list):
+...     'This class implements a list-like interface'
+...     pass
 
-**>>> CustomList.register(list)**
-**Traceback (most recent call last):**
- **...**
-**RuntimeError: Refusing to create an inheritance cycle**
+>>> CustomList.register(list)
+Traceback (most recent call last):
+ **...
+RuntimeError: Refusing to create an inheritance cycle
 
 ```
 
 为了能够处理这样的情况，`abc.ABCMeta` 中还有另一个有用的特性。在子类化 `abc.ABCMeta` 时，可以扩展 `__subclasshook__` 方法来定制 `issubclass` 和 `isinstance` 的行为。
 
 ```py
-**>>> import abc**
+>>> import abc
 
-**>>> class UniversalClass(abc.ABC):**
-**...    @classmethod**
-**...    def __subclasshook__(cls, subclass):**
-**...        return True**
+>>> class UniversalClass(abc.ABC):
+...    @classmethod
+...    def __subclasshook__(cls, subclass):
+...        return True
 
-**>>> issubclass(list, UniversalClass)**
-**True**
-**>>> issubclass(bool, UniversalClass)**
-**True**
-**>>> isinstance(True, UniversalClass)**
-**True**
-**>>> issubclass(UniversalClass, bool)**
-**False**
+>>> issubclass(list, UniversalClass)
+True
+>>> issubclass(bool, UniversalClass)
+True
+>>> isinstance(True, UniversalClass)
+True
+>>> issubclass(UniversalClass, bool)
+False
 
 ```
 
@@ -434,39 +434,39 @@ class ABC(metaclass=abc.ABCMeta):
 元类最常见的用途之一是让类自动注册为插件/处理程序。这些示例可以在许多项目中看到，比如 Web 框架。这些代码库太庞大了，在这里无法有用地解释。因此，我们将展示一个更简单的例子，展示元类作为自注册的 `plugin` 系统的强大功能：
 
 ```py
-**>>> import abc**
+>>> import abc
 
-**>>> class Plugins(abc.ABCMeta):**
-**...     plugins = dict()**
-**...**
-**...     def __new__(metaclass, name, bases, namespace):**
-**...         cls = abc.ABCMeta.__new__(metaclass, name, bases,**
-**...                                   namespace)**
-**...         if isinstance(cls.name, str):**
-**...             metaclass.plugins[cls.name] = cls**
-**...         return cls**
-**...**
-**...     @classmethod**
-**...     def get(cls, name):**
-**...         return cls.plugins[name]**
+>>> class Plugins(abc.ABCMeta):
+...     plugins = dict()
+...
+...     def __new__(metaclass, name, bases, namespace):
+...         cls = abc.ABCMeta.__new__(metaclass, name, bases,
+...                                   namespace)
+...         if isinstance(cls.name, str):
+...             metaclass.plugins[cls.name] = cls
+...         return cls
+...
+...     @classmethod
+...     def get(cls, name):
+...         return cls.plugins[name]
 
-**>>> class PluginBase(metaclass=Plugins):**
-**...     @property**
-**...     @abc.abstractmethod**
-**...     def name(self):**
-**...         raise NotImplemented()**
+>>> class PluginBase(metaclass=Plugins):
+...     @property
+...     @abc.abstractmethod
+...     def name(self):
+...         raise NotImplemented()
 
-**>>> class SpamPlugin(PluginBase):**
-**...     name = 'spam'**
+>>> class SpamPlugin(PluginBase):
+...     name = 'spam'
 
-**>>> class EggsPlugin(PluginBase):**
-**...     name = 'eggs'**
+>>> class EggsPlugin(PluginBase):
+...     name = 'eggs'
 
-**>>> Plugins.get('spam')**
-**<class '...SpamPlugin'>**
-**>>> Plugins.plugins**
-**{'spam': <class '...SpamPlugin'>,**
- **'eggs': <class '...EggsPlugin'>}**
+>>> Plugins.get('spam')
+<class '...SpamPlugin'>
+>>> Plugins.plugins
+{'spam': <class '...SpamPlugin'>,
+ **'eggs': <class '...EggsPlugin'>}
 
 ```
 
@@ -564,13 +564,13 @@ class Plugins(abc.ABCMeta):
 执行时会得到以下结果：
 
 ```py
-**>>> import plugins**
-**>>> plugins.Plugins.get('spam')**
-**Loading plugins from plugins.spam**
-**<class 'plugins.spam.Spam'>**
+>>> import plugins
+>>> plugins.Plugins.get('spam')
+Loading plugins from plugins.spam
+<class 'plugins.spam.Spam'>
 
-**>>> plugins.Plugins.get('spam')**
-**<class 'plugins.spam.Spam'>**
+>>> plugins.Plugins.get('spam')
+<class 'plugins.spam.Spam'>
 
 ```
 
@@ -609,15 +609,15 @@ class Plugins(abc.ABCMeta):
 可以使用以下代码调用：
 
 ```py
-**>>> import plugins**
+>>> import plugins
 
-**>>> plugins.Plugins.load(**
-**...     'plugins.spam',**
-**...     'plugins.eggs',**
-**... )**
+>>> plugins.Plugins.load(
+...     'plugins.spam',
+...     'plugins.eggs',
+... )
 
-**>>> plugins.Plugins.get('spam')**
-**<class 'plugins.spam.Spam'>**
+>>> plugins.Plugins.get('spam')
+<class 'plugins.spam.Spam'>
 
 ```
 
@@ -722,69 +722,69 @@ class Plugins(abc.ABCMeta):
 足够的理论！让我们说明创建和实例化类对象的过程，以便检查操作顺序：
 
 ```py
-**>>> import functools**
+>>> import functools
 
-**>>> def decorator(name):**
-**...     def _decorator(cls):**
-**...         @functools.wraps(cls)**
-**...         def __decorator(*args, **kwargs):**
-**...             print('decorator(%s)' % name)**
-**...             return cls(*args, **kwargs)**
-**...         return __decorator**
-**...     return _decorator**
+>>> def decorator(name):
+...     def _decorator(cls):
+...         @functools.wraps(cls)
+...         def __decorator(*args, **kwargs):
+...             print('decorator(%s)' % name)
+...             return cls(*args, **kwargs)
+...         return __decorator
+...     return _decorator
 
-**>>> class SpamMeta(type):**
-**...**
-**...     @decorator('SpamMeta.__init__')**
-**...     def __init__(self, name, bases, namespace, **kwargs):**
-**...         print('SpamMeta.__init__()')**
-**...         return type.__init__(self, name, bases, namespace)**
-**...**
-**...     @staticmethod**
-**...     @decorator('SpamMeta.__new__')**
-**...     def __new__(cls, name, bases, namespace, **kwargs):**
-**...         print('SpamMeta.__new__()')**
-**...         return type.__new__(cls, name, bases, namespace)**
-**...**
-**...     @classmethod**
-**...     @decorator('SpamMeta.__prepare__')**
-**...     def __prepare__(cls, names, bases, **kwargs):**
-**...         print('SpamMeta.__prepare__()')**
-**...         namespace = dict(spam=5)**
-**...         return namespace**
+>>> class SpamMeta(type):
+...
+...     @decorator('SpamMeta.__init__')
+...     def __init__(self, name, bases, namespace, **kwargs):
+...         print('SpamMeta.__init__()')
+...         return type.__init__(self, name, bases, namespace)
+...
+...     @staticmethod
+...     @decorator('SpamMeta.__new__')
+...     def __new__(cls, name, bases, namespace, **kwargs):
+...         print('SpamMeta.__new__()')
+...         return type.__new__(cls, name, bases, namespace)
+...
+...     @classmethod
+...     @decorator('SpamMeta.__prepare__')
+...     def __prepare__(cls, names, bases, **kwargs):
+...         print('SpamMeta.__prepare__()')
+...         namespace = dict(spam=5)
+...         return namespace
 
-**>>> @decorator('Spam')**
-**... class Spam(metaclass=SpamMeta):**
-**...**
-**...     @decorator('Spam.__init__')**
-**...     def __init__(self, eggs=10):**
-**...         print('Spam.__init__()')**
-**...         self.eggs = eggs**
-**decorator(SpamMeta.__prepare__)**
-**SpamMeta.__prepare__()**
-**decorator(SpamMeta.__new__)**
-**SpamMeta.__new__()**
-**decorator(SpamMeta.__init__)**
-**SpamMeta.__init__()**
+>>> @decorator('Spam')
+... class Spam(metaclass=SpamMeta):
+...
+...     @decorator('Spam.__init__')
+...     def __init__(self, eggs=10):
+...         print('Spam.__init__()')
+...         self.eggs = eggs
+decorator(SpamMeta.__prepare__)
+SpamMeta.__prepare__()
+decorator(SpamMeta.__new__)
+SpamMeta.__new__()
+decorator(SpamMeta.__init__)
+SpamMeta.__init__()
 
-**# Testing with the class object**
-**>>> spam = Spam**
-**>>> spam.spam**
-**5**
-**>>> spam.eggs**
-**Traceback (most recent call last):**
- **...**
-**AttributeError: ... object has no attribute 'eggs'**
+# Testing with the class object
+>>> spam = Spam
+>>> spam.spam
+5
+>>> spam.eggs
+Traceback (most recent call last):
+ **...
+AttributeError: ... object has no attribute 'eggs'
 
-**# Testing with a class instance**
-**>>> spam = Spam()**
-**decorator(Spam)**
-**decorator(Spam.__init__)**
-**Spam.__init__()**
-**>>> spam.spam**
-**5**
-**>>> spam.eggs**
-**10**
+# Testing with a class instance
+>>> spam = Spam()
+decorator(Spam)
+decorator(Spam.__init__)
+Spam.__init__()
+>>> spam.spam
+5
+>>> spam.eggs
+10
 
 ```
 
@@ -813,48 +813,48 @@ class Plugins(abc.ABCMeta):
 一种简单的存储字段顺序的方法是给字段实例一个特殊的`__init__`方法，每次定义都会增加，因此字段具有递增的索引属性。这种解决方案可以被认为是经典解决方案，因为它在 Python 2 中也适用。
 
 ```py
-**>>> import itertools**
+>>> import itertools
 
-**>>> class Field(object):**
-**...     counter = itertools.count()**
-**...**
-**...     def __init__(self, name=None):**
-**...         self.name = name**
-**...         self.index = next(Field.counter)**
-**...**
-**...     def __repr__(self):**
-**...         return '<%s[%d] %s>' % (**
-**...             self.__class__.__name__,**
-**...             self.index,**
-**...             self.name,**
-**...         )**
+>>> class Field(object):
+...     counter = itertools.count()
+...
+...     def __init__(self, name=None):
+...         self.name = name
+...         self.index = next(Field.counter)
+...
+...     def __repr__(self):
+...         return '<%s[%d] %s>' % (
+...             self.__class__.__name__,
+...             self.index,
+...             self.name,
+...         )
 
-**>>> class FieldsMeta(type):**
-**...     def __new__(metaclass, name, bases, namespace):**
-**...         cls = type.__new__(metaclass, name, bases, namespace)**
-**...         fields = []**
-**...         for k, v in namespace.items():**
-**...             if isinstance(v, Field):**
-**...                 fields.append(v)**
-**...                 v.name = v.name or k**
-**...**
-**...         cls.fields = sorted(fields, key=lambda f: f.index)**
-**...         return cls**
+>>> class FieldsMeta(type):
+...     def __new__(metaclass, name, bases, namespace):
+...         cls = type.__new__(metaclass, name, bases, namespace)
+...         fields = []
+...         for k, v in namespace.items():
+...             if isinstance(v, Field):
+...                 fields.append(v)
+...                 v.name = v.name or k
+...
+...         cls.fields = sorted(fields, key=lambda f: f.index)
+...         return cls
 
-**>>> class Fields(metaclass=FieldsMeta):**
-**...     spam = Field()**
-**...     eggs = Field()**
+>>> class Fields(metaclass=FieldsMeta):
+...     spam = Field()
+...     eggs = Field()
 
-**>>> Fields.fields**
-**[<Field[0] spam>, <Field[1] eggs>]**
+>>> Fields.fields
+[<Field[0] spam>, <Field[1] eggs>]
 
-**>>> fields = Fields()**
-**>>> fields.eggs.index**
-**1**
-**>>> fields.spam.index**
-**0**
-**>>> fields.fields**
-**[<Field[0] spam>, <Field[1] eggs>]**
+>>> fields = Fields()
+>>> fields.eggs.index
+1
+>>> fields.spam.index
+0
+>>> fields.fields
+[<Field[0] spam>, <Field[1] eggs>]
 
 ```
 

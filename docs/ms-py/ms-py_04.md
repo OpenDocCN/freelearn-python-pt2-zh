@@ -35,40 +35,40 @@ Python 的`list`推导是将函数或过滤器应用于一系列项目的非常�
 让我们立即看几个例子。`list`推导的基本前提看起来是这样的：
 
 ```py
-**>>> squares = [x ** 2 for x in range(10)]**
-**>>> squares**
-**[0, 1, 4, 9, 16, 25, 36, 49, 64, 81]**
+>>> squares = [x ** 2 for x in range(10)]
+>>> squares
+[0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
 
 ```
 
 我们可以很容易地扩展这个过滤器：
 
 ```py
-**>>> uneven_squares = [x ** 2 for x in range(10) if x % 2]**
-**>>> uneven_squares**
-**[1, 9, 25, 49, 81]**
+>>> uneven_squares = [x ** 2 for x in range(10) if x % 2]
+>>> uneven_squares
+[1, 9, 25, 49, 81]
 
 ```
 
 语法与常规 Python for 循环非常接近，但`if`语句和自动存储结果使其在某些情况下非常有用。常规的 Python 等价物并不长，但是：
 
 ```py
-**>>> uneven_squares = []**
-**>>> for x in range(10):**
-**...     if x % 2:**
-**...         uneven_squares.append(x ** 2)**
+>>> uneven_squares = []
+>>> for x in range(10):
+...     if x % 2:
+...         uneven_squares.append(x ** 2)
 
-**>>> uneven_squares**
-**[1, 9, 25, 49, 81]**
+>>> uneven_squares
+[1, 9, 25, 49, 81]
 
 ```
 
 但必须小心，由于特殊的列表推导结构，某些类型的操作并不像你期望的那样明显。这一次，我们正在寻找大于`0.5`的随机数：
 
 ```py
-**>>> import random**
-**>>> [random.random() for _ in range(10) if random.random() >= 0.5]**
-**[0.5211948104577864, 0.650010512129705, 0.021427316545174158]**
+>>> import random
+>>> [random.random() for _ in range(10) if random.random() >= 0.5]
+[0.5211948104577864, 0.650010512129705, 0.021427316545174158]
 
 ```
 
@@ -77,10 +77,10 @@ Python 的`list`推导是将函数或过滤器应用于一系列项目的非常�
 对抗这种情况的一种方法是通过从过滤器中创建单独的列表：
 
 ```py
-**>>> import random**
-**>>> numbers = [random.random() for _ in range(10)]**
-**>>> [x for x in numbers if x >= 0.5]**
-**[0.715510247827078, 0.8426277505519564, 0.5071133900377911]**
+>>> import random
+>>> numbers = [random.random() for _ in range(10)]
+>>> [x for x in numbers if x >= 0.5]
+[0.715510247827078, 0.8426277505519564, 0.5071133900377911]
 
 ```
 
@@ -89,63 +89,63 @@ Python 的`list`推导是将函数或过滤器应用于一系列项目的非常�
 这是一个列表推导中的列表推导：
 
 ```py
-**>>> import random**
-**>>> [x for x in [random.random() for _ in range(10)] if x >= 0.5]**
+>>> import random
+>>> [x for x in [random.random() for _ in range(10)] if x >= 0.5]
 
 ```
 
 这里有一个很快变成难以理解的列表推导：
 
 ```py
-**>>> import random**
-**>>> [x for _ in range(10) for x in [random.random()] if x >= 0.5]**
+>>> import random
+>>> [x for _ in range(10) for x in [random.random()] if x >= 0.5]
 
 ```
 
 需要注意这些选项，因为双重列表推导实际上像嵌套的`for`循环一样工作，因此会快速生成大量结果。在这方面进行详细说明：
 
 ```py
-**>>> [(x, y) for x in range(3) for y in range(3, 5)]**
-**[(0, 3), (0, 4), (1, 3), (1, 4), (2, 3), (2, 4)]**
+>>> [(x, y) for x in range(3) for y in range(3, 5)]
+[(0, 3), (0, 4), (1, 3), (1, 4), (2, 3), (2, 4)]
 
 ```
 
 这实际上做了以下事情：
 
 ```py
-**>>> results = []**
-**>>> for x in range(3):**
-**...     for y in range(3, 5):**
-**...         results.append((x, y))**
-**...**
-**>>> results**
-**[(0, 3), (0, 4), (1, 3), (1, 4), (2, 3), (2, 4)]**
+>>> results = []
+>>> for x in range(3):
+...     for y in range(3, 5):
+...         results.append((x, y))
+...
+>>> results
+[(0, 3), (0, 4), (1, 3), (1, 4), (2, 3), (2, 4)]
 
 ```
 
 这些在某些情况下可能很有用，但我建议限制它们的使用，因为它们很快就会变得难以阅读。我强烈建议不要在列表推导中使用列表推导来提高可读性。重要的是要理解发生了什么，所以让我们看一个更多的例子。以下列表推导交换了列数和行数，因此 3 x 4 矩阵变成了 4 x 3：
 
 ```py
-**>>> matrix = [**
-**...     [1, 2, 3, 4],**
-**...     [5, 6, 7, 8],**
-**...     [9, 10, 11, 12],**
-**... ]**
+>>> matrix = [
+...     [1, 2, 3, 4],
+...     [5, 6, 7, 8],
+...     [9, 10, 11, 12],
+... ]
 
-**>>> reshaped_matrix = [**
-**...     [**
-**...         [y for x in matrix for y in x][i * len(matrix) + j]**
-**...         for j in range(len(matrix))**
-**...     ]**
-**...     for i in range(len(matrix[0]))**
-**... ]**
+>>> reshaped_matrix = [
+...     [
+...         [y for x in matrix for y in x][i * len(matrix) + j]
+...         for j in range(len(matrix))
+...     ]
+...     for i in range(len(matrix[0]))
+... ]
 
-**>>> import pprint**
-**>>> pprint.pprint(reshaped_matrix, width=40)**
-**[[1, 2, 3],**
- **[4, 5, 6],**
- **[7, 8, 9],**
- **[10, 11, 12]]**
+>>> import pprint
+>>> pprint.pprint(reshaped_matrix, width=40)
+[[1, 2, 3],
+ **[4, 5, 6],
+ **[7, 8, 9],
+ **[10, 11, 12]]
 
 ```
 
@@ -156,11 +156,11 @@ Python 的`list`推导是将函数或过滤器应用于一系列项目的非常�
 `dict`推导与列表推导非常相似，但结果是一个`dict`。除此之外，唯一的真正区别是你需要返回一个键和一个值，而列表推导接受任何类型的值。以下是一个基本示例：
 
 ```py
-**>>> {x: x ** 2 for x in range(10)}**
-**{0: 0, 1: 1, 2: 4, 3: 9, 4: 16, 5: 25, 6: 36, 7: 49, 8: 64, 9: 81}**
+>>> {x: x ** 2 for x in range(10)}
+{0: 0, 1: 1, 2: 4, 3: 9, 4: 16, 5: 25, 6: 36, 7: 49, 8: 64, 9: 81}
 
-**>>> {x: x ** 2 for x in range(10) if x % 2}**
-**{1: 1, 3: 9, 9: 81, 5: 25, 7: 49}**
+>>> {x: x ** 2 for x in range(10) if x % 2}
+{1: 1, 3: 9, 9: 81, 5: 25, 7: 49}
 
 ```
 
@@ -171,8 +171,8 @@ Python 的`list`推导是将函数或过滤器应用于一系列项目的非常�
 有趣的是你可以混合这两个，当然，这样会更加难以阅读：
 
 ```py
-**>>> {x ** 2: [y for y in range(x)] for x in range(5)}**
-**{0: [], 1: [0], 4: [0, 1], 16: [0, 1, 2, 3], 9: [0, 1, 2]}**
+>>> {x ** 2: [y for y in range(x)] for x in range(5)}
+{0: [], 1: [0], 4: [0, 1], 16: [0, 1, 2, 3], 9: [0, 1, 2]}
 
 ```
 
@@ -183,11 +183,11 @@ Python 的`list`推导是将函数或过滤器应用于一系列项目的非常�
 就像你可以使用花括号(`{}`)创建一个`set`一样，你也可以使用`set`推导来创建一个集合。它们的工作方式类似于列表推导，但值是唯一的（并且没有排序顺序）：
 
 ```py
-**>>> [x*y for x in range(3) for y in range(3)]**
-**[0, 0, 0, 0, 1, 2, 0, 2, 4]**
+>>> [x*y for x in range(3) for y in range(3)]
+[0, 0, 0, 0, 1, 2, 0, 2, 4]
 
-**>>> {x*y for x in range(3) for y in range(3)}**
-**{0, 1, 2, 4}**
+>>> {x*y for x in range(3) for y in range(3)}
+{0, 1, 2, 4}
 
 ```
 
@@ -200,19 +200,19 @@ Python 的`list`推导是将函数或过滤器应用于一系列项目的非常�
 Python 中的`lambda`语句只是一个匿名函数。由于语法的限制，它比常规函数稍微有限，但可以通过它完成很多事情。但是，可读性很重要，所以通常最好尽可能简单。其中一个更常见的用例是`sorted`函数的`sort`关键字：
 
 ```py
-**>>> class Spam(object):**
-**...     def __init__(self, value):**
-**...         self.value = value**
-**...**
-**...     def __repr__(self):**
-**...         return '<%s: %s>' % (self.__class__.__name__, self.value)**
-**...**
-**>>> spams = [Spam(5), Spam(2), Spam(4), Spam(1)]**
-**>>> sorted_spams = sorted(spams, key=lambda spam: spam.value)**
-**>>> spams**
-**[<Spam: 5>, <Spam: 2>, <Spam: 4>, <Spam: 1>]**
-**>>> sorted_spams**
-**[<Spam: 1>, <Spam: 2>, <Spam: 4>, <Spam: 5>]**
+>>> class Spam(object):
+...     def __init__(self, value):
+...         self.value = value
+...
+...     def __repr__(self):
+...         return '<%s: %s>' % (self.__class__.__name__, self.value)
+...
+>>> spams = [Spam(5), Spam(2), Spam(4), Spam(1)]
+>>> sorted_spams = sorted(spams, key=lambda spam: spam.value)
+>>> spams
+[<Spam: 5>, <Spam: 2>, <Spam: 4>, <Spam: 1>]
+>>> sorted_spams
+[<Spam: 1>, <Spam: 2>, <Spam: 4>, <Spam: 5>]
 
 ```
 
@@ -221,20 +221,20 @@ Python 中的`lambda`语句只是一个匿名函数。由于语法的限制，�
 并不是说常规函数会很啰嗦，但是通过使用匿名函数，你有一个小优势；你不会用额外的函数污染你的本地范围：
 
 ```py
-**>>> def key_function(spam):**
-**...     return spam.value**
+>>> def key_function(spam):
+...     return spam.value
 
-**>>> spams = [Spam(5), Spam(2), Spam(4), Spam(1)]**
-**>>> sorted_spams = sorted(spams, key=lambda spam: spam.value)**
+>>> spams = [Spam(5), Spam(2), Spam(4), Spam(1)]
+>>> sorted_spams = sorted(spams, key=lambda spam: spam.value)
 
 ```
 
 至于风格，请注意`PEP8`规定将 lambda 分配给变量是一个坏主意。逻辑上也是如此。匿名函数的概念就是这样——匿名的。如果你给它一个身份，你应该将它定义为一个普通函数。如果你想保持它简短，实际上并不会长太多。请注意，以下两个语句都被认为是不好的风格，仅用于示例目的：
 
 ```py
-**>>> def key(spam): return spam.value**
+>>> def key(spam): return spam.value
 
-**>>> key = lambda spam: spam.value**
+>>> key = lambda spam: spam.value
 
 ```
 
@@ -259,7 +259,7 @@ Y 组合子可能是λ-演算中最著名的例子：
 以下是 Python 表示法：
 
 ```py
-**Y = lambda f: lambda *args: f(Y(f))(*args)**
+Y = lambda f: lambda *args: f(Y(f))(*args)
 
 ```
 
@@ -276,37 +276,37 @@ def Y(f):
 这可能对您来说仍然有点不清楚，所以让我们看一个实际使用它的例子：
 
 ```py
-**>>> Y = lambda f: lambda *args: f(Y(f))(*args)**
+>>> Y = lambda f: lambda *args: f(Y(f))(*args)
 
-**>>> def factorial(combinator):**
-**...     def _factorial(n):**
-**...         if n:**
-**...             return n * combinator(n - 1)**
-**...         else:**
-**...             return 1**
-**...     return _factorial**
-**>>> Y(factorial)(5)**
-**120**
+>>> def factorial(combinator):
+...     def _factorial(n):
+...         if n:
+...             return n * combinator(n - 1)
+...         else:
+...             return 1
+...     return _factorial
+>>> Y(factorial)(5)
+120
 
 ```
 
 以下是短版本，其中 Y 组合子的力量实际上出现了，具有递归但仍然匿名的函数：
 
 ```py
-**>>> Y = lambda f: lambda *args: f(Y(f))(*args)**
+>>> Y = lambda f: lambda *args: f(Y(f))(*args)
 
-**>>> Y(lambda c: lambda n: n and n * c(n - 1) or 1)(5)**
-**120**
+>>> Y(lambda c: lambda n: n and n * c(n - 1) or 1)(5)
+120
 
 ```
 
 请注意，`n`和`n * c(n – 1)`或`1`部分是长版本函数中使用的`if`语句的简写。或者，这可以使用 Python 三元运算符来编写：
 
 ```py
-**>>> Y = lambda f: lambda *args: f(Y(f))(*args)**
+>>> Y = lambda f: lambda *args: f(Y(f))(*args)
 
-**>>> Y(lambda c: lambda n: n * c(n - 1) if n else 1)(5)**
-**120**
+>>> Y(lambda c: lambda n: n * c(n - 1) if n else 1)(5)
+120
 
 ```
 
@@ -315,15 +315,15 @@ def Y(f):
 最后一个 Y 组合子的例子将通过在几行中定义`quicksort`来给出：
 
 ```py
-**>>> quicksort = Y(lambda f:**
-**...     lambda x: (**
-**...         f([item for item in x if item < x[0]])**
-**...         + [y for y in x if x[0] == y]**
-**...         + f([item for item in x if item > x[0]])**
-**...     ) if x else [])**
+>>> quicksort = Y(lambda f:
+...     lambda x: (
+...         f([item for item in x if item < x[0]])
+...         + [y for y in x if x[0] == y]
+...         + f([item for item in x if item > x[0]])
+...     ) if x else [])
 
-**>>> quicksort([1, 3, 5, 4, 1, 3, 2])**
-**[1, 1, 2, 3, 3, 4, 5]**
+>>> quicksort([1, 3, 5, 4, 1, 3, 2])
+[1, 1, 2, 3, 3, 4, 5]
 
 ```
 
@@ -338,34 +338,34 @@ def Y(f):
 `partial`函数非常方便，可以为经常使用但无法（或不想）重新定义的函数添加一些默认参数。在面向对象的代码中，通常可以解决类似这样的情况，但在过程式代码中，您经常需要重复参数。让我们以第三章中的`heapq`函数为例：
 
 ```py
-**>>> import heapq**
-**>>> heap = []**
-**>>> heapq.heappush(heap, 1)**
-**>>> heapq.heappush(heap, 3)**
-**>>> heapq.heappush(heap, 5)**
-**>>> heapq.heappush(heap, 2)**
-**>>> heapq.heappush(heap, 4)**
-**>>> heapq.nsmallest(3, heap)**
-**[1, 2, 3]**
+>>> import heapq
+>>> heap = []
+>>> heapq.heappush(heap, 1)
+>>> heapq.heappush(heap, 3)
+>>> heapq.heappush(heap, 5)
+>>> heapq.heappush(heap, 2)
+>>> heapq.heappush(heap, 4)
+>>> heapq.nsmallest(3, heap)
+[1, 2, 3]
 
 ```
 
 几乎所有的`heapq`函数都需要一个`heap`参数，那么为什么不为它创建一个快捷方式呢？这就是`functools.partial`的用武之地：
 
 ```py
-**>>> import functools**
-**>>> import heapq**
-**>>> heap = []**
-**>>> push = functools.partial(heapq.heappush, heap)**
-**>>> smallest = functools.partial(heapq.nsmallest, iterable=heap)**
+>>> import functools
+>>> import heapq
+>>> heap = []
+>>> push = functools.partial(heapq.heappush, heap)
+>>> smallest = functools.partial(heapq.nsmallest, iterable=heap)
 
-**>>> push(1)**
-**>>> push(3)**
-**>>> push(5)**
-**>>> push(2)**
-**>>> push(4)**
-**>>> smallest(3)**
-**[1, 2, 3]**
+>>> push(1)
+>>> push(3)
+>>> push(5)
+>>> push(2)
+>>> push(4)
+>>> smallest(3)
+[1, 2, 3]
 
 ```
 
@@ -384,10 +384,10 @@ def Y(f):
 `reduce`最常用的例子之一是计算阶乘，这确实非常简单：
 
 ```py
-**>>> import operator**
-**>>> import functools**
-**>>> functools.reduce(operator.mul, range(1, 6))**
-**120**
+>>> import operator
+>>> import functools
+>>> functools.reduce(operator.mul, range(1, 6))
+120
 
 ```
 
@@ -398,62 +398,62 @@ def Y(f):
 在内部，`reduce`函数将执行以下操作：
 
 ```py
-**>>> import operator**
-**>>> f = operator.mul**
-**>>> f(f(f(f(1, 2), 3), 4), 5)**
-**120**
+>>> import operator
+>>> f = operator.mul
+>>> f(f(f(f(1, 2), 3), 4), 5)
+120
 
 ```
 
 为了进一步澄清这一点，让我们这样看：
 
 ```py
-**>>> iterable = range(1, 6)**
-**>>> import operator**
+>>> iterable = range(1, 6)
+>>> import operator
 
-**# The initial values:**
-**>>> a, b, *iterable = iterable**
-**>>> a, b, iterable**
-**(1, 2, [3, 4, 5])**
+# The initial values:
+>>> a, b, *iterable = iterable
+>>> a, b, iterable
+(1, 2, [3, 4, 5])
 
-**# First run**
-**>>> a = operator.mul(a, b)**
-**>>> b, *iterable = iterable**
-**>>> a, b, iterable**
-**(2, 3, [4, 5])**
+# First run
+>>> a = operator.mul(a, b)
+>>> b, *iterable = iterable
+>>> a, b, iterable
+(2, 3, [4, 5])
 
-**# Second run**
-**>>> a = operator.mul(a, b)**
-**>>> b, *iterable = iterable**
-**>>> a, b, iterable**
-**(6, 4, [5])**
+# Second run
+>>> a = operator.mul(a, b)
+>>> b, *iterable = iterable
+>>> a, b, iterable
+(6, 4, [5])
 
-**# Third run**
-**>>> a = operator.mul(a, b)**
-**>>> b, *iterable = iterable**
-**>>> a, b, iterable**
-**(24, 5, [])**
+# Third run
+>>> a = operator.mul(a, b)
+>>> b, *iterable = iterable
+>>> a, b, iterable
+(24, 5, [])
 
-**# Fourth and last run**
-**>>> a = operator.mul (a, b)**
-**>>> a**
-**120**
+# Fourth and last run
+>>> a = operator.mul (a, b)
+>>> a
+120
 
 ```
 
 或者使用`deque`集合的简单`while`循环：
 
 ```py
-**>>> import operator**
-**>>> import collections**
-**>>> iterable = collections.deque(range(1, 6))**
+>>> import operator
+>>> import collections
+>>> iterable = collections.deque(range(1, 6))
 
-**>>> value = iterable.popleft()**
-**>>> while iterable:**
-**...     value = operator.mul(value, iterable.popleft())**
+>>> value = iterable.popleft()
+>>> while iterable:
+...     value = operator.mul(value, iterable.popleft())
 
-**>>> value**
-**120**
+>>> value
+120
 
 ```
 
@@ -462,56 +462,56 @@ def Y(f):
 树是`reduce`函数真正发挥作用的一个案例。还记得在第三章中使用`defaultdict`定义树的一行代码吗？有什么好的方法可以访问该对象内部的键？给定树项目的路径，我们可以使用`reduce`轻松访问内部项目：
 
 ```py
-**>>> import json**
-**>>> import functools**
-**>>> import collections**
+>>> import json
+>>> import functools
+>>> import collections
 
-**>>> def tree():**
-**...     return collections.defaultdict(tree)**
+>>> def tree():
+...     return collections.defaultdict(tree)
 
-**# Build the tree:**
-**>>> taxonomy = tree()**
-**>>> reptilia = taxonomy['Chordata']['Vertebrata']['Reptilia']**
-**>>> reptilia['Squamata']['Serpentes']['Pythonidae'] = [**
-**...     'Liasis', 'Morelia', 'Python']**
+# Build the tree:
+>>> taxonomy = tree()
+>>> reptilia = taxonomy['Chordata']['Vertebrata']['Reptilia']
+>>> reptilia['Squamata']['Serpentes']['Pythonidae'] = [
+...     'Liasis', 'Morelia', 'Python']
 
-**# The actual contents of the tree**
-**>>> print(json.dumps(taxonomy, indent=4))**
-**{**
- **"Chordata": {**
- **"Vertebrata": {**
- **"Reptilia": {**
- **"Squamata": {**
- **"Serpentes": {**
- **"Pythonidae": [**
- **"Liasis",**
- **"Morelia",**
- **"Python"**
- **]**
- **}**
- **}**
- **}**
- **}**
- **}**
-**}**
+# The actual contents of the tree
+>>> print(json.dumps(taxonomy, indent=4))
+{
+ **"Chordata": {
+ **"Vertebrata": {
+ **"Reptilia": {
+ **"Squamata": {
+ **"Serpentes": {
+ **"Pythonidae": [
+ **"Liasis",
+ **"Morelia",
+ **"Python"
+ **]
+ **}
+ **}
+ **}
+ **}
+ **}
+}
 
-**# The path we wish to get**
-**>>> path = 'Chordata.Vertebrata.Reptilia.Squamata.Serpentes'**
+# The path we wish to get
+>>> path = 'Chordata.Vertebrata.Reptilia.Squamata.Serpentes'
 
-**# Split the path for easier access**
-**>>> path = path.split('.')**
+# Split the path for easier access
+>>> path = path.split('.')
 
-**# Now fetch the path using reduce to recursively fetch the items**
-**>>> family = functools.reduce(lambda a, b: a[b], path, taxonomy)**
-**>>> family.items()**
-**dict_items([('Pythonidae', ['Liasis', 'Morelia', 'Python'])])**
+# Now fetch the path using reduce to recursively fetch the items
+>>> family = functools.reduce(lambda a, b: a[b], path, taxonomy)
+>>> family.items()
+dict_items([('Pythonidae', ['Liasis', 'Morelia', 'Python'])])
 
-**# The path we wish to get**
-**>>> path = 'Chordata.Vertebrata.Reptilia.Squamata'.split('.')**
+# The path we wish to get
+>>> path = 'Chordata.Vertebrata.Reptilia.Squamata'.split('.')
 
-**>>> suborder = functools.reduce(lambda a, b: a[b], path, taxonomy)**
-**>>> suborder.keys()**
-**dict_keys(['Serpentes'])**
+>>> suborder = functools.reduce(lambda a, b: a[b], path, taxonomy)
+>>> suborder.keys()
+dict_keys(['Serpentes'])
 
 ```
 
@@ -554,13 +554,13 @@ fold_right = functools.reduce(
 两者之间的主要区别在于`accumulate`函数返回即时结果。例如，在对公司销售额进行求和时，这可能很有用：
 
 ```py
-**>>> import operator**
-**>>> import itertools**
+>>> import operator
+>>> import itertools
 
-**# Sales per month**
-**>>> months = [10, 8, 5, 7, 12, 10, 5, 8, 15, 3, 4, 2]**
-**>>> list(itertools.accumulate(months, operator.add))**
-**[10, 18, 23, 30, 42, 52, 57, 65, 80, 83, 87, 89]**
+# Sales per month
+>>> months = [10, 8, 5, 7, 12, 10, 5, 8, 15, 3, 4, 2]
+>>> list(itertools.accumulate(months, operator.add))
+[10, 18, 23, 30, 42, 52, 57, 65, 80, 83, 87, 89]
 
 ```
 
@@ -571,11 +571,11 @@ fold_right = functools.reduce(
 `chain`函数是一个简单但有用的函数，它可以组合多个迭代器的结果。如果你有多个列表、迭代器等，只需用一个简单的链条组合它们：
 
 ```py
-**>>> import itertools**
-**>>> a = range(3)**
-**>>> b = range(5)**
-**>>> list(itertools.chain(a, b))**
-**[0, 1, 2, 0, 1, 2, 3, 4]**
+>>> import itertools
+>>> a = range(3)
+>>> b = range(5)
+>>> list(itertools.chain(a, b))
+[0, 1, 2, 0, 1, 2, 3, 4]
 
 ```
 
@@ -586,9 +586,9 @@ fold_right = functools.reduce(
 `combinations`迭代器产生的结果与您从数学定义中所期望的完全相同。从给定的项目列表中选择特定长度的所有组合：
 
 ```py
-**>>> import itertools**
-**>>> list(itertools.combinations(range(3), 2))**
-**[(0, 1), (0, 2), (1, 2)]**
+>>> import itertools
+>>> list(itertools.combinations(range(3), 2))
+[(0, 1), (0, 2), (1, 2)]
 
 ```
 
@@ -603,9 +603,9 @@ fold_right = functools.reduce(
 这是元素重复的变体：
 
 ```py
-**>>> import itertools**
-**>>> list(itertools.combinations_with_replacement(range(3), 2))**
-**[(0, 0), (0, 1), (0, 2), (1, 1), (1, 2), (2, 2)]**
+>>> import itertools
+>>> list(itertools.combinations_with_replacement(range(3), 2))
+[(0, 0), (0, 1), (0, 2), (1, 1), (1, 2), (2, 2)]
 
 ```
 
@@ -616,14 +616,14 @@ fold_right = functools.reduce(
 让我们看一个使用组合和链的小组合，生成一个`powerset`：
 
 ```py
-**>>> import itertools**
+>>> import itertools
 
-**>>> def powerset(iterable):**
-**...     return itertools.chain.from_iterable(**
-**...         itertools.combinations(iterable, i)**
-**...         for i in range(len(iterable) + 1))**
-**>>> list(powerset(range(3)))**
-**[(), (0,), (1,), (2,), (0, 1), (0, 2), (1, 2), (0, 1, 2)]**
+>>> def powerset(iterable):
+...     return itertools.chain.from_iterable(
+...         itertools.combinations(iterable, i)
+...         for i in range(len(iterable) + 1))
+>>> list(powerset(range(3)))
+[(), (0,), (1,), (2,), (0, 1), (0, 2), (1, 2), (0, 1, 2)]
 
 ```
 
@@ -636,9 +636,9 @@ fold_right = functools.reduce(
 `permutations`函数与`combinations`函数非常相似。唯一的真正区别是`(a, b)`被认为与`(b, a)`不同。换句话说，顺序很重要：
 
 ```py
-**>>> import itertools**
-**>>> list(itertools.permutations(range(3), 2))**
-**[(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)]**
+>>> import itertools
+>>> list(itertools.permutations(range(3), 2))
+[(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)]
 
 ```
 
@@ -647,9 +647,9 @@ fold_right = functools.reduce(
 `compress`函数是那种您不经常需要的函数之一，但在您需要时它可能非常有用。它对您的可迭代对象应用布尔过滤器，使其仅返回您实际需要的项目。这里最重要的一点是，它都是懒执行的，如果数据或选择器集合耗尽，`compress`将停止。因此，即使有无限范围，它也可以正常工作：
 
 ```py
-**>>> import itertools**
-**>>> list(itertools.compress(range(1000), [0, 1, 1, 1, 0, 1]))**
-**[1, 2, 3, 5]**
+>>> import itertools
+>>> list(itertools.compress(range(1000), [0, 1, 1, 1, 0, 1]))
+[1, 2, 3, 5]
 
 ```
 
@@ -658,18 +658,18 @@ fold_right = functools.reduce(
 `dropwhile`函数将删除所有结果，直到给定的谓词求值为 true。如果您正在等待设备最终返回预期结果，这可能很有用。这在这里有点难以证明，所以我只会展示一个基本用法的例子——等待大于`3`的数字：
 
 ```py
-**>>> import itertools**
-**>>> list(itertools.dropwhile(lambda x: x <= 3, [1, 3, 5, 4, 2]))**
-**[5, 4, 2]**
+>>> import itertools
+>>> list(itertools.dropwhile(lambda x: x <= 3, [1, 3, 5, 4, 2]))
+[5, 4, 2]
 
 ```
 
 正如您可能期望的，`takewhile`函数是其相反。它将简单地返回所有行，直到谓词变为 false：
 
 ```py
-**>>> import itertools**
-**>>> list(itertools.takewhile(lambda x: x <= 3, [1, 3, 5, 4, 2]))**
-**[1, 3]**
+>>> import itertools
+>>> list(itertools.takewhile(lambda x: x <= 3, [1, 3, 5, 4, 2]))
+[1, 3]
 
 ```
 
@@ -686,44 +686,44 @@ fold_right = functools.reduce(
 由于列出整个范围将使我们的 Python 解释器崩溃，我们将简单地使用`zip`来限制结果并比较常规`range`函数的结果。在后面的段落中，我们将看到使用`itertools.islice`的更方便的选项。`count`函数有两个可选参数：`start`参数，默认为`0`，`step`参数，默认为`1`：
 
 ```py
-**>>> import itertools**
+>>> import itertools
 
-**# Except for being infinite, the standard version returns the same**
-**# results as the range function does.**
-**>>> for a, b in zip(range(3), itertools.count()):**
-**...     a, b**
-**(0, 0)**
-**(1, 1)**
-**(2, 2)**
+# Except for being infinite, the standard version returns the same
+# results as the range function does.
+>>> for a, b in zip(range(3), itertools.count()):
+...     a, b
+(0, 0)
+(1, 1)
+(2, 2)
 
-**# With a different starting point the results are still the same**
-**>>> for a, b in zip(range(5, 8), itertools.count(5)):**
-**...     a, b**
-**(5, 5)**
-**(6, 6)**
-**(7, 7)**
+# With a different starting point the results are still the same
+>>> for a, b in zip(range(5, 8), itertools.count(5)):
+...     a, b
+(5, 5)
+(6, 6)
+(7, 7)
 
-**# And a different step works the same as well**
-**>>> for a, b in zip(range(5, 10, 2), itertools.count(5, 2)):**
-**...     a, b**
-**(5, 5)**
-**(7, 7)**
-**(9, 9)**
+# And a different step works the same as well
+>>> for a, b in zip(range(5, 10, 2), itertools.count(5, 2)):
+...     a, b
+(5, 5)
+(7, 7)
+(9, 9)
 
-**# Unless you try to use floating point numbers**
-**>>> range(5, 10, 0.5)**
-**Traceback (most recent call last):**
- **...**
-**TypeError: 'float' object cannot be interpreted as an integer**
+# Unless you try to use floating point numbers
+>>> range(5, 10, 0.5)
+Traceback (most recent call last):
+ **...
+TypeError: 'float' object cannot be interpreted as an integer
 
-**# Which does work for count**
-**>>> for a, b in zip(range(5, 10), itertools.count(5, 0.5)):**
-**...     a, b**
-**(5, 5)**
-**(6, 5.5)**
-**(7, 6.0)**
-**(8, 6.5)**
-**(9, 7.0)**
+# Which does work for count
+>>> for a, b in zip(range(5, 10), itertools.count(5, 0.5)):
+...     a, b
+(5, 5)
+(6, 5.5)
+(7, 6.0)
+(8, 6.5)
+(9, 7.0)
 
 ```
 
@@ -740,37 +740,37 @@ fold_right = functools.reduce(
 以下是`groupby`的正确用法示例：
 
 ```py
-**>>> import itertools**
-**>>> items = [('a', 1), ('a', 2), ('b', 2), ('b', 0), ('c', 3)]**
+>>> import itertools
+>>> items = [('a', 1), ('a', 2), ('b', 2), ('b', 0), ('c', 3)]
 
-**>>> for group, items in itertools.groupby(items, lambda x: x[0]):**
-**...     print('%s: %s' % (group, [v for k, v in items]))**
-**a: [1, 2]**
-**b: [2, 0]**
-**c: [3]**
+>>> for group, items in itertools.groupby(items, lambda x: x[0]):
+...     print('%s: %s' % (group, [v for k, v in items]))
+a: [1, 2]
+b: [2, 0]
+c: [3]
 
 ```
 
 然后还有一些情况可能会产生意外的结果：
 
 ```py
-**>>> import itertools**
-**>>> items = [('a', 1), ('b', 0), ('b', 2), ('a', 2), ('c', 3)]**
-**>>> groups = dict()**
+>>> import itertools
+>>> items = [('a', 1), ('b', 0), ('b', 2), ('a', 2), ('c', 3)]
+>>> groups = dict()
 
-**>>> for group, items in itertools.groupby(items, lambda x: x[0]):**
-**...     groups[group] = items**
-**...     print('%s: %s' % (group, [v for k, v in items]))**
-**a: [1]**
-**b: [0, 2]**
-**a: [2]**
-**c: [3]**
+>>> for group, items in itertools.groupby(items, lambda x: x[0]):
+...     groups[group] = items
+...     print('%s: %s' % (group, [v for k, v in items]))
+a: [1]
+b: [0, 2]
+a: [2]
+c: [3]
 
-**>>> for group, items in sorted(groups.items()):**
-**...     print('%s: %s' % (group, [v for k, v in items]))**
-**a: []**
-**b: []**
-**c: []**
+>>> for group, items in sorted(groups.items()):
+...     print('%s: %s' % (group, [v for k, v in items]))
+a: []
+b: []
+c: []
 
 ```
 
@@ -783,23 +783,23 @@ fold_right = functools.reduce(
 让我们以之前的`itertools.counter`为例：
 
 ```py
-**>>> import itertools**
-**>>> list(itertools.islice(itertools.count(), 2, 7))**
-**[2, 3, 4, 5, 6]**
+>>> import itertools
+>>> list(itertools.islice(itertools.count(), 2, 7))
+[2, 3, 4, 5, 6]
 
 ```
 
 所以，不要使用常规的`slice`：
 
 ```py
-**itertools.count()[:10]**
+itertools.count()[:10]
 
 ```
 
 我们将`slice`参数输入到函数中：
 
 ```py
-**itertools.islice(itertools.count(), 10)**
+itertools.islice(itertools.count(), 10)
 
 ```
 

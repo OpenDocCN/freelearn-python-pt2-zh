@@ -19,15 +19,15 @@
 在我们真正开始之前，重要的是要知道如何正确安装包。至少有四种不同的选项可以安装包。第一种最明显的方法是使用普通的`pip`命令：
 
 ```py
-**pip install package**
+pip install package
 
 ```
 
 这也可以通过直接使用`setup.py`来实现：
 
 ```py
-**cd package**
-**python setup.py install**
+cd package
+python setup.py install
 
 ```
 
@@ -38,15 +38,15 @@
 与常规安装一样，`pip`和`setup.py`版本都可用：
 
 ```py
-**pip install –e package_directory**
+pip install –e package_directory
 
 ```
 
 以及`setup.py`版本：
 
 ```py
-**cd package_directory**
-**python setup.py develop**
+cd package_directory
+python setup.py develop
 
 ```
 
@@ -61,7 +61,7 @@
 在继续之前，请确保您拥有最新版本的`pip`和`setuptools`：
 
 ```py
-**pip install -U pip setuptools**
+pip install -U pip setuptools
 
 ```
 
@@ -193,7 +193,7 @@ if __name__ == '__main__':
 在我们的例子中，我们只是使用`packages=setuptools.find_packages()`。在大多数情况下，这将工作得很好，但重要的是要理解它的作用。`find_packages`函数会查找给定目录中的所有目录，并在其中有`__init__.py`文件的情况下将其添加到列表中。因此，你通常可以使用`['your_package']`代替`find_packages()`。然而，如果你有多个包，那么这往往会变得乏味。这就是`find_packages()`有用的地方；只需指定一些包含参数（第二个参数）或一些排除参数（第三个参数），你就可以在项目中拥有所有相关的包。例如：
 
 ```py
-**packages = find_packages(exclude=['tests', 'docs'])**
+packages = find_packages(exclude=['tests', 'docs'])
 
 ```
 
@@ -246,12 +246,12 @@ def main():
 现在，让我们试着安装这个包：
 
 ```py
-**# pip install -e .**
-**Installing collected packages: Our-little-project**
- **Running setup.py develop for Our-little-project**
-**Successfully installed Our-little-project**
-**# spam 123 abc**
-**Args: ['~/envs/mastering_python/bin/spam', '123', 'abc']**
+# pip install -e .
+Installing collected packages: Our-little-project
+ **Running setup.py develop for Our-little-project
+Successfully installed Our-little-project
+# spam 123 abc
+Args: ['~/envs/mastering_python/bin/spam', '123', 'abc']
 
 ```
 
@@ -262,7 +262,7 @@ def main():
 编写自定义的`setup.py`命令非常有用。一个例子是`sphinx-pypi-upload-2`，我在所有的包中都使用它，它是我维护的`unmaintained sphinx-pypi-upload`包的分支。这是一个使构建和上传 Sphinx 文档到 Python 包索引变得非常简单的包，当分发你的包时非常有用。使用`sphinx-pypi-upload-2`包，你可以做以下操作（我在分发我维护的任何包时都会这样做）：
 
 ```py
-**python setup.py sdist bdist_wheel upload build_sphinx upload_sphinx**
+python setup.py sdist bdist_wheel upload build_sphinx upload_sphinx
 
 ```
 
@@ -318,42 +318,42 @@ class SpamCommand(setuptools.Command):
 执行它非常简单：
 
 ```py
-**# pip install -e .**
-**Installing collected packages: Our-little-project**
- **Running setup.py develop for Our-little-project**
-**Successfully installed Our-little-project-0.0.0**
-**# python setup.py --help-commands**
-**[...]**
-**Extra commands:**
- **[...]**
- **spam              Make some spam!**
- **test              run unit tests after in-place build**
- **[...]**
+# pip install -e .
+Installing collected packages: Our-little-project
+ **Running setup.py develop for Our-little-project
+Successfully installed Our-little-project-0.0.0
+# python setup.py --help-commands
+[...]
+Extra commands:
+ **[...]
+ **spam              Make some spam!
+ **test              run unit tests after in-place build
+ **[...]
 
-**usage: setup.py [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...]**
- **or: setup.py --help [cmd1 cmd2 ...]**
- **or: setup.py --help-commands**
- **or: setup.py cmd –help**
+usage: setup.py [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...]
+ **or: setup.py --help [cmd1 cmd2 ...]
+ **or: setup.py --help-commands
+ **or: setup.py cmd –help
 
-**# python setup.py --help spam**
-**Common commands: (see '--help-commands' for more)**
+# python setup.py --help spam
+Common commands: (see '--help-commands' for more)
 
-**[...]**
+[...]
 
-**Options for 'SpamCommand' command:**
- **--spam (-s)  Set the amount of spams**
+Options for 'SpamCommand' command:
+ **--spam (-s)  Set the amount of spams
 
-**usage: setup.py [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...]**
- **or: setup.py --help [cmd1 cmd2 ...]**
- **or: setup.py --help-commands**
- **or: setup.py cmd --help**
+usage: setup.py [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...]
+ **or: setup.py --help [cmd1 cmd2 ...]
+ **or: setup.py --help-commands
+ **or: setup.py cmd --help
 
-**# python setup.py spam**
-**running spam**
-**spamspamspam**
-**# python setup.py spam -s 5**
-**running spam**
-**spamspamspamspamspam**
+# python setup.py spam
+running spam
+spamspamspam
+# python setup.py spam -s 5
+running spam
+spamspamspamspamspam
 
 ```
 
@@ -427,23 +427,23 @@ class Test(unittest.TestCase):
 标准的`python setup.py test`命令将运行常规的`unittest`命令：
 
 ```py
-**# python setup.py -v test**
-**running test**
-**running "unittest --verbose"**
-**running egg_info**
-**writing Our_little_project.egg-info/PKG-INFO**
-**writing dependency_links to Our_little_project.egg-info/dependency_links.txt**
-**writing top-level names to Our_little_project.egg-info/top_level.txt**
-**writing entry points to Our_little_project.egg-info/entry_points.txt**
-**reading manifest file 'Our_little_project.egg-info/SOURCES.txt'**
-**writing manifest file 'Our_little_project.egg-info/SOURCES.txt'**
-**running build_ext**
-**test (test.Test) ... ok**
+# python setup.py -v test
+running test
+running "unittest --verbose"
+running egg_info
+writing Our_little_project.egg-info/PKG-INFO
+writing dependency_links to Our_little_project.egg-info/dependency_links.txt
+writing top-level names to Our_little_project.egg-info/top_level.txt
+writing entry points to Our_little_project.egg-info/entry_points.txt
+reading manifest file 'Our_little_project.egg-info/SOURCES.txt'
+writing manifest file 'Our_little_project.egg-info/SOURCES.txt'
+running build_ext
+test (test.Test) ... ok
 
-**----------------------------------------------------------------------**
-**Ran 1 test in 0.000s**
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
 
-**OK**
+OK
 
 ```
 
@@ -466,29 +466,29 @@ def test_b():
 现在，其他测试选项。由于自定义命令实际上并没有增加太多内容，而且实际上使事情变得更加复杂，我们将跳过它。如果您想自定义测试的运行方式，请改用`pytest.ini`和`setup.cfg`文件。最好的选项是`pytest-runner`，它使运行测试变得非常简单：
 
 ```py
-**# pip install pytest-runner**
-**Collecting pytest-runner**
- **Using cached pytest_runner-2.7-py2.py3-none-any.whl**
-**Installing collected packages: pytest-runner**
-**Successfully installed pytest-runner-2.7**
-**# python setup.py pytest**
-**running pytest**
-**running egg_info**
-**writing top-level names to Our_little_project.egg-info/top_level.txt**
-**writing dependency_links to Our_little_project.egg-info/dependency_links.txt**
-**writing entry points to Our_little_project.egg-info/entry_points.txt**
-**writing Our_little_project.egg-info/PKG-INFO**
-**reading manifest file 'Our_little_project.egg-info/SOURCES.txt'**
-**writing manifest file 'Our_little_project.egg-info/SOURCES.txt'**
-**running build_ext**
-**======================== test session starts =========================**
-**platform darwin -- Python 3.5.1, pytest-2.8.7, py-1.4.31, pluggy-0.3.1**
-**rootdir: h15, inifile: pytest.ini**
-**collected 2 items**
+# pip install pytest-runner
+Collecting pytest-runner
+ **Using cached pytest_runner-2.7-py2.py3-none-any.whl
+Installing collected packages: pytest-runner
+Successfully installed pytest-runner-2.7
+# python setup.py pytest
+running pytest
+running egg_info
+writing top-level names to Our_little_project.egg-info/top_level.txt
+writing dependency_links to Our_little_project.egg-info/dependency_links.txt
+writing entry points to Our_little_project.egg-info/entry_points.txt
+writing Our_little_project.egg-info/PKG-INFO
+reading manifest file 'Our_little_project.egg-info/SOURCES.txt'
+writing manifest file 'Our_little_project.egg-info/SOURCES.txt'
+running build_ext
+======================== test session starts =========================
+platform darwin -- Python 3.5.1, pytest-2.8.7, py-1.4.31, pluggy-0.3.1
+rootdir: h15, inifile: pytest.ini
+collected 2 items
 
-**test_pytest.py ..**
+test_pytest.py ..
 
-**====================== 2 passed in 0.01 seconds ======================**
+====================== 2 passed in 0.01 seconds ======================
 
 ```
 
@@ -524,26 +524,26 @@ if __name__ == '__main__':
 `nose`包只处理安装，并且与`py.test`略有不同。唯一的区别是`py.test`有一个单独的`pytest-runner`包用于测试运行器，而 nose 包有一个内置的`nosetests`命令。因此，以下是 nose 版本：
 
 ```py
-**# pip install nose**
-**Collecting nose**
- **Using cached nose-1.3.7-py3-none-any.whl**
-**Installing collected packages: nose**
-**Successfully installed nose-1.3.7**
-**# python setup.py nosetests**
-**running nosetests**
-**running egg_info**
-**writing top-level names to Our_little_project.egg-info/top_level.txt**
-**writing entry points to Our_little_project.egg-info/entry_points.txt**
-**writing Our_little_project.egg-info/PKG-INFO**
-**writing dependency_links to Our_little_project.egg-info/dependency_lin**
-**ks.txt**
-**reading manifest file 'Our_little_project.egg-info/SOURCES.txt'**
-**writing manifest file 'Our_little_project.egg-info/SOURCES.txt'**
-**..**
-**----------------------------------------------------------------------**
-**Ran 2 tests in 0.006s**
+# pip install nose
+Collecting nose
+ **Using cached nose-1.3.7-py3-none-any.whl
+Installing collected packages: nose
+Successfully installed nose-1.3.7
+# python setup.py nosetests
+running nosetests
+running egg_info
+writing top-level names to Our_little_project.egg-info/top_level.txt
+writing entry points to Our_little_project.egg-info/entry_points.txt
+writing Our_little_project.egg-info/PKG-INFO
+writing dependency_links to Our_little_project.egg-info/dependency_lin
+ks.txt
+reading manifest file 'Our_little_project.egg-info/SOURCES.txt'
+writing manifest file 'Our_little_project.egg-info/SOURCES.txt'
+..
+----------------------------------------------------------------------
+Ran 2 tests in 0.006s
 
-**OK**
+OK
 
 ```
 
@@ -613,11 +613,11 @@ def make_eggs(int n):
 这种方法的问题是，除非你安装了`Cython`，否则`setup.py`会出现问题：
 
 ```py
-**# python setup.py build**
-**Traceback (most recent call last):**
- **File "setup.py", line 2, in <module>**
- **import Cython**
-**ImportError: No module named 'Cython'**
+# python setup.py build
+Traceback (most recent call last):
+ **File "setup.py", line 2, in <module>
+ **import Cython
+ImportError: No module named 'Cython'
 
 ```
 
@@ -639,58 +639,58 @@ setuptools.setup(
 现在，如果需要，`Cython`将被自动安装，并且代码将正常工作：
 
 ```py
-**# python setup.py build**
-**running build**
-**running build_ext**
-**cythoning eggs.pyx to eggs.c**
-**building 'eggs' extension**
-**...**
-**# python setup.py develop**
-**running develop**
-**running egg_info**
-**creating Eggs.egg-info**
-**writing dependency_links to Eggs.egg-info/dependency_links.txt**
-**writing top-level names to Eggs.egg-info/top_level.txt**
-**writing Eggs.egg-info/PKG-INFO**
-**writing manifest file 'Eggs.egg-info/SOURCES.txt'**
-**reading manifest file 'Eggs.egg-info/SOURCES.txt'**
-**writing manifest file 'Eggs.egg-info/SOURCES.txt'**
-**running build_ext**
-**skipping 'eggs.c' Cython extension (up-to-date)**
-**copying build/... ->**
-**Creating Eggs.egg-link (link to .)**
-**Adding Eggs 1.0 to easy-install.pth file**
+# python setup.py build
+running build
+running build_ext
+cythoning eggs.pyx to eggs.c
+building 'eggs' extension
+...
+# python setup.py develop
+running develop
+running egg_info
+creating Eggs.egg-info
+writing dependency_links to Eggs.egg-info/dependency_links.txt
+writing top-level names to Eggs.egg-info/top_level.txt
+writing Eggs.egg-info/PKG-INFO
+writing manifest file 'Eggs.egg-info/SOURCES.txt'
+reading manifest file 'Eggs.egg-info/SOURCES.txt'
+writing manifest file 'Eggs.egg-info/SOURCES.txt'
+running build_ext
+skipping 'eggs.c' Cython extension (up-to-date)
+copying build/... ->
+Creating Eggs.egg-link (link to .)
+Adding Eggs 1.0 to easy-install.pth file
 
-**Installed Eggs**
-**Processing dependencies for Eggs==1.0**
-**Finished processing dependencies for Eggs==1.0**
-**# python -c 'import eggs; eggs.make_eggs(3)'**
-**Making 3 eggs: eggs eggs eggs**
+Installed Eggs
+Processing dependencies for Eggs==1.0
+Finished processing dependencies for Eggs==1.0
+# python -c 'import eggs; eggs.make_eggs(3)'
+Making 3 eggs: eggs eggs eggs
 
 ```
 
 然而，为了开发目的，`Cython`还提供了一种不需要手动构建的更简单的方法。首先，为了确保我们实际上正在使用这种方法，让我们安装`Cython`，并彻底卸载和清理`eggs`：
 
 ```py
-**# pip uninstall eggs -y**
-**Uninstalling Eggs-1.0:**
- **Successfully uninstalled Eggs-1.0**
-**# pip uninstall eggs -y**
-**Cannot uninstall requirement eggs, not installed**
-**# python setup.py clean**
-**# pip install cython**
+# pip uninstall eggs -y
+Uninstalling Eggs-1.0:
+ **Successfully uninstalled Eggs-1.0
+# pip uninstall eggs -y
+Cannot uninstall requirement eggs, not installed
+# python setup.py clean
+# pip install cython
 
 ```
 
 现在让我们尝试运行我们的`eggs.pyx`模块：
 
 ```py
-**>>> import pyximport**
-**>>> pyximport.install()**
-**(None, <pyximport.pyximport.PyxImporter object at 0x...>)**
-**>>> import eggs**
-**>>> eggs.make_eggs(3)**
-**Making 3 eggs: eggs eggs eggs**
+>>> import pyximport
+>>> pyximport.install()
+(None, <pyximport.pyximport.PyxImporter object at 0x...>)
+>>> import eggs
+>>> eggs.make_eggs(3)
+Making 3 eggs: eggs eggs eggs
 
 ```
 
@@ -703,7 +703,7 @@ setuptools.setup(
 实现起来幸运的是很简单。首先，安装`wheel`包：
 
 ```py
-**# pip install wheel**
+# pip install wheel
 
 ```
 
@@ -723,11 +723,11 @@ universal = 1
 首先，让我们检查`setup.py`文件是否有问题：
 
 ```py
-**# python setup.py check**
-**running check**
-**warning: check: missing required meta-data: url**
+# python setup.py check
+running check
+warning: check: missing required meta-data: url
 
-**warning: check: missing meta-data: either (author and author_email) or (maintainer and maintainer_email) must be supplied**
+warning: check: missing meta-data: either (author and author_email) or (maintainer and maintainer_email) must be supplied
 
 ```
 
@@ -752,8 +752,8 @@ setuptools.setup(
 现在让我们再次检查：
 
 ```py
-**# python setup.py check**
-**running check**
+# python setup.py check
+running check
 
 ```
 
@@ -762,39 +762,39 @@ setuptools.setup(
 现在我们的`setup.py`已经井井有条了，让我们来尝试测试。由于我们的小测试项目几乎没有测试，这将几乎是空的。但是如果您正在启动一个新项目，我建议从一开始就尽量保持 100%的测试覆盖率。稍后实施所有测试通常更加困难，而在工作时进行测试通常会让您更多地考虑代码的设计决策。运行测试非常容易：
 
 ```py
-**# python setup.py test**
-**running test**
-**running egg_info**
-**writing dependency_links to Eggs.egg-info/dependency_links.txt**
-**writing Eggs.egg-info/PKG-INFO**
-**writing top-level names to Eggs.egg-info/top_level.txt**
-**reading manifest file 'Eggs.egg-info/SOURCES.txt'**
-**writing manifest file 'Eggs.egg-info/SOURCES.txt'**
-**running build_ext**
-**skipping 'eggs.c' Cython extension (up-to-date)**
-**copying build/... ->**
+# python setup.py test
+running test
+running egg_info
+writing dependency_links to Eggs.egg-info/dependency_links.txt
+writing Eggs.egg-info/PKG-INFO
+writing top-level names to Eggs.egg-info/top_level.txt
+reading manifest file 'Eggs.egg-info/SOURCES.txt'
+writing manifest file 'Eggs.egg-info/SOURCES.txt'
+running build_ext
+skipping 'eggs.c' Cython extension (up-to-date)
+copying build/... ->
 
-**---------------------------------------------------------------------**
-**Ran 0 tests in 0.000s**
+---------------------------------------------------------------------
+Ran 0 tests in 0.000s
 
-**OK**
+OK
 
 ```
 
 现在我们已经检查完毕，下一步是构建文档。如前所述，`sphinx`和`sphinx-pypi-upload-2`软件包可以在这方面提供帮助：
 
 ```py
-**# python setup.py build_sphinx**
-**running build_sphinx**
-**Running Sphinx v1.3.5**
-**...**
+# python setup.py build_sphinx
+running build_sphinx
+Running Sphinx v1.3.5
+...
 
 ```
 
 一旦我们确定一切都正确，我们就可以构建软件包并将其上传到 PyPI。对于纯 Python 版本的发布，您可以使用`sdist`（源分发）命令。对于使用本机安装程序的软件包，有一些选项可用，例如`bdist_wininst`和`bdist_rpm`。我个人几乎在所有我的软件包中使用以下命令：
 
 ```py
-**# python setup.py build_sphinx upload_sphinx sdist bdist_wheel upload**
+# python setup.py build_sphinx upload_sphinx sdist bdist_wheel upload
 
 ```
 

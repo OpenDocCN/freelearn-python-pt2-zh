@@ -22,7 +22,12 @@
 
 Node.js 是一个用于开发 Web 应用程序、移动应用程序和去中心化应用程序的流行框架。前往[`nodejs.org`](https://nodejs.org)并下载最新版本（目前是版本 10）。以下是如何在 Ubuntu Linux 平台上安装 Node.js：
 
-[PRE0]
+```py
+$ curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+$ sudo apt-get install -y nodejs
+$ node --version
+v10.15.0
+```
 
 # 安装 Truffle 和 Solidity
 
@@ -32,19 +37,32 @@ Truffle 是一个用于使用 Solidity 开发智能合约的开发框架。您�
 
 但首先，您需要确保`npm`在您的主目录中全局安装软件：
 
-[PRE1]
+```py
+$ mkdir ~/.npm-global
+$ npm config set prefix '~/.npm-global' 
+```
 
 然后将这行添加到`~/.`配置文件中：
 
-[PRE2]
+```py
+export PATH=~/.npm-global/bin:$PATH
+```
 
 现在，打开一个新的终端，以便新的配置文件生效，或者，可以按照以下步骤操作：
 
-[PRE3]
+```py
+$ source ~/.profile
+```
 
 然后，我们可以按照以下步骤安装 Truffle：
 
-[PRE4]
+```py
+$ npm install -g truffle
+$ truffle version
+Truffle v5.0.2 (core: 5.0.2)
+Solidity v0.5.0 (solc-js)
+Node v10.15.0 
+```
 
 # 安装 Ganache
 
@@ -54,13 +72,20 @@ Truffle 是一个用于使用 Solidity 开发智能合约的开发框架。您�
 
 要下载软件，请访问 Ganache 网站：[`www.truffleframework.com/ganache`](https://www.truffleframework.com/ganache)。对于 Linux 平台，该软件称为`ganache-1.2.3-x86_64.AppImage`。下载后，您必须在执行之前设置正确的权限：
 
-[PRE5]
+```py
+$ chmod a+x ganache-1.2.3-x86_64.AppImage
+$ ./ganache-1.2.3-x86_64.AppImage
+```
 
 # 编写智能合约
 
 安装所有必需的软件后，我们可以开始编写智能合约。首先，我们将创建一个新目录，然后使用 Truffle 开发工具对其进行初始化：
 
-[PRE6]
+```py
+$ mkdir my_first_smart_contract
+$ cd my_first_smart_contract
+$ truffle init
+```
 
 `truffle init`命令的输出如下：
 
@@ -68,17 +93,49 @@ Truffle 是一个用于使用 Solidity 开发智能合约的开发框架。您�
 
 这将命令 Truffle 初始化您的目录以成为智能合约开发项目。在该项目目录中开发智能合约时，有几个目录可供您使用：
 
-[PRE7]
+```py
+$ ls
+contracts migrations test truffle-config.js
+```
 
 通常，您会将智能合约的源代码合并到`contracts`文件夹中。`migrations`文件夹包含用于部署智能合约的文件，`test`文件夹包含`test`文件。您可以在`truffle-config.js`文件中配置智能合约部署设置。我们将使用以下代码创建第一个智能合约并将其命名为`donation.sol`：
 
-[PRE8]
+```py
+pragma solidity ⁰.5.0;
+
+contract Donation {
+  address public donatur;
+  address payable donatee;
+  uint public money;
+  string public useless_variable;
+
+  constructor() public {
+    donatee = msg.sender;
+    useless_variable = "Donation string";
+  }
+
+  function change_useless_variable(string memory param) public {
+    useless_variable = param;
+  }
+
+  function donate() public payable {
+    donatur = msg.sender;
+    money = msg.value;
+  }
+
+  function receive_donation() public {
+    donatee.transfer(address(this).balance);
+  }
+}
+```
 
 如果您是智能合约的新手，前面的示例中可能会有一些陌生的关键字。在本章中，我们不打算讨论与 Solidity 有关的所有内容。相反，我们只会研究构建智能合约和学习智能合约概念所必需的 Solidity 功能。
 
 但首先，让我们将这个用 Solidity 编写的智能合约编译成以太坊字节码和**应用程序二进制接口**（**abi**）。为此，我们将在 Truffle 项目目录中运行以下命令：
 
-[PRE9]
+```py
+$ truffle compile
+```
 
 编译的结果可以在`build/contracts`文件夹中看到，名为`Donation.json`：
 
@@ -94,13 +151,21 @@ Truffle 是一个用于使用 Solidity 开发智能合约的开发框架。您�
 
 1.  编写迁移脚本：要部署您的智能合约，您需要编写一个迁移文件。创建一个名为`migrations/2_deploy_donation.js`的新文件。然后，我们用以下脚本填充这个文件：
 
-[PRE10]
+```py
+var Donation = artifacts.require("./Donation.sol");
+
+module.exports = function(deployer) {
+  deployer.deploy(Donation);
+};
+```
 
 至于`migrations/1_initial_migration.js`和`contracts/Migrations.sol`文件，我们暂时保持它们不变。Truffle 需要这些文件才能部署智能合约。
 
 1.  启动 Ganache（以太坊开发的区块链）：现在您需要启动 Ganache。假设您已经获得了适当的权限，运行以下命令行来执行文件：
 
-[PRE11]
+```py
+./ganache-1.2.3-x86_64.AppImage
+```
 
 如下截图所示，您有多个帐户，每个帐户的余额为 100 以太币：
 
@@ -110,17 +175,40 @@ Truffle 是一个用于使用 Solidity 开发智能合约的开发框架。您�
 
 1.  编辑 Truffle 配置文件：如果您打开`truffle-config.js`文件，在删除注释行后，代码将如下所示：
 
-[PRE12]
+```py
+module.exports = {
+  networks: {
+  },
+  mocha: {
+  },
+  compilers: {
+    solc: {
+    }
+  }
+};
+```
 
 清除它，并将以下代码添加到`truffle-config.js`文件中：
 
-[PRE13]
+```py
+module.exports = {
+  networks: {
+    "development": {
+      network_id: 5777,
+      host: "localhost",
+      port: 7545
+    },
+  }
+};
+```
 
 `host`和`port`是从 Ganache 屏幕上的 RPC 服务器中获取的，`network_id`是从 Ganache 屏幕上的 Network ID 中获取的。
 
 1.  执行迁移脚本：要部署您的智能合约，您可以按照以下方式执行它：
 
-[PRE14]
+```py
+$ truffle migrate
+```
 
 Truffle 框架将获取您在`Donation.json`文件中定义的字节码，并将其发送到以太坊区块链或 Ganache。这将为您提供以下输出：
 
@@ -130,7 +218,9 @@ Truffle 框架将获取您在`Donation.json`文件中定义的字节码，并将
 
 如果您尝试部署智能合约时输出了`Network is up to date.`，您可以删除`build/contracts`目录中的文件，并使用`truffle migrate`命令运行这个版本：
 
-[PRE15]
+```py
+$ truffle migrate --reset
+```
 
 现在，让我们来看看 Ganache 屏幕上的变化：
 
@@ -148,11 +238,16 @@ Truffle 框架将获取您在`Donation.json`文件中定义的字节码，并将
 
 要与驻留在以太坊区块链中的智能合约进行交互，在您的`Truffle`项目目录中执行以下命令：
 
-[PRE16]
+```py
+$ truffle console
+```
 
 然后，在`truffle`控制台提示符中，执行以下命令：
 
-[PRE17]
+```py
+truffle(development)> Donation.deployed().then(function(instance) { return instance.useless_variable.call(); });
+'Donation string'
+```
 
 如果您对`then`感到困惑，Truffle 控制台使用回调的概念，通过它执行访问智能合约对象是异步执行的。在 Truffle 控制台中，此语句在回调被执行之前立即返回。在回调函数中，您将接受智能合约实例作为`instance`参数。然后，我们可以从这个`instance`参数中访问我们的`useless_variable`变量。然后，要检索值，我们必须在该变量上执行`call`方法。
 
@@ -162,7 +257,9 @@ Truffle 框架将使用`Donation.json`文件中定义的**abi**来了解您的�
 
 如果您对这个免费概念感到困惑，让我们通过将`useless_variable`变量更改为其他内容来使其更清晰：
 
-[PRE18]
+```py
+truffle(development)> Donation.deployed().then(function(instance) { return instance.change_useless_variable("sky is blue", {from: "0xb105F01Ce341Ef9282dc2201BDfdA2c26903da77" }); });
+```
 
 您将获得以下输出：
 
@@ -182,7 +279,9 @@ Truffle 框架将使用`Donation.json`文件中定义的**abi**来了解您的�
 
 现在，让我们向智能合约发送一些以太币。让我们使用第二个帐户。第二个帐户希望使用智能合约捐赠 5 个以太币，如下所示：
 
-[PRE19]
+```py
+truffle(development)> Donation.deployed().then(function(instance) { return instance.donate({ from: "0x6d3eBC3000d112B70aaCA8F770B06f961C852014", value: 5000000000000000000 }); });
+```
 
 您将获得以下输出：
 
@@ -194,7 +293,9 @@ Truffle 框架将使用`Donation.json`文件中定义的**abi**来了解您的�
 
 让我们使用第一个帐户提取这笔款项：
 
-[PRE20]
+```py
+truffle(development)> Donation.deployed().then(function(instance) { return instance.receive_donation({ from: "0xb105F01Ce341Ef9282dc2201BDfdA2c26903da77" }); });
+```
 
 您将获得以下输出：
 

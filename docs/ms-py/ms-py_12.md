@@ -29,12 +29,12 @@ Donald Knuth 经常被称为算法分析之父。他的书系*计算机编程艺
 性能是一个非常广泛的术语。它有许多不同的含义，在许多情况下被错误地定义。您可能听过类似于“语言 X 比 Python 快”的说法。然而，这种说法本质上是错误的。Python 既不快也不慢；Python 是一种编程语言，语言根本没有性能指标。如果有人说 CPython 解释器对于语言 X 比解释器 Y 快或慢，那是可能的。代码的性能特征在不同的解释器之间可能有很大的差异。只需看看这个小测试：
 
 ```py
-**# python3 -m timeit '"".join(str(i) for i in range(10000))'**
-**100 loops, best of 3: 2.91 msec per loop**
-**# python2 -m timeit '"".join(str(i) for i in range(10000))'**
-**100 loops, best of 3: 2.13 msec per loop**
-**# pypy -m timeit '"".join(str(i) for i in range(10000))'**
-**1000 loops, best of 3: 677 usec per loop**
+# python3 -m timeit '"".join(str(i) for i in range(10000))'
+100 loops, best of 3: 2.91 msec per loop
+# python2 -m timeit '"".join(str(i) for i in range(10000))'
+100 loops, best of 3: 2.13 msec per loop
+# pypy -m timeit '"".join(str(i) for i in range(10000))'
+1000 loops, best of 3: 677 usec per loop
 
 ```
 
@@ -45,14 +45,14 @@ Donald Knuth 经常被称为算法分析之父。他的书系*计算机编程艺
 在我们开始改进性能之前，我们需要一种可靠的方法来衡量它。Python 有一个非常好的模块（`timeit`），专门用于测量代码片段的执行时间。它多次执行一小段代码，以确保变化尽可能小，并使测量相对干净。如果您想比较几个代码片段，这非常有用。以下是示例执行：
 
 ```py
-**# python3 -m timeit 'x=[]; [x.insert(0, i) for i in range(10000)]'**
-**10 loops, best of 3: 30.2 msec per loop**
-**# python3 -m timeit 'x=[]; [x.append(i) for i in range(10000)]'**
-**1000 loops, best of 3: 1.01 msec per loop**
-**# python3 -m timeit 'x=[i for i in range(10000)]'**
-**1000 loops, best of 3: 381 usec per loop**
-**# python3 -m timeit 'x=list(range(10000))'**
-**10000 loops, best of 3: 212 usec per loop**
+# python3 -m timeit 'x=[]; [x.insert(0, i) for i in range(10000)]'
+10 loops, best of 3: 30.2 msec per loop
+# python3 -m timeit 'x=[]; [x.append(i) for i in range(10000)]'
+1000 loops, best of 3: 1.01 msec per loop
+# python3 -m timeit 'x=[i for i in range(10000)]'
+1000 loops, best of 3: 381 usec per loop
+# python3 -m timeit 'x=list(range(10000))'
+10000 loops, best of 3: 212 usec per loop
 
 ```
 
@@ -100,11 +100,11 @@ if __name__ == '__main__':
 执行此操作时，您将得到以下内容：
 
 ```py
-**# python3 test_timeit.py**
-**100 loops, best of 10:  0.000238s :: test_list()**
-**100 loops, best of 10:  0.000407s :: test_list_comprehension()**
-**100 loops, best of 10:  0.000838s :: test_append()**
-**100 loops, best of 10:  0.031795s :: test_insert()**
+# python3 test_timeit.py
+100 loops, best of 10:  0.000238s :: test_list()
+100 loops, best of 10:  0.000407s :: test_list_comprehension()
+100 loops, best of 10:  0.000838s :: test_append()
+100 loops, best of 10:  0.031795s :: test_insert()
 
 ```
 
@@ -113,16 +113,16 @@ if __name__ == '__main__':
 个人建议使用 IPython，因为它可以更轻松地进行测量：
 
 ```py
-**# ipython3**
-**In [1]: import test_timeit**
-**In [2]: %timeit test_timeit.test_list()**
-**1000 loops, best of 3: 255 µs per loop**
-**In [3]: %timeit test_timeit.test_list_comprehension()**
-**1000 loops, best of 3: 430 µs per loop**
-**In [4]: %timeit test_timeit.test_append()**
-**1000 loops, best of 3: 934 µs per loop**
-**In [5]: %timeit test_timeit.test_insert()**
-**10 loops, best of 3: 31.6 ms per loop**
+# ipython3
+In [1]: import test_timeit
+In [2]: %timeit test_timeit.test_list()
+1000 loops, best of 3: 255 µs per loop
+In [3]: %timeit test_timeit.test_list_comprehension()
+1000 loops, best of 3: 430 µs per loop
+In [4]: %timeit test_timeit.test_append()
+1000 loops, best of 3: 934 µs per loop
+In [5]: %timeit test_timeit.test_insert()
+10 loops, best of 3: 31.6 ms per loop
 
 ```
 
@@ -241,23 +241,23 @@ if __name__ == '__main__':
 首先我们将不使用缓存来执行函数：
 
 ```py
-**# python3 -m cProfile -s calls test_fibonacci.py no_cache**
- **2692557 function calls (21 primitive calls) in 0.815**
- **seconds**
+# python3 -m cProfile -s calls test_fibonacci.py no_cache
+ **2692557 function calls (21 primitive calls) in 0.815
+ **seconds
 
- **Ordered by: call count**
+ **Ordered by: call count
 
- **ncalls tottime percall filename:lineno(function)**
-**2692537/1   0.815   0.815 test_fibonacci.py:13(fibonacci)**
- **7   0.000   0.000 {built-in method builtins.getattr}**
- **5   0.000   0.000 {built-in method builtins.setattr}**
- **1   0.000   0.000 {method 'update' of 'dict' objects}**
- **1   0.000   0.000 {built-in method builtins.isinstance}**
- **1   0.000   0.000 functools.py:422(decorating_function)**
- **1   0.000   0.815 test_fibonacci.py:1(<module>)**
- **1   0.000   0.000 {method 'disable' of '_lsprof.Profiler'}**
- **1   0.000   0.815 {built-in method builtins.exec}**
- **1   0.000   0.000 functools.py:43(update_wrapper)**
+ **ncalls tottime percall filename:lineno(function)
+2692537/1   0.815   0.815 test_fibonacci.py:13(fibonacci)
+ **7   0.000   0.000 {built-in method builtins.getattr}
+ **5   0.000   0.000 {built-in method builtins.setattr}
+ **1   0.000   0.000 {method 'update' of 'dict' objects}
+ **1   0.000   0.000 {built-in method builtins.isinstance}
+ **1   0.000   0.000 functools.py:422(decorating_function)
+ **1   0.000   0.815 test_fibonacci.py:1(<module>)
+ **1   0.000   0.000 {method 'disable' of '_lsprof.Profiler'}
+ **1   0.000   0.815 {built-in method builtins.exec}
+ **1   0.000   0.000 functools.py:43(update_wrapper)
         1   0.000   0.000 functools.py:391(lru_cache)
 ```
 
@@ -276,23 +276,23 @@ Percall，`cumtime / ncalls`
 哪个对你的用例最有用取决于情况。使用默认输出中的`-s`参数可以很容易地改变排序顺序。但现在让我们看看缓存版本的结果。再次，只有简化的输出：
 
 ```py
-**# python3 -m cProfile -s calls test_fibonacci.py cache**
- **51 function calls (21 primitive calls) in 0.000 seconds**
+# python3 -m cProfile -s calls test_fibonacci.py cache
+ **51 function calls (21 primitive calls) in 0.000 seconds
 
- **Ordered by: call count**
+ **Ordered by: call count
 
- **ncalls tottime percall filename:lineno(function)**
- **31/1   0.000   0.000 test_fibonacci.py:5(fibonacci_cached)**
- **7   0.000   0.000 {built-in method builtins.getattr}**
- **5   0.000   0.000 {built-in method builtins.setattr}**
- **1   0.000   0.000 test_fibonacci.py:1(<module>)**
- **1   0.000   0.000 {built-in method builtins.isinstance}**
- **1   0.000   0.000 {built-in method builtins.exec}**
- **1   0.000   0.000 functools.py:422(decorating_function)**
- **1   0.000   0.000 {method 'disable' of '_lsprof.Profiler'}**
- **1   0.000   0.000 {method 'update' of 'dict' objects}**
- **1   0.000   0.000 functools.py:391(lru_cache)**
- **1   0.000   0.000 functools.py:43(update_wrapper)**
+ **ncalls tottime percall filename:lineno(function)
+ **31/1   0.000   0.000 test_fibonacci.py:5(fibonacci_cached)
+ **7   0.000   0.000 {built-in method builtins.getattr}
+ **5   0.000   0.000 {built-in method builtins.setattr}
+ **1   0.000   0.000 test_fibonacci.py:1(<module>)
+ **1   0.000   0.000 {built-in method builtins.isinstance}
+ **1   0.000   0.000 {built-in method builtins.exec}
+ **1   0.000   0.000 functools.py:422(decorating_function)
+ **1   0.000   0.000 {method 'disable' of '_lsprof.Profiler'}
+ **1   0.000   0.000 {method 'update' of 'dict' objects}
+ **1   0.000   0.000 functools.py:391(lru_cache)
+ **1   0.000   0.000 functools.py:43(update_wrapper)
 
 ```
 
@@ -389,17 +389,17 @@ if __name__ == '__main__':
 在运行时，确实出现了我使用了一个太大的偏差：
 
 ```py
-**# python3 test_fibonacci.py no_cache**
- **2692539 function calls (3 primitive calls) in -0.778**
- **seconds**
+# python3 test_fibonacci.py no_cache
+ **2692539 function calls (3 primitive calls) in -0.778
+ **seconds
 
- **Ordered by: call count**
+ **Ordered by: call count
 
- **ncalls tottime percall filename:lineno(function)**
-**2692537/1  -0.778  -0.778 test_fibonacci.py:15(fibonacci)**
- **1   0.000   0.000 :0(setprofile)**
- **1   0.000  -0.778 profile:0(<function fibonacci at 0x...>)**
- **0   0.000         profile:0(profiler)**
+ **ncalls tottime percall filename:lineno(function)
+2692537/1  -0.778  -0.778 test_fibonacci.py:15(fibonacci)
+ **1   0.000   0.000 :0(setprofile)
+ **1   0.000  -0.778 profile:0(<function fibonacci at 0x...>)
+ **0   0.000         profile:0(profiler)
 
 ```
 
@@ -467,17 +467,17 @@ if __name__ == '__main__':
 代码足够简单，只是一个基本的计时器和性能分析器打印一些默认的统计数据。哪种对你来说更好取决于你的用例，但它们肯定都有用。这种选择性性能分析的额外优势是输出更有限，有助于可读性：
 
 ```py
-**# python3 test_fibonacci.py**
- **timed_fibonacci: 0:00:01.050200**
- **7049157 function calls (3 primitive calls) in 2.024**
- **seconds**
+# python3 test_fibonacci.py
+ **timed_fibonacci: 0:00:01.050200
+ **7049157 function calls (3 primitive calls) in 2.024
+ **seconds
 
- **Ordered by: standard name**
+ **Ordered by: standard name
 
- **ncalls tottime percall filename:lineno(function)**
- **1   0.000   2.024 test_fibonacci.py:31(profiled_fibonacci)**
-**7049155/1   2.024   2.024 test_fibonacci.py:41(fibonacci)**
- **1   0.000   0.000 {method 'disable' of '_lsprof.Profiler'}**
+ **ncalls tottime percall filename:lineno(function)
+ **1   0.000   2.024 test_fibonacci.py:31(profiled_fibonacci)
+7049155/1   2.024   2.024 test_fibonacci.py:41(fibonacci)
+ **1   0.000   0.000 {method 'disable' of '_lsprof.Profiler'}
 
 ```
 
@@ -500,9 +500,9 @@ if __name__ == '__main__':
 在执行脚本时，你应该会得到类似这样的结果：
 
 ```py
-**# python3 test_pystone.py**
-**Pystone(1.2) time for 50000 passes = 0.725432**
-**This machine benchmarks at 68924.4 pystones/second**
+# python3 test_pystone.py
+Pystone(1.2) time for 50000 passes = 0.725432
+This machine benchmarks at 68924.4 pystones/second
 
 ```
 
@@ -520,24 +520,24 @@ stats.print_stats(10)
 在某些情况下，将多次测量的结果结合起来可能是有趣的。可以通过指定多个文件或使用`stats.add(*filenames)`来实现。但首先，让我们看看常规输出：
 
 ```py
-**# python3 parse_statistics.py**
+# python3 parse_statistics.py
 
- **1050012 function calls in 0.776 seconds**
+ **1050012 function calls in 0.776 seconds
 
- **Ordered by: call count, cumulative time**
- **List reduced from 21 to 10 due to restriction <10>**
+ **Ordered by: call count, cumulative time
+ **List reduced from 21 to 10 due to restriction <10>
 
- **ncalls  tottime  percall  cumtime  percall filename:lineno(function)**
- **150000    0.032    0.000    0.032    0.000 pystone.py:214(Proc7)**
- **150000    0.027    0.000    0.027    0.000 pystone.py:232(Func1)**
- **100000    0.016    0.000    0.016    0.000 {built-in method builtins.chr}**
- **100000    0.010    0.000    0.010    0.000 {built-in method builtins.ord}**
- **50002    0.029    0.000    0.029    0.000 pystone.py:52(__init__)**
- **50000    0.127    0.000    0.294    0.000 pystone.py:144(Proc1)**
- **50000    0.094    0.000    0.094    0.000 pystone.py:219(Proc8)**
- **50000    0.048    0.000    0.077    0.000 pystone.py:60(copy)**
- **50000    0.051    0.000    0.061    0.000 pystone.py:240(Func2)**
- **50000    0.031    0.000    0.043    0.000 pystone.py:171(Proc3)**
+ **ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+ **150000    0.032    0.000    0.032    0.000 pystone.py:214(Proc7)
+ **150000    0.027    0.000    0.027    0.000 pystone.py:232(Func1)
+ **100000    0.016    0.000    0.016    0.000 {built-in method builtins.chr}
+ **100000    0.010    0.000    0.010    0.000 {built-in method builtins.ord}
+ **50002    0.029    0.000    0.029    0.000 pystone.py:52(__init__)
+ **50000    0.127    0.000    0.294    0.000 pystone.py:144(Proc1)
+ **50000    0.094    0.000    0.094    0.000 pystone.py:219(Proc8)
+ **50000    0.048    0.000    0.077    0.000 pystone.py:60(copy)
+ **50000    0.051    0.000    0.061    0.000 pystone.py:240(Func2)
+ **50000    0.031    0.000    0.043    0.000 pystone.py:171(Proc3)
 
 ```
 
@@ -546,9 +546,9 @@ stats.print_stats(10)
 让我们看看 QCacheGrind 的输出。在 Windows 的情况下，QCacheGrindWin 包提供了一个二进制文件，而在 Linux 中，它很可能通过您的软件包管理器提供，在 OS X 中，您可以尝试`brew install qcachegrind --with-graphviz`。但是还有一个包你需要：`pyprof2calltree`包。它将`profile`输出转换为 QCacheGrind 理解的格式。因此，在简单的`pip install pyprof2calltree`之后，我们现在可以将`profile`文件转换为`callgrind`文件：
 
 ```py
-**# pyprof2calltree -i pystone.profile -o pystone.callgrind**
-**writing converted data to: pystone.callgrind**
-**# qcachegrind pystone.callgrind**
+# pyprof2calltree -i pystone.profile -o pystone.callgrind
+writing converted data to: pystone.callgrind
+# qcachegrind pystone.callgrind
 
 ```
 
@@ -565,7 +565,7 @@ stats.print_stats(10)
 `line_profiler`实际上不是 Python 捆绑的包，但它太有用了，不能忽视。虽然常规的`profile`模块对某个块内的所有（子）函数进行分析，但`line_profiler`允许在函数内逐行进行分析。斐波那契函数在这里并不是最合适的，但我们可以使用一个素数生成器。但首先，安装`line_profiler`：
 
 ```py
- **pip install line_profiler**
+ **pip install line_profiler
 
 ```
 
@@ -599,36 +599,36 @@ if __name__ == '__main__':
 你可能想知道`profile`装饰器是从哪里来的。它来自`line_profiler`模块，这就是为什么我们必须用`kernprof`命令运行脚本的原因：
 
 ```py
-**# kernprof -l test_primes.py**
-**The sum of the first 2000 primes is 16274627**
-**Wrote profile results to test_primes.py.lprof**
+# kernprof -l test_primes.py
+The sum of the first 2000 primes is 16274627
+Wrote profile results to test_primes.py.lprof
 
 ```
 
 正如命令所说，结果已经写入了`test_primes.py.lprof`文件。因此，为了便于阅读，让我们查看该文件的输出，跳过`Time`列：
 
 ```py
-**# python3 -m line_profiler test_primes.py.lprof**
-**Timer unit: 1e-06 s**
+# python3 -m line_profiler test_primes.py.lprof
+Timer unit: 1e-06 s
 
-**Total time: 2.33179 s**
-**File: test_primes.py**
-**Function: primes at line 4**
+Total time: 2.33179 s
+File: test_primes.py
+Function: primes at line 4
 
-**Line #      Hits   Per Hit   % Time  Line Contents**
-**==================================================**
- **4                               @profile**
- **5                               def primes():**
- **6         1       3.0      0.0      n = 2**
- **7         1       1.0      0.0      primes = set()**
- **8         1       0.0      0.0      while True:**
- **9   2058163       0.5     43.1          for p in primes:**
- **10   2056163       0.6     56.0              if n % p == 0:**
- **11     15388       0.5      0.3                  break**
- **12                                       else:**
- **13      2000       1.2      0.1              primes.add(n)**
- **14      2000       0.5      0.0              yield n**
- **15     17387       0.6      0.4          n += 1**
+Line #      Hits   Per Hit   % Time  Line Contents
+==================================================
+ **4                               @profile
+ **5                               def primes():
+ **6         1       3.0      0.0      n = 2
+ **7         1       1.0      0.0      primes = set()
+ **8         1       0.0      0.0      while True:
+ **9   2058163       0.5     43.1          for p in primes:
+ **10   2056163       0.6     56.0              if n % p == 0:
+ **11     15388       0.5      0.3                  break
+ **12                                       else:
+ **13      2000       1.2      0.1              primes.add(n)
+ **14      2000       0.5      0.0              yield n
+ **15     17387       0.6      0.4          n += 1
 
 ```
 
@@ -685,26 +685,26 @@ CPython 解释器最隐晦的组件之一是全局解释器锁（GIL），这是
 您可能已经看到过一些基准测试，表明使用`+=`比连接字符串要慢得多。在某个时候，这确实产生了很大的差异。然而，使用 Python 3 后，大部分差异已经消失。
 
 ```py
-**In [1]: %%timeit**
- **...: s = ''**
- **...: for i in range(1000000):**
- **...:     s += str(i)**
- **...:**
-**1 loops, best of 3: 362 ms per loop**
+In [1]: %%timeit
+ **...: s = ''
+ **...: for i in range(1000000):
+ **...:     s += str(i)
+ **...:
+1 loops, best of 3: 362 ms per loop
 
-**In [2]: %%timeit**
- **...: ss = []**
- **...: for i in range(1000000):**
- **...:     ss.append(str(i))**
- **...: s = ''.join(ss)**
- **...:**
-**1 loops, best of 3: 332 ms per loop**
+In [2]: %%timeit
+ **...: ss = []
+ **...: for i in range(1000000):
+ **...:     ss.append(str(i))
+ **...: s = ''.join(ss)
+ **...:
+1 loops, best of 3: 332 ms per loop
 
-**In [3]: %timeit ''.join(str(i) for i in range(1000000))**
-**1 loops, best of 3: 324 ms per loop**
+In [3]: %timeit ''.join(str(i) for i in range(1000000))
+1 loops, best of 3: 324 ms per loop
 
-**In [4]: %timeit ''.join([str(i) for i in range(1000000)])**
-**1 loops, best of 3: 294 ms per loop**
+In [4]: %timeit ''.join([str(i) for i in range(1000000)])
+1 loops, best of 3: 294 ms per loop
 
 ```
 
@@ -861,17 +861,17 @@ if __name__ == '__main__':
 结果是：
 
 ```py
-**# python3 test_tracemalloc.py**
-**test_tracemalloc.py:8: size=35.3 MiB, count=999745, average=37 B**
-**<frozen importlib._bootstrap_external>:473: size=1909 KiB, count=20212, average=97 B**
-**<frozen importlib._bootstrap>:222: size=895 KiB, count=3798, average=241 B**
-**collections/__init__.py:412: size=103 KiB, count=1451, average=72 B**
-**<string>:5: size=36.6 KiB, count=133, average=282 B**
-**collections/__init__.py:406: size=29.9 KiB, count=15, average=2039 B**
-**abc.py:133: size=26.1 KiB, count=102, average=262 B**
-**ipaddress.py:608: size=21.3 KiB, count=182, average=120 B**
-**<frozen importlib._bootstrap_external>:53: size=21.2 KiB, count=140, average=155 B**
-**types.py:234: size=15.3 KiB, count=124, average=127 B**
+# python3 test_tracemalloc.py
+test_tracemalloc.py:8: size=35.3 MiB, count=999745, average=37 B
+<frozen importlib._bootstrap_external>:473: size=1909 KiB, count=20212, average=97 B
+<frozen importlib._bootstrap>:222: size=895 KiB, count=3798, average=241 B
+collections/__init__.py:412: size=103 KiB, count=1451, average=72 B
+<string>:5: size=36.6 KiB, count=133, average=282 B
+collections/__init__.py:406: size=29.9 KiB, count=15, average=2039 B
+abc.py:133: size=26.1 KiB, count=102, average=262 B
+ipaddress.py:608: size=21.3 KiB, count=182, average=120 B
+<frozen importlib._bootstrap_external>:53: size=21.2 KiB, count=140, average=155 B
+types.py:234: size=15.3 KiB, count=124, average=127 B
 
 ```
 
@@ -901,20 +901,20 @@ if __name__ == '__main__':
 请注意，尽管这里实际上导入了`memory_profiler`，但这并不是严格要求的。它也可以通过`python3 -m memory_profiler your_scripts.py`来执行：
 
 ```py
-**# python3 test_memory_profiler.py**
-**Filename: test_memory_profiler.py**
+# python3 test_memory_profiler.py
+Filename: test_memory_profiler.py
 
-**Line #    Mem usage    Increment   Line Contents**
-**================================================**
- **4     11.0 MiB      0.0 MiB   @memory_profiler.profile**
- **5                             def main():**
- **6     11.0 MiB      0.0 MiB       n = 100000**
- **7     14.6 MiB      3.5 MiB       a = [i for i in range(n)]**
- **8     17.8 MiB      3.2 MiB       b = [i for i in range(n)]**
- **9     21.7 MiB      3.9 MiB       c = list(range(n))**
- **10     25.5 MiB      3.9 MiB       d = list(range(n))**
- **11     38.0 MiB     12.5 MiB       e = dict.fromkeys(a, b)**
- **12     44.1 MiB      6.1 MiB       f = dict.fromkeys(c, d)**
+Line #    Mem usage    Increment   Line Contents
+================================================
+ **4     11.0 MiB      0.0 MiB   @memory_profiler.profile
+ **5                             def main():
+ **6     11.0 MiB      0.0 MiB       n = 100000
+ **7     14.6 MiB      3.5 MiB       a = [i for i in range(n)]
+ **8     17.8 MiB      3.2 MiB       b = [i for i in range(n)]
+ **9     21.7 MiB      3.9 MiB       c = list(range(n))
+ **10     25.5 MiB      3.9 MiB       d = list(range(n))
+ **11     38.0 MiB     12.5 MiB       e = dict.fromkeys(a, b)
+ **12     44.1 MiB      6.1 MiB       f = dict.fromkeys(c, d)
 
 ```
 
@@ -988,28 +988,28 @@ if __name__ == '__main__':
 让我们看看这段代码实际上有多糟糕的内存泄漏：
 
 ```py
-**# python3 test_leak.py**
-**The first leak:**
-**tracemalloc.py:349: size=528 B (+528 B), count=3 (+3), average=176 B**
-**test_leak.py:34: size=288 B (+288 B), count=2 (+2), average=144 B**
-**test_leak.py:32: size=120 B (+120 B), count=2 (+2), average=60 B**
-**tracemalloc.py:485: size=64 B (+64 B), count=1 (+1), average=64 B**
-**tracemalloc.py:487: size=56 B (+56 B), count=1 (+1), average=56 B**
-**tracemalloc.py:277: size=32 B (+32 B), count=1 (+1), average=32 B**
-**test_leak.py:31: size=28 B (+28 B), count=1 (+1), average=28 B**
-**test_leak.py:9: size=28 B (+28 B), count=1 (+1), average=28 B**
+# python3 test_leak.py
+The first leak:
+tracemalloc.py:349: size=528 B (+528 B), count=3 (+3), average=176 B
+test_leak.py:34: size=288 B (+288 B), count=2 (+2), average=144 B
+test_leak.py:32: size=120 B (+120 B), count=2 (+2), average=60 B
+tracemalloc.py:485: size=64 B (+64 B), count=1 (+1), average=64 B
+tracemalloc.py:487: size=56 B (+56 B), count=1 (+1), average=56 B
+tracemalloc.py:277: size=32 B (+32 B), count=1 (+1), average=32 B
+test_leak.py:31: size=28 B (+28 B), count=1 (+1), average=28 B
+test_leak.py:9: size=28 B (+28 B), count=1 (+1), average=28 B
 
-**The second leak:**
-**test_leak.py:41: size=18.3 MiB (+18.3 MiB), count=400000 (+400000), average=48 B**
-**test_leak.py:40: size=18.3 MiB (+18.3 MiB), count=400000 (+400000), average=48 B**
-**test_leak.py:38: size=10.7 MiB (+10.7 MiB), count=200001 (+200001), average=56 B**
-**test_leak.py:39: size=10.7 MiB (+10.7 MiB), count=200002 (+200002), average=56 B**
-**tracemalloc.py:349: size=680 B (+152 B), count=6 (+3), average=113 B**
-**test_leak.py:17: size=72 B (+72 B), count=1 (+1), average=72 B**
-**test_leak.py:43: size=64 B (+64 B), count=1 (+1), average=64 B**
-**test_leak.py:32: size=56 B (-64 B), count=1 (-1), average=56 B**
-**tracemalloc.py:487: size=112 B (+56 B), count=2 (+1), average=56 B**
-**tracemalloc.py:277: size=64 B (+32 B), count=2 (+1), average=32 B**
+The second leak:
+test_leak.py:41: size=18.3 MiB (+18.3 MiB), count=400000 (+400000), average=48 B
+test_leak.py:40: size=18.3 MiB (+18.3 MiB), count=400000 (+400000), average=48 B
+test_leak.py:38: size=10.7 MiB (+10.7 MiB), count=200001 (+200001), average=56 B
+test_leak.py:39: size=10.7 MiB (+10.7 MiB), count=200002 (+200002), average=56 B
+tracemalloc.py:349: size=680 B (+152 B), count=6 (+3), average=113 B
+test_leak.py:17: size=72 B (+72 B), count=1 (+1), average=72 B
+test_leak.py:43: size=64 B (+64 B), count=1 (+1), average=64 B
+test_leak.py:32: size=56 B (-64 B), count=1 (-1), average=56 B
+tracemalloc.py:487: size=112 B (+56 B), count=2 (+1), average=56 B
+tracemalloc.py:277: size=64 B (+32 B), count=2 (+1), average=32 B
 
 ```
 
@@ -1058,12 +1058,12 @@ print('Thresholds:', gc.get_threshold())
 现在让我们看看输出：
 
 ```py
-**# python3 test_refcount.py**
-**Before manual collection:**
- **<Eggs: a> [{'b': <Eggs: a>, 'name': 'a'}, <class '__main__.Eggs'>]**
- **<Eggs: b> [{'name': 'b', 'a': <Eggs: b>}, <class '__main__.Eggs'>]**
-**After manual collection:**
-**Thresholds: (700, 10, 10)**
+# python3 test_refcount.py
+Before manual collection:
+ **<Eggs: a> [{'b': <Eggs: a>, 'name': 'a'}, <class '__main__.Eggs'>]
+ **<Eggs: b> [{'name': 'b', 'a': <Eggs: b>}, <class '__main__.Eggs'>]
+After manual collection:
+Thresholds: (700, 10, 10)
 
 ```
 
@@ -1115,12 +1115,12 @@ if __name__ == '__main__':
 输出可能与你已经预期的非常接近：
 
 ```py
-**# python3 test_leak.py**
-**400617: <class 'dict'>**
-**400000: <class '__main__.Eggs'>**
-**962: <class 'wrapper_descriptor'>**
-**920: <class 'function'>**
-**625: <class 'method_descriptor'>**
+# python3 test_leak.py
+400617: <class 'dict'>
+400000: <class '__main__.Eggs'>
+962: <class 'wrapper_descriptor'>
+920: <class 'function'>
+625: <class 'method_descriptor'>
 
 ```
 
@@ -1157,12 +1157,12 @@ if __name__ == '__main__':
 现在让我们看看这次剩下了什么：
 
 ```py
-**# python3 test_leak.py**
-**962: <class 'wrapper_descriptor'>**
-**919: <class 'function'>**
-**625: <class 'method_descriptor'>**
-**618: <class 'dict'>**
-**535: <class 'builtin_function_or_method'>**
+# python3 test_leak.py
+962: <class 'wrapper_descriptor'>
+919: <class 'function'>
+625: <class 'method_descriptor'>
+618: <class 'dict'>
+535: <class 'builtin_function_or_method'>
 
 ```
 
@@ -1187,9 +1187,9 @@ if __name__ == '__main__':
 这导致一个有效的引用和一个无效的引用：
 
 ```py
-**# python3 test_weakref.py**
-**<__main__.Eggs object at 0x104891a20>**
-**None**
+# python3 test_weakref.py
+<__main__.Eggs object at 0x104891a20>
+None
 
 ```
 
@@ -1220,12 +1220,12 @@ Python 内存管理器中有四个你需要了解的概念：
 为了说明区别：
 
 ```py
-**Line #    Mem usage    Increment   Line Contents**
-**================================================**
- **4     11.0 MiB      0.0 MiB   @memory_profiler.profile**
- **5                             def main():**
- **6     11.0 MiB      0.0 MiB    a = range(1000000)**
- **7     49.7 MiB     38.6 MiB    b = list(range(1000000))**
+Line #    Mem usage    Increment   Line Contents
+================================================
+ **4     11.0 MiB      0.0 MiB   @memory_profiler.profile
+ **5                             def main():
+ **6     11.0 MiB      0.0 MiB    a = range(1000000)
+ **7     49.7 MiB     38.6 MiB    b = list(range(1000000))
 
 ```
 
@@ -1236,19 +1236,19 @@ Python 内存管理器中有四个你需要了解的概念：
 关于 Python 中集合的一个非常重要的细节是，其中许多集合只能增长；它们不会自行收缩。为了说明：
 
 ```py
-**Line #    Mem usage    Increment   Line Contents**
-**================================================**
- **4     11.5 MiB      0.0 MiB   @memory_profiler.profile**
- **5                             def main():**
- **6                             # Generate a huge dict**
- **7     26.3 MiB     14.8 MiB   a = dict.fromkeys(range(100000))**
- **8**
- **9                             # Remove all items**
- **10     26.3 MiB      0.0 MiB   for k in list(a.keys()):**
- **11     26.3 MiB      0.0 MiB   del a[k]**
- **12**
- **13                             # Recreate the dict**
- **14     23.6 MiB     -2.8 MiB   a = dict((k, v) for k, v in a.items())**
+Line #    Mem usage    Increment   Line Contents
+================================================
+ **4     11.5 MiB      0.0 MiB   @memory_profiler.profile
+ **5                             def main():
+ **6                             # Generate a huge dict
+ **7     26.3 MiB     14.8 MiB   a = dict.fromkeys(range(100000))
+ **8
+ **9                             # Remove all items
+ **10     26.3 MiB      0.0 MiB   for k in list(a.keys()):
+ **11     26.3 MiB      0.0 MiB   del a[k]
+ **12
+ **13                             # Recreate the dict
+ **14     23.6 MiB     -2.8 MiB   a = dict((k, v) for k, v in a.items())
 
 ```
 
@@ -1291,16 +1291,16 @@ if __name__ == '__main__':
 和内存使用情况：
 
 ```py
-**# python3 test_slots.py**
-**Filename: test_slots.py**
+# python3 test_slots.py
+Filename: test_slots.py
 
-**Line #    Mem usage    Increment   Line Contents**
-**================================================**
- **21     11.1 MiB      0.0 MiB   @memory_profiler.profile**
- **22                             def main():**
- **23     17.0 MiB      5.9 MiB   slots = [Slots(i) for i in range(25000)]**
- **24     25.0 MiB      8.0 MiB   no_slots = [NoSlots(i) for i in range(25000)]**
- **25     25.0 MiB      0.0 MiB   return slots, no_slots**
+Line #    Mem usage    Increment   Line Contents
+================================================
+ **21     11.1 MiB      0.0 MiB   @memory_profiler.profile
+ **22                             def main():
+ **23     17.0 MiB      5.9 MiB   slots = [Slots(i) for i in range(25000)]
+ **24     25.0 MiB      8.0 MiB   no_slots = [NoSlots(i) for i in range(25000)]
+ **25     25.0 MiB      0.0 MiB   return slots, no_slots
 
 ```
 

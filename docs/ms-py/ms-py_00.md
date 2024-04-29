@@ -79,10 +79,10 @@ class Plugins(abc.ABCMeta):
 任何命令行输入或输出都写成如下形式，其中>>>表示 Python 控制台，#表示常规的 Linux/Unix shell：
 
 ```py
-**>>> class Spam(object):**
-**…     eggs = 'my eggs'**
+>>> class Spam(object):
+…     eggs = 'my eggs'
 
-**>>> Spam = type('Spam', (object,), dict(eggs='my eggs'))**
+>>> Spam = type('Spam', (object,), dict(eggs='my eggs'))
 
 ```
 

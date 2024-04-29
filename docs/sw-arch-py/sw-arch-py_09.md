@@ -193,7 +193,7 @@ Virtualenv 解决了权限和版本问题。它创建一个带有自己的 Pytho
 一旦为您的应用程序设置了虚拟环境并安装了所需的软件包，最好生成依赖项及其版本。可以通过以下命令轻松完成：
 
 ```py
-**$ pip freeze**
+$ pip freeze
 
 ```
 
@@ -361,7 +361,7 @@ mandelbrot = mandelbrot.simple.mandelbrot:main
 现在可以使用以下命令安装软件包：
 
 ```py
-**$ python setup.py install**
+$ python setup.py install
 
 ```
 
@@ -394,7 +394,7 @@ Python 中的`setup.py`文件加上 setuptools/distutils 生态系统不仅可�
 1.  完成此操作后，注册就像运行`setup.py`并使用`register`命令一样简单：
 
 ```py
-**$ python setup.py register**
+$ python setup.py register
 
 ```
 
@@ -407,7 +407,7 @@ Python 中的`setup.py`文件加上 setuptools/distutils 生态系统不仅可�
 1.  要将源代码提交到 PyPI，应运行以下命令：
 
 ```py
-**$ python setup.py sdist upload**
+$ python setup.py sdist upload
 
 ```
 

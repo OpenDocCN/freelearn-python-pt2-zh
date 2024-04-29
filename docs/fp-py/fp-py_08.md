@@ -52,25 +52,38 @@
 
 这个函数可以被认为是像`enumerate()`这样的函数的原始基础。我们可以用`zip()`和`count()`函数来定义`enumerate()`函数，如下所示：
 
-[PRE0]
+```py
+enumerate = lambda x, start=0: zip(count(start),x)
+
+```
 
 `enumerate()`函数的行为就像使用`count()`函数生成与某个迭代器相关联的值的`zip()`函数。
 
 因此，以下两个命令彼此等价：
 
-[PRE1]
+```py
+zip(count(), some_iterator)
+enumerate(some_iterator)
+
+```
 
 两者都会发出与迭代器中的项目配对的两个元组的数字序列。
 
 `zip()`函数在使用`count()`函数时变得稍微简单，如下命令所示：
 
-[PRE2]
+```py
+zip(count(1,3), some_iterator)
+
+```
 
 这将提供 1、4、7、10 等值，作为枚举器的每个值的标识符。这是一个挑战，因为`enumerate`没有提供更改步长的方法。
 
 以下命令描述了`enumerate()`函数：
 
-[PRE3]
+```py
+((1+3*e, x) for e,x in enumerate(a))
+
+```
 
 ### 注意
 
@@ -78,17 +91,30 @@
 
 这是一种检查累积误差的方法。我们将定义一个函数，该函数将评估来自迭代器的项目，直到满足某个条件。以下是我们如何定义`until()`函数的方法：
 
-[PRE4]
+```py
+def until(terminate, iterator):
+ **i = next(iterator)
+ **if terminate(*i): return i
+ **return until(terminate, iterator)
+
+```
 
 我们将从迭代器中获取下一个值。如果通过测试，那就是我们的值。否则，我们将递归地评估这个函数，以搜索通过测试的值。
 
 我们将提供一个源可迭代对象和一个比较函数，如下所示：
 
-[PRE5]
+```py
+source = zip(count(0, .1), (.1*c for c in count()))
+neq = lambda x, y: abs(x-y) > 1.0E-12
+
+```
 
 当我们评估`until(neq, source)`方法时，我们发现结果如下：
 
-[PRE6]
+```py
+(92.799999999999, 92.80000000000001)
+
+```
 
 经过 928 次迭代，错误位的总和累积到![Counting with count()](img/B03652_08_01.jpg)。两个值都没有精确的二进制表示。
 
@@ -98,7 +124,11 @@
 
 最小可检测差异可以计算如下：
 
-[PRE7]
+```py
+>>> until(lambda x, y: x != y, source)
+(0.6, 0.6000000000000001)
+
+```
 
 仅经过六步，`count(0, 0.1)`方法已经累积了一个可测的误差![Counting with count()](img/B03652_08_02.jpg)。不是很大的误差，但在 1000 步内，它将变得相当大。
 
@@ -110,15 +140,26 @@
 
 我们可以使用`cycle()`函数发出`True`和`False`值的序列，如下所示：
 
-[PRE8]
+```py
+m3= (i == 0 for i in cycle(range(3)))
+
+m5= (i == 0 for i in cycle(range(5)))
+
+```
 
 如果我们将一组有限的数字压缩在一起，我们将得到一组三元组，其中一个数字和两个标志，显示该数字是否是 3 的倍数或 5 的倍数。引入有限的可迭代对象以创建正在生成的数据的适当上限是很重要的。以下是一系列值及其乘法器标志：
 
-[PRE9]
+```py
+multipliers = zip(range(10), m3, m5)
+
+```
 
 现在我们可以分解三元组，并使用过滤器传递是倍数的数字并拒绝所有其他数字：
 
-[PRE10]
+```py
+sum(i for i, *multipliers in multipliers if any(multipliers))
+
+```
 
 这个函数还有另一个更有价值的用途，用于探索性数据分析。
 
@@ -128,7 +169,13 @@
 
 我们假设数据可以使用`csv`模块解析。这导致了一种优雅的方式来创建子集。我们可以使用以下命令创建子集：
 
-[PRE11]
+```py
+chooser = (x == 0 for x in cycle(range(c)))
+rdr= csv.reader(source_file)
+wtr= csv.writer(target_file)
+wtr.writerows(row for pick, row in zip(chooser, rdr) if pick)
+
+```
 
 我们根据选择因子`c`创建了一个`cycle()`函数。例如，我们可能有一千万条记录的人口：选择 1,000 条记录的子集涉及选择 1/10,000 的记录。我们假设这段代码片段被安全地嵌套在一个打开相关文件的`with`语句中。我们还避免显示与 CSV 格式文件的方言问题的细节。
 
@@ -146,13 +193,24 @@
 
 我们可以考虑以下命令：
 
-[PRE12]
+```py
+all = repeat(0)
+subset= cycle(range(100))
+chooser = (x == 0 for x in either_all_or_subset)
+
+```
 
 这使我们可以进行简单的参数更改，要么选择所有数据，要么选择数据的子集。
 
 我们可以将这个嵌套在循环中，以创建更复杂的结构。这里有一个简单的例子：
 
-[PRE13]
+```py
+>>> list(tuple(repeat(i, times=i)) for i in range(10))
+[(), (1,), (2, 2), (3, 3, 3), (4, 4, 4, 4), (5, 5, 5, 5, 5), (6, 6, 6, 6, 6, 6), (7, 7, 7, 7, 7, 7, 7), (8, 8, 8, 8, 8, 8, 8, 8), (9, 9, 9, 9, 9, 9, 9, 9, 9)]
+>>> list(sum(repeat(i, times=i)) for i in range(10))
+[0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+
+```
 
 我们使用`repeat()`函数的`times`参数创建了重复的数字序列。
 
@@ -186,11 +244,19 @@
 
 在第七章中，*其他元组技术*，我们使用`enumerate()`函数对排序数据进行了天真的排名分配。我们可以做一些事情，比如将一个值与其在原始序列中的位置配对，如下所示：
 
-[PRE14]
+```py
+pairs = tuple(enumerate(sorted(raw_values)))
+
+```
 
 这将对`raw_values`中的项目进行排序，创建两个具有升序数字序列的元组，并实现我们可以用于进一步计算的对象。命令和结果如下：
 
-[PRE15]
+```py
+>>> raw_values= [1.2, .8, 1.2, 2.3, 11, 18]
+>>> tuple(enumerate( sorted(raw_values)))
+((0, 0.8), (1, 1.2), (2, 1.2), (3, 2.3), (4, 11), (5, 18))
+
+```
 
 在第七章中，*其他元组技术*，我们实现了一个替代形式的 enumerate，`rank()`函数，它将以更具统计意义的方式处理并列。
 
@@ -200,23 +266,42 @@
 
 在第七章中，*其他元组技术*，我们扩展了基本解析器，为行程的每个`Leg`创建了命名元组。增强解析器的输出如下所示：
 
-[PRE16]
+```py
+(Leg(start=Point(latitude=37.54901619777347, longitude=-76.33029518659048), end=Point(latitude=37.840832, longitude=-76.273834), distance=17.7246), Leg(start=Point(latitude=37.840832, longitude=-76.273834), end=Point(latitude=38.331501, longitude=-76.459503), distance=30.7382), Leg(start=Point(latitude=38.331501, longitude=-76.459503), end=Point(latitude=38.845501, longitude=-76.537331), distance=31.0756),...,Leg(start=Point(latitude=38.330166, longitude=-76.458504), end=Point(latitude=38.976334, longitude=-76.473503), distance=38.8019))
+
+```
 
 第一个`Leg`函数是在切萨皮克湾上两点之间的短途旅行。
 
 我们可以添加一个函数，它将构建一个更复杂的元组，其中包含输入顺序信息作为元组的一部分。首先，我们将定义`Leg`类的一个稍微复杂的版本：
 
-[PRE17]
+```py
+Leg = namedtuple("Leg", ("order", "start", "end", "distance"))
+
+```
 
 这类似于第七章中显示的`Leg`实例，*其他元组技术*，但它包括顺序以及其他属性。我们将定义一个函数，将成对分解并创建`Leg`实例如下：
 
-[PRE18]
+```py
+def ordered_leg_iter(pair_iter):
+ **for order, pair in enumerate(pair_iter):
+ **start, end = pair
+ **yield Leg(order, start, end, round(haversine(start, end),4))
+
+```
 
 我们可以使用此函数对每对起始和结束点进行枚举。我们将分解该对，然后重新组装`order`、`start`和`end`参数以及`haversine(start,end)`参数的值作为单个`Leg`实例。这个`generator`函数将与可迭代序列一起工作。
 
 在前面的解释的背景下，它的用法如下：
 
-[PRE19]
+```py
+with urllib.request.urlopen("file:./Winter%202012-2013.kml") as source:
+ **path_iter = float_lat_lon(row_iter_kml(source))
+ **pair_iter = legs(path_iter)
+ **trip_iter = ordered_leg_iter(pair_iter)
+ **trip= tuple(trip_iter)
+
+```
 
 我们已经将原始文件解析为路径点，创建了起始-结束对，然后创建了一个由单个`Leg`对象构建的行程。`enumerate()`函数确保可迭代序列中的每个项目都被赋予一个唯一的数字，该数字从默认的起始值 0 递增。可以提供第二个参数值以提供替代的起始值。
 
@@ -230,17 +315,29 @@
 
 `trip`变量的值如下：
 
-[PRE20]
+```py
+(Leg(start=Point(latitude=37.54901619777347, longitude=-76.33029518659048), end=Point(latitude=37.840832, longitude=-76.273834), distance=17.7246), Leg(start=Point(latitude=37.840832, longitude=-76.273834), end=Point(latitude=38.331501, longitude=-76.459503), distance=30.7382), ..., Leg(start=Point(latitude=38.330166, longitude=-76.458504), end=Point(latitude=38.976334, longitude=-76.473503), distance=38.8019))
+
+```
 
 每个`Leg`对象都有一个起点、一个终点和一个距离。四分位数的计算如下例所示：
 
-[PRE21]
+```py
+distances= (leg.distance for leg in trip)
+distance_accum= tuple(accumulate(distances))
+total= distance_accum[-1]+1.0
+quartiles= tuple(int(4*d/total) for d in distance_accum)
+
+```
 
 我们提取了距离数值，并计算了每段的累积距离。累积距离的最后一个就是总数。我们将`1.0`添加到总数中，以确保`4*d/total`为 3.9983，这将截断为 3。如果没有`+1.0`，最终的项目将具有值`4`，这是一个不可能的第五个四分位数。对于某些类型的数据（具有极大的值），我们可能需要添加一个更大的值。
 
 `quartiles`变量的值如下：
 
-[PRE22]
+```py
+(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3)
+
+```
 
 我们可以使用`zip()`函数将这个四分位数序列与原始数据点合并。我们还可以使用`groupby()`等函数来创建每个四分位数中各段的不同集合。
 
@@ -250,7 +347,18 @@
 
 特别是，我们可以将`chain()`函数与`contextlib.ExitStack()`方法结合使用，以处理文件集合作为单个可迭代值序列。我们可以做如下操作：
 
-[PRE23]
+```py
+from contextlib import ExitStack
+import csv
+def row_iter_csv_tab(*filenames):
+ **with ExitStack() as stack:
+ **files = [stack.enter_context(open(name, 'r', newline=''))
+ **for name in filenames]
+ **readers = [csv.reader(f, delimiter='\t') for f in files]
+ **readers = map(lambda f: csv.reader(f, delimiter='\t'), files)
+ **yield from chain(*readers)
+
+```
 
 我们创建了一个`ExitStack`对象，可以包含许多单独的上下文打开。当`with`语句结束时，`ExitStack`对象中的所有项目都将被正确关闭。我们创建了一个简单的打开文件对象序列；这些对象也被输入到了`ExitStack`对象中。
 
@@ -258,7 +366,10 @@
 
 我们还可以使用以下命令打开文件：
 
-[PRE24]
+```py
+readers = map(lambda f: csv.reader(f, delimiter='\t'), files)
+
+```
 
 最后，我们将所有的读取器链接成一个单一的迭代器，使用`chain(*readers)`。这用于从所有文件中产生行的序列。
 
@@ -274,7 +385,13 @@
 
 给定具有原始数据的`trip`变量和具有四分位数分配的`quartile`变量，我们可以使用以下命令对数据进行分组：
 
-[PRE25]
+```py
+group_iter= groupby(zip(quartile, trip), key=lambda q_raw:
+ **q_raw[0])
+for group_key, group_iter in group_iter:
+ **print(group_key, tuple(group_iter))
+
+```
 
 这将从原始行程数据开始，将四分位数与原始行程数据一起进行迭代。`groupby（）`函数将使用给定的`lambda`变量按四分位数分组。我们使用`for`循环来检查`groupby（）`函数的结果。这显示了我们如何获得组键值和组成员的迭代器。
 
@@ -282,7 +399,15 @@
 
 请注意，我们还可以使用`defaultdict（list）`方法创建组，如下所示：
 
-[PRE26]
+```py
+def groupby_2(iterable, key):
+ **groups = defaultdict(list)
+ **for item in iterable:
+ **groups[key(item)].append(item)
+ **for g in groups:
+ **yield iter(groups[g])
+
+```
 
 我们创建了一个`defaultdict`类，其中`list`对象作为与每个键关联的值。每个项目将应用给定的`key（）`函数以创建键值。项目将附加到具有给定键的`defaultdict`类中的列表中。
 
@@ -302,13 +427,22 @@
 
 我们可以将`filter（）`函数视为具有以下定义：
 
-[PRE27]
+```py
+def filter(iterable, function):
+ **i1, i2 = tee(iterable, 2)
+ **return compress(i1, (function(x) for x in i2))
+
+```
 
 我们使用`tee（）`函数克隆了可迭代对象。（我们稍后将详细讨论这个函数。）我们对每个值评估了过滤谓词。然后我们将原始可迭代对象和过滤函数可迭代对象提供给`compress`，传递和拒绝值。这从`compress（）`函数的更原始特性中构建了`filter（）`函数的特性。
 
 在本章的*使用 cycle（）重复循环*部分，我们看到了使用简单的生成器表达式进行数据选择。其本质如下：
 
-[PRE28]
+```py
+chooser = (x == 0 for x in cycle(range(c)))
+keep= (row for pick, row in zip(chooser, some_source) if pick)
+
+```
 
 我们定义了一个函数，它将产生一个值`1`，后跟*c-1*个零。这个循环将被重复，允许从源中仅选择*1/c*行。
 
@@ -316,7 +450,15 @@
 
 保持表达式实际上只是一个`compress（some_source，chooser）`方法。如果我们进行这种更改，处理将变得简化：
 
-[PRE29]
+```py
+all = repeat(0)
+subset = cycle(range(c))
+randomized = random.randrange(c)
+selection_rule = one of all, subset, or randomized
+chooser = (x == 0 for x in selection_rule)
+keep = compress(some_source, chooser)
+
+```
 
 我们定义了三种替代选择规则：`all`，`subset`和`randomized`。子集和随机化版本将从源中选择*1/c*行。`chooser`表达式将根据选择规则之一构建一个`True`和`False`值的可迭代对象。应用源可迭代对象到行选择可迭代对象来选择要保留的行。
 
@@ -326,21 +468,35 @@
 
 在第四章中，*与集合一起工作*，我们看到了使用切片表示法从集合中选择子集。我们的示例是从`list`对象中切片出成对的项目。以下是一个简单的列表：
 
-[PRE30]
+```py
+flat= ['2', '3', '5', '7', '11', '13', '17', '19', '23', '29', '31', '37', '41', '43', '47', '53', '59', '61', '67', '71',... ]
+
+```
 
 我们可以使用列表切片创建成对的元素，如下所示：
 
-[PRE31]
+```py
+zip(flat[0::2], flat[1::2])
+
+```
 
 `islice()`函数为我们提供了类似的功能，而不需要实例化`list`对象，并且看起来像以下内容：
 
-[PRE32]
+```py
+flat_iter_1= iter(flat)
+flat_iter_2= iter(flat)
+zip(islice(flat_iter_1, 0, None, 2), islice(flat_iter_2, 1, None, 2))
+
+```
 
 我们在一个扁平数据点列表上创建了两个独立的迭代器。这些可能是打开文件或数据库结果集上的两个独立迭代器。这两个迭代器需要是独立的，以便一个`islice()`函数的更改不会干扰另一个`islice()`函数。
 
 `islice()`函数的两组参数类似于`flat[0::2]`和`flat[1::2]`方法。没有类似切片的简写，因此需要指定开始和结束参数值。步长可以省略，默认值为 1。这将从原始序列产生两个元组的序列：
 
-[PRE33]
+```py
+[(2, 3), (5, 7), (11, 13), (17, 19), (23, 29), ... (7883, 7901), (7907, 7919)]
+
+```
 
 由于`islice()`与可迭代对象一起工作，这种设计可以处理非常大的数据集。我们可以使用它从较大的数据集中选择一个子集。除了使用`filter()`或`compress()`函数外，我们还可以使用`islice(source,0,None,c)`方法从较大的数据集中选择![使用 islice()选择子集](img/B03652_08_06.jpg)项。
 
@@ -352,21 +508,38 @@
 
 我们可以将这些与文件解析一起使用，以跳过输入中的标题或页脚。我们使用`dropwhile()`函数来拒绝标题行并传递剩余数据。我们使用`takewhile()`函数来传递数据并拒绝尾部行。我们将返回第三章中显示的简单 GPL 文件格式，*函数、迭代器和生成器*。该文件的标题如下所示：
 
-[PRE34]
+```py
+GIMP Palette
+Name: Crayola
+Columns: 16
+#
+```
 
 接下来是以下示例的行：
 
-[PRE35]
+```py
+255  73 108  Radical Red
+```
 
 我们可以使用基于`dropwhile()`函数的解析器轻松定位标题的最后一行——`#`行，如下所示：
 
-[PRE36]
+```py
+with open("crayola.gpl") as source:
+ **rdr = csv.reader(source, delimiter='\t')
+ **rows = dropwhile(lambda row: row[0] != '#', rdr)
+
+```
 
 我们创建了一个 CSV 读取器，以制表符为基础解析行。这将从名称中整齐地分离出`color`三元组。三元组需要进一步解析。这将产生一个以`#`行开头并继续文件其余部分的迭代器。
 
 我们可以使用`islice()`函数丢弃可迭代对象的第一项。然后我们可以按以下方式解析颜色细节：
 
-[PRE37]
+```py
+ **color_rows = islice(rows, 1, None)
+ **colors = ((color.split(), name) for color, name in color_rows)
+ **print(list(colors))
+
+```
 
 `islice(rows, 1, None)`表达式类似于请求`rows[1:]`切片：第一项被悄悄丢弃。一旦标题行的最后一行被丢弃，我们就可以解析颜色元组并返回更有用的颜色对象。
 
@@ -376,17 +549,36 @@
 
 在第五章中，*高阶函数*我们看了内置的`filter()`函数。`itertools`模块中的`filterfalse()`函数可以从`filter()`函数中定义如下：
 
-[PRE38]
+```py
+filterfalse = lambda pred, iterable:
+ **filter(lambda x: not pred(x), iterable)
+
+```
 
 与`filter()`函数一样，谓词函数可以是`None`值。`filter(None, iterable)`方法的值是可迭代对象中的所有`True`值。`filterfalse(None, iterable)`方法的值是可迭代对象中的所有`False`值：
 
-[PRE39]
+```py
+>>> filter(None, [0, False, 1, 2])
+<filter object at 0x101b43a50>
+>>> list(_)
+[1, 2]
+>>> filterfalse(None, [0, False, 1, 2])
+<itertools.filterfalse object at 0x101b43a50>
+>>> list(_)
+[0, False]
+
+```
 
 拥有`filterfalse()`函数的目的是促进重用。如果我们有一个简洁的函数可以做出过滤决定，我们应该能够使用该函数将输入分成通过和拒绝组，而不必费力地处理逻辑否定。
 
 执行以下命令的想法是：
 
-[PRE40]
+```py
+iter_1, iter_2 = iter(some_source), iter(some_source)
+good = filter(test, iter_1)
+bad = filterfalse(test, iter_2)
+
+```
 
 这将显然包括源自所有项目。`test()`函数保持不变，我们不能通过不正确使用`()`引入微妙的逻辑错误。
 
@@ -394,11 +586,17 @@
 
 内置的`map()`函数是一个高阶函数，它将`map()`函数应用于可迭代对象中的项目。我们可以将`map()`函数的简单版本看作如下：
 
-[PRE41]
+```py
+map(function, arg_iter) == (function(a) for a in arg_iter)
+
+```
 
 当`arg_iter`参数是单个值列表时，这很有效。`itertools`模块中的`starmap()`函数只是`map()`函数的`*a`版本，如下所示：
 
-[PRE42]
+```py
+starmap(function, arg_iter) == (function(*a) for a in arg_iter)
+
+```
 
 这反映了`map()`函数语义的小变化，以正确处理元组结构。
 
@@ -406,17 +604,31 @@
 
 我们可以将`map(function, iter1, iter2, ..., itern)`方法定义为以下两个命令：
 
-[PRE43]
+```py
+(function(*args) for args in zip(iter1, iter2, ..., itern))
+starmap(function, zip(iter1, iter2, ..., itern))
+
+```
 
 各种迭代器值被用来通过`*args`构造一个参数元组。实际上，`starmap()`函数就像这种更一般的情况。我们可以从更一般的`starmap()`函数构建简单的`map()`函数。
 
 当我们查看行程数据时，可以根据前面的命令重新定义基于`starmap()`函数的`Leg`对象的构造。在创建`Leg`对象之前，我们创建了点对。每对如下所示：
 
-[PRE44]
+```py
+((Point(latitude=37.54901619777347, longitude=-76.33029518659048), Point(latitude=37.840832, longitude=-76.273834)), ...,(Point(latitude=38.330166, longitude=-76.458504), Point(latitude=38.976334, longitude=-76.473503)))
+
+```
 
 我们可以使用`starmap()`函数来组装`Leg`对象，如下所示：
 
-[PRE45]
+```py
+with urllib.request.urlopen(url) as source:
+ **path_iter = float_lat_lon(row_iter_kml(source))
+ **pair_iter = legs(path_iter)
+ **make_leg = lambda start, end: Leg(start, end, haversine(start,end))
+ **trip = list(starmap(make_leg, pair_iter))
+
+```
 
 `legs()`函数创建反映航程的腿的起点和终点的点对象对。有了这些对，我们可以创建一个简单的函数`make_leg`，它接受一对`Points`对象，并返回一个具有起点、终点和两点之间距离的`Leg`对象。
 
@@ -432,7 +644,14 @@
 
 `tee()`函数允许我们克隆一个迭代器。这似乎使我们摆脱了必须实现一个序列以便我们可以对数据进行多次遍历的限制。例如，对于一个庞大的数据集，可以按照以下方式编写一个简单的平均值：
 
-[PRE46]
+```py
+def mean(iterator):
+ **it0, it1= tee(iterator,2)
+ **s0= sum(1 for x in it0)
+ **s1= sum(x for x in it1)
+ **return s0/s1
+
+```
 
 这将计算平均值，而不会以任何形式在内存中出现整个数据集。
 

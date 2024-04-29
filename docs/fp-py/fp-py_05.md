@@ -46,13 +46,22 @@ Python 提供了几种第一种高阶函数。我们将在本章中查看这些�
 
 `max()`和`min()`函数有双重作用。它们是应用于集合的简单函数。它们也是高阶函数。我们可以看到它们的默认行为如下：
 
-[PRE0]
+```py
+>>> max(1, 2, 3)
+3
+>>> max((1,2,3,4))
+4
+
+```
 
 这两个函数都将接受无限数量的参数。这些函数也被设计为接受序列或可迭代对象作为唯一参数，并定位该可迭代对象的最大值（或最小值）。
 
 它们还做一些更复杂的事情。假设我们有来自第四章*与集合一起工作*示例中的旅行数据。我们有一个将生成元组序列的函数，如下所示：
 
-[PRE1]
+```py
+(((37.54901619777347, -76.33029518659048), (37.840832, -76.273834), 17.7246), ((37.840832, -76.273834), (38.331501, -76.459503), 30.7382), ((38.331501, -76.459503), (38.845501, -76.537331), 31.0756), ((36.843334, -76.298668), (37.549, -76.331169), 42.3962), ((37.549, -76.331169), (38.330166, -76.458504), 47.2866), ((38.330166, -76.458504), (38.976334, -76.473503), 38.8019))
+
+```
 
 每个`tuple`有三个值：起始位置、结束位置和距离。位置以纬度和经度对的形式给出。东纬是正数，所以这些点位于美国东海岸，大约西经 76°。距离以海里为单位。
 
@@ -66,33 +75,66 @@ Python 提供了几种第一种高阶函数。我们将在本章中查看这些�
 
 为了提供上下文，我们将展示前两种解决方案。以下是一个构建旅程并使用前两种方法来找到最长和最短距离的脚本：
 
-[PRE2]
+```py
+from ch02_ex3 import float_from_pair, lat_lon_kml, limits, haversine, legs
+path= float_from_pair(lat_lon_kml())
+trip= tuple((start, end, round(haversine(start, end),4))for start,end in legs(iter(path)))
+
+```
 
 这一部分根据从 KML 文件中读取的`path`构建的每个`leg`的`haversine`距离创建了`trip`对象作为`tuple`。
 
 一旦我们有了`trip`对象，我们就可以提取距离并计算这些距离的最大值和最小值。代码如下所示：
 
-[PRE3]
+```py
+long, short = max(dist for start,end,dist in trip), min(dist for start,end,dist in trip)
+print(long, short)
+
+```
 
 我们使用了一个生成器函数来从`trip`元组的每个`leg`中提取相关项目。我们不得不重复生成器函数，因为每个生成器表达式只能被消耗一次。
 
 以下是结果：
 
-[PRE4]
+```py
+129.7748 0.1731
+
+```
 
 以下是带有`unwrap(process(wrap()))`模式的版本。我们实际上声明了名为`wrap()`和`unwrap()`的函数，以清楚地说明这种模式的工作原理：
 
-[PRE5]
+```py
+def wrap(leg_iter):
+ **return ((leg[2],leg) for leg in leg_iter)
+
+def unwrap(dist_leg):
+ **distance, leg = dist_leg
+ **return leg
+long, short = unwrap(max(wrap(trip))), unwrap(min(wrap(trip)))
+print(long, short)
+
+```
 
 与之前的版本不同，这个版本定位了具有最长和最短距离的`legs`的所有属性。而不仅仅是提取距离，我们首先将距离放在每个包装的元组中。然后，我们可以使用`min()`和`max()`函数的默认形式来处理包含距离和 leg 详情的两个元组。处理后，我们可以剥离第一个元素，只留下`leg`详情。
 
 结果如下所示：
 
-[PRE6]
+```py
+((27.154167, -80.195663), (29.195168, -81.002998), 129.7748)
+((35.505665, -76.653664), (35.508335, -76.654999), 0.1731)
+
+```
 
 最终且最重要的形式使用了`max()`和`min()`函数的高阶函数特性。我们将首先定义一个`helper`函数，然后使用它来通过执行以下代码片段来将 legs 的集合减少到所需的摘要：
 
-[PRE7]
+```py
+def by_dist(leg):
+ **lat, lon, dist= leg
+ **return dist
+long, short = max(trip, key=by_dist), min(trip, key=by_dist)
+print(long, short)
+
+```
 
 `by_dist()`函数拆分了每个`leg`元组中的三个项目，并返回距离项目。我们将在`max()`和`min()`函数中使用这个函数。
 
@@ -100,7 +142,11 @@ Python 提供了几种第一种高阶函数。我们将在本章中查看这些�
 
 我们可以使用以下内容来帮助概念化`max()`函数如何使用`key`函数：
 
-[PRE8]
+```py
+wrap= ((key(leg),leg) for leg in trip)
+return max(wrap)[1]
+
+```
 
 `max()`和`min()`函数的行为就好像给定的`key`函数被用来将序列中的每个项目包装成一个两元组，处理两元组，然后解构两元组以返回原始值。
 
@@ -112,7 +158,11 @@ Python 提供了 lambda 形式作为简化使用高阶函数的一种方式。la
 
 以下是使用简单的`lambda`表达式作为 key 的示例：
 
-[PRE9]
+```py
+long, short = max(trip, key=lambda leg: leg[2]), min(trip, key=lambda leg: leg[2])
+print(long, short)
+
+```
 
 我们使用的`lambda`将从序列中获得一个项目；在这种情况下，每个 leg 三元组将被传递给`lambda`。`lambda`参数变量`leg`被赋值，表达式`leg[2]`被评估，从三元组中取出距离。
 
@@ -122,11 +172,24 @@ Python 提供了 lambda 形式作为简化使用高阶函数的一种方式。la
 
 我们还可以将 lambda 分配给变量，做法如下：
 
-[PRE10]
+```py
+start= lambda x: x[0]
+end = lambda x: x[1]
+dist = lambda x: x[2]
+
+```
 
 `lambda`是一个`callable`对象，可以像函数一样使用。以下是一个交互提示的示例：
 
-[PRE11]
+```py
+>>> leg = ((27.154167, -80.195663), (29.195168, -81.002998), 129.7748)
+>>> start= lambda x: x[0]
+>>> end  = lambda x: x[1]
+>>> dist = lambda x: x[2]
+>>> dist(leg)
+129.7748
+
+```
 
 Python 为元组的元素分配有意义的名称提供了两种方法：命名元组和一组 lambda。两者是等效的。
 
@@ -134,7 +197,16 @@ Python 为元组的元素分配有意义的名称提供了两种方法：命名�
 
 以下是交互会话的继续：
 
-[PRE12]
+```py
+>>> start(leg)
+(27.154167, -80.195663)
+>>>** 
+>>> lat = lambda x: x[0]
+>>> lon = lambda x: x[1]
+>>> lat(start(leg))
+27.154167
+
+```
 
 lambda 与命名元组相比没有明显的优势。一组`lambda`用于提取字段需要更多的代码行来定义比一个命名元组。另一方面，我们可以使用前缀函数表示法，在函数编程上下文中可能更容易阅读。更重要的是，正如我们将在稍后的`sorted()`示例中看到的，`lambdas`可以比`namedtuple`属性名称更有效地被`sorted()`、`min()`和`max()`使用。
 
@@ -152,19 +224,38 @@ lambda 与命名元组相比没有明显的优势。一组`lambda`用于提取�
 
 我们的第一个例子涉及解析一块文本以获取数字序列。假设我们有以下文本块：
 
-[PRE13]
+```py
+>>> text= """\
+...       2      3      5      7     11     13     17     19     23     29** 
+...      31     37     41     43     47     53     59     61     67     71** 
+...      73     79     83     89     97    101    103    107    109    113** 
+...     127    131    137    139    149    151    157    163    167    173** 
+...     179    181    191    193    197    199    211    223    227    229** 
+... """
+
+```
 
 我们可以使用以下生成器函数重新构造这个文本：
 
-[PRE14]
+```py
+>>> data= list(v for line in text.splitlines() for v in line.split())
+
+```
 
 这将文本分割成行。对于每一行，它将行分割成以空格分隔的单词，并迭代每个结果字符串。结果如下所示：
 
-[PRE15]
+```py
+['2', '3', '5', '7', '11', '13', '17', '19', '23', '29', '31', '37', '41', '43', '47', '53', '59', '61', '67', '71', '73', '79', '83', '89', '97', '101', '103', '107', '109', '113', '127', '131', '137', '139', '149', '151', '157', '163', '167', '173', '179', '181', '191', '193', '197', '199', '211', '223', '227', '229']
+
+```
 
 我们仍然需要将`int()`函数应用于每个`string`值。这就是`map()`函数的优势所在。看一下以下代码片段：
 
-[PRE16]
+```py
+>>> list(map(int,data))
+[2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229]
+
+```
 
 `map()`函数将`int()`函数应用于集合中的每个值。结果是一系列数字而不是一系列字符串。
 
@@ -178,13 +269,19 @@ lambda 与命名元组相比没有明显的优势。一组`lambda`用于提取�
 
 我们可以使用`map()`函数进行这个计算：
 
-[PRE17]
+```py
+map(lambda x: (start(x),end(x),dist(x)*6076.12/5280), trip)
+
+```
 
 我们已经定义了一个`lambda`，它将被`map()`函数应用于航程中的每个航段。`lambda`将使用其他`lambdas`从每个航段中分离起点、终点和英里距离值。它将计算修订后的距离，并从起点、终点和英里距离组装一个新的航段元组。
 
 这与以下生成器表达式完全相同：
 
-[PRE18]
+```py
+((start(x),end(x),dist(x)*6076.12/5280) for x in trip)
+
+```
 
 我们对生成器表达式中的每个项目进行了相同的处理。
 
@@ -194,17 +291,27 @@ lambda 与命名元组相比没有明显的优势。一组`lambda`用于提取�
 
 有时，我们会有两个需要相互对应的数据集合。在第四章，*处理集合*中，我们看到`zip()`函数如何交错两个序列以创建一系列成对。在许多情况下，我们真的想做这样的事情：
 
-[PRE19]
+```py
+map(function, zip(one_iterable, another_iterable))
+
+```
 
 我们正在从两个（或更多）并行可迭代对象创建参数元组，并将函数应用于参数`tuple`。我们也可以这样看待：
 
-[PRE20]
+```py
+(function(x,y) for x,y in zip(one_iterable, another_iterable))
+
+```
 
 在这里，我们用等效的生成器表达式替换了`map()`函数。
 
 我们可能会有将整个事情概括到这样的想法：
 
-[PRE21]
+```py
+def star_map(function, *iterables)
+ **return (function(*args) for args in zip(*iterables))
+
+```
 
 有一个更好的方法已经可用于我们。实际上我们并不需要这些技术。让我们看一个替代方法的具体例子。
 
@@ -212,13 +319,25 @@ lambda 与命名元组相比没有明显的优势。一组`lambda`用于提取�
 
 以下是一个简化版本，使用了`zip()`函数应用于一种特殊类型的可迭代对象：
 
-[PRE22]
+```py
+>>> waypoints= range(4)
+>>> zip(waypoints, waypoints[1:])
+<zip object at 0x101a38c20>
+>>> list(_)
+[(0, 1), (1, 2), (2, 3)]
+
+```
 
 我们创建了一个从单个平面列表中提取的成对序列。每对将有两个相邻的值。`zip()`函数在较短的列表用尽时会正确停止。这种`zip( x, x[1:])`模式只适用于实现的序列和`range()`函数创建的可迭代对象。
 
 我们创建了成对，以便我们可以对每对应用`haversine()`函数来计算路径上两点之间的距离。以下是它在一个步骤序列中的样子：
 
-[PRE23]
+```py
+from ch02_ex3 import lat_lon_kml, float_from_pair, haversine
+path= tuple(float_from_pair(lat_lon_kml()))
+distances1= map( lambda s_e: (s_e[0], s_e[1], haversine(*s_e)), zip(path, path[1:]))
+
+```
 
 我们已经将关键的航路点序列加载到`path`变量中。这是一个有序的纬度-经度对序列。由于我们将使用`zip(path, path[1:])`设计模式，我们必须有一个实现的序列而不是一个简单的可迭代对象。
 
@@ -226,7 +345,10 @@ lambda 与命名元组相比没有明显的优势。一组`lambda`用于提取�
 
 如前所述，我们可以通过使用`map()`函数的一个巧妙特性来简化这个过程，如下所示：
 
-[PRE24]
+```py
+distances2= map(lambda s, e: (s, e, haversine(s, e)), path, path[1:])
+
+```
 
 请注意，我们已经向`map()`函数提供了一个函数和两个可迭代对象。`map()`函数将从每个可迭代对象中取出下一个项目，并将这两个值作为给定函数的参数应用。在这种情况下，给定函数是一个`lambda`，它从起点、终点和距离创建所需的三元组。
 
@@ -238,7 +360,10 @@ lambda 与命名元组相比没有明显的优势。一组`lambda`用于提取�
 
 我们可以将这个应用到我们的行程数据中，以创建超过 50 海里长的腿的子集，如下所示：
 
-[PRE25]
+```py
+long= list(filter(lambda leg: dist(leg) >= 50, trip)))
+
+```
 
 `lambda`谓词对长腿将为`True`，将被传递。短腿将被拒绝。输出是通过这个距离测试的 14 条腿。
 
@@ -246,7 +371,13 @@ lambda 与命名元组相比没有明显的优势。一组`lambda`用于提取�
 
 再举一个简单的例子，看下面的代码片段：
 
-[PRE26]
+```py
+>>> filter(lambda x: x%3==0 or x%5==0, range(10))
+<filter object at 0x101d5de50>
+>>> sum(_)
+23
+
+```
 
 我们定义了一个简单的`lambda`来检查一个数字是否是 3 的倍数或 5 的倍数。我们将这个函数应用到一个可迭代对象`range(10)`上。结果是一个可迭代的数字序列，通过决策规则传递。
 
@@ -254,7 +385,11 @@ lambda 与命名元组相比没有明显的优势。一组`lambda`用于提取�
 
 这也可以通过执行以下代码来使用生成器表达式来完成：
 
-[PRE27]
+```py
+>>> list(x for x in range(10) if x%3==0 or x%5==0)
+[0, 3, 5, 6, 9]
+
+```
 
 我们可以使用以下集合推导符号来形式化这个过程：
 
@@ -264,7 +399,12 @@ lambda 与命名元组相比没有明显的优势。一组`lambda`用于提取�
 
 我们经常希望使用已定义的函数而不是`lambda` `forms`来使用`filter()`函数。以下是重用先前定义的谓词的示例：
 
-[PRE28]
+```py
+>>> from ch01_ex1 import isprimeg
+>>> list(filter(isprimeg, range(100)))
+[2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
+
+```
 
 在这个例子中，我们从另一个模块中导入了一个名为`isprimeg()`的函数。然后我们将这个函数应用到一组值上，以传递素数并拒绝集合中的非素数。
 
@@ -278,7 +418,15 @@ lambda 与命名元组相比没有明显的优势。一组`lambda`用于提取�
 
 以下是我们可以解决这个问题的方法：
 
-[PRE29]
+```py
+from stats import mean, stdev, z
+dist_data = list(map(dist, trip))
+μ_d = mean(dist_data)
+σ_d = stdev(dist_data)
+outlier = lambda leg: z(dist(leg),μ_d,σ_d) > 3
+print("Outliers", list(filter(outlier, trip)))
+
+```
 
 我们将距离函数映射到`trip`集合中的每个`leg`。由于我们将对结果进行几项操作，因此必须实现一个`list`对象。我们不能依赖迭代器，因为第一个函数会消耗它。然后我们可以使用这个提取来计算人口统计学`μ_d`和`σ_d`，即平均值和标准偏差。
 
@@ -296,7 +444,12 @@ lambda 与命名元组相比没有明显的优势。一组`lambda`用于提取�
 
 另一个例子是可变集合对象的`pop()`方法如何对对象进行有状态的更改。以下是使用`pop()`方法的示例：
 
-[PRE30]
+```py
+>>> tail= iter([1, 2, 3, None, 4, 5, 6].pop, None)
+>>> list(tail)
+[6, 5, 4]
+
+```
 
 `tail`变量设置为一个迭代器，该迭代器在列表`[1, 2, 3, None, 4, 5, 6]`上进行遍历，该列表将由`pop()`函数遍历。`pop()`的默认行为是`pop(-1)`，即元素以相反顺序弹出。当找到`sentinel`值时，`iterator`停止返回值。
 
@@ -310,21 +463,35 @@ lambda 与命名元组相比没有明显的优势。一组`lambda`用于提取�
 
 假设我们有来自第四章示例中的旅行数据，*与集合一起工作*。我们有一个函数，它将为`trip`的每个`leg`生成一个包含起点、终点和距离的元组序列。数据如下：
 
-[PRE31]
+```py
+(((37.54901619777347, -76.33029518659048), (37.840832, -76.273834), 17.7246), ((37.840832, -76.273834), (38.331501, -76.459503), 30.7382), ((38.331501, -76.459503), (38.845501, -76.537331), 31.0756), ((36.843334, -76.298668), (37.549, -76.331169), 42.3962), ((37.549, -76.331169), (38.330166, -76.458504), 47.2866), ((38.330166, -76.458504), (38.976334, -76.473503), 38.8019))
+
+```
 
 我们可以看到`sorted()`函数的默认行为，使用以下交互：
 
-[PRE32]
+```py
+>>> sorted(dist(x) for x in trip)
+[0.1731, 0.1898, 1.4235, 4.3155, ... 86.2095, 115.1751, 129.7748]
+
+```
 
 我们使用了一个生成器表达式（`dist(x) for x in trip`）从我们的旅行数据中提取距离。然后对这个可迭代的数字集合进行排序，以获得从 0.17 nm 到 129.77 nm 的距离。
 
 如果我们想要保持原始的三个元组中的`leg`和距离在一起，我们可以让`sorted()`函数应用一个`key()`函数来确定如何对元组进行排序，如下面的代码片段所示：
 
-[PRE33]
+```py
+>>> sorted(trip, key=dist)
+[((35.505665, -76.653664), (35.508335, -76.654999), 0.1731), ((35.028175, -76.682495), (35.031334, -76.682663), 0.1898), ((27.154167, -80.195663), (29.195168, -81.002998), 129.7748)]
+
+```
 
 我们已经对旅行数据进行了排序，使用了一个`dist lambda`来从每个元组中提取距离。`dist`函数如下：
 
-[PRE34]
+```py
+dist = lambda leg: leg[2]
+
+```
 
 这展示了使用简单的`lambda`将复杂的元组分解为组成元素的能力。
 
@@ -360,29 +527,48 @@ Python 的两个内置高阶函数`map()`和`filter()`通常可以处理几乎�
 
 +   `map()`函数：
 
-[PRE35]
+```py
+map(f, C)
+```
 
 +   生成器表达式：
 
-[PRE36]
+```py
+(f(x) for x in C)
+```
 
 +   生成器函数：
 
-[PRE37]
+```py
+def mymap(f, C):
+    for x in C:
+        yield f(x)
+mymap(f, C)
+```
 
 同样，我们有三种将`filter`函数应用于`collection`的方式，它们都是等效的：
 
 +   `filter()`函数：
 
-[PRE38]
+```py
+filter(f, C)
+```
 
 +   生成器表达式：
 
-[PRE39]
+```py
+(x for x in C if f(x))
+```
 
 +   生成器函数：
 
-[PRE40]
+```py
+def myfilter(f, C):
+    for x in C:
+        if f(x):
+            yield x
+myfilter(f, C)
+```
 
 有一些性能差异；`map()`和`filter()`函数最快。更重要的是，有不同类型的扩展适用于这些映射和过滤设计，它们如下：
 
@@ -400,33 +586,59 @@ Python 的两个内置高阶函数`map()`和`filter()`通常可以处理几乎�
 
 我们将使用来自第四章，“处理集合”的旅行数据。以下是一个解包映射的具体示例：
 
-[PRE41]
+```py
+def convert(conversion, trip):
+ **return (conversion(distance) for start, end, distance in trip)
+
+```
 
 这个高阶函数将由我们可以应用于原始数据的转换函数支持，如下所示：
 
-[PRE42]
+```py
+to_miles = lambda nm: nm*5280/6076.12
+to_km = lambda nm: nm*1.852
+to_nm = lambda nm: nm
+
+```
 
 然后可以如下使用该函数提取距离并应用转换函数：
 
-[PRE43]
+```py
+convert(to_miles, trip)
+
+```
 
 当我们解包时，结果将是一系列浮点值。结果如下：
 
-[PRE44]
+```py
+[20.397120559090908, 35.37291511060606, ..., 44.652462240151515]
+
+```
 
 这个`convert()`函数对我们的起点-终点-距离行程数据结构非常具体，因为`for`循环分解了那个三元组。
 
 我们可以构建一个更一般的解决方案，用于在映射设计模式中进行解包。它有点复杂。首先，我们需要像下面的代码片段一样的通用分解函数：
 
-[PRE45]
+```py
+fst= lambda x: x[0]
+snd= lambda x: x[1]
+sel2= lambda x: x[2]
+
+```
 
 我们希望能够表示`f(sel2(s_e_d)) for s_e_d in trip`。这涉及到函数组合；我们正在组合一个像`to_miles()`这样的函数和一个像`sel2()`这样的选择器。我们可以使用另一个 lambda 在 Python 中表示函数组合，如下所示：
 
-[PRE46]
+```py
+to_miles= lambda s_e_d: to_miles(sel2(s_e_d))
+
+```
 
 这给我们一个更长但更一般的解包版本，如下所示：
 
-[PRE47]
+```py
+to_miles(s_e_d) for s_e_d in trip
+
+```
 
 虽然这个第二个版本有点更一般化，但似乎并不是特别有用。然而，当与特别复杂的元组一起使用时，它可能会很方便。
 
@@ -442,23 +654,40 @@ Python 的两个内置高阶函数`map()`和`filter()`通常可以处理几乎�
 
 这是第四章*处理集合*中显示的示例的一部分，用于从点的路径创建行程数据。代码如下：
 
-[PRE48]
+```py
+from ch02_ex3 import float_from_pair, lat_lon_kml, limits, haversine, legs
+path= float_from_pair(lat_lon_kml())
+trip= tuple((start, end, round(haversine(start, end),4)) for start,end in legs(iter(path)))
+
+```
 
 我们可以稍微修改这个来创建一个将`wrapping`与其他函数分离的高阶函数。我们可以定义一个这样的函数：
 
-[PRE49]
+```py
+def cons_distance(distance, legs_iter):
+ **return ((start, end, round(distance(start,end),4)) for start, end in legs_iter)
+
+```
 
 这个函数将每个`leg`分解为两个变量，`start`和`end`。这些将与给定的`distance()`函数一起用于计算点之间的距离。结果将构建一个更复杂的三元组，其中包括原始的两个`leg`，以及计算出的结果。
 
 然后，我们可以重写我们的行程分配，应用`haversine()`函数来计算距离，如下所示：
 
-[PRE50]
+```py
+path= float_from_pair(lat_lon_kml())
+trip2= tuple(cons_distance(haversine, legs(iter(path))))
+
+```
 
 我们用高阶函数`cons_distance()`替换了一个生成器表达式。这个函数不仅接受一个函数作为参数，还返回一个生成器表达式。
 
 这个稍微不同的表述如下：
 
-[PRE51]
+```py
+def cons_distance3(distance, legs_iter):
+ **return ( leg+(round(distance(*leg),4),) for leg in legs_iter)
+
+```
 
 这个版本使得从旧对象构建新对象的过程更加清晰。我们正在迭代行程的各个部分。我们正在计算`leg`上的距离。我们正在用`leg`和距离连接起来构建新的结构。
 
@@ -472,33 +701,58 @@ Python 的两个内置高阶函数`map()`和`filter()`通常可以处理几乎�
 
 假设我们有一块文本，我们想将其转换为数字的平面序列。文本如下所示：
 
-[PRE52]
+```py
+text= """\
+ **2      3      5      7     11     13     17     19     23     29
+ **31     37     41     43     47     53     59     61     67     71
+ **73     79     83     89     97    101    103    107    109    113
+ **127    131    137    139    149    151    157    163    167    173
+ **179    181    191    193    197    199    211    223    227    229
+"""
+
+```
 
 每行是一个 10 个数字的块。我们需要解除行以创建数字的平面序列。
 
 这是一个两部分生成器函数，如下所示：
 
-[PRE53]
+```py
+data= list(v for line in text.splitlines() for v in line.split())
+
+```
 
 这将把文本分割成行，并遍历每一行。它将把每一行分割成单词，并遍历每一个单词。这样的输出是一个字符串列表，如下所示：
 
-[PRE54]
+```py
+['2', '3', '5', '7', '11', '13', '17', '19', '23', '29', '31', '37', '41', '43', '47', '53', '59', '61', '67', '71', '73', '79', '83', '89', '97', '101', '103', '107', '109', '113', '127', '131', '137', '139', '149', '151', '157', '163', '167', '173', '179', '181', '191', '193', '197', '199', '211', '223', '227', '229']
+
+```
 
 要将字符串转换为数字，我们必须应用转换函数，并解开其原始格式的阻塞结构，使用以下代码片段：
 
-[PRE55]
+```py
+def numbers_from_rows(conversion, text):
+ **return (conversion(v) for line in text.splitlines() for v in line.split())
+
+```
 
 此函数具有`conversion`参数，该参数是应用于将被发出的每个值的函数。这些值是通过使用上面显示的算法进行扁平化而创建的。
 
 我们可以在以下类型的表达式中使用`numbers_from_rows（）`函数：
 
-[PRE56]
+```py
+print(list(numbers_from_rows(float, text)))
+
+```
 
 在这里，我们使用内置的`float（）`从文本块中创建一个`浮点数`值列表。
 
 我们有许多选择，可以使用混合高阶函数和生成器表达式。例如，我们可以将其表示如下：
 
-[PRE57]
+```py
+map(float, v for line in text.splitlines() for v in line.split())
+
+```
 
 如果这有助于我们理解算法的整体结构，那可能会有所帮助。这个原则被称为**分块**；具有有意义名称的函数的细节可以被抽象化，我们可以在新的上下文中使用该函数。虽然我们经常使用高阶函数，但有时生成器表达式可能更清晰。
 
@@ -508,25 +762,46 @@ Python 的两个内置高阶函数`map()`和`filter()`通常可以处理几乎�
 
 在第四章，“处理集合”中，我们看了算法的结构。我们可以将过滤器与结构算法轻松地合并为单个复杂函数。以下是我们首选函数的版本，用于对可迭代对象的输出进行分组：
 
-[PRE58]
+```py
+def group_by_iter(n, iterable):
+ **row= tuple(next(iterable) for i in range(n))
+ **while row:
+ **yield row
+ **row= tuple(next(iterable) for i in range(n))
+
+```
 
 这将尝试从可迭代对象中获取`n`个项目的元组。如果元组中有任何项目，则它们将作为结果可迭代对象的一部分产生。原则上，该函数然后对原始可迭代对象中剩余的项目进行递归操作。由于递归在 Python 中相对低效，我们已将其优化为显式的`while`循环。
 
 我们可以按以下方式使用此函数：
 
-[PRE59]
+```py
+ **group_by_iter(7, filter( lambda x: x%3==0 or x%5==0, range(100)))
+
+```
 
 这将对由`range（）`函数创建的可迭代对象应用`filter（）`函数的结果进行分组。
 
 我们可以将分组和过滤合并为一个单一函数，在单个函数体中执行这两个操作。对`group_by_iter（）`的修改如下：
 
-[PRE60]
+```py
+def group_filter_iter(n, predicate, iterable):
+ **data = filter(predicate, iterable)
+ **row= tuple(next(data) for i in range(n))
+ **while row:
+ **yield row
+ **row= tuple(next(data) for i in range(n))
+
+```
 
 此函数将过滤谓词函数应用于源可迭代对象。由于过滤器输出本身是非严格可迭代对象，因此`data`变量不会提前计算；数据的值将根据需要创建。这个函数的大部分与上面显示的版本相同。
 
 我们可以稍微简化我们使用此函数的上下文，如下所示：
 
-[PRE61]
+```py
+group_filter_iter(7, lambda x: x%3==0 or x%5==0, range(1,100))
+
+```
 
 在这里，我们应用了过滤谓词，并将结果分组在一个函数调用中。在`filter()`函数的情况下，将过滤器与其他处理一起应用很少是一个明显的优势。似乎一个单独的、可见的`filter()`函数比一个组合函数更有帮助。
 
@@ -560,7 +835,12 @@ Python 的两个内置高阶函数`map()`和`filter()`通常可以处理几乎�
 
 我们可以定义一个函数如下：
 
-[PRE62]
+```py
+def first(predicate, collection):
+ **for x in collection:
+ **if predicate(x): return x
+
+```
 
 我们已经遍历了`collection`，应用了给定的谓词函数。如果谓词为`True`，我们将返回相关的值。如果我们耗尽了`collection`，将返回`None`的默认值。
 
@@ -568,7 +848,15 @@ Python 的两个内置高阶函数`map()`和`filter()`通常可以处理几乎�
 
 这可以作为一个辅助函数，用于确定一个数字是否是质数。以下是一个测试数字是否为质数的函数：
 
-[PRE63]
+```py
+import math
+def isprimeh(x):
+ **if x == 2: return True
+ **if x % 2 == 0: return False
+ **factor= first( lambda n: x%n==0, range(3,int(math.sqrt(x)+.5)+1,2))
+ **return factor is None
+
+```
 
 这个函数处理了关于数字 2 是质数以及每个其他偶数是合数的一些边缘情况。然后，它使用上面定义的`first()`函数来定位给定集合中的第一个因子。
 
@@ -576,7 +864,15 @@ Python 的两个内置高阶函数`map()`和`filter()`通常可以处理几乎�
 
 我们可以做类似的事情来处理数据异常。以下是`map()`函数的一个版本，它还过滤了不良数据：
 
-[PRE64]
+```py
+def map_not_none(function, iterable):
+ **for x in iterable:
+ **try:
+ **yield function(x)
+ **except Exception as e:
+ **pass # print(e)
+
+```
 
 这个函数遍历可迭代对象中的项目。它尝试将函数应用于项目；如果没有引发异常，则产生新值。如果引发异常，则默默地丢弃有问题的值。
 
@@ -584,7 +880,10 @@ Python 的两个内置高阶函数`map()`和`filter()`通常可以处理几乎�
 
 我们可以使用`map()`函数将`非 None`值映射为以下形式：
 
-[PRE65]
+```py
+data = map_not_none(int, some_source)
+
+```
 
 我们将`int()`函数应用于`some_source`中的每个值。当`some_source`参数是一个字符串的可迭代集合时，这可以是一个拒绝不表示数字的`字符串`的方便方法。
 
@@ -596,7 +895,15 @@ Python 的两个内置高阶函数`map()`和`filter()`通常可以处理几乎�
 
 为了强调这一点，考虑以下类：
 
-[PRE66]
+```py
+from collections.abc import Callable
+class NullAware(Callable):
+ **def __init__(self, some_func):
+ **self.some_func= some_func
+ **def __call__(self, arg):
+ **return None if arg is None else self.some_func(arg)
+
+```
 
 这个类创建了一个名为`NullAware()`的函数，它是一个高阶函数，用于创建一个新的函数。当我们评估`NullAware(math.log)`表达式时，我们正在创建一个可以应用于参数值的新函数。`__init__()`方法将保存给定的函数在结果对象中。
 
@@ -604,15 +911,29 @@ Python 的两个内置高阶函数`map()`和`filter()`通常可以处理几乎�
 
 常见的方法是创建新函数并将其保存以备将来使用，方法是给它分配一个名称，如下所示：
 
-[PRE67]
+```py
+null_log_scale= NullAware(math.log)
+
+```
 
 这将创建一个新的函数并分配名称`null_log_scale()`。然后我们可以在另一个上下文中使用该函数。看一下以下示例：
 
-[PRE68]
+```py
+>>> some_data = [10, 100, None, 50, 60]
+>>> scaled = map(null_log_scale, some_data)
+>>> list(scaled)
+[2.302585092994046, 4.605170185988092, None, 3.912023005428146, 4.0943445622221]
+
+```
 
 一个不太常见的方法是在一个表达式中创建并使用发出的函数，如下所示：
 
-[PRE69]
+```py
+>>> scaled= map(NullAware( math.log ), some_data)
+>>> list(scaled)
+[2.302585092994046, 4.605170185988092, None, 3.912023005428146, 4.0943445622221]
+
+```
 
 对`NullAware( math.log )`的评估创建了一个函数。然后，这个匿名函数被`map()`函数用于处理一个可迭代的`some_data`。
 
@@ -626,7 +947,17 @@ Python 的两个内置高阶函数`map()`和`filter()`通常可以处理几乎�
 
 我们将回到上面显示的`sum_filter_f()`复合函数。这是一个基于`Callable`类定义构建的版本：
 
-[PRE70]
+```py
+from collections.abc import Callable
+class Sum_Filter(Callable):
+ **__slots__ = ["filter", "function"]
+ **def __init__(self, filter, function):
+ **self.filter= filter
+ **self.function= function
+ **def __call__(self, iterable):
+ **return sum(self.function(x) for x in iterable ifself.filter(x))
+
+```
 
 我们已经导入了抽象超类`Callable`，并将其用作我们类的基础。我们在这个对象中定义了确切的两个插槽；这对我们使用函数作为有状态对象施加了一些限制。这并不会阻止对生成的对象进行所有修改，但它限制了我们只能使用两个属性。尝试添加属性会导致异常。
 
@@ -634,7 +965,10 @@ Python 的两个内置高阶函数`map()`和`filter()`通常可以处理几乎�
 
 这个类的一个实例是一个具有两个策略函数的函数。我们可以按照以下方式创建一个实例：
 
-[PRE71]
+```py
+count_not_none = Sum_Filter(lambda x: x is not None, lambda x: 1)
+
+```
 
 我们构建了一个名为`count_not_none()`的函数，用于计算序列中的`non-None`值。它通过使用`lambda`传递`non-None`值和一个使用常量 1 而不是实际值的函数来实现这一点。
 
@@ -642,11 +976,17 @@ Python 的两个内置高阶函数`map()`和`filter()`通常可以处理几乎�
 
 我们可以这样使用`count_not_None()`函数：
 
-[PRE72]
+```py
+N= count_not_none(data)
+
+```
 
 不使用`sum_filter_f()`函数：
 
-[PRE73]
+```py
+N= sum_filter_f(valid, count_, data)
+
+```
 
 基于`Callable`的`count_not_none()`函数不需要像传统函数那样多的参数。这使得它表面上更容易使用。然而，这也可能使它有些更加晦涩，因为函数工作的细节在源代码的两个地方：一个是函数作为`Callable`类的实例创建的地方，另一个是函数被使用的地方。
 

@@ -291,7 +291,7 @@ Traceback (most recent call last):
 return _compile(pattern, flags)
   File "/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/re.py", line 242, in _compile
 raise error, v # invalid expression
-sre_constants.error: **look-behind requires fixed-width pattern**
+sre_constants.error: **look-behind requires fixed-width pattern
 
 ```
 

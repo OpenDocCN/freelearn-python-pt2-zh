@@ -112,15 +112,15 @@ Python 使许多内部特性直接可用于我们的应用程序。这意味着�
    class Friend(Contact):
        def __init__(self, name, email, phone):
            self.name = name
-           **self.email = email**
+           **self.email = email
            self.phone = phone
 ```
 
 任何命令行输入或输出都以以下形式编写：
 
 ```py
-**>>> e = EmailableContact("John Smith", "jsmith@example.net")**
-**>>> Contact.all_contacts**
+>>> e = EmailableContact("John Smith", "jsmith@example.net")
+>>> Contact.all_contacts
 
 ```
 

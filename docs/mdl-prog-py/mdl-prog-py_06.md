@@ -81,7 +81,7 @@ if status != 0:
 想象一下，你决定分享一个名为`encryption`的模块，它使用公钥/私钥对执行文本加密。然后，另一个程序员将此模块复制到他们的程序中。然而，当他们尝试使用它时，他们的程序崩溃，并显示以下错误消息：
 
 ```py
-**ImportError: No module named 'hash_utils'**
+ImportError: No module named 'hash_utils'
 
 ```
 
@@ -126,7 +126,7 @@ from . import hash_utils
 想象一下，我们的新的`encryptionlib`包利用了我们在上一章中遇到的`NumPy`库。也许`hash_utils`导入了一些来自 NumPy 的函数，并使用它们来快速计算数字列表的二进制哈希。即使 NumPy 作为原始程序的一部分安装了，你也不能假设新程序也是如此：如果你将`encryptionlib`包安装到一个新程序中并运行它，最终会出现以下错误：
 
 ```py
-**ImportError: No module named 'numpy'**
+ImportError: No module named 'numpy'
 
 ```
 
@@ -344,11 +344,11 @@ print(etree.tostring(movies, pretty_print=True))
 这将打印出一个包含三部经典电影信息的 XML 格式文档：
 
 ```py
-**<movie>**
- **<movie year="1939">The Wizard of Oz</movie>**
- **<movie year="1964">Mary Poppins</movie>**
- **<movie year="1974">Chinatown</movie>**
-**</movie>**
+<movie>
+ **<movie year="1939">The Wizard of Oz</movie>
+ **<movie year="1964">Mary Poppins</movie>
+ **<movie year="1974">Chinatown</movie>
+</movie>
 
 ```
 
@@ -405,8 +405,8 @@ print(q)
 我们还希望能够知道一个数量代表的是什么类型的值，例如：
 
 ```py
-**>>> print(quantities.kind(q))**
-**weight**
+>>> print(quantities.kind(q))
+weight
 
 ```
 
@@ -415,34 +415,34 @@ print(q)
 我们还可以获取数量的值和单位：
 
 ```py
-**>>> print(quantities.value(q))**
-**3**
-**>>> print(quantities.units(q))**
-**tablespoon**
+>>> print(quantities.value(q))
+3
+>>> print(quantities.units(q))
+tablespoon
 
 ```
 
 我们还需要能够将一个数量转换为不同的单位。例如：
 
 ```py
-**>>> q = quantities.new(2.5, "cups")**
-**>>> print(quantities.convert(q, "liter"))**
-**0.59147059125 liters**
+>>> q = quantities.new(2.5, "cups")
+>>> print(quantities.convert(q, "liter"))
+0.59147059125 liters
 
 ```
 
 最后，我们希望能够获得我们的图书馆支持的所有单位种类的列表以及每种单位的个体单位：
 
 ```py
-**>>> for kind in quantities.supported_kinds():**
-**>>>     for unit in quantities.supported_units(kind):**
-**>>>         print(kind, unit)**
-**weight gram**
-**weight kilogram**
-**weight ounce**
-**weight pound**
-**length millimeter**
-**...**
+>>> for kind in quantities.supported_kinds():
+>>>     for unit in quantities.supported_units(kind):
+>>>         print(kind, unit)
+weight gram
+weight kilogram
+weight ounce
+weight pound
+length millimeter
+...
 
 ```
 
@@ -506,9 +506,9 @@ print(q.value, q.units)
 确保`def`语句的缩进与之前的`def __init__()`语句相同，这样它就是我们正在创建的类的一部分。这将允许我们做一些如下的事情：
 
 ```py
-**>>> q = Quantity(1, "inch")**
-**>>> print(q)**
-**1 inch**
+>>> q = Quantity(1, "inch")
+>>> print(q)
+1 inch
 
 ```
 
@@ -814,7 +814,7 @@ from .interface import *
 现在我们已经编写了代码（或者下载了代码），让我们来看看这个包是如何工作的。在终端窗口中，将当前目录设置为包含您的`quantities`包目录的文件夹，并键入`python`以启动 Python 解释器。然后，输入以下内容：
 
 ```py
-**>>> import quantities**
+>>> import quantities
 
 ```
 
@@ -823,7 +823,7 @@ from .interface import *
 接下来，我们必须通过提供我们想要使用的区域设置来初始化我们的`quantities`包：
 
 ```py
-**>>> quantities.init("international")**
+>>> quantities.init("international")
 
 ```
 
@@ -832,9 +832,9 @@ from .interface import *
 让我们创建一个简单的数量，然后要求 Python 解释器显示它：
 
 ```py
-**>>> q = quantities.new(24, "km")**
-**>>>> print(q)**
-**24 kilometre**
+>>> q = quantities.new(24, "km")
+>>>> print(q)
+24 kilometre
 
 ```
 
@@ -843,8 +843,8 @@ from .interface import *
 让我们尝试将这个单位转换成英寸：
 
 ```py
-**>>> print(quantities.convert(q, "inch"))**
-**944881.8897637795 inch**
+>>> print(quantities.convert(q, "inch"))
+944881.8897637795 inch
 
 ```
 

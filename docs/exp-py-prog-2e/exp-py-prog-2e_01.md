@@ -94,11 +94,21 @@ Python 3 引入的破坏性更改通常可以分为几个组：
 
 使现有代码难以运行的语法更改是最容易发现的——它们将导致代码根本无法运行。具有新语法元素的 Python 3 代码将无法在 Python 2 上运行，反之亦然。被移除的元素将使 Python 2 代码与 Python 3 明显不兼容。具有这些问题的运行代码将立即导致解释器失败，引发`SyntaxError`异常。以下是一个破损脚本的示例，其中恰好有两个语句，由于语法错误，都不会被执行：
 
-[PRE0]
+```py
+print("hello world")
+print "goodbye python2"
+```
 
 在 Python 3 上运行时的实际结果如下：
 
-[PRE1]
+```py
+$ python3 script.py
+ **File "script.py", line 2
+ **print "goodbye python2"
+ **^
+SyntaxError: Missing parentheses in call to 'print'
+
+```
 
 这样的差异列表有点长，而且，任何新的 Python 3.x 版本可能会不时地添加新的语法元素，这些元素会在早期的 Python 版本（甚至在同一个 3.x 分支上）上引发错误。其中最重要的部分在第二章和第三章中都有所涵盖，因此这里没有必要列出所有这些内容。
 
@@ -174,11 +184,22 @@ Python 表示数据类型和集合的变化需要开发人员在尝试保持兼�
 
 最基本的是 Python 的`__future__`模块。它将一些新版本 Python 的功能移回到旧版本，并采用 import 语句的形式：
 
-[PRE2]
+```py
+from __future__ import <feature>
+```
 
 `future`语句提供的功能是与语法相关的元素，不能通过其他方式轻松处理。此语句仅影响其使用的模块。以下是 Python 2.7 交互会话的示例，它从 Python 3.0 中引入了 Unicode 文字：
 
-[PRE3]
+```py
+Python 2.7.10 (default, May 23 2015, 09:40:32) [MSC v.1500 32 bit (Intel)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> type("foo")  # old literals
+<type 'str'>
+>>> from __future__ import unicode_literals
+>>> type("foo")  # now is unicode
+<type 'unicode'>
+
+```
 
 以下是所有可用的`__future__`语句选项的列表，关心 2/3 兼容性的开发人员应该知道：
 
@@ -194,7 +215,22 @@ Python 表示数据类型和集合的变化需要开发人员在尝试保持兼�
 
 在某些情况下，开发人员可能不希望在一些小包中包含额外的依赖项。一个常见的做法是额外的模块，它收集所有兼容性代码，通常命名为`compat.py`。以下是从`python-gmaps`项目（[`github.com/swistakm/python-gmaps`](https://github.com/swistakm/python-gmaps)）中获取的这样一个`compat`模块的示例：
 
-[PRE4]
+```py
+# -*- coding: utf-8 -*-
+import sys
+
+if sys.version_info < (3, 0, 0):
+    import urlparse  # noqa
+
+    def is_string(s):
+        return isinstance(s, basestring)
+
+else:
+    from urllib import parse as urlparse  # noqa
+
+    def is_string(s):
+        return isinstance(s, str)
+```
 
 即使在依赖于 Six 进行 2/3 兼容性的项目中，这样的`compat.py`模块也很受欢迎，因为这是一种非常方便的方式来存储处理与用作依赖项的不同版本的包的兼容性的代码。
 
@@ -320,15 +356,63 @@ PyPy 与 CPython 实现相比的主要区别是：
 
 由于这个事实，PyPI 上的许多软件包也可以作为系统软件包管理工具（如`apt-get`（Debian，Ubuntu），`rpm`（Red Hat Linux）或`emerge`（Gentoo））管理的本地软件包。尽管应该记住，可用库的列表非常有限，而且与 PyPI 相比，它们大多已经过时。这就是为什么`pip`应该始终被用来获取最新版本的新软件包，作为**PyPA**（**Python Packaging Authority**）的建议。尽管它是 CPython 2.7.9 和 3.4 版本的独立软件包，但它默认随每个新版本捆绑发布。安装新软件包就像这样简单：
 
-[PRE5]
+```py
+pip install <package-name>
+
+```
 
 除其他功能外，`pip`允许强制使用特定版本的软件包（使用`pip install package-name==version`语法）并升级到最新可用版本（使用`--upgrade`开关）。本书中介绍的大多数命令行工具的完整使用说明可以通过简单地运行带有`-h`或`--help`开关的命令来轻松获得，但这里有一个示例会话，演示了最常用的选项：
 
-[PRE6]
+```py
+$ pip show pip
+---
+Metadata-Version: 2.0
+Name: pip
+Version: 7.1.2
+Summary: The PyPA recommended tool for installing Python packages.
+Home-page: https://pip.pypa.io/
+Author: The pip developers
+Author-email: python-virtualenv@groups.google.com
+License: MIT
+Location: /usr/lib/python2.7/site-packages
+Requires:
+
+$ pip install 'pip<7.0.0'
+Collecting pip<7.0.0
+ **Downloading pip-6.1.1-py2.py3-none-any.whl (1.1MB)
+ **100% |████████████████████████████████| 1.1MB 242kB/s
+Installing collected packages: pip
+ **Found existing installation: pip 7.1.2
+ **Uninstalling pip-7.1.2:
+ **Successfully uninstalled pip-7.1.2
+Successfully installed pip-6.1.1
+You are using pip version 6.1.1, however version 7.1.2 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.
+
+$ pip install --upgrade pip
+You are using pip version 6.1.1, however version 7.1.2 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.
+Collecting pip
+ **Using cached pip-7.1.2-py2.py3-none-any.whl
+Installing collected packages: pip
+ **Found existing installation: pip 6.1.1
+ **Uninstalling pip-6.1.1:
+ **Successfully uninstalled pip-6.1.1
+Successfully installed pip-7.1.2
+
+```
 
 在某些情况下，`pip`可能不是默认可用的。从 Python 3.4 版本开始（也是 Python 2.7.9），它始终可以使用`ensurepip`模块进行引导：
 
-[PRE7]
+```py
+$ python -m ensurepip
+Ignoring indexes: https://pypi.python.org/simple
+Requirement already satisfied (use --upgrade to upgrade): setuptools in /usr/lib/python2.7/site-packages
+Collecting pip
+Installing collected packages: pip
+Successfully installed pip-6.1.1
+
+```
 
 有关如何为旧版本的 Python 安装 pip 的最新信息，请访问项目的文档页面[`pip.pypa.io/en/stable/installing/`](https://pip.pypa.io/en/stable/installing/)。
 
@@ -336,7 +420,10 @@ PyPy 与 CPython 实现相比的主要区别是：
 
 `pip`可用于安装系统范围的软件包。在基于 Unix 和 Linux 的系统上，这将需要超级用户权限，因此实际调用将是：
 
-[PRE8]
+```py
+sudo pip install <package-name>
+
+```
 
 请注意，这在 Windows 上不是必需的，因为它默认不提供 Python 解释器，通常由用户手动安装 Python 而不需要超级用户权限。
 
@@ -368,7 +455,10 @@ Virtualenv 是这个列表中迄今为止最受欢迎的工具。它的名字简
 
 一旦安装完成，可以使用以下命令创建一个新的虚拟环境：
 
-[PRE9]
+```py
+virtualenv ENV
+
+```
 
 在这里，`ENV`应该被新环境的期望名称替换。这将在当前工作目录路径中创建一个新的`ENV`目录。它将包含几个新的目录：
 
@@ -378,19 +468,48 @@ Virtualenv 是这个列表中迄今为止最受欢迎的工具。它的名字简
 
 一旦创建了新的环境，就需要在当前 shell 会话中使用 Unix 的 source 命令激活它：
 
-[PRE10]
+```py
+source ENV/bin/activate
+
+```
 
 这会通过影响其环境变量改变当前 shell 会话的状态。为了让用户意识到他已经激活了虚拟环境，它会通过在其开头添加`(ENV)`字符串来改变 shell 提示。以下是一个创建新环境并激活它的示例会话：
 
-[PRE11]
+```py
+$ virtualenv example
+New python executable in example/bin/python
+Installing setuptools, pip, wheel...done.
+$ source example/bin/activate
+(example)$ deactivate
+$** 
+
+```
 
 关于`virtualenv`的重要事情是，它完全依赖于存储在文件系统上的状态。它不提供任何额外的能力来跟踪应该安装在其中的包。这些虚拟环境不可移植，不应该移动到另一个系统/机器上。这意味着需要为每个新的应用部署从头开始创建新的虚拟环境。因此，`virtualenv`用户使用的一个良好的实践是将所有项目依赖项存储在`requirements.txt`文件中（这是命名约定），如下面的代码所示：
 
-[PRE12]
+```py
+# lines followed by hash (#) are treated as a comments
+
+# strict version names are best for reproducibility
+eventlet==0.17.4
+graceful==0.1.1
+
+# for projects that are well tested with different
+# dependency versions the relative version specifiers 
+# are acceptable too
+falcon>=0.3.0,<0.5.0
+
+# packages without versions should be avoided unless
+# latest release is always required/desired
+pytz
+```
 
 有了这样的文件，所有依赖项都可以很容易地使用`pip`进行安装，因为它接受 requirements 文件作为其输出。
 
-[PRE13]
+```py
+pip install -r requirements.txt
+
+```
 
 需要记住的是，要求文件并不总是理想的解决方案，因为它并没有定义确切的依赖项列表，只有要安装的依赖项。因此，整个项目在开发环境中可以正常工作，但如果要求文件过时并且不反映环境的实际状态，它将无法在其他环境中启动。当然，有`pip freeze`命令可以打印当前环境中的所有软件包，但不应该盲目使用它——它会输出所有内容，甚至是仅用于测试而不在项目中使用的软件包。书中提到的另一个工具`buildout`解决了这个问题，因此对于一些开发团队来说，它可能是更好的选择。
 
@@ -402,7 +521,10 @@ Virtualenv 是这个列表中迄今为止最受欢迎的工具。它的名字简
 
 虚拟环境很快在社区内得到了很好的建立，并成为了一个受欢迎的工具。从 Python 3.3 开始，创建虚拟环境得到了标准库的支持。使用方式几乎与 Virtualenv 相同，尽管命令行选项的命名约定有很大不同。新的`venv`模块提供了一个`pyvenv`脚本来创建一个新的虚拟环境。
 
-[PRE14]
+```py
+pyvenv ENV
+
+```
 
 这里，`ENV`应该被新环境的期望名称所替换。此外，现在可以直接从 Python 代码中创建新环境，因为所有功能都是从内置的`venv`模块中公开的。其他用法和实现细节，如环境目录的结构和激活/停用脚本，大部分与 Virtualenv 相同，因此迁移到这个解决方案应该是简单而无痛的。
 
@@ -472,15 +594,24 @@ Vagrant 中提供的最重要的配置是一个名为`Vagrantfile`的单个文�
 
 `Vagrantfile`的语法语言是 Ruby。示例配置文件提供了一个很好的模板来启动项目，并且有很好的文档，因此不需要了解这种语言。可以使用一个命令创建模板配置：
 
-[PRE15]
+```py
+vagrant init
+
+```
 
 这将在当前工作目录中创建一个名为`Vagrantfile`的新文件。通常最好将此文件存储在相关项目源的根目录。这个文件已经是一个有效的配置，将使用默认提供者和基础盒子镜像创建一个新的虚拟机。默认情况下不启用任何配置。添加了`Vagrantfile`后，可以使用以下命令启动新的虚拟机：
 
-[PRE16]
+```py
+vagrant up
+
+```
 
 初始启动可能需要几分钟，因为实际的盒子必须从网络上下载。每次启动已经存在的虚拟机时，还会有一些初始化过程，这可能需要一些时间，具体取决于所使用的提供者、盒子和系统性能。通常，这只需要几秒钟。一旦新的 Vagrant 环境启动并运行，开发人员可以使用以下简写连接到 SSH：
 
-[PRE17]
+```py
+vagrant ssh
+
+```
 
 这可以在`Vagrantfile`位置下的项目源树中的任何位置完成。为了开发者的方便起见，我们将在上面的目录中查找配置文件，并将其与相关的 VM 实例进行匹配。然后，它建立安全外壳连接，因此开发环境可以像任何普通的远程机器一样进行交互。唯一的区别是整个项目源树（根定义为`Vagrantfile`位置）在 VM 的文件系统下的`/vagrant/`下是可用的。
 
@@ -510,7 +641,27 @@ Python 程序员在交互式解释器会话中花费了大量时间。它非常�
 
 如果您没有这样的文件，可以轻松创建一个。以下是一个添加了使用`<Tab>`键和历史记录的最简单启动文件的示例：
 
-[PRE18]
+```py
+# python startup file
+import readline
+import rlcompleter
+import atexit
+import os
+
+# tab completion
+readline.parse_and_bind('tab: complete')
+
+# history file
+histfile = os.path.join(os.environ['HOME'], '.pythonhistory')
+try:
+    readline.read_history_file(histfile)
+
+except IOError:
+    pass
+
+atexit.register(readline.write_history_file, histfile)
+del os, histfile, readline, rlcompleter
+```
 
 在您的主目录中创建此文件，并将其命名为`.pythonstartup`。然后，在环境中添加一个`PYTHONSTARTUP`变量，使用您文件的路径：
 
@@ -518,7 +669,10 @@ Python 程序员在交互式解释器会话中花费了大量时间。它非常�
 
 如果您正在运行 Linux 或 Mac OS X，最简单的方法是在您的主文件夹中创建启动脚本。然后，将其链接到设置为系统 shell 启动脚本的`PYTHONSTARTUP`环境变量。例如，Bash 和 Korn shells 使用`.profile`文件，您可以插入一行如下：
 
-[PRE19]
+```py
+export PYTHONSTARTUP=~/.pythonstartup
+
+```
 
 如果您正在运行 Windows，可以在系统首选项中以管理员身份设置新的环境变量，并将脚本保存在一个常用位置，而不是使用特定的用户位置。
 
@@ -564,11 +718,17 @@ ptpython（[`github.com/jonathanslenders/ptpython/`](https://github.com/jonathan
 
 Python 已经内置了一个名为`pdb`的交互式调试器（参见[`docs.python.org/3/library/pdb.html`](https://docs.python.org/3/library/pdb.html)）。它可以从命令行上调用现有的脚本，因此如果程序异常退出，Python 将进入事后调试：
 
-[PRE20]
+```py
+python -m pdb script.py
+
+```
 
 事后调试虽然有用，但并不涵盖每种情况。它仅在应用程序以某种异常退出时有用。在许多情况下，有错误的代码只是表现异常，但并不会意外退出。在这种情况下，可以使用这个单行习惯用法在特定代码行上设置自定义断点：
 
-[PRE21]
+```py
+import pdb; pdb.set_trace()
+
+```
 
 这将导致 Python 解释器在运行时在此行开始调试会话。
 

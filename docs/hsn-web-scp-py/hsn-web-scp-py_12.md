@@ -212,7 +212,7 @@ FORTRAN
 >>> matchesOne = re.split(r"\W+",sentence)  #split by word, \w (word characters, \W - nonword) >>> print("Regular Split '\W+' found total: ",len(matchesOne ),"\n",matchesOne)  Regular Split '\W+' found total: 43 
 ['Brief', 'information', 'about', 'Jobs', 'in', 'Python', 'Programming', 'and', 'Scripting', 'experience', 'in', 'some', 'language', 'such', 'as', 'Python', 'R', 'MATLAB', 'SAS', 'Mathematica', 'Java', 'C', 'C', 'VB', 'JavaScript', 'or', 'FORTRAN', 'is', 'expected', 'Participants', 'should', 'be', 'comfortable', 'with', 'basic', 'programming', 'concepts', 'like', 'variables', 'loops', 'and', 'functions', ''] >>> matchesTwo = re.split(r"\s",sentence) #split by space
 >>> print("Regular Split '\s' found total: ",len(matchesTwo),"\n", matchesTwo) **Regular Split '\s' found total: 42** 
-**['Brief', 'information', 'about', 'Jobs', 'in', 'Python.', 'Programming', 'and', 'Scripting', 'experience', 'in', 'some', 'language', '(such', 'as', 'Python', 'R,', 'MATLAB,', 'SAS,', 'Mathematica,', 'Java,', 'C,', 'C++,', 'VB,', 'JavaScript', 'or', 'FORTRAN)', 'is', 'expected.', 'Participants', 'should', 'be', 'comfortable', 'with', 'basic', 'programming', 'concepts', 'like', 'variables,', 'loops,', 'and', 'functions.']**
+['Brief', 'information', 'about', 'Jobs', 'in', 'Python.', 'Programming', 'and', 'Scripting', 'experience', 'in', 'some', 'language', '(such', 'as', 'Python', 'R,', 'MATLAB,', 'SAS,', 'Mathematica,', 'Java,', 'C,', 'C++,', 'VB,', 'JavaScript', 'or', 'FORTRAN)', 'is', 'expected.', 'Participants', 'should', 'be', 'comfortable', 'with', 'basic', 'programming', 'concepts', 'like', 'variables,', 'loops,', 'and', 'functions.']
 ```
 
 +   `re.split()`: 这根据模式拆分提供的内容并返回带有结果的列表。还有一个`split()`，它可以与字符串一起使用以使用默认或提供的字符进行分割。它的使用方式与本节中稍早的`splitSentence`类似。
@@ -697,7 +697,7 @@ Blogs URL: 80
 `dataSetBlog`将包含以下标题（URL 部分）。将`set()`方法应用于`dataSetBlog`时，将从`dataSetBlog`返回唯一元素。如下所示，`dataSetBlog`中没有重复的标题：
 
 ```py
-**print**("Blogs Title: ", len(dataSetBlog))
+print**("Blogs Title: ", len(dataSetBlog))
 print("Unique Blog Count: ", len(set(dataSetBlog)))
 print(dataSetBlog)
 #print(set(dataSetBlog)) #returns unique element from List similar to dataSetBlog.

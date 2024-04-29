@@ -46,11 +46,28 @@ Python/C API 通常会随着 Python 的每个版本发布而改变。在大多�
 
 Python 的 C 扩展需要在可用之前编译成共享/动态库，因为显然没有本地的方法可以直接从源代码将 C/C++代码导入 Python。幸运的是，`distutils`和`setuptools`提供了帮助，将编译的扩展定义为模块，因此可以使用`setup.py`脚本处理编译和分发，就像它们是普通的 Python 包一样。这是官方文档中处理带有构建扩展的简单包的`setup.py`脚本的一个示例：
 
-[PRE0]
+```py
+from distutils.core import setup, Extension
+
+module1 = Extension(
+    'demo',
+    sources=['demo.c']
+)
+
+setup(
+    name='PackageName',
+    version='1.0',
+    description='This is a demo package',
+    ext_modules=[module1]
+)
+```
 
 准备好之后，你的分发流程还需要一个额外的步骤：
 
-[PRE1]
+```py
+python setup.py build
+
+```
 
 这将根据`ext_modules`参数编译所有你的扩展，根据`Extension()`调用提供的所有额外编译器设置。将使用的编译器是你的环境的默认编译器。如果要分发源代码分发包，则不需要进行这个编译步骤。在这种情况下，你需要确保目标环境具有所有编译的先决条件，例如编译器、头文件和将链接到二进制文件的其他库（如果你的扩展需要）。有关打包 Python 扩展的更多细节将在*挑战*部分中解释。
 
@@ -112,7 +129,17 @@ Python 提供了非常多样化的内置数据类型。其中一些真正使用�
 
 我们的问题将是找到斐波那契数列的第*n*个数字。很少有人会仅为了这个问题创建编译扩展，但它非常简单，因此它将作为将任何 C 函数连接到 Python/C API 的非常好的示例。我们的唯一目标是清晰和简单，因此我们不会试图提供最有效的解决方案。一旦我们知道这一点，我们在 Python 中实现的斐波那契函数的参考实现如下：
 
-[PRE2]
+```py
+"""Python module that provides fibonacci sequence function"""
+
+def fibonacci(n):
+    """Return nth Fibonacci sequence number computed recursively.
+    """
+    if n < 2:
+        return 1
+    else:
+        return fibonacci(n - 1) + fibonacci(n - 2)
+```
 
 请注意，这是`fibonnaci()`函数的最简单实现之一，可以对其进行许多改进。尽管如此，我们拒绝改进我们的实现（例如使用记忆化模式），因为这不是我们示例的目的。同样地，即使编译后的代码提供了更多的优化可能性，我们在讨论 C 或 Cython 中的实现时也不会优化我们的代码。
 
@@ -124,19 +151,115 @@ Python 提供了非常多样化的内置数据类型。其中一些真正使用�
 
 如前所述，我们将尝试将`fibonacci()`函数移植到 C 并将其作为扩展暴露给 Python 代码。没有与 Python/C API 连接的裸实现，类似于前面的 Python 示例，大致如下：
 
-[PRE3]
+```py
+long long fibonacci(unsigned int n) {
+    if (n < 2) {
+        return 1;
+    } else {
+        return fibonacci(n - 2) + fibonacci(n - 1);
+    }
+}
+```
 
 以下是一个完整、完全功能的扩展的示例，它在编译模块中公开了这个单一函数：
 
-[PRE4]
+```py
+#include <Python.h>
+
+long long fibonacci(unsigned int n) {
+    if (n < 2) {
+        return 1;
+    } else {
+        return fibonacci(n-2) + fibonacci(n-1);
+    }
+}
+
+static PyObject* fibonacci_py(PyObject* self, PyObject* args) {
+    PyObject *result = NULL;
+    long n;
+
+    if (PyArg_ParseTuple(args, "l", &n)) {
+        result = Py_BuildValue("L", fibonacci((unsigned int)n));
+    }
+
+    return result;
+}
+
+static char fibonacci_docs[] =
+    "fibonacci(n): Return nth Fibonacci sequence number "
+    "computed recursively\n";
+
+static PyMethodDef fibonacci_module_methods[] = {
+    {"fibonacci", (PyCFunction)fibonacci_py,
+     METH_VARARGS, fibonacci_docs},
+    {NULL, NULL, 0, NULL}
+};
+
+static struct PyModuleDef fibonacci_module_definition = {
+    PyModuleDef_HEAD_INIT,
+    "fibonacci",
+    "Extension module that provides fibonacci sequence function",
+    -1,
+    fibonacci_module_methods
+};
+
+PyMODINIT_FUNC PyInit_fibonacci(void) {
+    Py_Initialize();
+
+    return PyModule_Create(&fibonacci_module_definition);
+}
+```
 
 前面的例子乍一看可能有点令人不知所措，因为我们不得不添加四倍的代码才能让`fibonacci()` C 函数可以从 Python 中访问。我们稍后会讨论代码的每一部分，所以不用担心。但在我们讨论之前，让我们看看如何将其打包并在 Python 中执行。我们模块的最小`setuptools`配置需要使用`setuptools.Extension`类来指示解释器如何编译我们的扩展：
 
-[PRE5]
+```py
+from setuptools import setup, Extension
+
+setup(
+    name='fibonacci',
+    ext_modules=[
+        Extension('fibonacci', ['fibonacci.c']),
+    ]
+)
+```
 
 扩展的构建过程可以通过 Python 的`setup.py`构建命令来初始化，但也会在包安装时自动执行。以下是在开发模式下安装的结果以及一个简单的交互会话，我们在其中检查和执行我们编译的`fibonacci()`函数：
 
-[PRE6]
+```py
+$ ls -1a
+fibonacci.c
+setup.py
+
+$ pip install -e .
+Obtaining file:///Users/swistakm/dev/book/chapter7
+Installing collected packages: fibonacci
+ **Running setup.py develop for fibonacci
+Successfully installed Fibonacci
+
+$ ls -1ap
+build/
+fibonacci.c
+fibonacci.cpython-35m-darwin.so
+fibonacci.egg-info/
+setup.py
+
+$ python
+Python 3.5.1 (v3.5.1:37a07cee5969, Dec  5 2015, 21:12:44)** 
+[GCC 4.2.1 (Apple Inc. build 5666) (dot 3)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import fibonacci
+>>> help(fibonacci.fibonacci)
+
+Help on built-in function fibonacci in fibonacci:
+
+fibonacci.fibonacci = fibonacci(...)
+ **fibonacci(n): Return nth Fibonacci sequence number computed recursively
+
+>>> [fibonacci.fibonacci(n) for n in range(10)]
+[1, 1, 2, 3, 5, 8, 13, 21, 34, 55]
+>>>** 
+
+```
 
 ### 对 Python/C API 的更详细了解
 
@@ -144,23 +267,46 @@ Python 提供了非常多样化的内置数据类型。其中一些真正使用�
 
 扩展模块以一个包含`Python.h`头文件的单个 C 预处理指令开始：
 
-[PRE7]
+```py
+#include <Python.h>
+```
 
 这将引入整个 Python/C API，并且是您需要包含的一切，以便能够编写您的扩展。在更现实的情况下，您的代码将需要更多的预处理指令，以从 C 标准库函数中获益或集成其他源文件。我们的示例很简单，因此不需要更多的指令。
 
 接下来是我们模块的核心：
 
-[PRE8]
+```py
+long long fibonacci(unsigned int n) {
+    if (n < 2) {
+        return 1;
+    } else {
+        return fibonacci(n - 2) + fibonacci(n - 1);
+    }
+}
+```
 
 前面的`fibonacci()`函数是我们代码中唯一有用的部分。它是纯 C 实现，Python 默认情况下无法理解。我们的示例的其余部分将创建接口层，通过 Python/C API 将其暴露出来。
 
 将此代码暴露给 Python 的第一步是创建与 CPython 解释器兼容的 C 函数。在 Python 中，一切都是对象。这意味着在 Python 中调用的 C 函数也需要返回真正的 Python 对象。Python/C API 提供了`PyObject`类型，每个可调用函数都必须返回指向它的指针。我们函数的签名是：
 
-[PRE9]
+```py
+static PyObject* fibonacci_py(PyObject* self, PyObject* args)s
+```
 
 请注意，前面的签名并未指定确切的参数列表，而只是`PyObject* args`，它将保存指向包含提供的值元组的结构的指针。参数列表的实际验证必须在函数体内执行，这正是`fibonacci_py()`所做的。它解析`args`参数列表，假设它是单个`unsigned int`类型，并将该值用作`fibonacci()`函数的参数来检索斐波那契数列元素：
 
-[PRE10]
+```py
+static PyObject* fibonacci_py(PyObject* self, PyObject* args) {
+    PyObject *result = NULL;
+    long n;
+
+    if (PyArg_ParseTuple(args, "l", &n)) {
+        result = Py_BuildValue("L", fibonacci((unsigned int)n));
+    }
+
+    return result;
+}
+```
 
 ### 注意
 
@@ -176,7 +322,11 @@ Python 提供了非常多样化的内置数据类型。其中一些真正使用�
 
 首先，我们创建一个静态字符串，它将成为`fibonacci_py()`函数的 Python 文档字符串的内容：
 
-[PRE11]
+```py
+static char fibonacci_docs[] =
+    "fibonacci(n): Return nth Fibonacci sequence number "
+    "computed recursively\n";
+```
 
 请注意，这可能会*内联*在`fibonacci_module_methods`的某个地方，但将文档字符串分开并存储在与其引用的实际函数定义的附近是一个很好的做法。
 
@@ -192,7 +342,13 @@ Python 提供了非常多样化的内置数据类型。其中一些真正使用�
 
 这样的数组必须始终以`{NULL, NULL, 0, NULL}`的哨兵值结束，表示其结束。在我们的简单情况下，我们创建了`static PyMethodDef fibonacci_module_methods[]`数组，其中只包含两个元素（包括哨兵值）：
 
-[PRE12]
+```py
+static PyMethodDef fibonacci_module_methods[] = {
+    {"fibonacci", (PyCFunction)fibonacci_py,
+     METH_VARARGS, fibonacci_docs},
+    {NULL, NULL, 0, NULL}
+};
+```
 
 这就是第一个条目如何映射到`PyMethodDef`结构：
 
@@ -218,11 +374,23 @@ Python 提供了非常多样化的内置数据类型。其中一些真正使用�
 
 其他字段在官方 Python 文档中有详细解释（参考[`docs.python.org/3/c-api/module.html`](https://docs.python.org/3/c-api/module.html)），但在我们的示例扩展中不需要。如果不需要，它们应该设置为`NULL`，当未指定时，它们将隐式地初始化为该值。这就是为什么我们的模块描述包含在`fibonacci_module_definition`变量中可以采用这种简单的五元素形式的原因：
 
-[PRE13]
+```py
+static struct PyModuleDef fibonacci_module_definition = {
+    PyModuleDef_HEAD_INIT,
+    "fibonacci",
+    "Extension module that provides fibonacci sequence function",
+    -1,
+    fibonacci_module_methods
+};
+```
 
 最后一段代码是我们工作的巅峰，即模块初始化函数。这必须遵循非常特定的命名约定，以便 Python 解释器在加载动态/共享库时可以轻松地选择它。它应该被命名为`PyInit_name`，其中*name*是您的模块名称。因此，它与在`PyModuleDef`定义中用作`m_base`字段和`setuptools.Extension()`调用的第一个参数的字符串完全相同。如果您不需要对模块进行复杂的初始化过程，它将采用与我们示例中完全相同的非常简单的形式：
 
-[PRE14]
+```py
+PyMODINIT_FUNC PyInit_fibonacci(void) {
+    return PyModule_Create(&fibonacci_module_definition);
+}
+```
 
 `PyMODINIT_FUNC`宏是一个预处理宏，它将声明此初始化函数的返回类型为`PyObject*`，并根据平台需要添加任何特殊的链接声明。
 
@@ -240,7 +408,45 @@ Python 提供了非常多样化的内置数据类型。其中一些真正使用�
 
 接受关键字的函数可以用`METH_KEYWORDS`或者`METH_VARARGS |` `METH_KEYWORDS`的形式来描述。如果是这样，它应该使用`PyArg_ParseTupleAndKeywords()`来解析它的参数，而不是`PyArg_ParseTuple()`或者`PyArg_UnpackTuple()`。下面是一个示例模块，其中有一个返回`None`的函数，接受两个命名关键字参数，并将它们打印到标准输出：
 
-[PRE15]
+```py
+#include <Python.h>
+
+static PyObject* print_args(PyObject *self, PyObject *args, PyObject *keywds)
+{
+    char *first;
+    char *second;
+
+    static char *kwlist[] = {"first", "second", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "ss", kwlist,
+                                     &first, &second))
+        return NULL;
+
+    printf("%s %s\n", first, second);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+static PyMethodDef module_methods[] = {
+    {"print_args", (PyCFunction)print_args,
+     METH_VARARGS | METH_KEYWORDS,
+     "print provided arguments"},
+    {NULL, NULL, 0, NULL}
+};
+
+static struct PyModuleDef module_definition = {
+    PyModuleDef_HEAD_INIT,
+    "kwargs",
+    "Keyword argument processing example",
+    -1,
+    module_methods
+};
+
+PyMODINIT_FUNC PyInit_kwargs(void) {
+    return PyModule_Create(&module_definition);
+}
+```
 
 Python/C API 中的参数解析非常灵活，并且在官方文档中有详细描述。`PyArg_ParseTuple()`和`PyArg_ParseTupleAndKeywords()`中的格式参数允许对参数数量和类型进行精细的控制。Python 中已知的每个高级调用约定都可以使用此 API 在 C 中编码，包括：
 
@@ -268,7 +474,18 @@ Python/C API 中的异常处理建立在这个简单原则的基础上。有一�
 
 为了了解这在实践中是如何工作的，让我们回顾一下前几节中示例中的`fibonacci_py（）`函数：
 
-[PRE16]
+```py
+static PyObject* fibonacci_py(PyObject* self, PyObject* args) {
+ **PyObject *result = NULL;
+    long n;
+
+ **if (PyArg_ParseTuple(args, "l", &n)) {
+ **result = Py_BuildValue("L", fibonacci((unsigned int) n));
+    }
+
+ **return result;
+}
+```
 
 以某种方式参与我们的错误处理的行已经被突出显示。它从初始化`result`变量开始，该变量应存储我们函数的返回值。它被初始化为`NULL`，正如我们已经知道的那样，这是一个错误指示器。这通常是您编写扩展的方式，假设错误是代码的默认状态。
 
@@ -278,15 +495,38 @@ Python/C API 中的异常处理建立在这个简单原则的基础上。有一�
 
 但我们的工作并不仅仅是关心 Python/C API 调用引发的异常。很可能您需要通知扩展用户发生了其他类型的错误或失败。Python/C API 有多个函数可帮助您引发异常，但最常见的是`PyErr_SetString（）`。它使用提供的附加字符串设置错误指示器和给定的异常类型作为错误原因的解释。此函数的完整签名是：
 
-[PRE17]
+```py
+void PyErr_SetString(PyObject* type, const char* message)
+```
 
 我已经说过我们的`fibonacci_py（）`函数的实现存在严重错误。现在是修复它的正确时机。幸运的是，我们有适当的工具来做到这一点。问题在于在以下行中将`long`类型不安全地转换为`unsigned int`：
 
-[PRE18]
+```py
+    if (PyArg_ParseTuple(args, "l", &n)) {
+      result = Py_BuildValue("L", fibonacci((unsigned int) n));
+    }
+```
 
 感谢`PyArg_ParseTuple（）`调用，第一个且唯一的参数将被解释为`long`类型（`"l"`指定符），并存储在本地`n`变量中。然后将其转换为`unsigned int`，因此如果用户使用负值从 Python 调用`fibonacci（）`函数，则会出现问题。例如，作为有符号 32 位整数的`-1`在转换为无符号 32 位整数时将被解释为`4294967295`。这样的值将导致深度递归，并导致堆栈溢出和分段错误。请注意，如果用户提供任意大的正参数，也可能会发生相同的情况。我们无法在没有完全重新设计 C `fibonacci（）`函数的情况下解决这个问题，但至少我们可以尝试确保传递的参数满足一些先决条件。在这里，我们检查`n`参数的值是否大于或等于零，如果不是，则引发`ValueError`异常：
 
-[PRE19]
+```py
+static PyObject* fibonacci_py(PyObject* self, PyObject* args) {
+    PyObject *result = NULL;
+    long n;
+    long long fib;
+
+    if (PyArg_ParseTuple(args, "l", &n)) {
+        if (n<0) {
+            PyErr_SetString(PyExc_ValueError,
+                            "n must not be less than 0");
+        } else {
+            result = Py_BuildValue("L", fibonacci((unsigned int)n));
+        }
+    }
+
+    return result;
+}
+```
 
 最后一点是全局错误状态不会自行清除。您的 C 函数中可能会优雅地处理一些错误（就像在 Python 中使用`try ... except`子句一样），如果错误指示器不再有效，则需要能够清除错误指示器。用于此目的的函数是`PyErr_Clear（）`。
 
@@ -302,7 +542,27 @@ Python/C API 中的异常处理建立在这个简单原则的基础上。有一�
 
 当我们仔细观察我们的`fibonacci`扩展示例时，我们可以清楚地看到`fibonacci()`函数不执行任何 Python 代码，也不触及任何 Python 结构。这意味着简单包装`fibonacci(n)`执行的`fibonacci_py()`函数可以更新以在调用周围释放 GIL：
 
-[PRE20]
+```py
+static PyObject* fibonacci_py(PyObject* self, PyObject* args) {
+    PyObject *result = NULL;
+    long n;
+    long long fib;
+
+    if (PyArg_ParseTuple(args, "l", &n)) {
+        if (n<0) {
+            PyErr_SetString(PyExc_ValueError,
+                            "n must not be less than 0");
+        } else {
+            Py_BEGIN_ALLOW_THREADS;
+            fib = fibonacci(n);
+            Py_END_ALLOW_THREADS;
+
+            result = Py_BuildValue("L", fib);
+        }}
+
+    return result;
+}
+```
 
 ### 引用计数
 
@@ -322,13 +582,29 @@ Python 中的每个对象，由一个引用（`PyObject*`指针）表示，都�
 
 另一个常见的问题是由 Python 对象模型的本质和一些函数返回借用引用的事实引起的。当引用计数变为零时，将执行解分配函数。对于用户定义的类，可以定义一个`__del__()`方法，在那时将被调用。这可以是任何 Python 代码，可能会影响其他对象及其引用计数。官方 Python 文档给出了以下可能受到此问题影响的代码示例：
 
-[PRE21]
+```py
+void bug(PyObject *list) {
+    PyObject *item = PyList_GetItem(list, 0);
+
+    PyList_SetItem(list, 1, PyLong_FromLong(0L));
+    PyObject_Print(item, stdout, 0); /* BUG! */
+}
+```
 
 看起来完全无害，但问题实际上是我们无法知道`list`对象包含哪些元素。当`PyList_SetItem()`在`list[1]`索引上设置一个新值时，之前存储在该索引处的对象的所有权被处理。如果它是唯一存在的引用，引用计数将变为 0，并且对象将被解分配。可能是某个用户定义的类，具有`__del__()`方法的自定义实现。如果在这样的`__del__()`执行的结果中，`item[0]`将从列表中移除，将会出现严重问题。请注意，`PyList_GetItem()`返回一个*借用*引用！在返回引用之前，它不会调用`Py_INCREF()`。因此，在该代码中，可能会调用`PyObject_Print()`，并且会使用一个不再存在的对象的引用。这将导致分段错误并使 Python 解释器崩溃。
 
 正确的方法是在我们需要它们的整个时间内保护借用引用，因为有可能在其中的任何调用可能导致任何其他对象的解分配，即使它们看似无关：
 
-[PRE22]
+```py
+void no_bug(PyObject *list) {
+    PyObject *item = PyList_GetItem(list, 0);
+
+    Py_INCREF(item);
+    PyList_SetItem(list, 1, PyLong_FromLong(0L));
+    PyObject_Print(item, stdout, 0);
+    Py_DECREF(item);
+}
+```
 
 ## Cython
 
@@ -340,7 +616,15 @@ Cython 既是一个优化的静态编译器，也是 Python 的超集编程语�
 
 Cython 提供了一个简单的`cythonize`实用函数，允许您轻松地将编译过程与`distutils`或`setuptools`集成。假设我们想将`fibonacci()`函数的纯 Python 实现编译为 C 扩展。如果它位于`fibonacci`模块中，最小的`setup.py`脚本可能如下所示：
 
-[PRE23]
+```py
+from setuptools import setup
+from Cython.Build import cythonize
+
+setup(
+    name='fibonacci',
+    ext_modules=cythonize(['fibonacci.py'])
+)
+```
 
 Cython 作为 Python 语言的源编译工具还有另一个好处。源到源编译到扩展可以是源分发安装过程的完全可选部分。如果需要安装包的环境没有 Cython 或任何其他构建先决条件，它可以像普通的*纯 Python*包一样安装。用户不应该注意到以这种方式分发的代码行为上的任何功能差异。
 
@@ -354,11 +638,50 @@ Cython 作为 Python 语言的源编译工具还有另一个好处。源到源�
 
 请注意，Cython 文档表示，包括生成的 C 文件以及 Cython 源是分发 Cython 扩展的推荐方式。同样的文档表示，Cython 编译应该默认禁用，因为用户可能在他的环境中没有所需版本的 Cython，这可能导致意外的编译问题。无论如何，随着环境隔离的出现，这似乎是一个今天不太令人担忧的问题。此外，Cython 是一个有效的 Python 包，可以在 PyPI 上获得，因此可以很容易地在特定版本中定义为您项目的要求。当然，包括这样的先决条件是一个具有严重影响的决定，应该非常谨慎地考虑。更安全的解决方案是利用`setuptools`包中的`extras_require`功能的强大功能，并允许用户决定是否要使用特定环境变量来使用 Cython：
 
-[PRE24]
+```py
+import os
+
+from distutils.core import setup
+from distutils.extension import Extension
+
+try:
+    # cython source to source compilation available
+    # only when Cython is available
+    import Cython
+    # and specific environment variable says
+    # explicitely that Cython should be used
+    # to generate C sources
+    USE_CYTHON = bool(os.environ.get("USE_CYTHON"))
+
+except ImportError:
+    USE_CYTHON = False
+
+ext = '.pyx' if USE_CYTHON else '.c'
+
+extensions = [Extension("fibonacci", ["fibonacci"+ext])]
+
+if USE_CYTHON:
+    from Cython.Build import cythonize
+    extensions = cythonize(extensions)
+
+setup(
+    name='fibonacci',
+    ext_modules=extensions,
+    extras_require={
+        # Cython will be set in that specific version
+        # as a requirement if package will be intalled
+        # with '[with-cython]' extra feature
+        'cython': ['cython==0.23.4']
+    }
+)
+```
 
 `pip`安装工具支持通过在包名后添加`[extra-name]`后缀来使用*extras*选项安装包。对于前面的示例，可以使用以下命令启用从本地源安装时的可选 Cython 要求和编译：
 
-[PRE25]
+```py
+$ USE_CYTHON=1 pip install .[with-cython]
+
+```
 
 ### Cython 作为一种语言
 
@@ -368,25 +691,74 @@ Cython 不仅是一个编译器，还是 Python 语言的超集。超集意味�
 
 Cython 源文件使用不同的文件扩展名。它是`.pyx`而不是`.py`。假设我们仍然想要实现我们的 Fibbonacci 序列。`fibonacci.pyx`的内容可能如下所示：
 
-[PRE26]
+```py
+"""Cython module that provides fibonacci sequence function."""
+
+def fibonacci(unsigned int n):
+    """Return nth Fibonacci sequence number computed recursively."""
+    if n < 2:
+        return n
+    else:
+        return fibonacci(n - 1) + fibonacci(n - 2)
+```
 
 正如您所看到的，真正改变的只是`fibonacci()`函数的签名。由于 Cython 中的可选静态类型，我们可以将`n`参数声明为`unsigned int`，这应该稍微改进了我们函数的工作方式。此外，它比我们以前手工编写扩展时做的事情要多得多。如果 Cython 函数的参数声明为静态类型，则扩展将自动处理转换和溢出错误，引发适当的异常：
 
-[PRE27]
+```py
+>>> from fibonacci import fibonacci
+>>> fibonacci(5)
+5
+>>> fibonacci(-1)
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+ **File "fibonacci.pyx", line 21, in fibonacci.fibonacci (fibonacci.c:704)
+OverflowError: can't convert negative value to unsigned int
+>>> fibonacci(10 ** 10)
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+ **File "fibonacci.pyx", line 21, in fibonacci.fibonacci (fibonacci.c:704)
+OverflowError: value too large to convert to unsigned int
+
+```
 
 我们已经知道 Cython 只编译*源到源*，生成的代码使用与我们手工编写 C 代码扩展时相同的 Python/C API。请注意，`fibonacci()`是一个递归函数，因此它经常调用自身。这意味着尽管我们为输入参数声明了静态类型，在递归调用期间，它将像任何其他 Python 函数一样对待自己。因此，`n-1`和`n-2`将被打包回 Python 对象，然后传递给内部`fibonacci()`实现的隐藏包装层，再次将其转换为`unsigned int`类型。这将一次又一次地发生，直到我们达到递归的最终深度。这不一定是一个问题，但涉及到比实际需要的更多的参数处理。
 
 我们可以通过将更多的工作委托给一个纯 C 函数来削减 Python 函数调用和参数处理的开销。我们以前在使用纯 C 创建 C 扩展时就这样做过，我们在 Cython 中也可以这样做。我们可以使用`cdef`关键字声明只接受和返回 C 类型的 C 风格函数：
 
-[PRE28]
+```py
+cdef long long fibonacci_cc(unsigned int n):
+    if n < 2:
+        return n
+    else:
+        return fibonacci_cc(n - 1) + fibonacci_cc(n - 2)
+
+def fibonacci(unsigned int n):
+    """ Return nth Fibonacci sequence number computed recursively
+    """
+    return fibonacci_cc(n)
+```
 
 我们甚至可以走得更远。通过一个简单的 C 示例，我们最终展示了如何在调用我们的纯 C 函数时释放 GIL，因此扩展对多线程应用程序来说更加友好。在以前的示例中，我们使用了 Python/C API 头文件中的`Py_BEGIN_ALLOW_THREADS`和`Py_END_ALLOW_THREADS`预处理器宏来标记代码段为无需 Python 调用。Cython 语法要简短得多，更容易记住。可以使用简单的`with nogil`语句在代码段周围释放 GIL：
 
-[PRE29]
+```py
+def fibonacci(unsigned int n):
+    """ Return nth Fibonacci sequence number computed recursively
+    """
+ **with nogil:
+        result = fibonacci_cc(n)
+
+    return fibonacci_cc(n)
+```
 
 您还可以将整个 C 风格函数标记为无需 GIL 即可调用：
 
-[PRE30]
+```py
+cdef long long fibonacci_cc(unsigned int n) nogil:
+    if n < 2:
+        return n
+    else:
+        return fibonacci_cc(n - 1) + fibonacci_cc(n - 2)
+```
 
 重要的是要知道，这样的函数不能将 Python 对象作为参数或返回类型。每当标记为`nogil`的函数需要执行任何 Python/C API 调用时，它必须使用`with gil`语句获取 GIL。
 
@@ -442,21 +814,50 @@ Cython 源文件使用不同的文件扩展名。它是`.pyx`而不是`.py`。�
 
 加载库的两种约定（`LoadLibrary()`函数和特定的库类型类）都要求您使用完整的库名称。这意味着需要包括所有预定义的库前缀和后缀。例如，在 Linux 上加载 C 标准库，您需要编写以下内容：
 
-[PRE31]
+```py
+>>> import ctypes
+>>> ctypes.cdll.LoadLibrary('libc.so.6')
+<CDLL 'libc.so.6', handle 7f0603e5f000 at 7f0603d4cbd0>
+
+```
 
 在这里，对于 Mac OS X，这将是：
 
-[PRE32]
+```py
+>>> import ctypes
+>>> ctypes.cdll.LoadLibrary('libc.dylib')
+
+```
 
 幸运的是，`ctypes.util`子模块提供了一个`find_library()`函数，允许使用其名称加载库，而无需任何前缀或后缀，并且将在具有预定义共享库命名方案的任何系统上工作：
 
-[PRE33]
+```py
+>>> import ctypes
+>>> from ctypes.util import find_library
+>>> ctypes.cdll.LoadLibrary(find_library('c'))
+<CDLL '/usr/lib/libc.dylib', handle 7fff69b97c98 at 0x101b73ac8>
+>>> ctypes.cdll.LoadLibrary(find_library('bz2'))
+<CDLL '/usr/lib/libbz2.dylib', handle 10042d170 at 0x101b6ee80>
+>>> ctypes.cdll.LoadLibrary(find_library('AGL'))
+<CDLL '/System/Library/Frameworks/AGL.framework/AGL', handle 101811610 at 0x101b73a58>
+
+```
 
 ### 使用 ctypes 调用 C 函数
 
 当成功加载库时，通常的模式是将其存储为与库同名的模块级变量。函数可以作为对象属性访问，因此调用它们就像调用来自任何其他已导入模块的 Python 函数一样：
 
-[PRE34]
+```py
+>>> import ctypes
+>>> from ctypes.util import find_library
+>>>** 
+>>> libc = ctypes.cdll.LoadLibrary(find_library('c'))
+>>>** 
+>>> libc.printf(b"Hello world!\n")
+Hello world!
+13
+
+```
 
 不幸的是，除了整数、字符串和字节之外，所有内置的 Python 类型都与 C 数据类型不兼容，因此必须包装在`ctypes`模块提供的相应类中。以下是来自`ctypes`文档的完整兼容数据类型列表：
 
@@ -487,7 +888,16 @@ Cython 源文件使用不同的文件扩展名。它是`.pyx`而不是`.py`。�
 
 正如您所看到的，上表中没有专门的类型来反映任何 Python 集合作为 C 数组。创建 C 数组类型的推荐方法是简单地使用所需的基本`ctypes`类型与乘法运算符：
 
-[PRE35]
+```py
+>>> import ctypes
+>>> IntArray5 = ctypes.c_int * 5
+>>> c_int_array = IntArray5(1, 2, 3, 4, 5)
+>>> FloatArray2 = ctypes.c_float * 2
+>>> c_float_array = FloatArray2(0, 3.14)
+>>> c_float_array[1]
+3.140000104904175
+
+```
 
 ### 将 Python 函数作为 C 回调传递
 
@@ -495,7 +905,10 @@ Cython 源文件使用不同的文件扩展名。它是`.pyx`而不是`.py`。�
 
 普通的 Python 函数类型将不兼容`qsort()`规范所需的回调函数类型。以下是来自 BSD `man`页面的`qsort()`签名，其中还包含了接受的回调类型（`compar`参数）的类型：
 
-[PRE36]
+```py
+void qsort(void *base, size_t nel, size_t width,
+           int (*compar)(const void *, const void *));
+```
 
 因此，为了执行`libc`中的`qsort()`，您需要传递：
 
@@ -511,7 +924,16 @@ Cython 源文件使用不同的文件扩展名。它是`.pyx`而不是`.py`。�
 
 `ctypes`模块包含一个`CFUNTYPE()`工厂函数，允许我们将 Python 函数包装并表示为 C 可调用函数指针。第一个参数是包装函数应该返回的 C 返回类型。它后面是作为其参数接受的 C 类型的可变列表。与`qsort()`的`compar`参数兼容的函数类型将是：
 
-[PRE37]
+```py
+CMPFUNC = ctypes.CFUNCTYPE(
+    # return type
+    ctypes.c_int,
+    # first argument type
+    ctypes.POINTER(ctypes.c_int),
+    # second argument type
+    ctypes.POINTER(ctypes.c_int),
+)
+```
 
 ### 注意
 
@@ -519,11 +941,77 @@ Cython 源文件使用不同的文件扩展名。它是`.pyx`而不是`.py`。�
 
 总结一切，假设我们想要使用标准 C 库中的`qsort()`函数对随机洗牌的整数列表进行排序。以下是一个示例脚本，展示了如何使用到目前为止我们学到的关于`ctypes`的一切来实现这一点：
 
-[PRE38]
+```py
+from random import shuffle
+
+import ctypes
+from ctypes.util import find_library
+
+libc = ctypes.cdll.LoadLibrary(find_library('c'))
+
+CMPFUNC = ctypes.CFUNCTYPE(
+    # return type
+    ctypes.c_int,
+    # first argument type
+    ctypes.POINTER(ctypes.c_int),
+    # second argument type
+    ctypes.POINTER(ctypes.c_int),
+)
+
+def ctypes_int_compare(a, b):
+    # arguments are pointers so we access using [0] index
+    print(" %s cmp %s" % (a[0], b[0]))
+
+    # according to qsort specification this should return:
+    # * less than zero if a < b
+    # * zero if a == b
+    # * more than zero if a > b
+    return a[0] - b[0]
+
+def main():
+    numbers = list(range(5))
+    shuffle(numbers)
+    print("shuffled: ", numbers)
+
+    # create new type representing array with length
+    # same as the length of numbers list
+    NumbersArray = ctypes.c_int * len(numbers)
+    # create new C array using a new type
+    c_array = NumbersArray(*numbers)
+
+    libc.qsort(
+        # pointer to the sorted array
+        c_array,
+        # length of the array
+        len(c_array),
+        # size of single array element
+        ctypes.sizeof(ctypes.c_int),
+        # callback (pointer to the C comparison function)
+        CMPFUNC(ctypes_int_compare)
+    )
+    print("sorted:   ", list(c_array))
+
+if __name__ == "__main__":
+    main()
+```
 
 作为回调提供的比较函数有一个额外的`print`语句，因此我们可以看到它在排序过程中是如何执行的：
 
-[PRE39]
+```py
+$ python ctypes_qsort.py** 
+shuffled:  [4, 3, 0, 1, 2]
+ **4 cmp 3
+ **4 cmp 0
+ **3 cmp 0
+ **4 cmp 1
+ **3 cmp 1
+ **0 cmp 1
+ **4 cmp 2
+ **3 cmp 2
+ **1 cmp 2
+sorted:    [0, 1, 2, 3, 4]
+
+```
 
 ## CFFI
 
@@ -531,7 +1019,57 @@ CFFI 是 Python 的外部函数接口，是`ctypes`的一个有趣的替代方�
 
 因为这是一个非常庞大的项目，不可能在几段话中简要介绍它。另一方面，不多说一些关于它的东西会很遗憾。我们已经讨论了使用`ctypes`集成标准库中的`qsort()`函数的一个例子。因此，展示这两种解决方案之间的主要区别的最佳方式将是使用`cffi`重新实现相同的例子。我希望一段代码能比几段文字更有价值：
 
-[PRE40]
+```py
+from random import shuffle
+
+from cffi import FFI
+
+ffi = FFI()
+
+ffi.cdef("""
+void qsort(void *base, size_t nel, size_t width,
+           int (*compar)(const void *, const void *));
+""")
+C = ffi.dlopen(None)
+
+@ffi.callback("int(void*, void*)")
+def cffi_int_compare(a, b):
+    # Callback signature requires exact matching of types.
+    # This involves less more magic than in ctypes
+    # but also makes you more specific and requires
+    # explicit casting
+    int_a = ffi.cast('int*', a)[0]
+    int_b = ffi.cast('int*', b)[0]
+    print(" %s cmp %s" % (int_a, int_b))
+
+    # according to qsort specification this should return:
+    # * less than zero if a < b
+    # * zero if a == b
+    # * more than zero if a > b
+    return int_a - int_b
+
+def main():
+    numbers = list(range(5))
+    shuffle(numbers)
+    print("shuffled: ", numbers)
+
+    c_array = ffi.new("int[]", numbers)
+
+    C.qsort(
+        # pointer to the sorted array
+        c_array,
+        # length of the array
+        len(c_array),
+        # size of single array element
+        ffi.sizeof('int'),
+        # callback (pointer to the C comparison function)
+        cffi_int_compare,
+    )
+    print("sorted:   ", list(c_array))
+
+if __name__ == "__main__":
+    main()
+```
 
 # 总结
 

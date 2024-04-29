@@ -50,23 +50,23 @@ e = ("Three " "Strings "
 对于`isdigit`，`isdecimal`和`isnumeric`方法要小心，因为它们比您期望的更微妙。许多 Unicode 字符被认为是数字，除了我们习惯的十个数字之外。更糟糕的是，我们用来从字符串构造浮点数的句点字符不被视为十进制字符，因此`'45.2'.isdecimal()`返回`False`。真正的十进制字符由 Unicode 值 0660 表示，如 45.2 中的 0660（或`45\u06602`）。此外，这些方法不验证字符串是否为有效数字；"127.0.0.1"对所有三种方法都返回`True`。我们可能认为应该使用该十进制字符而不是句点来表示所有数字数量，但将该字符传递给`float()`或`int()`构造函数会将该十进制字符转换为零：
 
 ```py
-**>>> float('45\u06602')**
-**4502.0**
+>>> float('45\u06602')
+4502.0
 
 ```
 
 用于模式匹配的其他有用方法不返回布尔值。`count`方法告诉我们给定子字符串在字符串中出现了多少次，而`find`，`index`，`rfind`和`rindex`告诉我们给定子字符串在原始字符串中的位置。两个`r`（表示“右”或“反向”）方法从字符串的末尾开始搜索。如果找不到子字符串，`find`方法返回`-1`，而`index`在这种情况下会引发`ValueError`。看看其中一些方法的实际应用：
 
 ```py
-**>>> s = "hello world"**
-**>>> s.count('l')**
-**3**
-**>>> s.find('l')**
-**2**
-**>>> s.rindex('m')**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
-**ValueError: substring not found**
+>>> s = "hello world"
+>>> s.count('l')
+3
+>>> s.find('l')
+2
+>>> s.rindex('m')
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+ValueError: substring not found
 
 ```
 
@@ -79,16 +79,16 @@ e = ("Three " "Strings "
 作为`split`的反向操作，`join`方法接受一个字符串列表，并通过将原始字符串放在它们之间来返回所有这些字符串组合在一起的字符串。`replace`方法接受两个参数，并返回一个字符串，其中第一个参数的每个实例都已被第二个参数替换。以下是其中一些方法的实际应用：
 
 ```py
-**>>> s = "hello world, how are you"**
-**>>> s2 = s.split(' ')**
-**>>> s2**
-**['hello', 'world,', 'how', 'are', 'you']**
-**>>> '#'.join(s2)**
-**'hello#world,#how#are#you'**
-**>>> s.replace(' ', '**')**
-**'hello**world,**how**are**you'**
-**>>> s.partition(' ')**
-**('hello', ' ', 'world, how are you')**
+>>> s = "hello world, how are you"
+>>> s2 = s.split(' ')
+>>> s2
+['hello', 'world,', 'how', 'are', 'you']
+>>> '#'.join(s2)
+'hello#world,#how#are#you'
+>>> s.replace(' ', '**')
+'hello**world,**how**are**you'
+>>> s.partition(' ')
+('hello', ' ', 'world, how are you')
 
 ```
 
@@ -110,7 +110,7 @@ print(template.format('Dusty', 'writing'))
 如果我们运行这些语句，它将按顺序用变量替换大括号：
 
 ```py
-**Hello Dusty, you are currently writing.**
+Hello Dusty, you are currently writing.
 
 ```
 
@@ -146,11 +146,11 @@ print(template.format("MyClass", "print('hello world')"));
 在模板中，无论我们看到`{{`或`}}`序列，也就是包围 Java 类和方法定义的大括号，我们知道`format`方法将用单个大括号替换它们，而不是一些传递给`format`方法的参数。以下是输出：
 
 ```py
-**public class MyClass {**
- **public static void main(String[] args) {**
- **System.out.println("print('hello world')");**
- **}**
-**}**
+public class MyClass {
+ **public static void main(String[] args) {
+ **System.out.println("print('hello world')");
+ **}
+}
 
 ```
 
@@ -170,8 +170,8 @@ Subject: {subject}
 print(template.format(
     from_email = "a@example.com",
     to_email = "b@example.com",
- **message = "Here's some mail for you. "**
- **" Hope you enjoy the message!",**
+ **message = "Here's some mail for you. "
+ **" Hope you enjoy the message!",
     subject = "You have mail!"
     ))
 ```
@@ -185,7 +185,7 @@ print("{} {label} {}".format("x", "y", label="z"))
 如预期的那样，这段代码输出：
 
 ```py
-**x z y**
+x z y
 
 ```
 
@@ -202,10 +202,10 @@ message = {
         'message': "Here's some mail for you!"
         }
 template = """
-**From: <{0[0]}>**
-**To: <{0[1]}>**
-**Subject: {message[subject]}**
-**{message[message]}"""**
+From: <{0[0]}>
+To: <{0[1]}>
+Subject: {message[subject]}
+{message[message]}"""
 print(template.format(emails, message=message))
 ```
 
@@ -273,7 +273,7 @@ print("Sub: ${0} Tax: ${1} Total: ${total}".format(
 如果我们运行这个格式化代码，输出看起来并不像正确的货币：
 
 ```py
-**Sub: $12.32 Tax: $0.8624 Total: $13.182400000000001**
+Sub: $12.32 Tax: $0.8624 Total: $13.182400000000001
 
 ```
 
@@ -301,18 +301,18 @@ orders = [('burger', 2, 5),
 print("PRODUCT    QUANTITY    PRICE    SUBTOTAL")
 for product, price, quantity in orders:
     subtotal = price * quantity
- **print("{0:10s}{1: ⁹d}    ${2: <8.2f}${3: >7.2f}".format(**
- **product, quantity, price, subtotal))**
+ **print("{0:10s}{1: ⁹d}    ${2: <8.2f}${3: >7.2f}".format(
+ **product, quantity, price, subtotal))
 
 ```
 
 好的，这是一个看起来相当可怕的格式字符串，让我们看看它是如何工作的，然后再将其分解成可理解的部分：
 
 ```py
-**PRODUCT    QUANTITY    PRICE    SUBTOTAL**
-**burger        5        $2.00    $  10.00**
-**fries         1        $3.50    $   3.50**
-**cola          3        $1.75    $   5.25**
+PRODUCT    QUANTITY    PRICE    SUBTOTAL
+burger        5        $2.00    $  10.00
+fries         1        $3.50    $   3.50
+cola          3        $1.75    $   5.25
 
 ```
 
@@ -357,7 +357,7 @@ Python 的格式化语法非常灵活，但是很难记住。我每天都在使�
 ```py
 characters = b'\x63\x6c\x69\x63\x68\xe9'
 print(characters)
-**print(characters.decode("latin-1"))**
+print(characters.decode("latin-1"))
 
 ```
 
@@ -366,8 +366,8 @@ print(characters)
 只要我们使用了理解拉丁-1 编码的 shell，两个`print`调用将输出以下字符串：
 
 ```py
-**b'clich\xe9'**
-**cliché**
+b'clich\xe9'
+cliché
 
 ```
 
@@ -390,13 +390,13 @@ print(characters.encode("ascii"))
 前三种编码为重音字符创建了不同的字节集。第四种甚至无法处理该字节：
 
 ```py
-**b'clich\xc3\xa9'**
-**b'clich\xe9'**
-**b'clich\x82'**
-**Traceback (most recent call last):**
- **File "1261_10_16_decode_unicode.py", line 5, in <module>**
- **print(characters.encode("ascii"))**
-**UnicodeEncodeError: 'ascii' codec can't encode character '\xe9' in position 5: ordinal not in range(128)**
+b'clich\xc3\xa9'
+b'clich\xe9'
+b'clich\x82'
+Traceback (most recent call last):
+ **File "1261_10_16_decode_unicode.py", line 5, in <module>
+ **print(characters.encode("ascii"))
+UnicodeEncodeError: 'ascii' codec can't encode character '\xe9' in position 5: ordinal not in range(128)
 
 ```
 
@@ -447,7 +447,7 @@ print(b)
 输出如下：
 
 ```py
-**bytearray(b'abcd\x15\xa3gh')**
+bytearray(b'abcd\x15\xa3gh')
 
 ```
 
@@ -465,7 +465,7 @@ print(b)
 输出如下：
 
 ```py
-**bytearray(b'abcgDf')**
+bytearray(b'abcgDf')
 
 ```
 
@@ -517,7 +517,7 @@ import re
 
 pattern = sys.argv[1]
 search_string = sys.argv[2]
-**match = re.match(pattern, search_string)**
+match = re.match(pattern, search_string)
 
 if match:
     template = "'{}' matches pattern '{}'"
@@ -530,10 +530,10 @@ print(template.format(search_string, pattern))
 这只是一个通用版本的早期示例，它从命令行接受模式和搜索字符串。我们可以看到模式的开头必须匹配，但是一旦在以下命令行交互中找到匹配，就会返回一个值：
 
 ```py
-**$ python regex_generic.py "hello worl" "hello world"**
-**'hello world' matches pattern 'hello worl'**
-**$ python regex_generic.py "ello world" "hello world"**
-**'hello world' does not match pattern 'ello world'**
+$ python regex_generic.py "hello worl" "hello world"
+'hello world' matches pattern 'hello worl'
+$ python regex_generic.py "ello world" "hello world"
+'hello world' does not match pattern 'ello world'
 
 ```
 
@@ -542,8 +542,8 @@ print(template.format(search_string, pattern))
 如果您需要控制项目是否发生在行的开头或结尾（或者字符串中没有换行符，发生在字符串的开头和结尾），可以使用`^`和`$`字符分别表示字符串的开头和结尾。如果要匹配整个字符串的模式，最好包括这两个：
 
 ```py
-**'hello world' matches pattern '^hello world$'**
-**'hello worl' does not match pattern '^hello world$'**
+'hello world' matches pattern '^hello world$'
+'hello worl' does not match pattern '^hello world$'
 
 ```
 
@@ -552,10 +552,10 @@ print(template.format(search_string, pattern))
 让我们从匹配任意字符开始。句号字符在正则表达式模式中使用时，可以匹配任何单个字符。在字符串中使用句号意味着您不在乎字符是什么，只是有一个字符在那里。例如：
 
 ```py
-**'hello world' matches pattern 'hel.o world'**
-**'helpo world' matches pattern 'hel.o world'**
-**'hel o world' matches pattern 'hel.o world'**
-**'helo world' does not match pattern 'hel.o world'**
+'hello world' matches pattern 'hel.o world'
+'helpo world' matches pattern 'hel.o world'
+'hel o world' matches pattern 'hel.o world'
+'helo world' does not match pattern 'hel.o world'
 
 ```
 
@@ -564,19 +564,19 @@ print(template.format(search_string, pattern))
 这样做很好，但是如果我们只想匹配几个特定的字符怎么办？我们可以将一组字符放在方括号中，以匹配其中任何一个字符。因此，如果我们在正则表达式模式中遇到字符串`[abc]`，我们知道这五个（包括两个方括号）字符只会匹配字符串中的一个字符，并且进一步地，这一个字符将是`a`、`b`或`c`中的一个。看几个例子：
 
 ```py
-**'hello world' matches pattern 'hel[lp]o world'**
-**'helpo world' matches pattern 'hel[lp]o world'**
-**'helPo world' does not match pattern 'hel[lp]o world'**
+'hello world' matches pattern 'hel[lp]o world'
+'helpo world' matches pattern 'hel[lp]o world'
+'helPo world' does not match pattern 'hel[lp]o world'
 
 ```
 
 这些方括号集应该被称为字符集，但更常见的是被称为**字符类**。通常，我们希望在这些集合中包含大量的字符，并且将它们全部打出来可能会很单调和容易出错。幸运的是，正则表达式设计者考虑到了这一点，并给了我们一个快捷方式。在字符集中，短横线字符将创建一个范围。如果您想匹配"所有小写字母"、"所有字母"或"所有数字"，可以使用如下方法：
 
 ```py
-**'hello   world' does not match pattern 'hello [a-z] world'**
-**'hello b world' matches pattern 'hello [a-z] world'**
-**'hello B world' matches pattern 'hello [a-zA-Z] world'**
-**'hello 2 world' matches pattern 'hello [a-zA-Z0-9] world'**
+'hello   world' does not match pattern 'hello [a-z] world'
+'hello b world' matches pattern 'hello [a-z] world'
+'hello B world' matches pattern 'hello [a-zA-Z] world'
+'hello 2 world' matches pattern 'hello [a-zA-Z0-9] world'
 
 ```
 
@@ -587,9 +587,9 @@ print(template.format(search_string, pattern))
 如果在模式中放置句号字符可以匹配任意字符，那么如何在字符串中匹配一个句号呢？一种方法是将句号放在方括号中以创建一个字符类，但更通用的方法是使用反斜杠进行转义。下面是一个正则表达式，用于匹配 0.00 到 0.99 之间的两位小数：
 
 ```py
-**'0.05' matches pattern '0\.[0-9][0-9]'**
-**'005' does not match pattern '0\.[0-9][0-9]'**
-**'0,05' does not match pattern '0\.[0-9][0-9]'**
+'0.05' matches pattern '0\.[0-9][0-9]'
+'005' does not match pattern '0\.[0-9][0-9]'
+'0,05' does not match pattern '0\.[0-9][0-9]'
 
 ```
 
@@ -600,10 +600,10 @@ print(template.format(search_string, pattern))
 更有趣的是，我们还可以使用转义符号后跟一个字符来表示特殊字符，例如换行符（`\n`）和制表符（`\t`）。此外，一些字符类可以更简洁地用转义字符串表示；`\s`表示空白字符，`\w`表示字母、数字和下划线，`\d`表示数字：
 
 ```py
-**'(abc]' matches pattern '\(abc\]'**
-**' 1a' matches pattern '\s\d\w'**
-**'\t5n' does not match pattern '\s\d\w'**
-**'5n' matches pattern '\s\d\w'**
+'(abc]' matches pattern '\(abc\]'
+' 1a' matches pattern '\s\d\w'
+'\t5n' does not match pattern '\s\d\w'
+'5n' matches pattern '\s\d\w'
 
 ```
 
@@ -614,9 +614,9 @@ print(template.format(search_string, pattern))
 星号（`*`）字符表示前面的模式可以匹配零次或多次。这可能听起来很愚蠢，但它是最有用的重复字符之一。在我们探索原因之前，考虑一些愚蠢的例子，以确保我们理解它的作用：
 
 ```py
-**'hello' matches pattern 'hel*o'**
-**'heo' matches pattern 'hel*o'**
-**'helllllo' matches pattern 'hel*o'**
+'hello' matches pattern 'hel*o'
+'heo' matches pattern 'hel*o'
+'helllllo' matches pattern 'hel*o'
 
 ```
 
@@ -627,21 +627,21 @@ print(template.format(search_string, pattern))
 例如：
 
 ```py
-**'A string.' matches pattern '[A-Z][a-z]* [a-z]*\.'**
-**'No .' matches pattern '[A-Z][a-z]* [a-z]*\.'**
-**'' matches pattern '[a-z]*.*'**
+'A string.' matches pattern '[A-Z][a-z]* [a-z]*\.'
+'No .' matches pattern '[A-Z][a-z]* [a-z]*\.'
+'' matches pattern '[a-z]*.*'
 
 ```
 
 模式中的加号（`+`）与星号类似；它表示前面的模式可以重复一次或多次，但与星号不同的是，它不是可选的。问号（`?`）确保模式出现零次或一次，但不会更多。让我们通过玩数字来探索一些例子（记住`\d`与`[0-9]`匹配相同的字符类）：
 
 ```py
-**'0.4' matches pattern '\d+\.\d+'**
-**'1.002' matches pattern '\d+\.\d+'**
-**'1.' does not match pattern '\d+\.\d+'**
-**'1%' matches pattern '\d?\d%'**
-**'99%' matches pattern '\d?\d%'**
-**'999%' does not match pattern '\d?\d%'**
+'0.4' matches pattern '\d+\.\d+'
+'1.002' matches pattern '\d+\.\d+'
+'1.' does not match pattern '\d+\.\d+'
+'1%' matches pattern '\d?\d%'
+'99%' matches pattern '\d?\d%'
+'999%' does not match pattern '\d?\d%'
 
 ```
 
@@ -650,18 +650,18 @@ print(template.format(search_string, pattern))
 到目前为止，我们已经看到了如何可以多次重复一个模式，但我们在可以重复的模式上受到了限制。如果我们想重复单个字符，那么我们已经覆盖了，但如果我们想要重复一系列字符呢？将任何一组模式括在括号中允许它们在应用重复操作时被视为单个模式。比较这些模式：
 
 ```py
-**'abccc' matches pattern 'abc{3}'**
-**'abccc' does not match pattern '(abc){3}'**
-**'abcabcabc' matches pattern '(abc){3}'**
+'abccc' matches pattern 'abc{3}'
+'abccc' does not match pattern '(abc){3}'
+'abcabcabc' matches pattern '(abc){3}'
 
 ```
 
 与复杂模式结合使用，这种分组功能极大地扩展了我们的模式匹配能力。这是一个匹配简单英语句子的正则表达式：
 
 ```py
-**'Eat.' matches pattern '[A-Z][a-z]*( [a-z]+)*\.$'**
-**'Eat more good food.' matches pattern '[A-Z][a-z]*( [a-z]+)*\.$'**
-**'A good meal.' matches pattern '[A-Z][a-z]*( [a-z]+)*\.$'**
+'Eat.' matches pattern '[A-Z][a-z]*( [a-z]+)*\.$'
+'Eat more good food.' matches pattern '[A-Z][a-z]*( [a-z]+)*\.$'
+'A good meal.' matches pattern '[A-Z][a-z]*( [a-z]+)*\.$'
 
 ```
 
@@ -683,7 +683,7 @@ search_string = "some.user@example.com"
 match = re.match(pattern, search_string)
 
 if match:
- **domain = match.groups()[0]**
+ **domain = match.groups()[0]
     print(domain)
 ```
 
@@ -710,15 +710,15 @@ if match:
 以下交互式会话中的示例将有望澄清差异：
 
 ```py
-**>>> import re**
-**>>> re.findall('a.', 'abacadefagah')**
-**['ab', 'ac', 'ad', 'ag', 'ah']**
-**>>> re.findall('a(.)', 'abacadefagah')**
-**['b', 'c', 'd', 'g', 'h']**
-**>>> re.findall('(a)(.)', 'abacadefagah')**
-**[('a', 'b'), ('a', 'c'), ('a', 'd'), ('a', 'g'), ('a', 'h')]**
-**>>> re.findall('((a)(.))', 'abacadefagah')**
-**[('ab', 'a', 'b'), ('ac', 'a', 'c'), ('ad', 'a', 'd'), ('ag', 'a', 'g'), ('ah', 'a', 'h')]**
+>>> import re
+>>> re.findall('a.', 'abacadefagah')
+['ab', 'ac', 'ad', 'ag', 'ah']
+>>> re.findall('a(.)', 'abacadefagah')
+['b', 'c', 'd', 'g', 'h']
+>>> re.findall('(a)(.)', 'abacadefagah')
+[('a', 'b'), ('a', 'c'), ('a', 'd'), ('a', 'g'), ('a', 'h')]
+>>> re.findall('((a)(.))', 'abacadefagah')
+[('ab', 'a', 'b'), ('ac', 'a', 'c'), ('ad', 'a', 'd'), ('ag', 'a', 'g'), ('ah', 'a', 'h')]
 
 ```
 
@@ -750,10 +750,10 @@ some_data = ["a list", "containing", 5,
         ["inner", "list"]]
 
 with open("pickled_list", 'wb') as file:
- **pickle.dump(some_data, file)**
+ **pickle.dump(some_data, file)
 
 with open("pickled_list", 'rb') as file:
- **loaded_data = pickle.load(file)**
+ **loaded_data = pickle.load(file)
 
 print(loaded_data)
 assert loaded_data == some_data
@@ -809,13 +809,13 @@ class UpdatedURL:
 `url`、`contents`和`last_updated`都是可 pickle 的，但如果我们尝试 pickle 这个类的一个实例，事情在`self.timer`实例上会有点混乱：
 
 ```py
-**>>> u = UpdatedURL("http://news.yahoo.com/")**
-**>>> import pickle**
-**>>> serialized = pickle.dumps(u)**
-**Traceback (most recent call last):**
- **File "<pyshell#3>", line 1, in <module>**
- **serialized = pickle.dumps(u)**
-**_pickle.PicklingError: Can't pickle <class '_thread.lock'>: attribute lookup lock on _thread failed**
+>>> u = UpdatedURL("http://news.yahoo.com/")
+>>> import pickle
+>>> serialized = pickle.dumps(u)
+Traceback (most recent call last):
+ **File "<pyshell#3>", line 1, in <module>
+ **serialized = pickle.dumps(u)
+_pickle.PicklingError: Can't pickle <class '_thread.lock'>: attribute lookup lock on _thread failed
 
 ```
 
@@ -883,9 +883,9 @@ class Contact:
 我们可以只序列化`__dict__`属性：
 
 ```py
-**>>> c = Contact("John", "Smith")**
-**>>> json.dumps(c.__dict__)**
-**'{"last": "Smith", "first": "John"}'**
+>>> c = Contact("John", "Smith")
+>>> json.dumps(c.__dict__)
+'{"last": "Smith", "first": "John"}'
 
 ```
 
@@ -908,10 +908,10 @@ class ContactEncoder(json.JSONEncoder):
 我们可以使用这个类来通过将类（而不是实例化对象）传递给`dump`或`dumps`函数来编码一个联系人：
 
 ```py
-**>>> c = Contact("John", "Smith")**
-**>>> json.dumps(c, cls=ContactEncoder)**
-**'{"is_contact": true, "last": "Smith", "full": "John Smith",**
-**"first": "John"}'**
+>>> c = Contact("John", "Smith")
+>>> json.dumps(c, cls=ContactEncoder)
+'{"is_contact": true, "last": "Smith", "full": "John Smith",
+"first": "John"}'
 
 ```
 
@@ -928,14 +928,14 @@ def decode_contact(dic):
 我们可以使用`object_hook`关键字参数将这个函数传递给`load`或`loads`函数：
 
 ```py
-**>>> data = ('{"is_contact": true, "last": "smith",'**
- **'"full": "john smith", "first": "john"}')**
+>>> data = ('{"is_contact": true, "last": "smith",'
+ **'"full": "john smith", "first": "john"}')
 
-**>>> c = json.loads(data, object_hook=decode_contact)**
-**>>> c**
-**<__main__.Contact object at 0xa02918c>**
-**>>> c.full_name**
-**'john smith'**
+>>> c = json.loads(data, object_hook=decode_contact)
+>>> c
+<__main__.Contact object at 0xa02918c>
+>>> c.full_name
+'john smith'
 
 ```
 
@@ -996,15 +996,15 @@ import sys
 import json
 from pathlib import Path
 
-**DIRECTIVE_RE = re.compile(**
- **r'/\*\*\s*(include|variable|loopover|endloop|loopvar)'**
- **r'\s*([^ *]*)\s*\*\*/')**
+DIRECTIVE_RE = re.compile(
+ **r'/\*\*\s*(include|variable|loopover|endloop|loopvar)'
+ **r'\s*([^ *]*)\s*\*\*/')
 
 class TemplateEngine:
     def __init__(self, infilename, outfilename, contextfilename):
         self.template = open(infilename).read()
         self.working_dir = Path(infilename).absolute().parent
- **self.pos = 0**
+ **self.pos = 0
         self.outfile = open(outfilename, 'w')
         with open(contextfilename) as contextfile:
             self.context = json.load(contextfile)
@@ -1035,7 +1035,7 @@ def process(self):
     match = DIRECTIVE_RE.search(self.template, pos=self.pos)
     while match:
         self.outfile.write(self.template[self.pos:match.start()])
- **self.pos = match.end()**
+ **self.pos = match.end()
         match = DIRECTIVE_RE.search(self.template, pos=self.pos)
     self.outfile.write(self.template[self.pos:])
 ```
@@ -1049,9 +1049,9 @@ def process(self):
     match = DIRECTIVE_RE.search(self.template, pos=self.pos)
     while match:
         self.outfile.write(self.template[self.pos:match.start()])
- **directive, argument = match.groups()**
- **method_name = 'process_{}'.format(directive)**
- **getattr(self, method_name)(match, argument)**
+ **directive, argument = match.groups()
+ **method_name = 'process_{}'.format(directive)
+ **getattr(self, method_name)(match, argument)
         match = DIRECTIVE_RE.search(self.template, pos=self.pos)
     self.outfile.write(self.template[self.pos:])
 ```
@@ -1064,11 +1064,11 @@ def process(self):
 def process_include(self, match, argument):
     with (self.working_dir / argument).open() as includefile:
         self.outfile.write(includefile.read())
- **self.pos = match.end()**
+ **self.pos = match.end()
 
 def process_variable(self, match, argument):
     self.outfile.write(self.context.get(argument, ''))
- **self.pos = match.end()**
+ **self.pos = match.end()
 
 ```
 
@@ -1079,22 +1079,22 @@ def process_variable(self, match, argument):
 ```py
     def process_loopover(self, match, argument):
         self.loop_index = 0
- **self.loop_list = self.context.get(argument, [])**
+ **self.loop_list = self.context.get(argument, [])
         self.pos = self.loop_pos = match.end()
 
     def process_loopvar(self, match, argument):
- **self.outfile.write(self.loop_list[self.loop_index])**
+ **self.outfile.write(self.loop_list[self.loop_index])
         self.pos = match.end()
 
     def process_endloop(self, match, argument):
- **self.loop_index += 1**
+ **self.loop_index += 1
         if self.loop_index >= len(self.loop_list):
             self.pos = match.end()
             del self.loop_index
             del self.loop_list
             del self.loop_pos
         else:
- **self.pos = self.loop_pos**
+ **self.pos = self.loop_pos
 
 ```
 

@@ -126,15 +126,30 @@ DbC 背后的想法是，与其在代码中隐含地放置每个参与方的期�
 
 这个决定的一个稍微不同、更安全的版本是对未提供的数据使用默认值。这可能是代码的一部分可以使用默认行为的情况，例如，未设置的环境变量的默认值，配置文件中缺少的条目，或者函数的参数。我们可以在 Python 的 API 的不同方法中找到支持这一点的例子，例如，字典有一个`get`方法，它的（可选的）第二个参数允许您指定一个默认值：
 
-[PRE0]
+```py
+>>> configuration = {"dbport": 5432}
+>>> configuration.get("dbhost", "localhost")
+'localhost'
+>>> configuration.get("dbport")
+5432
+```
 
 环境变量具有类似的 API：
 
-[PRE1]
+```py
+>>> import os
+>>> os.getenv("DBHOST")
+'localhost'
+>>> os.getenv("DPORT", 5432)
+5432
+```
 
 在前面的两个例子中，如果未提供第二个参数，将返回`None`，因为这是这些函数定义的默认值。我们也可以为我们自己函数的参数定义默认值：
 
-[PRE2]
+```py
+>>> def connect_database(host="localhost", port=5432):
+...     logger.info("connecting to database server at %s:%i", host, port)
+```
 
 一般来说，用默认值替换缺失的参数是可以接受的，但用合法的接近值替换错误数据更加危险，可能会掩盖一些错误。在决定采用这种方法时，要考虑这个标准。
 
@@ -164,7 +179,49 @@ DbC 背后的想法是，与其在代码中隐含地放置每个参与方的期�
 
 在这个例子中，我们可以看到我们所说的混合不同抽象级别是什么意思。想象一个对象，它作为我们应用程序中一些数据的传输器。它连接到一个外部组件，在那里数据将在解码后被发送。在下面的清单中，我们将专注于`deliver_event`方法：
 
-[PRE3]
+```py
+class DataTransport:
+    """An example of an object handling exceptions of different levels."""
+
+    retry_threshold: int = 5
+    retry_n_times: int = 3
+
+    def __init__(self, connector):
+        self._connector = connector
+        self.connection = None
+
+    def deliver_event(self, event):
+        try:
+            self.connect()
+            data = event.decode()
+            self.send(data)
+        except ConnectionError as e:
+            logger.info("connection error detected: %s", e)
+            raise
+        except ValueError as e:
+            logger.error("%r contains incorrect data: %s", event, e)
+            raise
+
+    def connect(self):
+        for _ in range(self.retry_n_times):
+            try:
+                self.connection = self._connector.connect()
+            except ConnectionError as e:
+                logger.info(
+                    "%s: attempting new connection in %is",
+                    e,
+                    self.retry_threshold,
+                )
+                time.sleep(self.retry_threshold)
+            else:
+                return self.connection
+        raise ConnectionError(
+            f"Couldn't connect after {self.retry_n_times} times"
+        )
+
+    def send(self, data):
+        return self.connection.send(data)
+```
 
 对于我们的分析，让我们放大并关注`deliver_event()`方法如何处理异常。
 
@@ -172,13 +229,64 @@ DbC 背后的想法是，与其在代码中隐含地放置每个参与方的期�
 
 我们应该将这些片段分开成不同的方法或函数。对于连接管理，一个小函数就足够了。这个函数将负责尝试建立连接，捕获异常（如果发生），并相应地记录它们：
 
-[PRE4]
+```py
+def connect_with_retry(connector, retry_n_times, retry_threshold=5):
+    """Tries to establish the connection of <connector> retrying
+    <retry_n_times>.
 
-[PRE5]
+    If it can connect, returns the connection object.
+    If it's not possible after the retries, raises ConnectionError
+
+    :param connector: An object with a `.connect()` method.
+    :param retry_n_times int: The number of times to try to call
+                                ``connector.connect()``.
+    :param retry_threshold int: The time lapse between retry calls.
+
+    """
+    for _ in range(retry_n_times):
+        try:
+            return connector.connect()
+        except ConnectionError as e:
+            logger.info(
+                "%s: attempting new connection in %is", e, retry_threshold
+            )
+```
+
+```py
+            time.sleep(retry_threshold)
+    exc = ConnectionError(f"Couldn't connect after {retry_n_times} times")
+    logger.exception(exc)
+    raise exc
+```
 
 然后，我们将在我们的方法中调用这个函数。至于事件中的`ValueError`异常，我们可以用一个新对象分开它，并进行组合，但对于这个有限的情况来说，这将是过度的，所以只需将逻辑移到一个单独的方法中就足够了。有了这两个考虑，方法的新版本看起来更加简洁和易于阅读：
 
-[PRE6]
+```py
+class DataTransport:
+    """An example of an object that separates the exception handling by
+    abstraction levels.
+    """
+
+    retry_threshold: int = 5
+    retry_n_times: int = 3
+
+    def __init__(self, connector):    
+        self._connector = connector
+        self.connection = None
+
+    def deliver_event(self, event):
+        self.connection = connect_with_retry(
+            self._connector, self.retry_n_times, self.retry_threshold
+        )
+        self.send(event)
+
+    def send(self, event):
+        try:
+            return self.connection.send(event.decode())
+        except ValueError as e:
+            logger.error("%r contains incorrect data: %s", event, e)
+            raise
+```
 
 # 不要暴露 tracebacks
 
@@ -196,7 +304,12 @@ DbC 背后的想法是，与其在代码中隐含地放置每个参与方的期�
 
 Python 非常灵活，可以让我们编写可能有错误但不会引发错误的代码，就像这样：
 
-[PRE7]
+```py
+try:
+    process_data()
+except:
+    pass
+```
 
 这样做的问题是它永远不会失败。即使应该失败也是如此。如果您还记得 Python 之禅，错误永远不应该悄悄地传递，这也是不符合 Python 风格的。
 
@@ -224,7 +337,16 @@ Python 非常灵活，可以让我们编写可能有错误但不会引发错误�
 
 例如，如果我们希望在项目内部使用自定义异常包装默认异常，我们仍然可以这样做，同时包含有关根异常的信息：
 
-[PRE8]
+```py
+class InternalDataError(Exception):
+    """An exception with the data of our domain problem."""
+
+def process(data_dictionary, record_id):
+    try:
+        return data_dictionary[record_id]
+    except KeyError as e:
+        raise InternalDataError("Record not present") from e
+```
 
 在更改异常类型时，始终使用`raise <e> from <o>`语法。
 
@@ -238,7 +360,12 @@ Python 非常灵活，可以让我们编写可能有错误但不会引发错误�
 
 因此，断言不应与业务逻辑混合，也不应作为软件的控制流机制使用。以下示例是一个坏主意：
 
-[PRE9]
+```py
+try:
+    assert condition.holds(), "Condition is not satisfied"
+except AssertionError:
+    alternative_procedure()
+```
 
 不要捕获`AssertionError`异常。
 
@@ -250,7 +377,10 @@ Python 非常灵活，可以让我们编写可能有错误但不会引发错误�
 
 更好的替代方案需要更少的代码行，并提供更多有用的信息：
 
-[PRE10]
+```py
+result = condition.holds()
+assert result > 0, "Error with {0}".format(result)
+```
 
 # 关注点的分离
 
@@ -308,13 +438,43 @@ Python 非常灵活，可以让我们编写可能有错误但不会引发错误�
 
 让我们通过一个例子来看看这意味着什么。想象一下，在一个学习中心，学生根据以下标准排名：通过考试得 11 分，未通过考试扣 5 分，每在该机构学习一年扣 2 分。以下不是实际代码，而只是对这在真实代码库中可能如何分散的一种表示：
 
-[PRE11]
+```py
+def process_students_list(students):
+    # do some processing...
+
+    students_ranking = sorted(
+        students, key=lambda s: s.passed * 11 - s.failed * 5 - s.years * 2
+    )
+    # more processing
+    for student in students_ranking:
+        print(
+            "Name: {0}, Score: {1}".format(
+                student.name,
+                (student.passed * 11 - student.failed * 5 - student.years * 2),
+            )
+        )
+```
 
 注意排序函数中的 lambda 表示领域问题的一些有效知识，但它并没有反映出来（它没有名称，没有适当和合适的位置，没有赋予代码任何含义）。代码中的这种缺乏含义导致了我们在列出排名时发现的重复。
 
 我们应该在我们的代码中反映我们对领域问题的了解，这样我们的代码就不太可能遭受重复，并且更容易理解。
 
-[PRE12]
+```py
+def score_for_student(student):
+    return student.passed * 11 - student.failed * 5 - student.years * 2
+
+def process_students_list(students):
+    # do some processing...
+
+    students_ranking = sorted(students, key=score_for_student)
+    # more processing
+    for student in students_ranking:
+        print(
+            "Name: {0}, Score: {1}".format(
+                student.name, score_for_student(student)
+            )
+        )
+```
 
 公平的免责声明：这只是对代码重复的一个特征进行分析。实际上，代码重复有更多的情况、类型和分类，整个章节都可以专门讨论这个主题，但在这里我们专注于一个特定的方面，以使首字母缩略词背后的思想清晰明了。
 
@@ -344,15 +504,48 @@ Python 非常灵活，可以让我们编写可能有错误但不会引发错误�
 
 有时，我们可能会过于复杂化代码，创建比必要更多的函数或方法。以下类从一组提供的关键字参数创建一个命名空间，但它的代码接口相当复杂：
 
-[PRE13]
+```py
+class ComplicatedNamespace:
+    """An convoluted example of initializing an object with some properties."""
+
+    ACCEPTED_VALUES = ("id_", "user", "location")
+
+    @classmethod
+    def init_with_data(cls, **data):
+        instance = cls()
+        for key, value in data.items():
+            if key in cls.ACCEPTED_VALUES:
+                setattr(instance, key, value)
+        return instance
+```
 
 添加额外的类方法来初始化对象似乎并不是真正必要的。然后，迭代和其中的`setattr`调用使事情变得更加奇怪，向用户呈现的接口也不是很清晰：
 
-[PRE14]
+```py
+>>> cn = ComplicatedNamespace.init_with_data(
+...     id_=42, user="root", location="127.0.0.1", extra="excluded"
+... )
+>>> cn.id_, cn.user, cn.location
+(42, 'root', '127.0.0.1')
+
+>>> hasattr(cn, "extra")
+False
+```
 
 用户必须知道存在这种方法，这并不方便。保持简单，就像初始化 Python 中的任何其他对象一样（毕竟，有一个方法可以做到）使用`__init__`方法会更好：
 
-[PRE15]
+```py
+class Namespace:
+    """Create an object from keyword arguments."""
+
+    ACCEPTED_VALUES = ("id_", "user", "location")
+
+    def __init__(self, **data):
+        accepted_data = {
+            k: v for k, v in data.items() if k in self.ACCEPTED_VALUES
+        }
+        self.__dict__.update(accepted_data)
+```
 
 记住 Python 的禅意：简单胜于复杂。
 
@@ -364,11 +557,21 @@ EAFP 的理念是，我们编写代码以便直接执行操作，然后在以后
 
 这是**LBYL**的相反。正如其名称所示，在先看后跳的方法中，我们首先检查我们将要使用的内容。例如，我们可能希望在尝试操作文件之前检查文件是否可用：
 
-[PRE16]
+```py
+if os.path.exists(filename):
+    with open(filename) as f:
+        ...
+```
 
 这可能对其他编程语言有好处，但这不是编写代码的 Pythonic 方式。Python 是建立在 EAFP 等思想上的，并鼓励您遵循它们（记住，显式胜于隐式）。这段代码将被重写如下：
 
-[PRE17]
+```py
+try:
+    with open(filename) as f:
+        ...
+except FileNotFoundError as e:
+    logger.error(e)
+```
 
 更喜欢 EAFP 而不是 LBYL。
 
@@ -414,15 +617,37 @@ EAFP 的理念是，我们编写代码以便直接执行操作，然后在以后
 
 从我们需要的数据结构的角度来思考，我们意识到以恒定时间访问特定客户的记录是一个很好的特性。因此，像`policy_transaction[customer_id]`这样的接口看起来很不错。从这里，我们可能会认为可订阅的对象是一个好主意，进一步地，我们可能会陷入认为我们需要的对象是一个字典：
 
-[PRE18]
+```py
+class TransactionalPolicy(collections.UserDict):
+    """Example of an incorrect use of inheritance."""
+
+    def change_in_policy(self, customer_id, **new_policy_data):
+        self[customer_id].update(**new_policy_data)
+```
 
 有了这段代码，我们可以通过其标识符获取有关客户的策略的信息：
 
-[PRE19]
+```py
+>>> policy = TransactionalPolicy({
+...     "client001": { 
+...         "fee": 1000.0, 
+...         "expiration_date": datetime(2020, 1, 3), 
+...     } 
+... }) 
+>>> policy["client001"]
+{'fee': 1000.0, 'expiration_date': datetime.datetime(2020, 1, 3, 0, 0)}
+>>> policy.change_in_policy("client001", expiration_date=datetime(2020, 1, 4))
+>>> policy["client001"]
+{'fee': 1000.0, 'expiration_date': datetime.datetime(2020, 1, 4, 0, 0)}
+```
 
 当然，我们在第一次实现中实现了我们想要的接口，但是代价是什么？现在，这个类有了很多额外的行为，执行了不必要的方法：
 
-[PRE20]
+```py
+>>> dir(policy)
+[ # all magic and special method have been omitted for brevity...
+ 'change_in_policy', 'clear', 'copy', 'data', 'fromkeys', 'get', 'items', 'keys', 'pop', 'popitem', 'setdefault', 'update', 'values']
+```
 
 这个设计至少存在两个主要问题。一方面，层次结构是错误的。从基类创建一个新类在概念上意味着它是类的更具体的版本（因此得名）。`TransactionalPolicy`怎么会是一个字典呢？这有意义吗？请记住，这是对象的公共接口的一部分，所以用户会看到这个类，它们的层次结构，并且会注意到这样一个奇怪的特化，以及它的公共方法。
 
@@ -434,7 +659,22 @@ EAFP 的理念是，我们编写代码以便直接执行操作，然后在以后
 
 这里的正确解决方案是使用组合。`TransactionalPolicy`不是一个字典——它使用一个字典。它应该在一个私有属性中存储一个字典，并通过代理从该字典实现`__getitem__()`，然后只实现它所需的其余公共方法：
 
-[PRE21]
+```py
+class TransactionalPolicy:
+    """Example refactored to use composition."""
+
+    def __init__(self, policy_data, **extra_data):
+        self._data = {**policy_data, **extra_data}
+
+    def change_in_policy(self, customer_id, **new_policy_data):
+        self._data[customer_id].update(**new_policy_data)
+
+    def __getitem__(self, customer_id):
+        return self._data[customer_id]
+
+    def __len__(self):
+        return len(self._data)
+```
 
 这种方式不仅在概念上是正确的，而且更具扩展性。如果底层数据结构（目前是字典）在将来发生变化，只要保持接口不变，对象的调用者就不会受到影响。这减少了耦合，最小化了涟漪效应，允许更好的重构（单元测试不应该被改变），并使代码更易于维护。
 
@@ -458,19 +698,50 @@ Python 支持多重继承。继承，当使用不当时，会导致设计问题�
 
 有了类属性的值，这将变得明显：
 
-[PRE22]
+```py
+class BaseModule:
+    module_name = "top"
 
-[PRE23]
+    def __init__(self, module_name):
+        self.name = module_name
+
+    def __str__(self):
+        return f"{self.module_name}:{self.name}"
+
+class BaseModule1(BaseModule):
+    module_name = "module-1"
+
+class BaseModule2(BaseModule):
+    module_name = "module-2"
+
+class BaseModule3(BaseModule):
+    module_name = "module-3"
+
+class ConcreteModuleA12(BaseModule1, BaseModule2):
+    """Extend 1 & 2"""
+
+```
+
+```py
+class ConcreteModuleB23(BaseModule2, BaseModule3):
+    """Extend 2 & 3"""
+```
 
 现在，让我们测试一下调用了哪个方法：
 
-[PRE24]
+```py
+>>> str(ConcreteModuleA12("test"))
+'module-1:test'
+```
 
 没有冲突。Python 通过使用称为**C3 线性化**或 MRO 的算法来解决这个问题，该算法定义了方法将被调用的确定性方式。
 
 实际上，我们可以明确地询问类的解析顺序：
 
-[PRE25]
+```py
+>>> [cls.__name__ for cls in ConcreteModuleA12.mro()]
+['ConcreteModuleA12', 'BaseModule1', 'BaseModule2', 'BaseModule', 'object']
+```
 
 了解在继承结构中方法将如何解析可以在设计类时对我们有利，因为我们可以利用混入。
 
@@ -480,15 +751,34 @@ Python 支持多重继承。继承，当使用不当时，会导致设计问题�
 
 想象我们有一个简单的解析器，它接受一个字符串，并通过破折号(-)分隔的值提供迭代：
 
-[PRE26]
+```py
+class BaseTokenizer:
+
+    def __init__(self, str_token):
+        self.str_token = str_token
+
+    def __iter__(self):
+        yield from self.str_token.split("-")
+```
 
 这非常直观：
 
-[PRE27]
+```py
+>>> tk = BaseTokenizer("28a2320b-fd3f-4627-9792-a2b38e3c46b0")
+>>> list(tk)
+['28a2320b', 'fd3f', '4627', '9792', 'a2b38e3c46b0']
+```
 
 但现在我们希望将值发送为大写，而不改变基类。对于这个简单的例子，我们可以创建一个新类，但想象一下，许多类已经从`BaseTokenizer`扩展了，我们不想替换所有这些类。我们可以将一个新类混合到处理这种转换的层次结构中：
 
-[PRE28]
+```py
+class UpperIterableMixin:
+    def __iter__(self):
+        return map(str.upper, super().__iter__())
+
+class Tokenizer(UpperIterableMixin, BaseTokenizer):
+    pass
+```
 
 新的`Tokenizer`类非常简单。它不需要任何代码，因为它利用了 mixin。这种混合类型充当一种装饰器。根据我们刚才看到的，`Tokenizer`将从 mixin 中获取`__iter__`，而这个 mixin 又通过调用`super()`委托给了下一行中的类（即`BaseTokenizer`），但它将其值转换为大写，从而产生了期望的效果。
 
@@ -512,7 +802,23 @@ Python 中的第一条规则是所有参数都是按值传递的。总是。这�
 
 在接下来的内容中我们可以看到区别：
 
-[PRE29]
+```py
+>>> def function(argument):
+...     argument += " in function"
+...     print(argument)
+... 
+>>> immutable = "hello"
+>>> function(immutable)
+hello in function
+>>> mutable = list("hello")
+>>> immutable
+'hello'
+>>> function(mutable)
+['h', 'e', 'l', 'l', 'o', ' ', 'i', 'n', ' ', 'f', 'u', 'n', 'c', 't', 'i', 'o', 'n']
+>>> mutable
+['h', 'e', 'l', 'l', 'o', ' ', 'i', 'n', ' ', 'f', 'u', 'n', 'c', 't', 'i', 'o', 'n']
+>>> 
+```
 
 这可能看起来像是一个不一致，但实际上并不是。当我们传递第一个参数，一个字符串，这个参数被分配给函数中的参数。由于字符串对象是不可变的，类似`"argument += <expression>"`这样的语句实际上会创建一个新对象`"argument + <expression>"`，并将其分配回参数。在那一点上，`argument`只是函数范围内的一个局部变量，与调用者原始的变量无关。
 
@@ -534,19 +840,81 @@ Python 以及其他语言都有内置函数和结构，可以接受可变数量�
 
 假设有一个函数需要三个位置参数。在代码的某个部分，我们恰好有一个列表中我们想要传递给函数的参数，顺序与函数期望的顺序相同。我们可以使用打包机制，一次性将它们全部传递给一个指令，而不是一个一个地按位置传递（即`list[0]`到第一个元素，`list[1]`到第二个元素，依此类推），这样做真的不符合 Python 的风格。
 
-[PRE30]
+```py
+>>> def f(first, second, third):
+...     print(first)
+...     print(second)
+...     print(third)
+... 
+>>> l = [1, 2, 3]
+>>> f(*l)
+1
+2
+3
+```
 
 打包机制的好处在于它也可以反过来使用。如果我们想要按照它们各自的位置从列表中提取变量的值，我们可以这样赋值：
 
-[PRE31]
+```py
+>>> a, b, c = [1, 2, 3]
+>>> a
+1
+>>> b
+2
+>>> c
+3
+```
 
 部分解包也是可能的。假设我们只对序列的第一个值感兴趣（可以是列表、元组或其他内容），并且在某个点之后，我们只想保留其余的部分在一起。我们可以分配我们需要的变量，然后将其余部分放在一个打包的列表下。解包的顺序没有限制。如果没有东西放在其中一个解包的子部分中，结果将是一个空列表。鼓励读者在 Python 终端上尝试以下清单中呈现的示例，并且还要探索解包也适用于生成器：
 
-[PRE32]
+```py
+>>> def show(e, rest):
+...     print("Element: {0} - Rest: {1}".format(e, rest))
+... 
+>>> first, *rest = [1, 2, 3, 4, 5]
+>>> show(first, rest)
+Element: 1 - Rest: [2, 3, 4, 5]
+>>> *rest, last = range(6)
+>>> show(last, rest)
+Element: 5 - Rest: [0, 1, 2, 3, 4]
+>>> first, *middle, last = range(6)
+>>> first
+0
+>>> middle
+[1, 2, 3, 4]
+>>> last
+5
+>>> first, last, *empty = (1, 2)
+>>> first
+1
+>>> last
+2
+>>> empty
+[]
+```
 
 解包变量的最佳用途之一可以在迭代中找到。当我们必须迭代一系列元素，并且每个元素依次是一个序列时，同时进行解包是一个很好的主意。为了看到这种情况的示例，我们假装有一个函数接收一个数据库行的列表，并且负责从这些数据中创建用户。第一个实现从行中每列的位置获取值来构造用户，这一点根本不符合惯例。第二个实现在迭代时使用了解包：
 
-[PRE33]
+```py
+USERS = [(i, f"first_name_{i}", "last_name_{i}") for i in range(1_000)]
+
+class User:
+    def __init__(self, user_id, first_name, last_name):
+        self.user_id = user_id
+        self.first_name = first_name
+        self.last_name = last_name
+
+def bad_users_from_rows(dbrows) -> list:
+    """A bad case (non-pythonic) of creating ``User``s from DB rows."""
+    return [User(row[0], row[1], row[2]) for row in dbrows]
+
+def users_from_rows(dbrows) -> list:
+    """Create ``User``s from DB rows."""
+    return [
+        User(user_id, first_name, last_name)
+        for (user_id, first_name, last_name) in dbrows
+    ]
+```
 
 注意第二个版本要容易阅读得多。在函数的第一个版本（`bad_users_from_rows`）中，我们的数据以`row[0]`、`row[1]`和`row[2]`的形式表示，这并没有告诉我们它们是什么。另一方面，像`user_id`、`first_name`和`last_name`这样的变量就不言自明了。
 
@@ -554,21 +922,40 @@ Python 以及其他语言都有内置函数和结构，可以接受可变数量�
 
 这种情况的一个例子可以在标准库中找到，就在`max`函数中，它的定义如下：
 
-[PRE34]
+```py
+max(...)
+    max(iterable, *[, default=obj, key=func]) -> value
+    max(arg1, arg2, *args, *[, key=func]) -> value
+
+    With a single iterable argument, return its biggest item. The
+    default keyword-only argument specifies an object to return if
+    the provided iterable is empty.
+    With two or more arguments, return the largest argument.
+```
 
 还有一种类似的表示法，使用两个星号（`**`）用于关键字参数。如果我们有一个字典，并且将其带有双星号传递给函数，它将使用键作为参数的名称，并将该键的值作为该函数中该参数的值。
 
 例如，看看这个：
 
-[PRE35]
+```py
+function(**{"key": "value"})
+```
 
 这与以下内容相同：
 
-[PRE36]
+```py
+function(key="value")
+```
 
 相反，如果我们定义一个以两个星号符号开头的参数的函数，将会发生相反的情况——通过关键字提供的参数将被打包成一个字典：
 
-[PRE37]
+```py
+>>> def function(**kwargs):
+...     print(kwargs)
+... 
+>>> function(key="value")
+{'key': 'value'}
+```
 
 # 函数中的参数数量
 
@@ -602,7 +989,9 @@ Python 以及其他语言都有内置函数和结构，可以接受可变数量�
 
 有时，如果我们发现大部分参数属于一个公共对象，改变参数可能是一种简单的方法。例如，考虑这样一个函数调用：
 
-[PRE38]
+```py
+track_request(request.headers, request.ip_addr, request.request_id)
+```
 
 现在，这个函数可能会或可能不会接受额外的参数，但有一点非常明显：所有的参数都依赖于`request`，那么为什么不直接传递`request`对象呢？这是一个简单的改变，但它显著改进了代码。正确的函数调用应该是`track_request(request)`——更不用说，从语义上讲，这也更有意义。
 
@@ -634,11 +1023,31 @@ Python 以及其他语言都有内置函数和结构，可以接受可变数量�
 
 让我们给你一个快速的例子。Python 允许通过参数传递函数，因为它们只是常规对象。我们可以利用这个特性来实现一些正交性。我们有一个计算价格的函数，包括税金和折扣，但之后我们想要格式化获得的最终价格：
 
-[PRE39]
+```py
+def calculate_price(base_price: float, tax: float, discount: float) -> 
+    return (base_price * (1 + tax)) * (1 - discount)
+
+def show_price(price: float) -> str:
+    return "$ {0:,.2f}".format(price)
+
+def str_final_price(
+    base_price: float, tax: float, discount: float, fmt_function=str
+) -> str:
+    return fmt_function(calculate_price(base_price, tax, discount))
+```
 
 请注意，顶层函数正在组合两个正交函数。需要注意的一件事是我们如何计算价格，这也是另一个函数将被表示的方式。改变一个不会改变另一个。如果我们没有特别传递任何内容，它将使用字符串转换作为默认表示函数，如果我们选择传递自定义函数，结果字符串将改变。但是，对`show_price`的更改不会影响`calculate_price`。我们可以对任一函数进行更改，知道另一个函数将保持原样：
 
-[PRE40]
+```py
+>>> str_final_price(10, 0.2, 0.5)
+'6.0'
+
+>>> str_final_price(1000, 0.2, 0)
+'1200.0'
+
+>>> str_final_price(1000, 0.2, 0.1, fmt_function=show_price)
+'$ 1,080.00'
+```
 
 正交性与质量有关。如果代码的两部分是正交的，这意味着一个可以更改而不影响另一个。这意味着更改的部分具有单元测试，这些单元测试也与应用程序的其余部分的单元测试正交。在这种假设下，如果这些测试通过，我们可以假设（在一定程度上）应用程序是正确的，而不需要进行完整的回归测试。
 
@@ -660,7 +1069,9 @@ Python 以及其他语言都有内置函数和结构，可以接受可变数量�
 
 项目还有一个约定也是有帮助的。例如，我们可以创建一个特定于项目中要使用的常量值的文件，而不是在所有文件中放置`constants`，然后从那里导入它：
 
-[PRE41]
+```py
+from mypoject.constants import CONNECTION_TIMEOUT
+```
 
 像这样集中信息使得代码更容易重用，并有助于避免无意中的重复。
 

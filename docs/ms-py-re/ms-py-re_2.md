@@ -184,7 +184,7 @@ u'Espa\xf1a \\n'
 让我们看看当字符串不以`<HTML>`开头时会发生什么，如下面的代码行所示：
 
 ```py
-**>>> pattern.match("**⇢**<HTML>")**
+>>> pattern.match("**⇢**<HTML>")
     None
 ```
 
@@ -203,8 +203,8 @@ u'Espa\xf1a \\n'
 >>> pattern = re.compile(r'<HTML>')
 >>> pattern.match("⇢ ⇢ <HTML>")
     None
-**>>> pattern.match("**⇢ ⇢ **<HTML>", 2)**
- **<_sre.SRE_Match at 0x1043bc850>**
+>>> pattern.match("**⇢ ⇢ **<HTML>", 2)
+ **<_sre.SRE_Match at 0x1043bc850>
 
 ```
 
@@ -278,12 +278,12 @@ u'Espa\xf1a \\n'
 在下面的例子中，第一个`search`匹配`<HTML>`，因为它在字符串的开头，但第二个`search`不匹配，因为字符串以空格开头。最后，在第三个`search`中，我们有一个匹配，因为我们在新行后找到了`<HTML>`，这要归功于`re.MULTILINE`。
 
 ```py
-**>>> pattern = re.compile(r'^<HTML>', re.MULTILINE)**
+>>> pattern = re.compile(r'^<HTML>', re.MULTILINE)
 >>> pattern.search("<HTML>")
    <_sre.SRE_Match at 0x1043d3100>
 >>> pattern.search("⇢<HTML>")
    None
-**>>> pattern.search("**⇢ ⇢**\n<HTML>")**
+>>> pattern.search("**⇢ ⇢**\n<HTML>")
    <_sre.SRE_Match at 0x1043bce68>
 ```
 
@@ -294,7 +294,7 @@ u'Espa\xf1a \\n'
   <_sre.SRE_Match at 0x1043bced0>
 >>> pattern.search('</div></body>\n<HTML>', 4)
   <_sre.SRE_Match at 0x1036d77e8>
-**>>> pattern.search("**  **\n<HTML>", 4)**
+>>> pattern.search("**  **\n<HTML>", 4)
    None
 ```
 
@@ -402,7 +402,7 @@ StopIteration
 在前面的例子中，匹配是`\n`；因此，字符串是使用它作为分隔符进行分割的。让我们看一个更复杂的例子，如何获取字符串中的单词：
 
 ```py
->>> pattern = re.compile(**r"\W")**
+>>> pattern = re.compile(**r"\W")
 >>> pattern.split("hello⇢world")
 ['Hello', 'world']
 ```
@@ -410,7 +410,7 @@ StopIteration
 在前面的例子中，我们定义了一个匹配任何非字母数字字符的模式。因此，在这种情况下，匹配发生在空格中。这就是为什么字符串被分割成单词。让我们看另一个例子来更好地理解它：
 
 ```py
->>> pattern = re.compile(**r"\W")**
+>>> pattern = re.compile(**r"\W")
 >>> pattern.findall("hello⇢world")
 ['⇢']
 ```
@@ -519,8 +519,8 @@ StopIteration
 ```py
 >>> text = "imagine⇢a⇢new⇢*world*,⇢a⇢magic⇢*world*"
 >>> pattern = re.compile(r'\*(.*?)\*')
->>> pattern.sub(r"<b>**\g1**
-**1**<\\b>", text)
+>>> pattern.sub(r"<b>**\g1
+1**<\\b>", text)
  error: bad group name
 ```
 

@@ -46,24 +46,24 @@ def eggs(function):
 看看前面的例子，我们意识到这将`spam`作为`function`的参数，并再次返回该函数，实际上什么也没有改变。但大多数装饰器会嵌套函数。以下装饰器将打印发送到`spam`的所有参数，并将它们不加修改地传递给`spam`：
 
 ```py
-**>>> import functools**
+>>> import functools
 
-**>>> def eggs(function):**
-**...    @functools.wraps(function)**
-**...    def _eggs(*args, **kwargs):**
-**...        print('%r got args: %r and kwargs: %r' % (**
-**...            function.__name__, args, kwargs))**
-**...        return function(*args, **kwargs)**
-**...**
-**...    return _eggs**
+>>> def eggs(function):
+...    @functools.wraps(function)
+...    def _eggs(*args, **kwargs):
+...        print('%r got args: %r and kwargs: %r' % (
+...            function.__name__, args, kwargs))
+...        return function(*args, **kwargs)
+...
+...    return _eggs
 
-**>>> @eggs**
-**... def spam(a, b, c):**
-**...     return a * b + c**
+>>> @eggs
+... def spam(a, b, c):
+...     return a * b + c
 
-**>>> spam(1, 2, 3)**
-**'spam' got args: (1, 2, 3) and kwargs: {}**
-**5**
+>>> spam(1, 2, 3)
+'spam' got args: (1, 2, 3) and kwargs: {}
+5
 
 ```
 
@@ -74,52 +74,52 @@ def eggs(function):
 每当编写装饰器时，一定要确保添加`functools.wraps`来包装内部函数。如果不包装它，您将丢失原始函数的所有属性，这可能会导致混淆。看看下面的代码，没有`functools.wraps`：
 
 ```py
-**>>> def eggs(function):**
-**...    def _eggs(*args, **kwargs):**
-**...        return function(*args, **kwargs)**
-**...    return _eggs**
+>>> def eggs(function):
+...    def _eggs(*args, **kwargs):
+...        return function(*args, **kwargs)
+...    return _eggs
 
-**>>> @eggs**
-**... def spam(a, b, c):**
-**...     '''The spam function Returns a * b + c'''**
-**...     return a * b + c**
+>>> @eggs
+... def spam(a, b, c):
+...     '''The spam function Returns a * b + c'''
+...     return a * b + c
 
-**>>> help(spam)**
-**Help on function _eggs in module ...:**
-**<BLANKLINE>**
-**_eggs(*args, **kwargs)**
-**<BLANKLINE>**
+>>> help(spam)
+Help on function _eggs in module ...:
+<BLANKLINE>
+_eggs(*args, **kwargs)
+<BLANKLINE>
 
-**>>> spam.__name__**
-**'_eggs'**
+>>> spam.__name__
+'_eggs'
 
 ```
 
 现在，我们的`spam`方法再也没有文档了，名称也消失了。它已被重命名为`_eggs`。由于我们确实调用了`_eggs`，这是可以理解的，但对于依赖这些信息的代码来说非常不方便。现在我们将尝试使用`functools.wraps`进行相同的代码，只有一个细微的区别：
 
 ```py
-**>>> import functools**
+>>> import functools
 
-**>>> def eggs(function):**
-**...     @functools.wraps(function)**
-**...     def _eggs(*args, **kwargs):**
-**...         return function(*args, **kwargs)**
-**...     return _eggs**
+>>> def eggs(function):
+...     @functools.wraps(function)
+...     def _eggs(*args, **kwargs):
+...         return function(*args, **kwargs)
+...     return _eggs
 
-**>>> @eggs**
-**... def spam(a, b, c):**
-**...     '''The spam function Returns a * b + c'''**
-**...     return a * b + c**
+>>> @eggs
+... def spam(a, b, c):
+...     '''The spam function Returns a * b + c'''
+...     return a * b + c
 
-**>>> help(spam)**
-**Help on function spam in module ...:**
-**<BLANKLINE>**
-**spam(a, b, c)**
- **The spam function Returns a * b + c**
-**<BLANKLINE>**
+>>> help(spam)
+Help on function spam in module ...:
+<BLANKLINE>
+spam(a, b, c)
+ **The spam function Returns a * b + c
+<BLANKLINE>
 
-**>>> spam.__name__**
-**'spam'**
+>>> spam.__name__
+'spam'
 
 ```
 
@@ -146,44 +146,44 @@ def eggs(function):
 对于这个例子，我们使用了一个非常简单的函数，但我们都知道在现实生活中，我们并不总是那么幸运：
 
 ```py
-**>>> def spam(eggs):**
-**...     return 'spam' * (eggs % 5)**
-**...**
-**>>> output = spam(3)**
+>>> def spam(eggs):
+...     return 'spam' * (eggs % 5)
+...
+>>> output = spam(3)
 
 ```
 
 让我们拿我们简单的`spam`函数，并添加一些输出，这样我们就可以看到内部发生了什么：
 
 ```py
-**>>> def spam(eggs):**
-**...     output = 'spam' * (eggs % 5)**
-**...     print('spam(%r): %r' % (eggs, output))**
-**...     return output**
-**...**
-**>>> output = spam(3)**
-**spam(3): 'spamspamspam'**
+>>> def spam(eggs):
+...     output = 'spam' * (eggs % 5)
+...     print('spam(%r): %r' % (eggs, output))
+...     return output
+...
+>>> output = spam(3)
+spam(3): 'spamspamspam'
 
 ```
 
 虽然这样做是有效的，但是有一个小装饰器来解决这个问题会不会更好呢？
 
 ```py
-**>>> def debug(function):**
-**...     @functools.wraps(function)**
-**...     def _debug(*args, **kwargs):**
-**...         output = function(*args, **kwargs)**
-**...         print('%s(%r, %r): %r' % (function.__name__, args, kwargs, output))**
-**...         return output**
-**...     return _debug**
-**...**
-**>>>**
-**>>> @debug**
-**... def spam(eggs):**
-**...     return 'spam' * (eggs % 5)**
-**...**
-**>>> output = spam(3)**
-**spam((3,), {}): 'spamspamspam'**
+>>> def debug(function):
+...     @functools.wraps(function)
+...     def _debug(*args, **kwargs):
+...         output = function(*args, **kwargs)
+...         print('%s(%r, %r): %r' % (function.__name__, args, kwargs, output))
+...         return output
+...     return _debug
+...
+>>>
+>>> @debug
+... def spam(eggs):
+...     return 'spam' * (eggs % 5)
+...
+>>> output = spam(3)
+spam((3,), {}): 'spamspamspam'
 
 ```
 
@@ -215,36 +215,36 @@ some_module.some_function()
 记忆化是使某些代码运行速度更快的一个简单技巧。这里的基本技巧是存储输入和期望输出的映射，这样你只需要计算一次值。这种技术最常见的示例之一是演示天真（递归）的斐波那契函数：
 
 ```py
-**>>> import functools**
+>>> import functools
 
-**>>> def memoize(function):**
-**...     function.cache = dict()**
-**...**
-**...     @functools.wraps(function)**
-**...     def _memoize(*args):**
-**...         if args not in function.cache:**
-**...             function.cache[args] = function(*args)**
-**...         return function.cache[args]**
-**...     return _memoize**
+>>> def memoize(function):
+...     function.cache = dict()
+...
+...     @functools.wraps(function)
+...     def _memoize(*args):
+...         if args not in function.cache:
+...             function.cache[args] = function(*args)
+...         return function.cache[args]
+...     return _memoize
 
-**>>> @memoize**
-**... def fibonacci(n):**
-**...     if n < 2:**
-**...         return n**
-**...     else:**
-**...         return fibonacci(n - 1) + fibonacci(n - 2)**
+>>> @memoize
+... def fibonacci(n):
+...     if n < 2:
+...         return n
+...     else:
+...         return fibonacci(n - 1) + fibonacci(n - 2)
 
-**>>> for i in range(1, 7):**
-**...     print('fibonacci %d: %d' % (i, fibonacci(i)))**
-**fibonacci 1: 1**
-**fibonacci 2: 1**
-**fibonacci 3: 2**
-**fibonacci 4: 3**
-**fibonacci 5: 5**
-**fibonacci 6: 8**
+>>> for i in range(1, 7):
+...     print('fibonacci %d: %d' % (i, fibonacci(i)))
+fibonacci 1: 1
+fibonacci 2: 1
+fibonacci 3: 2
+fibonacci 4: 3
+fibonacci 5: 5
+fibonacci 6: 8
 
-**>>> fibonacci.__wrapped__.cache**
-**{(5,): 5, (0,): 0, (6,): 8, (1,): 1, (2,): 1, (3,): 2, (4,): 3}**
+>>> fibonacci.__wrapped__.cache
+{(5,): 5, (0,): 0, (6,): 8, (1,): 1, (2,): 1, (3,): 2, (4,): 3}
 
 ```
 
@@ -259,37 +259,37 @@ some_module.some_function()
 为了演示`lru_cache`的内部工作原理，我们将计算`fibonacci(100)`，这将使我们的计算机忙到宇宙的尽头，而没有任何缓存。此外，为了确保我们实际上可以看到`fibonacci`函数被调用的次数，我们将添加一个额外的装饰器来跟踪计数，如下所示：
 
 ```py
-**>>> import functools**
+>>> import functools
 
-**# Create a simple call counting decorator**
-**>>> def counter(function):**
-**...     function.calls = 0**
-**...     @functools.wraps(function)**
-**...     def _counter(*args, **kwargs):**
-**...         function.calls += 1**
-**...         return function(*args, **kwargs)**
-**...     return _counter**
+# Create a simple call counting decorator
+>>> def counter(function):
+...     function.calls = 0
+...     @functools.wraps(function)
+...     def _counter(*args, **kwargs):
+...         function.calls += 1
+...         return function(*args, **kwargs)
+...     return _counter
 
-**# Create a LRU cache with size 3** 
-**>>> @functools.lru_cache(maxsize=3)**
-**... @counter**
-**... def fibonacci(n):**
-**...     if n < 2:**
-**...         return n**
-**...     else:**
-**...         return fibonacci(n - 1) + fibonacci(n - 2)**
+# Create a LRU cache with size 3** 
+>>> @functools.lru_cache(maxsize=3)
+... @counter
+... def fibonacci(n):
+...     if n < 2:
+...         return n
+...     else:
+...         return fibonacci(n - 1) + fibonacci(n - 2)
 
-**>>> fibonacci(100)**
-**354224848179261915075**
+>>> fibonacci(100)
+354224848179261915075
 
-**# The LRU cache offers some useful statistics**
-**>>> fibonacci.cache_info()**
-**CacheInfo(hits=98, misses=101, maxsize=3, currsize=3)**
+# The LRU cache offers some useful statistics
+>>> fibonacci.cache_info()
+CacheInfo(hits=98, misses=101, maxsize=3, currsize=3)
 
-**# The result from our counter function which is now wrapped both by**
-**# our counter and the cache**
-**>>> fibonacci.__wrapped__.__wrapped__.calls**
-**101**
+# The result from our counter function which is now wrapped both by
+# our counter and the cache
+>>> fibonacci.__wrapped__.__wrapped__.calls
+101
 
 ```
 
@@ -304,29 +304,29 @@ some_module.some_function()
 以前的示例大多使用了没有任何参数的简单装饰器。正如我们已经在`lru_cache`中看到的那样，装饰器也可以接受参数，因为它们只是常规函数，但这会给装饰器增加一个额外的层。这意味着添加参数可以像下面这样简单：
 
 ```py
-**>>> import functools**
+>>> import functools
 
-**>>> def add(extra_n=1):**
-**...     'Add extra_n to the input of the decorated function'**
-**...**
-**...     # The inner function, notice that this is the actual**
-**...     # decorator**
-**...     def _add(function):**
-**...         # The actual function that will be called**
-**...         @functools.wraps(function)**
-**...         def __add(n):**
-**...             return function(n + extra_n)**
-**...**
-**...         return __add**
-**...**
-**...     return _add**
+>>> def add(extra_n=1):
+...     'Add extra_n to the input of the decorated function'
+...
+...     # The inner function, notice that this is the actual
+...     # decorator
+...     def _add(function):
+...         # The actual function that will be called
+...         @functools.wraps(function)
+...         def __add(n):
+...             return function(n + extra_n)
+...
+...         return __add
+...
+...     return _add
 
-**>>> @add(extra_n=2)**
-**... def eggs(n):**
-**...     return 'eggs' * n**
+>>> @add(extra_n=2)
+... def eggs(n):
+...     return 'eggs' * n
 
-**>>> eggs(2)**
-**'eggseggseggseggs'**
+>>> eggs(2)
+'eggseggseggseggs'
 
 ```
 
@@ -353,60 +353,60 @@ add(eggs)(2)
 使用第一种方法，普通（非关键字）参数必须是装饰函数，其他两个检查仍然适用。我们仍然可以检查函数是否确实可调用，以及是否只有一个可用参数。以下是使用先前示例的修改版本的示例：
 
 ```py
-**>>> import functools**
+>>> import functools
 
-**>>> def add(*args, **kwargs):**
-**...     'Add n to the input of the decorated function'**
-**...**
-**...     # The default kwargs, we don't store this in kwargs**
-**...     # because we want to make sure that args and kwargs**
-**...     # can't both be filled**
-**...     default_kwargs = dict(n=1)**
-**...**
-**...     # The inner function, notice that this is actually a**
-**...     # decorator itself**
-**...     def _add(function):**
-**...         # The actual function that will be called**
-**...         @functools.wraps(function)**
-**...         def __add(n):**
-**...             default_kwargs.update(kwargs)**
-**...             return function(n + default_kwargs['n'])**
-**...**
-**...         return __add**
-**...**
-**...     if len(args) == 1 and callable(args[0]) and not kwargs:**
-**...         # Decorator call without arguments, just call it**
-**...         # ourselves**
-**...         return _add(args[0])**
-**...     elif not args and kwargs:**
-**...         # Decorator call with arguments, this time it will**
-**...         # automatically be executed with function as the**
-**...         # first argument**
-**...         default_kwargs.update(kwargs)**
-**...         return _add**
-**...     else:**
-**...         raise RuntimeError('This decorator only supports '**
-**...                            'keyword arguments')**
+>>> def add(*args, **kwargs):
+...     'Add n to the input of the decorated function'
+...
+...     # The default kwargs, we don't store this in kwargs
+...     # because we want to make sure that args and kwargs
+...     # can't both be filled
+...     default_kwargs = dict(n=1)
+...
+...     # The inner function, notice that this is actually a
+...     # decorator itself
+...     def _add(function):
+...         # The actual function that will be called
+...         @functools.wraps(function)
+...         def __add(n):
+...             default_kwargs.update(kwargs)
+...             return function(n + default_kwargs['n'])
+...
+...         return __add
+...
+...     if len(args) == 1 and callable(args[0]) and not kwargs:
+...         # Decorator call without arguments, just call it
+...         # ourselves
+...         return _add(args[0])
+...     elif not args and kwargs:
+...         # Decorator call with arguments, this time it will
+...         # automatically be executed with function as the
+...         # first argument
+...         default_kwargs.update(kwargs)
+...         return _add
+...     else:
+...         raise RuntimeError('This decorator only supports '
+...                            'keyword arguments')
 
-**>>> @add**
-**... def spam(n):**
-**...     return 'spam' * n**
+>>> @add
+... def spam(n):
+...     return 'spam' * n
 
-**>>> @add(n=3)**
-**... def eggs(n):**
-**...     return 'eggs' * n**
+>>> @add(n=3)
+... def eggs(n):
+...     return 'eggs' * n
 
-**>>> spam(3)**
-**'spamspamspamspam'**
+>>> spam(3)
+'spamspamspamspam'
 
-**>>> eggs(2)**
-**'eggseggseggseggseggs'**
+>>> eggs(2)
+'eggseggseggseggseggs'
 
-**>>> @add(3)**
-**... def bacon(n):**
-**...     return 'bacon' * n**
-**Traceback (most recent call last):   ...**
-**RuntimeError: This decorator only supports keyword arguments**
+>>> @add(3)
+... def bacon(n):
+...     return 'bacon' * n
+Traceback (most recent call last):   ...
+RuntimeError: This decorator only supports keyword arguments
 
 ```
 
@@ -417,27 +417,27 @@ add(eggs)(2)
 与创建常规函数装饰器的方式类似，也可以使用类来创建装饰器。毕竟，函数只是一个可调用对象，类也可以实现可调用接口。以下装饰器与我们之前使用的`debug`装饰器类似，但使用的是类而不是常规函数：
 
 ```py
-**>>> import functools**
+>>> import functools
 
-**>>> class Debug(object):**
-**...**
-**...     def __init__(self, function):**
-**...         self.function = function**
-**...         # functools.wraps for classes**
-**...         functools.update_wrapper(self, function)**
-**...**
-**...     def __call__(self, *args, **kwargs):**
-**...         output = self.function(*args, **kwargs)**
-**...         print('%s(%r, %r): %r' % (**
-**...             self.function.__name__, args, kwargs, output))**
-**...         return output**
+>>> class Debug(object):
+...
+...     def __init__(self, function):
+...         self.function = function
+...         # functools.wraps for classes
+...         functools.update_wrapper(self, function)
+...
+...     def __call__(self, *args, **kwargs):
+...         output = self.function(*args, **kwargs)
+...         print('%s(%r, %r): %r' % (
+...             self.function.__name__, args, kwargs, output))
+...         return output
 
-**>>> @Debug**
-**... def spam(eggs):**
-**...     return 'spam' * (eggs % 5)**
-**...**
-**>>> output = spam(3)**
-**spam((3,), {}): 'spamspamspam'**
+>>> @Debug
+... def spam(eggs):
+...     return 'spam' * (eggs % 5)
+...
+>>> output = spam(3)
+spam((3,), {}): 'spamspamspam'
 
 ```
 
@@ -475,79 +475,79 @@ add(eggs)(2)
 在重新创建`classmethod`和`staticmethod`之前，我们需要了解这些方法的预期行为：
 
 ```py
-**>>> import pprint**
+>>> import pprint
 
-**>>> class Spam(object):**
-**...**
-**...     def some_instancemethod(self, *args, **kwargs):**
-**...         print('self: %r' % self)**
-**...         print('args: %s' % pprint.pformat(args))**
-**...         print('kwargs: %s' % pprint.pformat(kwargs))**
-**...**
-**...     @classmethod**
-**...     def some_classmethod(cls, *args, **kwargs):**
-**...         print('cls: %r' % cls)**
-**...         print('args: %s' % pprint.pformat(args))**
-**...         print('kwargs: %s' % pprint.pformat(kwargs))**
-**...**
-**...     @staticmethod**
-**...     def some_staticmethod(*args, **kwargs):**
-**...         print('args: %s' % pprint.pformat(args))**
-**...         print('kwargs: %s' % pprint.pformat(kwargs))**
+>>> class Spam(object):
+...
+...     def some_instancemethod(self, *args, **kwargs):
+...         print('self: %r' % self)
+...         print('args: %s' % pprint.pformat(args))
+...         print('kwargs: %s' % pprint.pformat(kwargs))
+...
+...     @classmethod
+...     def some_classmethod(cls, *args, **kwargs):
+...         print('cls: %r' % cls)
+...         print('args: %s' % pprint.pformat(args))
+...         print('kwargs: %s' % pprint.pformat(kwargs))
+...
+...     @staticmethod
+...     def some_staticmethod(*args, **kwargs):
+...         print('args: %s' % pprint.pformat(args))
+...         print('kwargs: %s' % pprint.pformat(kwargs))
 
-**# Create an instance so we can compare the difference between**
-**# executions with and without instances easily**
-**>>> spam = Spam()**
+# Create an instance so we can compare the difference between
+# executions with and without instances easily
+>>> spam = Spam()
 
-**# With an instance (note the lowercase spam)**
-**>>> spam.some_instancemethod(1, 2, a=3, b=4)**
-**self: <...Spam object at 0x...>**
-**args: (1, 2)**
-**kwargs: {'a': 3, 'b': 4}**
+# With an instance (note the lowercase spam)
+>>> spam.some_instancemethod(1, 2, a=3, b=4)
+self: <...Spam object at 0x...>
+args: (1, 2)
+kwargs: {'a': 3, 'b': 4}
 
-**# Without an instance (note the capitalized Spam)**
-**>>> Spam.some_instancemethod()**
-**Traceback (most recent call last):**
+# Without an instance (note the capitalized Spam)
+>>> Spam.some_instancemethod()
+Traceback (most recent call last):
 
- **...**
-**TypeError: some_instancemethod() missing 1 required positional argument: 'self'**
+ **...
+TypeError: some_instancemethod() missing 1 required positional argument: 'self'
 
-**# But what if we add parameters? Be very careful with these!**
-**# Our first argument is now used as an argument, this can give**
-**# very strange and unexpected errors**
-**>>> Spam.some_instancemethod(1, 2, a=3, b=4)**
-**self: 1**
-**args: (2,)**
-**kwargs: {'a': 3, 'b': 4}**
+# But what if we add parameters? Be very careful with these!
+# Our first argument is now used as an argument, this can give
+# very strange and unexpected errors
+>>> Spam.some_instancemethod(1, 2, a=3, b=4)
+self: 1
+args: (2,)
+kwargs: {'a': 3, 'b': 4}
 
-**# Classmethods are expectedly identical**
-**>>> spam.some_classmethod(1, 2, a=3, b=4)**
-**cls: <class '...Spam'>**
-**args: (1, 2)**
-**kwargs: {'a': 3, 'b': 4}**
+# Classmethods are expectedly identical
+>>> spam.some_classmethod(1, 2, a=3, b=4)
+cls: <class '...Spam'>
+args: (1, 2)
+kwargs: {'a': 3, 'b': 4}
 
-**>>> Spam.some_classmethod()**
-**cls: <class '...Spam'>**
-**args: ()**
-**kwargs: {}**
+>>> Spam.some_classmethod()
+cls: <class '...Spam'>
+args: ()
+kwargs: {}
 
-**>>> Spam.some_classmethod(1, 2, a=3, b=4)**
-**cls: <class '...Spam'>**
-**args: (1, 2)**
-**kwargs: {'a': 3, 'b': 4}**
+>>> Spam.some_classmethod(1, 2, a=3, b=4)
+cls: <class '...Spam'>
+args: (1, 2)
+kwargs: {'a': 3, 'b': 4}
 
-**# Staticmethods are also identical**
-**>>> spam.some_staticmethod(1, 2, a=3, b=4)**
-**args: (1, 2)**
-**kwargs: {'a': 3, 'b': 4}**
+# Staticmethods are also identical
+>>> spam.some_staticmethod(1, 2, a=3, b=4)
+args: (1, 2)
+kwargs: {'a': 3, 'b': 4}
 
-**>>> Spam.some_staticmethod()**
-**args: ()**
-**kwargs: {}**
+>>> Spam.some_staticmethod()
+args: ()
+kwargs: {}
 
-**>>> Spam.some_staticmethod(1, 2, a=3, b=4)**
-**args: (1, 2)**
-**kwargs: {'a': 3, 'b': 4}**
+>>> Spam.some_staticmethod(1, 2, a=3, b=4)
+args: (1, 2)
+kwargs: {'a': 3, 'b': 4}
 
 ```
 
@@ -556,33 +556,33 @@ add(eggs)(2)
 在继续使用装饰器之前，您需要了解 Python 描述符的工作原理。描述符可用于修改对象属性的绑定行为。这意味着如果将描述符用作属性的值，您可以修改在对属性进行这些操作时设置、获取和删除的值。以下是这种行为的基本示例：
 
 ```py
-**>>> class MoreSpam(object):**
-**...**
-**...     def __init__(self, more=1):**
-**...         self.more = more**
-**...**
-**...     def __get__(self, instance, cls):**
-**...         return self.more + instance.spam**
-**...**
-**...     def __set__(self, instance, value):**
-**...         instance.spam = value - self.more**
+>>> class MoreSpam(object):
+...
+...     def __init__(self, more=1):
+...         self.more = more
+...
+...     def __get__(self, instance, cls):
+...         return self.more + instance.spam
+...
+...     def __set__(self, instance, value):
+...         instance.spam = value - self.more
 
-**>>> class Spam(object):**
-**...**
-**...     more_spam = MoreSpam(5)**
-**...**
-**...     def __init__(self, spam):**
-**...         self.spam = spam**
+>>> class Spam(object):
+...
+...     more_spam = MoreSpam(5)
+...
+...     def __init__(self, spam):
+...         self.spam = spam
 
-**>>> spam = Spam(1)**
-**>>> spam.spam**
-**1**
-**>>> spam.more_spam**
-**6**
+>>> spam = Spam(1)
+>>> spam.spam
+1
+>>> spam.more_spam
+6
 
-**>>> spam.more_spam = 10**
-**>>> spam.spam**
-**5**
+>>> spam.more_spam = 10
+>>> spam.spam
+5
 
 ```
 
@@ -622,45 +622,45 @@ class StaticMethod(object):
 `property`装饰器可能是 Python 中最常用的装饰器。它允许您向现有实例属性添加 getter/setter，以便您可以在将它们设置为实例属性之前添加验证器和修改值。`property`装饰器可以用作赋值和装饰器。下面的示例展示了这两种语法，以便我们知道从`property`装饰器中可以期望到什么：
 
 ```py
-**>>> class Spam(object):**
-**...**
-**...     def get_eggs(self):**
-**...         print('getting eggs')**
-**...         return self._eggs**
-**...**
-**...     def set_eggs(self, eggs):**
-**...         print('setting eggs to %s' % eggs)**
-**...         self._eggs = eggs**
-**...**
-**...     def delete_eggs(self):**
-**...         print('deleting eggs')**
-**...         del self._eggs**
-**...**
-**...     eggs = property(get_eggs, set_eggs, delete_eggs)**
-**...**
-**...     @property**
-**...     def spam(self):**
-**...         print('getting spam')**
-**...         return self._spam**
-**...**
-**...     @spam.setter**
-**...     def spam(self, spam):**
-**...         print('setting spam to %s' % spam)**
-**...         self._spam = spam**
-**...**
-**...     @spam.deleter**
-**...     def spam(self):**
-**...         print('deleting spam')**
-**...         del self._spam**
+>>> class Spam(object):
+...
+...     def get_eggs(self):
+...         print('getting eggs')
+...         return self._eggs
+...
+...     def set_eggs(self, eggs):
+...         print('setting eggs to %s' % eggs)
+...         self._eggs = eggs
+...
+...     def delete_eggs(self):
+...         print('deleting eggs')
+...         del self._eggs
+...
+...     eggs = property(get_eggs, set_eggs, delete_eggs)
+...
+...     @property
+...     def spam(self):
+...         print('getting spam')
+...         return self._spam
+...
+...     @spam.setter
+...     def spam(self, spam):
+...         print('setting spam to %s' % spam)
+...         self._spam = spam
+...
+...     @spam.deleter
+...     def spam(self):
+...         print('deleting spam')
+...         del self._spam
 
-**>>> spam = Spam()**
-**>>> spam.eggs = 123**
-**setting eggs to 123**
-**>>> spam.eggs**
-**getting eggs**
-**123**
-**>>> del spam.eggs**
-**deleting eggs**
+>>> spam = Spam()
+>>> spam.eggs = 123
+setting eggs to 123
+>>> spam.eggs
+getting eggs
+123
+>>> del spam.eggs
+deleting eggs
 
 ```
 
@@ -720,40 +720,40 @@ class Property(object):
 当然，还有更多实现这种效果的方法。在前面的段落中，我们看到了裸描述符的实现，在我们之前的例子中，我们看到了属性装饰器。一个更通用的类的解决方案是实现 `__getattr__` 或 `__getattribute__`。这里有一个简单的演示：
 
 ```py
-**>>> class Spam(object):**
-**...     def __init__(self):**
-**...         self.registry = {}**
-**...**
-**...     def __getattr__(self, key):**
-**...         print('Getting %r' % key)**
-**...         return self.registry.get(key, 'Undefined')**
-**...**
-**...     def __setattr__(self, key, value):**
-**...         if key == 'registry':**
-**...             object.__setattr__(self, key, value)**
-**...         else:**
-**...             print('Setting %r to %r' % (key, value))**
-**...             self.registry[key] = value**
-**...**
-**...     def __delattr__(self, key):**
-**...         print('Deleting %r' % key)**
-**...         del self.registry[key]**
+>>> class Spam(object):
+...     def __init__(self):
+...         self.registry = {}
+...
+...     def __getattr__(self, key):
+...         print('Getting %r' % key)
+...         return self.registry.get(key, 'Undefined')
+...
+...     def __setattr__(self, key, value):
+...         if key == 'registry':
+...             object.__setattr__(self, key, value)
+...         else:
+...             print('Setting %r to %r' % (key, value))
+...             self.registry[key] = value
+...
+...     def __delattr__(self, key):
+...         print('Deleting %r' % key)
+...         del self.registry[key]
 
-**>>> spam = Spam()**
+>>> spam = Spam()
 
-**>>> spam.a**
-**Getting 'a'**
-**'Undefined'**
+>>> spam.a
+Getting 'a'
+'Undefined'
 
-**>>> spam.a = 1**
-**Setting 'a' to 1**
+>>> spam.a = 1
+Setting 'a' to 1
 
-**>>> spam.a**
-**Getting 'a'**
-**1**
+>>> spam.a
+Getting 'a'
+1
 
-**>>> del spam.a**
-**Deleting 'a'**
+>>> del spam.a
+Deleting 'a'
 
 ```
 
@@ -772,32 +772,32 @@ Python 2.6 引入了类装饰器语法。与函数装饰器语法一样，这实
 单例是始终只允许存在一个实例的类。因此，你总是得到相同的实例，而不是为你的调用获取一个特定的实例。这对于诸如数据库连接池之类的事物非常有用，你不想一直打开连接，而是想重用原始连接。
 
 ```py
-**>>> import functools**
+>>> import functools
 
-**>>> def singleton(cls):**
-**...     instances = dict()**
-**...     @functools.wraps(cls)**
-**...     def _singleton(*args, **kwargs):**
-**...         if cls not in instances:**
-**...             instances[cls] = cls(*args, **kwargs)**
-**...         return instances[cls]**
-**...     return _singleton**
+>>> def singleton(cls):
+...     instances = dict()
+...     @functools.wraps(cls)
+...     def _singleton(*args, **kwargs):
+...         if cls not in instances:
+...             instances[cls] = cls(*args, **kwargs)
+...         return instances[cls]
+...     return _singleton
 
-**>>> @singleton**
-**... class Spam(object):**
-**...     def __init__(self):**
-**...         print('Executing init')**
+>>> @singleton
+... class Spam(object):
+...     def __init__(self):
+...         print('Executing init')
 
-**>>> a = Spam()**
-**Executing init**
-**>>> b = Spam()**
+>>> a = Spam()
+Executing init
+>>> b = Spam()
 
-**>>> a is b**
-**True**
+>>> a is b
+True
 
-**>>> a.x = 123**
-**>>> b.x**
-**123**
+>>> a.x = 123
+>>> b.x
+123
 
 ```
 
@@ -812,117 +812,117 @@ Python 2.6 引入了类装饰器语法。与函数装饰器语法一样，这实
 在某个时候，你可能需要对数据结构进行排序。虽然可以使用 `sorted` 函数的 key 参数轻松实现这一点，但如果你经常需要这样做，还有一种更方便的方法 - 通过实现 `__gt__`、`__ge__`、`__lt__`、`__le__` 和 `__eq__` 函数。这似乎有点冗长，不是吗？如果你想要最佳性能，这仍然是一个好主意，但如果你可以承受一点性能损失和一些稍微复杂的堆栈跟踪，那么 `total_ordering` 可能是一个不错的选择。`total_ordering` 类装饰器可以基于具有 `__eq__` 函数和比较函数之一（`__lt__`、`__le__`、`__gt__` 或 `__ge__`）的类实现所有必需的排序函数。这意味着你可以严重缩短你的函数定义。让我们比较常规的函数和使用 `total_ordering` 装饰器的函数：
 
 ```py
-**>>> import functools**
+>>> import functools
 
-**>>> class Value(object):**
-**...     def __init__(self, value):**
-**...         self.value = value**
-**...**
-**...     def __repr__(self):**
-**...         return '<%s[%d]>' % (self.__class__, self.value)**
+>>> class Value(object):
+...     def __init__(self, value):
+...         self.value = value
+...
+...     def __repr__(self):
+...         return '<%s[%d]>' % (self.__class__, self.value)
 
-**>>> class Spam(Value):**
-**...     def __gt__(self, other):**
-**...         return self.value > other.value**
-**...**
-**...     def __ge__(self, other):**
-**...         return self.value >= other.value**
-**...**
-**...     def __lt__(self, other):**
-**...         return self.value < other.value**
-**...**
-**...     def __le__(self, other):**
-**...         return self.value <= other.value**
-**...**
-**...     def __eq__(self, other):**
-**...         return self.value == other.value**
+>>> class Spam(Value):
+...     def __gt__(self, other):
+...         return self.value > other.value
+...
+...     def __ge__(self, other):
+...         return self.value >= other.value
+...
+...     def __lt__(self, other):
+...         return self.value < other.value
+...
+...     def __le__(self, other):
+...         return self.value <= other.value
+...
+...     def __eq__(self, other):
+...         return self.value == other.value
 
-**>>> @functools.total_ordering**
-**... class Egg(Value):**
-**...     def __lt__(self, other):**
-**...         return self.value < other.value**
-**...**
-**...     def __eq__(self, other):**
-**...         return self.value == other.value**
+>>> @functools.total_ordering
+... class Egg(Value):
+...     def __lt__(self, other):
+...         return self.value < other.value
+...
+...     def __eq__(self, other):
+...         return self.value == other.value
 
-**>>> numbers = [4, 2, 3, 4]**
-**>>> spams = [Spam(n) for n in numbers]**
-**>>> eggs = [Egg(n) for n in numbers]**
+>>> numbers = [4, 2, 3, 4]
+>>> spams = [Spam(n) for n in numbers]
+>>> eggs = [Egg(n) for n in numbers]
 
-**>>> spams**
-**[<<class 'H05.Spam'>[4]>, <<class 'H05.Spam'>[2]>,**
-**<<class 'H05.Spam'>[3]>, <<class 'H05.Spam'>[4]>]**
+>>> spams
+[<<class 'H05.Spam'>[4]>, <<class 'H05.Spam'>[2]>,
+<<class 'H05.Spam'>[3]>, <<class 'H05.Spam'>[4]>]
 
-**>>> eggs**
-**[<<class 'H05.Egg'>[4]>, <<class 'H05.Egg'>[2]>,**
-**<<class 'H05.Egg'>[3]>, <<class 'H05.Egg'>[4]>]**
+>>> eggs
+[<<class 'H05.Egg'>[4]>, <<class 'H05.Egg'>[2]>,
+<<class 'H05.Egg'>[3]>, <<class 'H05.Egg'>[4]>]
 
-**>>> sorted(spams)**
-**[<<class 'H05.Spam'>[2]>, <<class 'H05.Spam'>[3]>,**
-**<<class 'H05.Spam'>[4]>, <<class 'H05.Spam'>[4]>]**
+>>> sorted(spams)
+[<<class 'H05.Spam'>[2]>, <<class 'H05.Spam'>[3]>,
+<<class 'H05.Spam'>[4]>, <<class 'H05.Spam'>[4]>]
 
-**>>> sorted(eggs)**
-**[<<class 'H05.Egg'>[2]>, <<class 'H05.Egg'>[3]>,**
-**<<class 'H05.Egg'>[4]>, <<class 'H05.Egg'>[4]>]**
+>>> sorted(eggs)
+[<<class 'H05.Egg'>[2]>, <<class 'H05.Egg'>[3]>,
+<<class 'H05.Egg'>[4]>, <<class 'H05.Egg'>[4]>]
 
-**# Sorting using key is of course still possible and in this case**
-**# perhaps just as easy:**
-**>>> values = [Value(n) for n in numbers]**
-**>>> values**
-**[<<class 'H05.Value'>[4]>, <<class 'H05.Value'>[2]>,**
-**<<class 'H05.Value'>[3]>, <<class 'H05.Value'>[4]>]**
+# Sorting using key is of course still possible and in this case
+# perhaps just as easy:
+>>> values = [Value(n) for n in numbers]
+>>> values
+[<<class 'H05.Value'>[4]>, <<class 'H05.Value'>[2]>,
+<<class 'H05.Value'>[3]>, <<class 'H05.Value'>[4]>]
 
-**>>> sorted(values, key=lambda v: v.value)**
-**[<<class 'H05.Value'>[2]>, <<class 'H05.Value'>[3]>,**
-**<<class 'H05.Value'>[4]>, <<class 'H05.Value'>[4]>]**
+>>> sorted(values, key=lambda v: v.value)
+[<<class 'H05.Value'>[2]>, <<class 'H05.Value'>[3]>,
+<<class 'H05.Value'>[4]>, <<class 'H05.Value'>[4]>]
 
 ```
 
 现在，你可能会想，“为什么没有一个类装饰器来使用指定的键属性使类可排序？”嗯，这确实可能是`functools`库的一个好主意，但它还没有。所以让我们看看我们如何实现类似的东西：
 
 ```py
-**>>> def sort_by_attribute(attr, keyfunc=getattr):**
-**...     def _sort_by_attribute(cls):**
-**...         def __gt__(self, other):**
-**...             return getattr(self, attr) > getattr(other, attr)**
-**...**
-**...         def __ge__(self, other):**
-**...             return getattr(self, attr) >= getattr(other, attr)**
-**...**
-**...         def __lt__(self, other):**
-**...             return getattr(self, attr) < getattr(other, attr)**
-**...**
-**...         def __le__(self, other):**
-**...             return getattr(self, attr) <= getattr(other, attr)**
-**...**
-**...         def __eq__(self, other):**
-**...             return getattr(self, attr) <= getattr(other, attr)**
-**...**
-**...         cls.__gt__ = __gt__**
-**...         cls.__ge__ = __ge__**
-**...         cls.__lt__ = __lt__**
-**...         cls.__le__ = __le__**
-**...         cls.__eq__ = __eq__**
-**...**
-**...         return cls**
-**...     return _sort_by_attribute**
+>>> def sort_by_attribute(attr, keyfunc=getattr):
+...     def _sort_by_attribute(cls):
+...         def __gt__(self, other):
+...             return getattr(self, attr) > getattr(other, attr)
+...
+...         def __ge__(self, other):
+...             return getattr(self, attr) >= getattr(other, attr)
+...
+...         def __lt__(self, other):
+...             return getattr(self, attr) < getattr(other, attr)
+...
+...         def __le__(self, other):
+...             return getattr(self, attr) <= getattr(other, attr)
+...
+...         def __eq__(self, other):
+...             return getattr(self, attr) <= getattr(other, attr)
+...
+...         cls.__gt__ = __gt__
+...         cls.__ge__ = __ge__
+...         cls.__lt__ = __lt__
+...         cls.__le__ = __le__
+...         cls.__eq__ = __eq__
+...
+...         return cls
+...     return _sort_by_attribute
 
-**>>> class Value(object):**
-**...     def __init__(self, value):**
-**...         self.value = value**
-**...**
-**...     def __repr__(self):**
-**...         return '<%s[%d]>' % (self.__class__, self.value)**
+>>> class Value(object):
+...     def __init__(self, value):
+...         self.value = value
+...
+...     def __repr__(self):
+...         return '<%s[%d]>' % (self.__class__, self.value)
 
-**>>> @sort_by_attribute('value')**
-**... class Spam(Value):**
-**...     pass**
+>>> @sort_by_attribute('value')
+... class Spam(Value):
+...     pass
 
-**>>> numbers = [4, 2, 3, 4]**
-**>>> spams = [Spam(n) for n in numbers]**
-**>>> sorted(spams)**
-**[<<class '...Spam'>[2]>, <<class '...Spam'>[3]>,**
-**<<class '...Spam'>[4]>, <<class '...Spam'>[4]>]**
+>>> numbers = [4, 2, 3, 4]
+>>> spams = [Spam(n) for n in numbers]
+>>> sorted(spams)
+[<<class '...Spam'>[2]>, <<class '...Spam'>[3]>,
+<<class '...Spam'>[4]>, <<class '...Spam'>[4]>]
 
 ```
 
@@ -963,39 +963,39 @@ some_integer = 123
 自 Python 3.4 以来，有一个装饰器可以轻松实现 Python 中的单分派模式。对于那些需要处理与正常执行不同的特定类型的情况之一。这是一个基本的例子：
 
 ```py
-**>>> import functools**
+>>> import functools
 
-**>>> @functools.singledispatch**
-**... def printer(value):**
-**...     print('other: %r' % value)**
+>>> @functools.singledispatch
+... def printer(value):
+...     print('other: %r' % value)
 
-**>>> @printer.register(str)**
-**... def str_printer(value):**
-**...     print(value)**
+>>> @printer.register(str)
+... def str_printer(value):
+...     print(value)
 
-**>>> @printer.register(int)**
-**... def int_printer(value):**
-**...     printer('int: %d' % value)**
+>>> @printer.register(int)
+... def int_printer(value):
+...     printer('int: %d' % value)
 
-**>>> @printer.register(dict)**
-**... def dict_printer(value):**
-**...     printer('dict:')**
-**...     for k, v in sorted(value.items()):**
-**...         printer('    key: %r, value: %r' % (k, v))**
+>>> @printer.register(dict)
+... def dict_printer(value):
+...     printer('dict:')
+...     for k, v in sorted(value.items()):
+...         printer('    key: %r, value: %r' % (k, v))
 
-**>>> printer('spam')**
-**spam**
+>>> printer('spam')
+spam
 
-**>>> printer([1, 2, 3])**
-**other: [1, 2, 3]**
+>>> printer([1, 2, 3])
+other: [1, 2, 3]
 
-**>>> printer(123)**
-**int: 123**
+>>> printer(123)
+int: 123
 
-**>>> printer({'a': 1, 'b': 2})**
-**dict:**
- **key: 'a', value: 1**
- **key: 'b', value: 2**
+>>> printer({'a': 1, 'b': 2})
+dict:
+ **key: 'a', value: 1
+ **key: 'b', value: 2
 
 ```
 
@@ -1008,24 +1008,24 @@ some_integer = 123
 现在，一个稍微更有用的例子——区分文件名和文件处理程序：
 
 ```py
-**>>> import json**
-**>>> import functools**
+>>> import json
+>>> import functools
 
-**>>> @functools.singledispatch**
-**... def write_as_json(file, data):**
-**...     json.dump(data, file)**
+>>> @functools.singledispatch
+... def write_as_json(file, data):
+...     json.dump(data, file)
 
-**>>> @write_as_json.register(str)**
-**... @write_as_json.register(bytes)**
-**... def write_as_json_filename(file, data):**
-**...     with open(file, 'w') as fh:**
-**...         write_as_json(fh, data)**
+>>> @write_as_json.register(str)
+... @write_as_json.register(bytes)
+... def write_as_json_filename(file, data):
+...     with open(file, 'w') as fh:
+...         write_as_json(fh, data)
 
-**>>> data = dict(a=1, b=2, c=3)**
-**>>> write_as_json('test1.json', data)**
-**>>> write_as_json(b'test2.json', 'w')**
-**>>> with open('test3.json', 'w') as fh:**
-**...     write_as_json(fh, data)**
+>>> data = dict(a=1, b=2, c=3)
+>>> write_as_json('test1.json', data)
+>>> write_as_json(b'test2.json', 'w')
+>>> with open('test3.json', 'w') as fh:
+...     write_as_json(fh, data)
 
 ```
 
@@ -1036,8 +1036,8 @@ some_integer = 123
 要检查已注册的类型，可以通过`write_as_json.registry`访问字典注册表：
 
 ```py
-**>>> write_as_json.registry.keys()**
-**dict_keys([<class 'bytes'>, <class 'object'>, <class 'str'>])**
+>>> write_as_json.registry.keys()
+dict_keys([<class 'bytes'>, <class 'object'>, <class 'str'>])
 
 ```
 
@@ -1053,26 +1053,26 @@ with open(filename) as fh:
 让我们暂时假设`open`函数不能作为上下文管理器使用，我们需要构建自己的函数来实现这一点。创建上下文管理器的标准方法是创建一个实现`__enter__`和`__exit__`方法的类，但这有点冗长。我们可以让它更短更简单：
 
 ```py
-**>>> import contextlib**
+>>> import contextlib
 
-**>>> @contextlib.contextmanager**
-**... def open_context_manager(filename, mode='r'):**
-**...     fh = open(filename, mode)**
-**...     yield fh**
-**...     fh.close()**
+>>> @contextlib.contextmanager
+... def open_context_manager(filename, mode='r'):
+...     fh = open(filename, mode)
+...     yield fh
+...     fh.close()
 
-**>>> with open_context_manager('test.txt', 'w') as fh:**
-**...     print('Our test is complete!', file=fh)**
+>>> with open_context_manager('test.txt', 'w') as fh:
+...     print('Our test is complete!', file=fh)
 
 ```
 
 简单，对吧？然而，我应该提到，对于这种特定情况——对象的关闭——在`contextlib`中有一个专门的函数，它甚至更容易使用。让我们来演示一下：
 
 ```py
-**>>> import contextlib**
+>>> import contextlib
 
-**>>> with contextlib.closing(open('test.txt', 'a')) as fh:**
-**...     print('Yet another test', file=fh)**
+>>> with contextlib.closing(open('test.txt', 'a')) as fh:
+...     print('Yet another test', file=fh)
 
 ```
 
@@ -1081,20 +1081,20 @@ with open(filename) as fh:
 但等等；还有更多！除了可以在`with`语句中使用之外，`contextmanager`的结果实际上也可以作为装饰器使用，自 Python 3.2 起。在较早的 Python 版本中，它只是一个小包装器，但自 Python 3.2 起，它基于`ContextDecorator`类，这使它成为一个装饰器。之前的装饰器并不适合这个任务，因为它产生了一个结果（关于这一点，可以在第六章中了解更多，*生成器和协程-无限，一步一步*），但我们可以考虑其他函数：
 
 ```py
-**>>> @contextlib.contextmanager**
-**... def debug(name):**
-**...     print('Debugging %r:' % name)**
-**...     yield**
-**...     print('End of debugging %r' % name)**
+>>> @contextlib.contextmanager
+... def debug(name):
+...     print('Debugging %r:' % name)
+...     yield
+...     print('End of debugging %r' % name)
 
-**>>> @debug('spam')**
-**... def spam():**
-**...     print('This is the inside of our spam function')**
+>>> @debug('spam')
+... def spam():
+...     print('This is the inside of our spam function')
 
-**>>> spam()**
-**Debugging 'spam':**
-**This is the inside of our spam function**
-**End of debugging 'spam'**
+>>> spam()
+Debugging 'spam':
+This is the inside of our spam function
+End of debugging 'spam'
 
 ```
 
@@ -1112,119 +1112,119 @@ def spam(eggs: int):
 由于 Python 3.5 还不太常见，这里有一个装饰器，它实现了更高级的类型检查。为了允许这种类型的检查，必须使用一些魔法，特别是使用`inspect`模块。就我个人而言，我不太喜欢检查代码来执行这样的技巧，因为它们很容易被破坏。这段代码实际上在函数和这个装饰器之间使用一个常规装饰器（不复制`argspec`）时会出错，但它仍然是一个很好的例子：
 
 ```py
-**>>> import inspect**
-**>>> import functools**
+>>> import inspect
+>>> import functools
 
-**>>> def to_int(name, minimum=None, maximum=None):**
-**...     def _to_int(function):**
-**...         # Use the method signature to map *args to named**
-**...         # arguments**
-**...         signature = inspect.signature(function)**
-**...**
-**...         # Unfortunately functools.wraps doesn't copy the**
-**...         # signature (yet) so we do it manually.**
-**...         # For more info: http://bugs.python.org/issue23764**
-**...         @functools.wraps(function, ['__signature__'])**
-**...         @functools.wraps(function)**
-**...         def __to_int(*args, **kwargs):**
-**...             # Bind all arguments to the names so we get a single**
-**...             # mapping of all arguments**
-**...             bound = signature.bind(*args, **kwargs)**
-**...**
-**...             # Make sure the value is (convertible to) an integer**
-**...             default = signature.parameters[name].default**
-**...             value = int(bound.arguments.get(name, default))**
-**...**
-**...             # Make sure it's within the allowed range**
-**...             if minimum is not None:**
-**...                 assert value >= minimum, (**
-**...                     '%s should be at least %r, got: %r' %**
-**...                     (name, minimum, value))**
-**...**
-**...             if maximum is not None:**
-**...                 assert value <= maximum, (**
-**...                     '%s should be at most %r, got: %r' %**
-**...                     (name, maximum, value))**
-**...**
-**...             return function(*args, **kwargs)**
-**...         return __to_int**
-**...     return _to_int**
+>>> def to_int(name, minimum=None, maximum=None):
+...     def _to_int(function):
+...         # Use the method signature to map *args to named
+...         # arguments
+...         signature = inspect.signature(function)
+...
+...         # Unfortunately functools.wraps doesn't copy the
+...         # signature (yet) so we do it manually.
+...         # For more info: http://bugs.python.org/issue23764
+...         @functools.wraps(function, ['__signature__'])
+...         @functools.wraps(function)
+...         def __to_int(*args, **kwargs):
+...             # Bind all arguments to the names so we get a single
+...             # mapping of all arguments
+...             bound = signature.bind(*args, **kwargs)
+...
+...             # Make sure the value is (convertible to) an integer
+...             default = signature.parameters[name].default
+...             value = int(bound.arguments.get(name, default))
+...
+...             # Make sure it's within the allowed range
+...             if minimum is not None:
+...                 assert value >= minimum, (
+...                     '%s should be at least %r, got: %r' %
+...                     (name, minimum, value))
+...
+...             if maximum is not None:
+...                 assert value <= maximum, (
+...                     '%s should be at most %r, got: %r' %
+...                     (name, maximum, value))
+...
+...             return function(*args, **kwargs)
+...         return __to_int
+...     return _to_int
 
-**>>> @to_int('a', minimum=10)**
-**... @to_int('b', maximum=10)**
-**... @to_int('c')**
-**... def spam(a, b, c=10):**
-**...     print('a', a)**
-**...     print('b', b)**
-**...     print('c', c)**
+>>> @to_int('a', minimum=10)
+... @to_int('b', maximum=10)
+... @to_int('c')
+... def spam(a, b, c=10):
+...     print('a', a)
+...     print('b', b)
+...     print('c', c)
 
-**>>> spam(10, b=0)**
-**a 10**
-**b 0**
-**c 10**
+>>> spam(10, b=0)
+a 10
+b 0
+c 10
 
-**>>> spam(a=20, b=10)**
-**a 20**
-**b 10**
-**c 10**
+>>> spam(a=20, b=10)
+a 20
+b 10
+c 10
 
-**>>> spam(1, 2, 3)**
-**Traceback (most recent call last):**
- **...**
-**AssertionError: a should be at least 10, got: 1**
+>>> spam(1, 2, 3)
+Traceback (most recent call last):
+ **...
+AssertionError: a should be at least 10, got: 1
 
-**>>> spam()**
-**Traceback (most recent call last):**
- **...**
-**TypeError: 'a' parameter lacking default value**
+>>> spam()
+Traceback (most recent call last):
+ **...
+TypeError: 'a' parameter lacking default value
 
-**>>> spam('spam', {})**
-**Traceback (most recent call last):**
- **...**
-**ValueError: invalid literal for int() with base 10: 'spam'**
+>>> spam('spam', {})
+Traceback (most recent call last):
+ **...
+ValueError: invalid literal for int() with base 10: 'spam'
 
 ```
 
 由于`inspect`的魔法，我仍然不确定是否推荐像这样使用装饰器。相反，我会选择一个更简单的版本，它完全不使用`inspect`，只是从`kwargs`中解析参数：
 
 ```py
-**>>> import functools**
+>>> import functools
 
-**>>> def to_int(name, minimum=None, maximum=None):**
-**...     def _to_int(function):**
-**...         @functools.wraps(function)**
-**...         def __to_int(**kwargs):**
-**...             value = int(kwargs.get(name))**
-**...**
-**...             # Make sure it's within the allowed range**
-**...             if minimum is not None:**
-**...                 assert value >= minimum, (**
-**...                     '%s should be at least %r, got: %r' %**
-**...                     (name, minimum, value))**
-**...**
-**...             if maximum is not None:**
-**...                 assert value <= maximum, (**
-**...                     '%s should be at most %r, got: %r' %**
-**...                     (name, maximum, value))**
-**...**
-**...             return function(**kwargs)**
-**...         return __to_int**
-**...     return _to_int**
+>>> def to_int(name, minimum=None, maximum=None):
+...     def _to_int(function):
+...         @functools.wraps(function)
+...         def __to_int(**kwargs):
+...             value = int(kwargs.get(name))
+...
+...             # Make sure it's within the allowed range
+...             if minimum is not None:
+...                 assert value >= minimum, (
+...                     '%s should be at least %r, got: %r' %
+...                     (name, minimum, value))
+...
+...             if maximum is not None:
+...                 assert value <= maximum, (
+...                     '%s should be at most %r, got: %r' %
+...                     (name, maximum, value))
+...
+...             return function(**kwargs)
+...         return __to_int
+...     return _to_int
 
-**>>> @to_int('a', minimum=10)**
-**... @to_int('b', maximum=10)**
-**... def spam(a, b):**
-**...     print('a', a)**
-**...     print('b', b)**
+>>> @to_int('a', minimum=10)
+... @to_int('b', maximum=10)
+... def spam(a, b):
+...     print('a', a)
+...     print('b', b)
 
-**>>> spam(a=20, b=10)**
-**a 20**
-**b 10**
+>>> spam(a=20, b=10)
+a 20
+b 10
 
-**>>> spam(a=1, b=10)**
-**Traceback (most recent call last):**
- **...**
-**AssertionError: a should be at least 10, got: 1**
+>>> spam(a=1, b=10)
+Traceback (most recent call last):
+ **...
+AssertionError: a should be at least 10, got: 1
 
 ```
 

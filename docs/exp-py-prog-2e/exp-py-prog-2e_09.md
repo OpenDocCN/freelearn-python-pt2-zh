@@ -70,7 +70,15 @@ Peter Elbow 在《写作的力量：掌握写作过程的技巧》（牛津大�
 
 一个好的做法是提供一个简短的介绍性文本，简要解释文档的内容，并引导读者到适当的部分：
 
-[PRE0]
+```py
+Atomisator is a product that fetches RSS feeds and saves them in a database, with a filtering process.
+
+If you are a developer, you might want to look at the API description (api.txt)
+
+If you are a manager, you can read the features list and the FAQ (features.txt)
+
+If you are a designer, you can read the architecture and infrastructure notes (arch.txt)
+```
 
 通过这种方式引导读者，你可能会产生更好的文档。
 
@@ -124,11 +132,25 @@ Peter Elbow 在《写作的力量：掌握写作过程的技巧》（牛津大�
 
 为了展示一个糟糕的用法示例，让我们假设我们想展示如何使用`parse()`函数：
 
-[PRE1]
+```py
+>>> from atomisator.parser import parse
+>>> # Let's use it:
+>>> stuff = parse('some-feed.xml')
+>>> next(stuff)
+{'title': 'foo', 'content': 'blabla'}
+
+```
 
 一个更好的例子是，当解析器知道如何使用 parse 函数返回一个 feed 内容时，它作为一个顶级函数可用：
 
-[PRE2]
+```py
+>>> from atomisator.parser import parse
+>>> # Let's use it:
+>>> my_feed = parse('http://tarekziade.wordpress.com/feed')
+>>> next(my_feed)
+{'title': 'eight tips to start with python', 'content': 'The first tip is..., ...'}
+
+```
 
 这种细微的差别可能听起来有些过分，但事实上它会使你的文档更有用。读者可以将这些行复制到 shell 中，理解 parse 使用 URL 作为参数，并且它返回一个包含博客条目的迭代器。
 
@@ -160,7 +182,23 @@ reStructuredText 也被称为 reST（参见[`docutils.sourceforge.net/rst.html`]
 
 这是这样一个文档的示例：
 
-[PRE3]
+```py
+=====
+Title
+=====
+
+Section 1
+=========
+This *word* has emphasis.
+
+Section 2
+=========
+
+Subsection
+::::::::::
+
+Text.
+```
 
 reST 包含在`docutils`中，该软件包提供了一套脚本，可将 reST 文件转换为各种格式，如 HTML、LaTeX、XML，甚至是 S5，Eric Meyer 的幻灯片系统（参见[`meyerweb.com/eric/tools/s5`](http://meyerweb.com/eric/tools/s5)）。
 
@@ -182,11 +220,36 @@ reST 包含在`docutils`中，该软件包提供了一套脚本，可将 reST �
 
 要安装 reStructuredText，安装`docutils`：
 
-[PRE4]
+```py
+$ pip install docutils
+
+```
 
 例如，由`docutils`包提供的`rst2html`脚本将根据 reST 文件生成 HTML 输出：
 
-[PRE5]
+```py
+$ more text.txt
+Title
+=====
+
+content.
+
+$ rst2html.py text.txt
+<?xml version="1.0" encoding="utf-8" ?>
+...
+<html ...>
+<head>
+...
+</head>
+<body>
+<div class="document" id="title">
+<h1 class="title">Title</h1>
+<p>content.</p>
+</div>
+</body>
+</html>
+
+```
 
 ## 部分结构
 
@@ -198,7 +261,41 @@ reST 包含在`docutils`中，该软件包提供了一套脚本，可将 reST �
 
 例如，考虑以下代码：
 
-[PRE6]
+```py
+==============
+Document title
+==============
+
+Introduction to the document content.
+
+Section 1
+=========
+
+First document section with two subsections.
+
+Note the ``=`` used as heading underline.
+
+Subsection A
+------------
+
+First subsection (A) of Section 1.
+
+Note the ``-`` used as heading underline.
+
+Subsection B
+------------
+Second subsection (B) of Section 1.
+
+Section 2
+=========
+
+Second section of document with one subsection.
+
+Subsection C
+------------
+
+Subsection (C) of Section 2.
+```
 
 ![部分结构](img/5295_09_01.jpg)
 
@@ -208,7 +305,27 @@ reST 包含在`docutils`中，该软件包提供了一套脚本，可将 reST �
 
 reST 为项目列表、编号列表和具有自动编号功能的定义列表提供可读的语法：
 
-[PRE7]
+```py
+Bullet list:
+
+- one
+- two
+- three
+
+Enumerated list:
+
+1\. one
+2\. two
+#. auto-enumerated
+
+Definition list:
+
+one
+    one is a number.
+
+two
+    two is also a number.
+```
 
 ![列表](img/5295_09_02.jpg)
 
@@ -230,7 +347,16 @@ reST 为项目列表、编号列表和具有自动编号功能的定义列表提
 
 当您需要展示一些代码示例时，可以使用文字块。两个冒号用于标记块，这是一个缩进的段落：
 
-[PRE8]
+```py
+This is a code example
+
+::
+
+    >>> 1 + 1
+    2
+
+Let's continue our text
+```
 
 ### 注意
 
@@ -238,7 +364,14 @@ reST 为项目列表、编号列表和具有自动编号功能的定义列表提
 
 请注意，冒号字符可以放在文本行中。在这种情况下，它们将在各种呈现格式中被替换为单个冒号：
 
-[PRE9]
+```py
+This is a code example::
+
+    >>> 1 + 1
+    2
+
+Let's continue our text
+```
 
 如果不想保留单个冒号，可以在前导文本和`::`之间插入一个空格。在这种情况下，`::`将被解释并完全删除。
 
@@ -250,17 +383,54 @@ reST 为项目列表、编号列表和具有自动编号功能的定义列表提
 
 只要提供在文档中，文本就可以通过以两个点开头的特殊行更改为外部链接：
 
-[PRE10]
+```py
+Try `Plone CMS`_, it is great ! It is based on Zope_.
+
+.. _`Plone CMS`: http://plone.org
+.. _Zope: http://zope.org
+```
 
 通常的做法是将外部链接分组放在文档的末尾。当要链接的文本包含空格时，必须用`` ` ``（反引号）字符括起来。
 
 通过在文本中添加标记，也可以使用内部链接：
 
-[PRE11]
+```py
+
+This is a code example
+
+.. _example:
+
+::
+
+    >>> 1 + 1
+    2
+
+Let's continue our text, or maybe go back to
+the example_.
+```
 
 还可以使用目标作为部分：
 
-[PRE12]
+```py
+
+==============
+Document title
+==============
+
+Introduction to the document content.
+
+
+Section 1
+=========
+
+First document section.
+
+
+Section 2
+=========
+
+-> go back to `Section 1`_
+```
 
 # 搭建文档
 
@@ -312,7 +482,39 @@ reST 为项目列表、编号列表和具有自动编号功能的定义列表提
 
 在 reST 中的示例设计文档模板可以如下所示：
 
-[PRE13]
+```py
+
+=========================================
+Design document title
+=========================================
+
+:Author: Document Author
+:Tags: document tags separated with spaces
+
+:abstract:
+
+    Write here a small abstract about your design document.
+
+.. contents ::
+
+
+Audience
+========
+
+Explain here who is the target readership.
+
+
+Content
+=======
+
+Write your document here. Do not hesitate to split it in several sections.
+
+
+References
+==========
+
+Put here references, and links to other documents.
+```
 
 ### 用法
 
@@ -372,7 +574,51 @@ reST 为项目列表、编号列表和具有自动编号功能的定义列表提
 
 一个简单的可重用的模板，用于配方，可以如下所示：
 
-[PRE14]
+```py
+
+===========
+Recipe name
+===========
+
+:Author: Recipe Author
+:Tags: document tags separated with spaces
+
+:abstract:
+
+    Write here a small abstract about your design document.
+
+.. contents ::
+
+
+Audience
+========
+
+Explain here who is the target readership.
+
+
+Prerequisites
+=============
+
+Write the list of prerequisites for implementing this recipe. This can be additional documents, software, specific libraries, environment settings or just anything that is required beyond the obvious language interpreter.
+
+
+Problem
+=======
+
+Explain the problem that this recipe is trying to solve.
+
+
+Solution
+========
+
+Give solution to problem explained earlier. This is the core of a recipe.
+
+
+References
+==========
+
+Put here references, and links to other documents.
+```
 
 #### 教程
 
@@ -474,13 +720,37 @@ reST 为项目列表、编号列表和具有自动编号功能的定义列表提
 
 按照惯例，`docs`文件夹被用作文档树的根：
 
-[PRE15]
+```py
+
+$ cd my-project
+$ find docs
+docs
+docs/source
+docs/source/design
+docs/source/operations
+docs/source/usage
+docs/source/usage/cookbook
+docs/source/usage/modules
+docs/source/usage/tutorial
+```
 
 注意，这个树位于一个`source`文件夹中，因为`docs`文件夹将被用作下一节中设置特殊工具的根文件夹。
 
 从那里，可以在每个级别（除了根目录）添加一个`index.txt`文件，解释文件夹包含什么类型的文档或总结每个子文件夹包含的内容。这些索引文件可以定义它们所包含的文档列表。例如，`operations`文件夹可以包含一个可用的操作文档列表：
 
-[PRE16]
+```py
+
+==========
+Operations
+==========
+
+This section contains operations documents:
+
+− How to install and run the project
+− How to install and manage a database for the project
+It is important to know that people tend to forget 
+
+```
 
 需要知道的是，人们往往会忘记更新这些文档列表和目录。因此最好是自动更新它们。在下一小节，我们将讨论一个工具，它除了许多其他功能之外，也可以处理这种情况。
 
@@ -494,7 +764,32 @@ Sphinx 可以轻松配置为与前一节中定义的文档方向保持一致。�
 
 与 Sphinx 一起工作的最简单方法是使用`sphinx-quickstart`脚本。此实用程序将生成一个脚本和`Makefile`，可用于在需要时生成 Web 文档。它将交互式地询问您一些问题，然后引导整个初始文档源树和配置文件。一旦完成，您可以随时轻松调整它。假设我们已经引导了整个 Sphinx 环境，并且我们想要查看其 HTML 表示。这可以通过使用`make html`命令轻松完成：
 
-[PRE17]
+```py
+
+project/docs$ make html
+sphinx-build -b html -d _build/doctrees   . _build/html
+Running Sphinx v1.3.6
+making output directory...
+loading pickled environment... not yet created
+building [mo]: targets for 0 po files that are out of date
+building [html]: targets for 1 source files that are out of date
+updating environment: 1 added, 0 changed, 0 removed
+reading sources... [100%] index
+looking for now-outdated files... none found
+pickling environment... done
+checking consistency... done
+preparing documents... done
+writing output... [100%] index
+generating indices... genindex
+writing additional pages... search
+copying static files... done
+copying extra files... done
+dumping search index in English (code: en) ... done
+dumping object inventory... done
+build succeeded.
+Build finished. The HTML pages are in _build/html.
+
+```
 
 ![消费者布局](img/5295_09_04.jpg)
 
@@ -514,7 +809,21 @@ Sphinx 提供了一个`toctree`指令，可用于在文档中注入带有指向�
 
 例如，`cookbook`文件夹中的索引文件，我们之前在生产者景观中定义的，可以是这样的：
 
-[PRE18]
+```py
+
+========
+Cookbook
+========
+
+Welcome to the Cookbook.
+
+Available recipes:
+
+.. toctree::
+   :glob:
+   *
+
+```
 
 使用这种语法，HTML 页面将显示`cookbook`文件夹中所有可用的 reStructuredText 文档的列表。此指令可用于所有索引文件中以构建可浏览的文档。
 
@@ -522,7 +831,17 @@ Sphinx 提供了一个`toctree`指令，可用于在文档中注入带有指向�
 
 对于模块助手，可以添加标记，以便它自动列在模块的索引页面中并可用：
 
-[PRE19]
+```py
+
+=======
+session
+=======
+
+.. module:: db.session
+
+The module session...
+
+```
 
 注意，这里的`db`前缀可以用来避免模块冲突。Sphinx 将其用作模块类别，并将以`db.`开头的所有模块分组到此类别中。
 
@@ -530,7 +849,20 @@ Sphinx 提供了一个`toctree`指令，可用于在文档中注入带有指向�
 
 还可以使用另一个选项填充索引页面，将文档链接到条目：
 
-[PRE20]
+```py
+=======
+session
+=======
+
+.. module:: db.session
+
+.. index::
+   Database Access
+   Session
+
+The module session...
+
+```
 
 将在索引页面中添加两个新条目，`Database Access`和`Session`。
 
@@ -539,7 +871,11 @@ Sphinx 提供了一个`toctree`指令，可用于在文档中注入带有指向�
 最后，Sphinx 提供了一种内联标记来设置交叉引用。例如，可以这样链接到模块：
 
 
-[PRE21]
+```py
+
+:mod:`db.session`
+
+```
 
 在这里，`:mod:`是模块标记的前缀，``db.session``是要链接到的模块的名称（如之前注册的）；请记住，`：mod:`以及之前的元素都是 Sphinx 在 reSTructuredText 中引入的特定指令。
 

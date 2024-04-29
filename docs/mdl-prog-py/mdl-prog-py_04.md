@@ -412,7 +412,7 @@ charter.generate_chart(chart, "chart.png")
 这只是我们之前看到的示例代码的副本。这个脚本将允许您测试 Charter 库；打开一个终端或命令行窗口，`cd`到包含`test_charter.py`文件的目录，并输入以下内容：
 
 ```py
-**python test_charter.py**
+python test_charter.py
 
 ```
 
@@ -977,13 +977,13 @@ from .pdf import line_series as line_series_pdf
 ```py
 renderers = {
     ...
-    **'pdf' : {**
- **'title'       : title_pdf,**
- **'x_axis'      : x_axis_pdf,**
- **'y_axis'      : y_axis_pdf,**
- **'bar_series'  : bar_series_pdf,**
- **'line_series' : line_series_pdf**
- **}**
+    **'pdf' : {
+ **'title'       : title_pdf,
+ **'x_axis'      : x_axis_pdf,
+ **'y_axis'      : y_axis_pdf,
+ **'bar_series'  : bar_series_pdf,
+ **'line_series' : line_series_pdf
+ **}
 }
 ```
 

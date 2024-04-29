@@ -39,9 +39,9 @@ Pythonic code - 当你第一次听到它时，你可能会认为它是一种编�
 有些程序员曾经问过 Guido van Rossum，Python 是否会支持大括号。从那天起，大括号就可以通过`__future__`导入使用了：
 
 ```py
-**>>> from __future__ import braces**
- **File "<stdin>", line 1**
-**SyntaxError: not a chance**
+>>> from __future__ import braces
+ **File "<stdin>", line 1
+SyntaxError: not a chance
 
 ```
 
@@ -76,28 +76,28 @@ PEP20 部分的示例在工作上并不完全相同，但它们确实有相同�
 为了清晰起见，在我们开始之前，让我们看一下`import this`的输出：
 
 ```py
-**>>> import this**
-**The Zen of Python, by Tim Peters**
+>>> import this
+The Zen of Python, by Tim Peters
 
-**Beautiful is better than ugly.**
-**Explicit is better than implicit.**
-**Simple is better than complex.**
-**Complex is better than complicated.**
-**Flat is better than nested.**
-**Sparse is better than dense.**
-**Readability counts.**
-**Special cases aren't special enough to break the rules.**
-**Although practicality beats purity.**
-**Errors should never pass silently.**
-**Unless explicitly silenced.**
-**In the face of ambiguity, refuse the temptation to guess.**
-**There should be one-- and preferably only one --obvious way to do it.**
-**Although that way may not be obvious at first unless you're Dutch.**
-**Now is better than never.**
-**Although never is often better than *right* now.**
-**If the implementation is hard to explain, it's a bad idea.**
-**If the implementation is easy to explain, it may be a good idea.**
-**Namespaces are one honking great idea -- let's do more of those!**
+Beautiful is better than ugly.
+Explicit is better than implicit.
+Simple is better than complex.
+Complex is better than complicated.
+Flat is better than nested.
+Sparse is better than dense.
+Readability counts.
+Special cases aren't special enough to break the rules.
+Although practicality beats purity.
+Errors should never pass silently.
+Unless explicitly silenced.
+In the face of ambiguity, refuse the temptation to guess.
+There should be one-- and preferably only one --obvious way to do it.
+Although that way may not be obvious at first unless you're Dutch.
+Now is better than never.
+Although never is often better than *right* now.
+If the implementation is hard to explain, it's a bad idea.
+If the implementation is easy to explain, it may be a good idea.
+Namespaces are one honking great idea -- let's do more of those!
 
 ```
 
@@ -814,10 +814,10 @@ def eggs(matrix):
 McCabe 将给我们以下输出：
 
 ```py
-**# pip install mccabe**
-**...**
-**# python -m mccabe cabe_test.py 1:1: 'spam' 1**
-**5:1: 'eggs' 4**
+# pip install mccabe
+...
+# python -m mccabe cabe_test.py 1:1: 'spam' 1
+5:1: 'eggs' 4
 
 ```
 
@@ -842,14 +842,14 @@ def eggs():
 它的结果如下：
 
 ```py
-**# pip install flake8**
-**...**
-**# flake8 flake8_test.py**
-**flake8_test.py:1:11: E231 missing whitespace after ','**
-**flake8_test.py:1:13: E231 missing whitespace after ','**
-**flake8_test.py:2:12: E231 missing whitespace after ','**
-**flake8_test.py:2:14: E226 missing whitespace around arithmetic operator**
-**flake8_test.py:4:1: E302 expected 2 blank lines, found 1**
+# pip install flake8
+...
+# flake8 flake8_test.py
+flake8_test.py:1:11: E231 missing whitespace after ','
+flake8_test.py:1:13: E231 missing whitespace after ','
+flake8_test.py:2:12: E231 missing whitespace after ','
+flake8_test.py:2:14: E226 missing whitespace around arithmetic operator
+flake8_test.py:4:1: E302 expected 2 blank lines, found 1
 
 ```
 
@@ -963,26 +963,26 @@ class Spam(object):
 处理类时需要注意的另一件重要事情是，类属性将被继承，这可能会让事情变得混乱。在继承时，原始属性将保留（除非被覆盖），即使在子类中也是如此：
 
 ```py
- **>>> class A(object):**
-**...     spam = 1**
+ **>>> class A(object):
+...     spam = 1
 
-**>>> class B(A):**
-**...     pass**
+>>> class B(A):
+...     pass
 
-**Regular inheritance, the spam attribute of both A and B are 1 as**
-**you would expect.**
-**>>> A.spam**
-**1**
-**>>> B.spam**
-**1**
+Regular inheritance, the spam attribute of both A and B are 1 as
+you would expect.
+>>> A.spam
+1
+>>> B.spam
+1
 
-**Assigning 2 to A.spam now modifies B.spam as well**
-**>>> A.spam = 2**
+Assigning 2 to A.spam now modifies B.spam as well
+>>> A.spam = 2
 
-**>>> A.spam**
-**2**
-**>>> B.spam**
-**2**
+>>> A.spam
+2
+>>> B.spam
+2
 
 ```
 
@@ -997,27 +997,27 @@ class Spam(object):
 这样可以工作：
 
 ```py
- **>>> def eggs():**
-**...     print('Spam: %r' % spam)**
+ **>>> def eggs():
+...     print('Spam: %r' % spam)
 
-**>>> eggs()**
-**Spam: 1**
+>>> eggs()
+Spam: 1
 
 ```
 
 但以下内容不是：
 
 ```py
- **>>> spam = 1**
+ **>>> spam = 1
 
-**>>> def eggs():**
-**...     spam += 1**
-**...     print('Spam: %r' % spam)**
+>>> def eggs():
+...     spam += 1
+...     print('Spam: %r' % spam)
 
-**>>> eggs()**
-**Traceback (most recent call last):**
- **...**
-**UnboundLocalError: local variable 'spam' referenced before assignment**
+>>> eggs()
+Traceback (most recent call last):
+ **...
+UnboundLocalError: local variable 'spam' referenced before assignment
 
 ```
 
@@ -1042,19 +1042,19 @@ list_ = [1, 2, 3]
 对于列表等，这只是一个很好的约定。对于`from`、`import`和`with`等语句，这是一个要求。忘记这一点可能会导致非常令人困惑的错误：
 
 ```py
-**>>> list = list((1, 2, 3))**
-**>>> list**
-**[1, 2, 3]**
+>>> list = list((1, 2, 3))
+>>> list
+[1, 2, 3]
 
-**>>> list((4, 5, 6))**
-**Traceback (most recent call last):**
- **...**
-**TypeError: 'list' object is not callable**
+>>> list((4, 5, 6))
+Traceback (most recent call last):
+ **...
+TypeError: 'list' object is not callable
 
-**>>> import = 'Some import'**
-**Traceback (most recent call last):**
- **...**
-**SyntaxError: invalid syntax**
+>>> import = 'Some import'
+Traceback (most recent call last):
+ **...
+SyntaxError: invalid syntax
 
 ```
 

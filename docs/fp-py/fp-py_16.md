@@ -46,19 +46,44 @@ Syracuse 函数的递归应用是具有“吸引子”的函数的一个例子�
 
 我们将创建一个包含多个内部缓存的可调用对象。这是我们需要的一个辅助函数：
 
-[PRE0]
+```py
+from functools import reduce
+from operator import mul
+prod = lambda x: reduce(mul, x)
+
+```
 
 `prod()`函数计算数字的可迭代乘积。它被定义为使用`*`运算符的缩减。
 
 这是一个带有两个缓存的可调用对象，它使用了`prod()`函数：
 
-[PRE1]
+```py
+from collections.abc import Callable
+class Binomial(Callable):
+ **def __init__(self):
+ **self.fact_cache= {}
+ **self.bin_cache= {}
+ **def fact(self, n):
+ **if n not in self.fact_cache:
+ **self.fact_cache[n] = prod(range(1,n+1))
+ **return self.fact_cache[n]
+ **def __call__(self, n, m):
+ **if (n,m) not in self.bin_cache:
+ **self.bin_cache[n,m] = self.fact(n)//(self.fact(m)*self.fact(n-m))
+ **return self.bin_cache[n,m]
+
+```
 
 我们创建了两个缓存：一个用于阶乘值，一个用于二项式系数值。内部的`fact()`方法使用`fact_cache`属性。如果值不在缓存中，它将被计算并添加到缓存中。外部的`__call__()`方法以类似的方式使用`bin_cache`属性：如果特定的二项式已经被计算，答案将被简单地返回。如果没有，将使用内部的`fact()`方法计算一个新值。
 
 我们可以像这样使用前面的`Callable`类：
 
-[PRE2]
+```py
+>>> binom= Binomial()
+>>> binom(52,5)
+2598960
+
+```
 
 这显示了我们如何从我们的类创建一个可调用对象，然后在特定的参数集上调用该对象。一副 52 张的牌可以以 5 张牌的方式发出。有 260 万种可能的手牌。
 
@@ -70,11 +95,24 @@ Syracuse 函数的递归应用是具有“吸引子”的函数的一个例子�
 
 要设计递归，请执行以下命令：
 
-[PRE3]
+```py
+def fact(n):
+ **if n == 0: return 1
+ **else: return n*fact(n-1)
+
+```
 
 +   如果递归在末尾有一个简单的调用，将递归情况替换为`for`循环。命令如下：
 
-[PRE4]
+```py
+def facti(n):
+ **if n == 0: return 1
+ **f= 1
+ **for i in range(2,n):
+ **f= f*i
+ **return f
+
+```
 
 如果递归出现在简单函数的末尾，它被描述为尾调用优化。许多编译器将其优化为循环。Python——由于其编译器缺乏这种优化——不会进行这种尾调用转换。
 
@@ -82,13 +120,36 @@ Syracuse 函数的递归应用是具有“吸引子”的函数的一个例子�
 
 在进行任何优化之前，确保函数已经正常工作是绝对必要的。对此，一个简单的`doctest`字符串通常就足够了。我们可能会像这样在我们的阶乘函数上使用注释：
 
-[PRE5]
+```py
+def fact(n):
+ **"""Recursive Factorial
+ **>>> fact(0)
+ **1
+ **>>> fact(1)
+ **1
+ **>>> fact(7)
+ **5040
+ **"""
+ **if n == 0: return 1
+ **else: return n*fact(n-1)
+
+```
 
 我们添加了两个边缘情况：显式基本情况和超出基本情况的第一项。我们还添加了另一个涉及多次迭代的项目。这使我们可以有信心地调整代码。
 
 当我们有更复杂的函数组合时，我们可能需要执行这样的命令：
 
-[PRE6]
+```py
+test_example="""
+>>> binom= Binomial()
+>>> binom(52,5)
+2598960
+"""
+__test__ = {
+ **"test_example": test_example,
+}
+
+```
 
 `__test__`变量由`doctest.testmod()`函数使用。与`__test__`变量关联的字典中的所有值都会被检查是否包含`doctest`字符串。这是测试由多个函数组合而成的功能的一种方便的方法。这也被称为集成测试，因为它测试了多个软件组件的集成。
 
@@ -140,17 +201,34 @@ Syracuse 函数的递归应用是具有“吸引子”的函数的一个例子�
 
 在生产质量保证操作中，硅晶圆缺陷数据被收集到数据库中。我们可以使用 SQL 查询来提取缺陷细节以进行进一步分析。例如，一个查询可能是这样的：
 
-[PRE7]
+```py
+SELECT SHIFT, DEFECT_CODE, SERIAL_NUMBER
+FROM some tables;
+
+```
 
 这个查询的输出可能是一个带有单个缺陷细节的 CSV 文件：
 
-[PRE8]
+```py
+shift,defect_code,serial_number
+1,None,12345
+1,None,12346
+1,A,12347
+1,B,12348
+and so on. for thousands of wafers
+```
 
 我们需要总结前面的数据。我们可以在 SQL 查询级别使用`COUNT`和`GROUP BY`语句进行总结。我们也可以在 Python 应用程序级别进行总结。虽然纯数据库摘要通常被描述为更有效，但这并不总是正确的。在某些情况下，简单提取原始数据并使用 Python 应用程序进行总结可能比 SQL 摘要更快。如果性能很重要，必须测量两种替代方案，而不是希望数据库最快。
 
 在某些情况下，我们可能能够高效地从数据库中获取摘要数据。这个摘要必须具有三个属性：班次、缺陷类型和观察到的缺陷数量。摘要数据如下：
 
-[PRE9]
+```py
+shift,defect_code,count
+1,A,15
+2,A,26
+3,A,33
+and so on.
+```
 
 输出将显示所有 12 种班次和缺陷类型的组合。
 
@@ -162,7 +240,20 @@ Syracuse 函数的递归应用是具有“吸引子”的函数的一个例子�
 
 我们将基本缺陷计数表示为`collections.Counter`参数。我们将从详细的原始数据中按班次和缺陷类型构建缺陷计数。以下是从 CSV 文件中读取一些原始数据的函数：
 
-[PRE10]
+```py
+import csv
+from collections import Counter
+from types import SimpleNamespace
+def defect_reduce(input):
+ **rdr= csv.DictReader(input)
+ **assert sorted(rdr.fieldnames) == ["defect_type", "serial_number", "shift"]
+ **rows_ns = (SimpleNamespace(**row) for row in rdr)
+ **defects = ((row.shift, row.defect_type) for row in rows_ns:
+ **if row.defect_type)
+ **tally= Counter(defects)
+ **return tally
+
+```
 
 前面的函数将基于通过`input`参数提供的打开文件创建一个字典读取器。我们已经确认列名与三个预期列名匹配。在某些情况下，文件中会有额外的列；在这种情况下，断言将类似于`all((c in rdr.fieldnames) for c in […])`。给定一个列名的元组，这将确保所有必需的列都存在于源中。我们还可以使用集合来确保`set(rdr.fieldnames) <= set([...])`。
 
@@ -178,13 +269,21 @@ Syracuse 函数的递归应用是具有“吸引子”的函数的一个例子�
 
 我们将使用`defect_reduce()`函数来收集和总结数据如下：
 
-[PRE11]
+```py
+with open("qa_data.csv", newline="" ) as input:
+ **defects= defect_reduce(input)
+print(defects)
+
+```
 
 我们可以打开一个文件，收集缺陷，并显示它们以确保我们已经按班次和缺陷类型正确进行了总结。由于结果是一个`Counter`对象，如果我们有其他数据源，我们可以将其与其他`Counter`对象结合使用。
 
 `defects`值如下：
 
-[PRE12]
+```py
+Counter({('3', 'C'): 49, ('1', 'C'): 45, ('2', 'C'): 34, ('3', 'A'): 33, ('2', 'B'): 31, ('2', 'A'): 26, ('1', 'B'): 21, ('3', 'D'): 20, ('3', 'B'): 17, ('1', 'A'): 15, ('1', 'D'): 13, ('2', 'D'): 5})
+
+```
 
 我们按班次和缺陷类型组织了缺陷计数。接下来我们将看一下摘要数据的替代输入。这反映了一个常见的用例，即摘要级别的数据是可用的。
 
@@ -196,7 +295,17 @@ Syracuse 函数的递归应用是具有“吸引子”的函数的一个例子�
 
 这是一个读取我们的摘要数据的函数：
 
-[PRE13]
+```py
+from collections import Counter
+import csv
+def defect_counts(source):
+ **rdr= csv.DictReader(source)
+ **assert rdr.fieldnames == ["shift", "defect_code", "count"]
+ **convert = map(lambda d: ((d['shift'], d['defect_code']), int(d['count'])),
+ **rdr)
+ **return Counter(dict(convert))
+
+```
 
 我们需要一个打开的文件作为输入。我们将创建一个`csv.DictReader()`函数，帮助解析从数据库获取的原始 CSV 数据。我们包括一个`assert`语句来确认文件确实具有预期的数据。
 
@@ -206,7 +315,10 @@ Syracuse 函数的递归应用是具有“吸引子”的函数的一个例子�
 
 我们可以将这个单一来源分配给变量`defects`。该值如下：
 
-[PRE14]
+```py
+Counter({('3', 'C'): 49, ('1', 'C'): 45, ('2', 'C'): 34, ('3', 'A'): 33, ('2', 'B'): 31, ('2', 'A'): 26,('1', 'B'): 21, ('3', 'D'): 20, ('3', 'B'): 17, ('1', 'A'): 15, ('1', 'D'): 13, ('2', 'D'): 5})
+
+```
 
 这与先前显示的详细摘要相匹配。然而，源数据已经被总结。当数据从数据库中提取并使用 SQL 进行分组操作时，通常会出现这种情况。
 
@@ -214,7 +326,10 @@ Syracuse 函数的递归应用是具有“吸引子”的函数的一个例子�
 
 我们需要计算按班次和按类型的缺陷概率。为了计算预期概率，我们需要从一些简单的总数开始。首先是所有缺陷的总数，可以通过执行以下命令来计算：
 
-[PRE15]
+```py
+total= sum(defects.values())
+
+```
 
 这是直接从分配给`defects`变量的`Counter`对象的值中得到的。这将显示样本集中总共有 309 个缺陷。
 
@@ -222,7 +337,10 @@ Syracuse 函数的递归应用是具有“吸引子”的函数的一个例子�
 
 我们可以通过从分配给`defects`变量的`Counter`对象的初始集合中提取额外的`Counter`对象来进行总结。以下是按班次总结：
 
-[PRE16]
+```py
+shift_totals= sum((Counter({s:defects[s,d]}) for s,d in defects), Counter())
+
+```
 
 我们创建了一组单独的`Counter`对象，这些对象以班次`s`为键，并与该班次相关的缺陷计数`defects[s,d]`。生成器表达式将创建 12 个这样的`Counter`对象，以提取所有四种缺陷类型和三个班次的数据。我们将使用`sum()`函数将`Counter`对象组合起来，以获得按班次组织的三个摘要。
 
@@ -232,17 +350,26 @@ Syracuse 函数的递归应用是具有“吸引子”的函数的一个例子�
 
 类型总数的创建方式与用于创建班次总数的表达式类似：
 
-[PRE17]
+```py
+type_totals= sum((Counter({d:defects[s,d]}) for s,d in defects), Counter())
+
+```
 
 我们创建了一打`Counter`对象，使用缺陷类型`d`作为键，而不是班次类型；否则，处理是相同的。
 
 班次总数如下：
 
-[PRE18]
+```py
+Counter({'3': 119, '2': 96, '1': 94})
+
+```
 
 缺陷类型的总数如下：
 
-[PRE19]
+```py
+Counter({'C': 128, 'A': 74, 'B': 69, 'D': 38})
+
+```
 
 我们将摘要保留为`Counter`对象，而不是创建简单的`dict`对象或甚至`list`实例。从这一点开始，我们通常会将它们用作简单的 dict。但是，在某些情况下，我们会希望使用适当的`Counter`对象，而不是缩减。
 
@@ -254,7 +381,13 @@ Syracuse 函数的递归应用是具有“吸引子”的函数的一个例子�
 
 这是我们如何计算按班次和缺陷类型计算缺陷概率的方法：
 
-[PRE20]
+```py
+from fractions import Fraction
+P_shift = dict( (shift, Fraction(shift_totals[shift],total))
+for shift in sorted(shift_totals))
+P_type = dict((type, Fraction(type_totals[type],total)) for type in sorted(type_totals))
+
+```
 
 我们创建了两个字典：`P_shift`和`P_type`。`P_shift`字典将一个班次映射到一个`Fraction`对象，显示了该班次对总缺陷数的贡献。类似地，`P_type`字典将一个缺陷类型映射到一个`Fraction`对象，显示了该类型对总缺陷数的贡献。
 
@@ -264,11 +397,17 @@ Syracuse 函数的递归应用是具有“吸引子”的函数的一个例子�
 
 `P_shift`数据看起来像这样：
 
-[PRE21]
+```py
+{'2': Fraction(32, 103), '3': Fraction(119, 309), '1': Fraction(94, 309)}
+
+```
 
 `P_type`数据看起来像这样：
 
-[PRE22]
+```py
+{'B': Fraction(23, 103), 'C': Fraction(128, 309), 'A': Fraction(74, 309), 'D': Fraction(38, 309)}
+
+```
 
 对于一些人来说，例如 32/103 或 96/309 可能比 0.3106 更有意义。我们可以很容易地从`Fraction`对象中获得`float`值，后面我们会看到。
 
@@ -280,13 +419,19 @@ Syracuse 函数的递归应用是具有“吸引子”的函数的一个例子�
 
 这是预期值的计算：
 
-[PRE23]
+```py
+expected = dict(((s,t), P_shift[s]*P_type[t]*total) for t in P_type:for s in P_shift)
+
+```
 
 我们将创建一个与初始`defects Counter`对象相对应的字典。这个字典将有一个包含两个元组的序列，带有键和值。键将是班次和缺陷类型的两个元组。我们的字典是从一个生成器表达式构建的，该表达式明确列举了从`P_shift`和`P_type`字典中的所有键的组合。
 
 `expected`字典的值看起来像这样：
 
-[PRE24]
+```py
+{('2', 'B'): Fraction(2208, 103), ('2', 'D'): Fraction(1216, 103),('3', 'D'): Fraction(4522, 309), ('2', 'A'): Fraction(2368, 103),('1', 'A'): Fraction(6956, 309), ('1', 'B'): Fraction(2162, 103),('3', 'B'): Fraction(2737, 103), ('1', 'C'): Fraction(12032, 309),('3', 'C'): Fraction(15232, 309), ('2', 'C'): Fraction(4096, 103),('3', 'A'): Fraction(8806, 309), ('1', 'D'): Fraction(3572, 309)}
+
+```
 
 映射的每个项目都有一个与班次和缺陷类型相关的键。这与基于缺陷的概率的`Fraction`值相关联，基于班次的概率乘以基于缺陷类型的概率乘以总缺陷数。一些分数被简化，例如，6624/309 的值可以简化为 2208/103。
 
@@ -294,7 +439,14 @@ Syracuse 函数的递归应用是具有“吸引子”的函数的一个例子�
 
 我们将成对打印观察到的和预期的时间。这将帮助我们可视化数据。我们将创建类似以下内容的内容来帮助总结我们观察到的和我们期望的：
 
-[PRE25]
+```py
+obs exp    obs exp    obs exp    obs exp** 
+15 22.51    21 20.99    45 38.94    13 11.56    94
+26 22.99    31 21.44    34 39.77     5 11.81    96
+33 28.50    17 26.57    49 49.29    20 14.63    119
+74        69        128        38        309
+
+```
 
 这显示了 12 个单元格。每个单元格都有观察到的缺陷数和期望的缺陷数。每行以变化总数结束，每列都有一个包含缺陷总数的页脚。
 
@@ -302,7 +454,15 @@ Syracuse 函数的递归应用是具有“吸引子”的函数的一个例子�
 
 以下是创建先前显示的列联表的一系列语句：
 
-[PRE26]
+```py
+print("obs exp"*len(type_totals))
+for s in sorted(shift_totals):
+ **pairs= ["{0:3d} {1:5.2f}".format(defects[s,t], float(expected[s,t])) for t in sorted(type_totals)]
+ **print("{0} {1:3d}".format( "".join(pairs), shift_totals[s]))
+footers= ["{0:3d}".format(type_totals[t]) for t in sorted(type_totals)]
+print("{0} {1:3d}".format("".join(footers), total))
+
+```
 
 这将缺陷类型分布到每一行。我们已经写了足够的`obs exp`列标题来涵盖所有的缺陷类型。对于每个变化，我们将发出一行观察到的和实际的对，然后是一个变化的总数。在底部，我们将发出一个只有缺陷类型总数和总数的页脚行。
 
@@ -314,7 +474,13 @@ Syracuse 函数的递归应用是具有“吸引子”的函数的一个例子�
 
 我们可以计算指定公式的值如下：
 
-[PRE27]
+```py
+diff= lambda e,o: (e-o)**2/e
+chi2= sum(diff(expected[s,t], defects[s,t]) for s in shift_totals:
+ **for t in type_totals
+ **)
+
+```
 
 我们定义了一个小的`lambda`来帮助我们优化计算。这使我们能够只执行一次`expected[s,t]`和`defects[s,t]`属性，即使期望值在两个地方使用。对于这个数据集，最终的卡方值为 19.18。
 
@@ -340,7 +506,13 @@ Syracuse 函数的递归应用是具有“吸引子”的函数的一个例子�
 
 这两个函数都需要一个阶乘计算，![计算卡方阈值](img/B03652_16_11.jpg)。我们已经看到了几种分数主题的变化。我们将使用以下一个：
 
-[PRE28]
+```py
+@lru_cache(128)
+def fact(k):
+ **if k < 2: return 1
+ **return reduce(operator.mul, range(2, int(k)+1))
+
+```
 
 这是![计算卡方阈值](img/B03652_16_12.jpg)：从 2 到*k*（包括*k*）的数字的乘积。我们省略了单元测试案例。
 
@@ -356,7 +528,10 @@ Syracuse 函数的递归应用是具有“吸引子”的函数的一个例子�
 
 当*s=1*和*z=2*时，项的序列如下：
 
-[PRE29]
+```py
+ **2/1, -2/1, 4/3, -2/3, 4/15, -4/45, ..., -2/638512875
+
+```
 
 在某些时候，每个额外的项对结果不会产生重大影响。
 
@@ -368,7 +543,22 @@ Syracuse 函数的递归应用是具有“吸引子”的函数的一个例子�
 
 这是先前解释的级数展开的实现：
 
-[PRE30]
+```py
+def gamma(s, z):
+ **def terms(s, z):
+ **for k in range(100):
+ **t2= Fraction(z**(s+k))/(s+k)
+ **term= Fraction((-1)**k,fact(k))*t2
+ **yield term
+ **warnings.warn("More than 100 terms")
+ **def take_until(function, iterable):
+ **for v in iterable:
+ **if function(v): return
+ **yield v
+ **ε= 1E-8
+ **return sum(take_until(lambda t:abs(t) < ε, terms(s, z)))
+
+```
 
 我们定义了一个`term()`函数，它将产生一系列项。我们使用了一个带有上限的`for`语句来生成只有 100 个项。我们可以使用`itertools.count()`函数来生成无限序列的项。使用带有上限的循环似乎更简单一些。
 
@@ -406,7 +596,20 @@ Syracuse 函数的递归应用是具有“吸引子”的函数的一个例子�
 
 如果我们使用适当的“分数”值，那么我们可以设计一个具有几个简单情况的函数：一个“整数”值，一个分母为 1 的“分数”值，以及一个分母为 2 的“分数”值。我们可以使用“分数”值如下：
 
-[PRE31]
+```py
+sqrt_pi = Fraction(677622787, 382307718)
+def Gamma_Half(k):
+ **if isinstance(k,int):
+ **return fact(k-1)
+ **elif isinstance(k,Fraction):
+ **if k.denominator == 1:
+ **return fact(k-1)
+ **elif k.denominator == 2:
+ **n = k-Fraction(1,2)
+ **return fact(2*n)/(Fraction(4**n)*fact(n))*sqrt_pi
+ **raise ValueError("Can't compute Γ({0})".format(k))
+
+```
 
 我们将函数称为`Gamma_Half`，以强调这仅适用于整数和一半。对于整数值，我们将使用之前定义的`fact()`函数。对于分母为 1 的“分数”对象，我们将使用相同的`fact()`定义：![计算完整的 gamma 值](img/B03652_16_25.jpg)。
 
@@ -424,7 +627,12 @@ Syracuse 函数的递归应用是具有“吸引子”的函数的一个例子�
 
 这些也可以显示为适当的“分数”值。无理数导致大而难以阅读的分数。我们可以使用类似这样的东西：
 
-[PRE32]
+```py
+ **>>> g= Gamma_Half(Fraction(3,2))
+ **>>> g.limit_denominator(2000000)
+ **Fraction(291270, 328663)
+
+```
 
 这提供了一个数值，其中分母被限制在 1 到 200 万的范围内；这提供了看起来很好的六位数，我们可以用于单元测试目的。
 
@@ -434,7 +642,15 @@ Syracuse 函数的递归应用是具有“吸引子”的函数的一个例子�
 
 函数本身非常小：
 
-[PRE33]
+```py
+def cdf(x, k):
+ **"""X² cumulative distribution function.
+ **:param x: X² value -- generally sum (obs[i]-exp[i])**2/exp[i]
+ **for parallel sequences of observed and expected values.:param k: degrees of freedom >= 1; generally len(data)-1
+ **"""
+ **return 1-gamma(Fraction(k,2), Fraction(x/2))/Gamma_Half(Fraction(k,2))
+
+```
 
 我们包含了一些`docstring`注释来澄清参数。我们从自由度和卡方值*x*创建了正确的`Fraction`对象。当将一个`float`值转换为一个`Fraction`对象时，我们将得到一个非常大的分数结果，带有许多完全无关的数字。
 
@@ -444,27 +660,62 @@ Syracuse 函数的递归应用是具有“吸引子”的函数的一个例子�
 
 要计算正确的`CDF`值，请执行以下命令：
 
-[PRE34]
+```py
+>>> round(float(cdf(0.004, 1)), 2)
+0.95
+>>> cdf(0.004, 1).limit_denominator(100)
+Fraction(94, 99)
+>>> round(float(cdf(10.83, 1)), 3)
+0.001
+>>> cdf(10.83, 1).limit_denominator(1000)
+Fraction(1, 1000)
+>>> round(float(cdf(3.94, 10)), 2)
+0.95
+>>> cdf(3.94, 10).limit_denominator(100)
+Fraction(19, 20)
+>>> round(float(cdf(29.59, 10)), 3)
+0.001
+>>> cdf(29.59, 10).limit_denominator(10000)
+Fraction(8, 8005)
+
+```
 
 给定一个自由度的值和一个自由度的数量，我们的`CDF`函数产生了与一个广泛使用的值表相同的结果。
 
 这是一个从一个表中的整行，用一个简单的生成器表达式计算出来的：
 
-[PRE35]
+```py
+>>> chi2= [0.004, 0.02, 0.06, 0.15, 0.46, 1.07, 1.64, 2.71, 3.84, 6.64, 10.83]
+>>> act= [round(float(x), 3) for x in map(cdf, chi2, [1]*len(chi2))]
+>>> act
+[0.95, 0.888, 0.806, 0.699, 0.498, 0.301, 0.2, 0.1, 0.05, 0.01, 0.001]
+
+```
 
 预期值如下：
 
-[PRE36]
+```py
+[0.95, 0.90, 0.80, 0.70, 0.50, 0.30, 0.20, 0.10, 0.05, 0.01, 0.001]
+
+```
 
 我们在第三位小数上有一些微小的差异。
 
 我们可以从一个值中得到一个概率，这个值是从一个分布随机性的概率表中获取的。从我们之前展示的例子中，自由度为 6 时的 0.05 概率对应的值为 12.5916。
 
-[PRE37]
+```py
+>>> round(float(cdf(12.5916, 6)), 2)
+0.05
+
+```
 
 在例子中，我们得到的实际值为 19.18。这是这个值是随机的概率：
 
-[PRE38]
+```py
+>>> round(float(cdf(19.18, 6)), 5)
+0.00387
+
+```
 
 这个概率是 3/775，分母限制为 1000。这些不是数据随机性的好概率。
 

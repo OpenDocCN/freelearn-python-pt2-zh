@@ -82,11 +82,40 @@ Python Packaging User Guide 给出了一些建议，推荐用于创建和分发�
 
 因此，此文件的最小内容是：
 
-[PRE0]
+```py
+from setuptools import setup
+
+setup(
+    name='mypackage',
+)
+```
 
 `name`给出了软件包的完整名称。从那里，脚本提供了几个命令，可以使用`--help-commands`选项列出：
 
-[PRE1]
+```py
+$ python3 setup.py --help-commands
+Standard commands:
+ **build             build everything needed to install
+ **clean             clean up temporary files from 'build' command
+ **install           install everything from build directory
+ **sdist             create a source distribution (tarball, zip file)
+ **register          register the distribution with the PyP
+ **bdist             create a built (binary) distribution
+ **check             perform some checks on the package
+ **upload            upload binary package to PyPI
+
+Extra commands:
+ **develop           install package in 'development mode'
+ **alias             define a shortcut to invoke one or more commands
+ **test              run unit tests after in-place build
+ **bdist_wheel       create a wheel distribution
+
+usage: setup.py [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...]
+ **or: setup.py --help [cmd1 cmd2 ...]
+ **or: setup.py --help-commands
+ **or: setup.py cmd --help
+
+```
 
 实际的命令列表更长，可以根据可用的`setuptools`扩展而变化。它被截断以仅显示对本章最重要和相关的命令。**标准** **命令**是`distutils`提供的内置命令，而**额外** **命令**是由第三方软件包创建的命令，例如`setuptools`或定义和注册新命令的任何其他软件包。另一个软件包注册的额外命令是由`wheel`软件包提供的`bdist_wheel`。
 
@@ -96,7 +125,16 @@ Python Packaging User Guide 给出了一些建议，推荐用于创建和分发�
 
 `setup.cfg`文件的语法与内置的`configparser`模块提供的语法相同，因此类似于流行的 Microsoft Windows INI 文件。以下是一个设置配置文件的示例，其中提供了一些`global`，`sdist`和`bdist_wheel`命令的默认值：
 
-[PRE2]
+```py
+[global]
+quiet=1
+
+[sdist]
+formats=zip,tar
+
+[bdist_wheel]
+universal=1
+```
 
 此示例配置将确保始终使用两种格式（ZIP 和 TAR）创建源分发，并且将创建通用轮（与 Python 版本无关）的构建轮分发。此外，通过全局`quiet`开关，每个命令的大部分输出都将被抑制。请注意，这仅用于演示目的，可能不是默认情况下抑制每个命令的输出的合理选择。
 
@@ -116,7 +154,14 @@ Python Packaging User Guide 给出了一些建议，推荐用于创建和分发�
 
 此模板每行定义一个包含或排除规则，例如：
 
-[PRE3]
+```py
+include HISTORY.txt
+include README.txt
+include CHANGES.txt
+include CONTRIBUTORS.txt
+include LICENSE
+recursive-include *.txt *.py
+```
 
 `MANIFEST.in`的完整命令列表可以在官方`distutils`文档中找到。
 
@@ -146,7 +191,31 @@ Python Packaging User Guide 给出了一些建议，推荐用于创建和分发�
 
 PyPI 和`distutils`提供了一组分类应用程序的解决方案，称为**trove classifiers**。所有分类器形成一个类似树状的结构。每个分类器都是一种字符串形式，其中每个命名空间都由`::`子字符串分隔。它们的列表作为`classifiers`参数提供给`setup()`函数的包定义。以下是 PyPI 上某个项目（这里是`solrq`）的分类器示例列表：
 
-[PRE4]
+```py
+from setuptools import setup
+
+setup(
+    name="solrq",
+    # (...)
+
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: BSD License',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.2',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: Implementation :: PyPy',
+        'Topic :: Internet :: WWW/HTTP :: Indexing/Search',
+    ],
+)
+```
 
 它们在包定义中是完全可选的，但为`setup()`接口中可用的基本元数据提供了有用的扩展。除其他外，trove classifiers 可能提供有关支持的 Python 版本或系统、项目的开发阶段或代码发布的许可证的信息。许多 PyPI 用户通过分类搜索和浏览可用的软件包，因此适当的分类有助于软件包达到其目标。
 
@@ -178,7 +247,25 @@ Trove classifiers 在整个打包生态系统中起着重要作用，不应被�
 
 为了分发而创建一个包对于经验不足的开发人员来说可能是一项繁琐的任务。`setuptools`或`distuitls`在它们的`setup()`函数调用中接受的大部分元数据可以手动提供，忽略了这些可能在项目的其他部分中可用的事实：
 
-[PRE5]
+```py
+from setuptools import setup
+
+setup(
+    name="myproject",
+    version="0.0.1",
+    description="mypackage project short description",
+    long_description="""
+        Longer description of mypackage project
+        possibly with some documentation and/or
+        usage examples
+    """,
+    install_requires=[
+        'dependency1',
+        'dependency2',
+        'etc',
+    ]
+)
+```
 
 虽然这肯定会起作用，但在长期内很难维护，并且留下了未来错误和不一致的可能性。`setuptools`和`distutils`都无法自动从项目源中提取各种元数据信息，因此您需要自己提供它们。在 Python 社区中有一些常见的模式用于解决最常见的问题，如依赖管理、版本/自述文件的包含等。至少了解其中一些是值得的，因为它们如此受欢迎，以至于它们可以被视为包装习语。
 
@@ -190,11 +277,51 @@ Trove classifiers 在整个打包生态系统中起着重要作用，不应被�
 
 PyPI 上有很多包都遵循这两个标准。它们的`__init__.py`文件包含如下所示的版本属性：
 
-[PRE6]
+```py
+# version as tuple for simple comparisons
+VERSION = (0, 1, 1)
+# string created from tuple to avoid inconsistency
+__version__ = ".".join([str(x) for x in VERSION])
+```
 
 延迟 PEP 396 的另一个建议是，distutils 的`setup()`函数中提供的版本应该从`__version__`派生，或者反之亦然。Python 包装用户指南提供了单一源项目版本的多种模式，每种模式都有其自己的优点和局限性。我个人比较喜欢的是比较长的模式，它没有包含在 PyPA 的指南中，但它的优点是将复杂性限制在`setup.py`脚本中。这个样板假设版本说明符由包的`__init__`模块的`VERSION`属性提供，并提取这些数据以包含在`setup()`调用中。以下是一些虚构包的`setup.py`脚本的摘录，展示了这种方法：
 
-[PRE7]
+```py
+from setuptools import setup
+import os
+
+def get_version(version_tuple):
+    # additional handling of a,b,rc tags, this can
+    # be simpler depending on your versioning scheme
+    if not isinstance(version_tuple[-1], int):
+        return '.'.join(
+            map(str, version_tuple[:-1])
+        ) + version_tuple[-1]
+
+    return '.'.join(map(str, version_tuple))
+
+# path to the packages __init__ module in project
+# source tree
+init = os.path.join(
+    os.path.dirname(__file__), 'src', 'some_package', '__init__.py'
+)
+
+version_line = list(
+    filter(lambda l: l.startswith('VERSION'), open(init))
+)[0]
+
+# VERSION is a tuple so we need to eval its line of code.
+# We could simply import it from the package but we
+# cannot be sure that this package is importable before
+# finishing its installation
+VERSION = get_version(eval(version_line.split('=')[-1]))
+
+setup(
+    name='some-package',
+    version=VERSION,
+    # ...
+)
+```
 
 #### 自述文件
 
@@ -204,17 +331,63 @@ Python Packaging Index 可以在 PyPI 门户网站的软件包页面上显示项
 
 如果你想为你的项目的 README 使用不同于 reStructuredText 标记语言的东西，你仍然可以以可读的形式在 PyPI 页面上提供它作为项目描述。诀窍在于使用`pypandoc`软件包将你的其他标记语言转换为 reStructuredText，同时上传到 Python Package Index 时要有一个回退到你的 readme 文件的纯内容，这样如果用户没有安装`pypandoc`，安装就不会失败：
 
-[PRE8]
+```py
+try:
+    from pypandoc import convert
+
+    def read_md(f):
+        return convert(f, 'rst')
+
+except ImportError:
+    convert = None
+    print(
+        "warning: pypandoc module not found, could not convert Markdown to RST"
+    )
+
+    def read_md(f):
+        return open(f, 'r').read()  # noqa
+
+README = os.path.join(os.path.dirname(__file__), 'README.md')
+
+setup(
+    name='some-package',
+    long_description=read_md(README),
+    # ...
+)
+```
 
 #### 管理依赖
 
 许多项目需要安装和/或使用一些外部软件包。当依赖列表非常长时，就会出现如何管理的问题。在大多数情况下，答案非常简单。不要过度设计问题。保持简单，并在你的`setup.py`脚本中明确提供依赖列表：
 
-[PRE9]
+```py
+from setuptools import setup
+setup(
+    name='some-package',
+    install_requires=['falcon', 'requests', 'delorean']
+    # ...
+)
+```
 
 一些 Python 开发人员喜欢使用`requirements.txt`文件来跟踪他们软件包的依赖列表。在某些情况下，你可能会找到理由这样做，但在大多数情况下，这是该项目代码未正确打包的遗留物。无论如何，即使像 Celery 这样的知名项目仍然坚持这种约定。因此，如果你不愿意改变你的习惯，或者你在某种程度上被迫使用要求文件，那么至少要做到正确。以下是从`requirements.txt`文件中读取依赖列表的一种流行习语：
 
-[PRE10]
+```py
+from setuptools import setup
+import os
+
+def strip_comments(l):
+    return l.split('#', 1)[0].strip()
+
+def reqs(*f):
+    return list(filter(None, [strip_comments(l) for l in open(
+        os.path.join(os.getcwd(), *f)).readlines()]))
+
+setup(
+    name='some-package',
+    install_requires=reqs('requirements.txt')
+    # ...
+)
+```
 
 ## 自定义设置命令
 
@@ -224,7 +397,15 @@ Python Packaging Index 可以在 PyPI 门户网站的软件包页面上显示项
 
 要链接新的命令，可以在设置调用中使用`entry_points`元数据：
 
-[PRE11]
+```py
+setup(
+    name="my.command",
+    entry_points="""
+        [distutils.commands]
+        my_command  = my.command.module.Class
+    """
+)
+```
 
 所有命名链接都被收集在命名部分中。当`distutils`被加载时，它会扫描在`distutils.commands`下注册的链接。
 
@@ -242,13 +423,19 @@ Python Packaging Index 可以在 PyPI 门户网站的软件包页面上显示项
 
 在安装包时，除了使用裸`setup.py`脚本之外，还可以使用`pip`。由于它是 PyPA 推荐的工具，即使在本地环境中安装包用于开发目的时，也应该使用它。为了从本地源安装包，请运行以下命令：
 
-[PRE12]
+```py
+pip install <project-path>
+
+```
 
 ### 卸载包
 
 令人惊讶的是，`setuptools`和`distutils`缺乏`uninstall`命令。幸运的是，可以使用`pip`卸载任何 Python 包：
 
-[PRE13]
+```py
+pip uninstall <package-name>
+
+```
 
 在系统范围的包上尝试卸载可能是一种危险的操作。这是为什么对于任何开发都使用虚拟环境如此重要的另一个原因。
 
@@ -258,7 +445,10 @@ Python Packaging Index 可以在 PyPI 门户网站的软件包页面上显示项
 
 `pip`还允许以这种模式安装包。这种安装选项称为*可编辑模式*，可以在`install`命令中使用`-e`参数启用：
 
-[PRE14]
+```py
+pip install -e <project-path>
+
+```
 
 # 命名空间包
 
@@ -284,21 +474,67 @@ Python Packaging Index 可以在 PyPI 门户网站的软件包页面上显示项
 
 重要的是要了解普通包和命名空间包之间的区别以及它们解决的问题。通常（没有命名空间包），您将创建一个带有以下文件结构的`acme`包和`sql`子包/子模块：
 
-[PRE15]
+```py
+$ tree acme/
+acme/
+├── acme
+│   ├── __init__.py
+│   └── sql
+│       └── __init__.py
+└── setup.py
+
+2 directories, 3 files
+
+```
 
 每当您想要添加一个新的子包，比如`templating`，您都被迫将其包含在`acme`的源树中：
 
-[PRE16]
+```py
+$ tree acme/
+acme/
+├── acme
+│   ├── __init__.py
+│   ├── sql
+│   │   └── __init__.py
+│   └── templating
+│       └── __init__.py
+└── setup.py
+
+3 directories, 4 files
+
+```
 
 这种方法使得独立开发`acme.sql`和`acme.templating`几乎不可能。`setup.py`脚本还必须为每个子包指定所有的依赖关系，因此不可能（或者至少非常困难）只安装一些`acme`组件。而且，如果一些子包有冲突的要求，这是一个无法解决的问题。
 
 使用命名空间包，您可以独立存储每个子包的源树：
 
-[PRE17]
+```py
+$ tree acme.sql/
+acme.sql/
+├── acme
+│   └── sql
+│       └── __init__.py
+└── setup.py
+
+2 directories, 2 files
+
+$ tree acme.templating/
+acme.templating/
+├── acme
+│   └── templating
+│       └── __init__.py
+└── setup.py
+
+2 directories, 2 files
+
+```
 
 您还可以在 PyPI 或您使用的任何包索引中独立注册它们。用户可以选择从`acme`命名空间安装哪些子包，但他们永远不会安装通用的`acme`包（它不存在）：
 
-[PRE18]
+```py
+$ pip install acme.sql acme.templating
+
+```
 
 请注意，独立的源树不足以在 Python 中创建命名空间包。如果您不希望您的包互相覆盖，您需要做一些额外的工作。此外，根据您的 Python 语言版本目标，正确的处理可能会有所不同。这方面的细节在接下来的两节中描述。
 
@@ -306,11 +542,38 @@ Python Packaging Index 可以在 PyPI 门户网站的软件包页面上显示项
 
 如果您只使用和针对 Python 3，那么对您来说有个好消息。**PEP 420（隐式命名空间包）**引入了一种新的定义命名空间包的方法。它是标准跟踪的一部分，并且自 3.3 版本以来成为语言的官方部分。简而言之，如果一个目录包含 Python 包或模块（包括命名空间包），并且不包含`__init__.py`文件，则被视为命名空间包。因此，以下是在上一节中介绍的文件结构示例：
 
-[PRE19]
+```py
+$ tree acme.sql/
+acme.sql/
+├── acme
+│   └── sql
+│       └── __init__.py
+└── setup.py
+
+2 directories, 2 files
+
+$ tree acme.templating/
+acme.templating/
+├── acme
+│   └── templating
+│       └── __init__.py
+└── setup.py
+
+2 directories, 2 files
+
+```
 
 它们足以定义`acme`是 Python 3.3 及更高版本中的命名空间包。使用设置工具的最小`setup.py`脚本将如下所示：
 
-[PRE20]
+```py
+from setuptools import setup
+
+setup(
+ **name='acme.templating',
+ **packages=['acme.templating'],
+)
+
+```
 
 不幸的是，在撰写本书时，`setuptools.find_packages()`不支持 PEP 420。无论如何，这在将来可能会改变。此外，明确定义包列表的要求似乎是易于集成命名空间包的一个非常小的代价。
 
@@ -320,15 +583,46 @@ PEP 420 布局中的命名空间包在 Python 3.3 之前的版本中无法工作
 
 最简单的方法是为每个组件创建一个文件结构，类似于普通包布局而不是命名空间包，并将一切交给`setuptools`。因此，`acme.sql`和`acme.templating`的示例布局可能如下所示：
 
-[PRE21]
+```py
+$ tree acme.sql/
+acme.sql/
+├── acme
+│   ├── __init__.py
+│   └── sql
+│       └── __init__.py
+└── setup.py
+
+2 directories, 3 files
+
+$ tree acme.templating/
+acme.templating/
+├── acme
+│   ├── __init__.py
+│   └── templating
+│       └── __init__.py
+└── setup.py
+
+2 directories, 3 files
+
+```
 
 请注意，对于`acme.sql`和`acme.templating`，还有一个额外的源文件`acme/__init__.py`。这个文件必须保持空白。如果我们将这个名称作为`setuptools.setup()`函数的`namespace_packages`关键字参数的值提供，`acme`命名空间包将被创建：
 
-[PRE22]
+```py
+from setuptools import setup
+
+setup(
+    name='acme.templating',
+    packages=['acme.templating'],
+    namespace_packages=['acme'],
+)
+```
 
 最简单并不意味着最好。为了注册一个新的命名空间，`setuptools`将在您的`__init__.py`文件中调用`pkg_resources.declare_namespace()`函数。即使`__init__.py`文件是空的，也会发生这种情况。无论如何，正如官方文档所说，声明命名空间在`__init__.py`文件中是您自己的责任，`setuptools`的这种隐式行为可能会在将来被取消。为了安全和"未来证明"，您需要在文件`acme/__init__.py`中添加以下行：
 
-[PRE23]
+```py
+__import__('pkg_resources').declare_namespace(__name__)
+```
 
 # 上传软件包
 
@@ -346,27 +640,55 @@ Python 软件包索引，如前所述，是开源软件包分发的官方来源�
 
 上传软件包的最简单方法是使用`setup.py`脚本的`upload`命令：
 
-[PRE24]
+```py
+$ python setup.py <dist-commands> upload
+
+```
 
 在这里，`<dist-commands>`是一个创建要上传的分发包的命令列表。只有在同一次`setup.py`执行期间创建的分发包才会上传到存储库。因此，如果您要同时上传源分发包、构建分发包和 wheel 软件包，那么您需要发出以下命令：
 
-[PRE25]
+```py
+$ python setup.py sdist bdist bdist_wheel upload
+
+```
 
 在使用`setup.py`上传时，您不能重复使用已构建的分发包，并且被迫在每次上传时重新构建它们。这可能有些合理，但对于大型或复杂的项目来说可能不方便，因为创建分发包可能需要相当长的时间。`setup.py upload`的另一个问题是，它可能在某些 Python 版本上使用明文 HTTP 或未经验证的 HTTPS 连接。这就是为什么建议使用`twine`作为`setup.py upload`的安全替代品。
 
 Twine 是与 PyPI 交互的实用程序，目前只提供一个功能-安全地上传软件包到存储库。它支持任何打包格式，并始终确保连接是安全的。它还允许您上传已经创建的文件，因此您可以在发布之前测试分发包。`twine`的一个示例用法仍然需要调用`setup.py`来构建分发包：
 
-[PRE26]
+```py
+$ python setup.py sdist bdist_wheel
+$ twine upload dist/*
+
+```
 
 如果您尚未注册此软件包，则上传将失败，因为您需要先注册它。这也可以使用`twine`来完成：
 
-[PRE27]
+```py
+$ twine register dist/*
+
+```
 
 ### .pypirc
 
 `.pypirc`是一个存储有关 Python 软件包存储库信息的配置文件。它应该位于您的主目录中。该文件的格式如下：
 
-[PRE28]
+```py
+[distutils]
+index-servers =
+    pypi
+    other
+
+[pypi]
+repository: <repository-url>
+username: <username>
+password: <password>
+
+[other]
+repository: https://example.com/pypi
+username: <username>
+password: <password>
+```
 
 `distutils`部分应该有`index-servers`变量，列出所有描述所有可用存储库和其凭据的部分。对于每个存储库部分，只有三个变量可以修改：
 
@@ -398,13 +720,28 @@ Python 软件包通常有两种类型的分发：
 
 这个命令是从目标系统独立地分发软件包的最简单方法。它创建一个包含存档的`dist`文件夹，可以进行分发。为了使用它，必须向`setup`传递一个额外的参数来提供版本号。如果不给它一个`version`值，它将使用`version = 0.0.0`：
 
-[PRE29]
+```py
+from setuptools import setup
+
+setup(name='acme.sql', version='0.1.1')
+```
 
 这个数字对于升级安装是有用的。每次发布软件包时，都会提高这个数字，以便目标系统知道它已经更改。
 
 让我们使用这个额外的参数运行`sdist`命令：
 
-[PRE30]
+```py
+$ python setup.py sdist
+running sdist
+...
+creating dist
+tar -cf dist/acme.sql-0.1.1.tar acme.sql-0.1.1
+gzip -f9 dist/acme.sql-0.1.1.tar
+removing 'acme.sql-0.1.1' (and everything under it)
+$ ls dist/
+acme.sql-0.1.1.tar.gz
+
+```
 
 ### 注意
 
@@ -434,13 +771,36 @@ Python 软件包通常有两种类型的分发：
 
 让我们在 Mac OS X 下为`acme.sql`创建一个二进制发行版：
 
-[PRE31]
+```py
+$ python setup.py bdist
+running bdist
+running bdist_dumb
+running build
+...
+running install_scripts
+tar -cf dist/acme.sql-0.1.1.macosx-10.3-fat.tar .
+gzip -f9 acme.sql-0.1.1.macosx-10.3-fat.tar
+removing 'build/bdist.macosx-10.3-fat/dumb' (and everything under it)
+$ ls dist/
+acme.sql-0.1.1.macosx-10.3-fat.tar.gz    acme.sql-0.1.1.tar.gz
+
+```
 
 请注意，新创建的存档名称包含了系统名称和它构建的发行版名称（*Mac OS X 10.3*）。
 
 在 Windows 下调用相同的命令将创建一个特定的分发存档：
 
-[PRE32]
+```py
+C:\acme.sql> python.exe setup.py bdist
+...
+C:\acme.sql> dir dist
+25/02/2008  08:18    <DIR>          .
+25/02/2008  08:18    <DIR>          ..
+25/02/2008  08:24            16 055 acme.sql-0.1.win32.zip
+ **1 File(s)         16 055 bytes
+ **2 Dir(s)  22 239 752 192 bytes free
+
+```
 
 如果软件包包含 C 代码，除了源分发外，释放尽可能多的不同二进制分发是很重要的。至少，对于那些没有安装 C 编译器的人来说，Windows 二进制分发是很重要的。
 
@@ -470,7 +830,9 @@ Python 软件包通常有两种类型的分发：
 
 开发人员友好的操作系统，比如 Mac OS X 或大多数 Linux 发行版，都预装了 Python。因此，对于他们的用户，基于 Python 的应用程序仍然可以作为依赖于主脚本文件中特定**解释器指令**的源代码包进行分发，这通常被称为**shebang**。对于大多数 Python 应用程序，这采用以下形式：
 
-[PRE33]
+```py
+#!/usr/bin/env python
+```
 
 这样的指令，当作为脚本的第一行使用时，将默认标记为由给定环境的 Python 版本解释。当然，这可以更详细地表达，需要特定的 Python 版本，比如`python3.4`、`python3`或`python2`。请注意，这将在大多数流行的 POSIX 系统中工作，但根据定义，这在任何情况下都不具备可移植性。这个解决方案依赖于特定的 Python 版本的存在，以及`env`可执行文件确切地位于`/usr/bin/env`。这些假设都可能在某些操作系统上失败。另外，shebang 在 Windows 上根本不起作用。此外，即使对于经验丰富的开发人员，在 Windows 上启动 Python 环境也可能是一个挑战，因此你不能指望非技术用户能够自己做到这一点。
 
@@ -530,25 +892,124 @@ PyInstaller（[`www.pyinstaller.org/`](http://www.pyinstaller.org/)）是目前�
 
 简单应用程序的使用很容易。假设我们的应用程序包含在名为`myscript.py`的脚本中。这是一个简单的“Hello world！”应用程序。我们想为 Windows 用户创建一个独立的可执行文件，并且我们的源代码位于文件系统中的`D://dev/app`下。我们的应用程序可以使用以下简短的命令进行打包：
 
-[PRE34]
+```py
+$ pyinstaller myscript.py
+
+2121 INFO: PyInstaller: 3.1
+2121 INFO: Python: 2.7.10
+2121 INFO: Platform: Windows-7-6.1.7601-SP1
+2121 INFO: wrote D:\dev\app\myscript.spec
+2137 INFO: UPX is not available.
+2138 INFO: Extending PYTHONPATH with paths
+['D:\\dev\\app', 'D:\\dev\\app']
+2138 INFO: checking Analysis
+2138 INFO: Building Analysis because out00-Analysis.toc is non existent
+2138 INFO: Initializing module dependency graph...
+2154 INFO: Initializing module graph hooks...
+2325 INFO: running Analysis out00-Analysis.toc
+(...)
+25884 INFO: Updating resource type 24 name 2 language 1033
+
+```
 
 PyInstaller 的标准输出即使对于简单的应用程序也非常长，因此为了简洁起见，在前面的示例中进行了截断。如果在 Windows 上运行，目录和文件的结果结构将如下所示：
 
-[PRE35]
+```py
+$ tree /0066
+│   myscript.py
+│   myscript.spec
+│
+├───build
+│   └───myscript
+│           myscript.exe
+│           myscript.exe.manifest
+│           out00-Analysis.toc
+│           out00-COLLECT.toc
+│           out00-EXE.toc
+│           out00-PKG.pkg
+│           out00-PKG.toc
+│           out00-PYZ.pyz
+│           out00-PYZ.toc
+│           warnmyscript.txt
+│
+└───dist
+ **└───myscript
+ **bz2.pyd
+ **Microsoft.VC90.CRT.manifest
+ **msvcm90.dll
+ **msvcp90.dll
+ **msvcr90.dll
+ **myscript.exe
+ **myscript.exe.manifest
+ **python27.dll
+ **select.pyd
+ **unicodedata.pyd
+ **_hashlib.pyd
+
+```
 
 `dist/myscript`目录包含了可以分发给用户的构建应用程序。请注意，整个目录必须被分发。它包含了运行我们的应用程序所需的所有附加文件（DLL、编译的扩展库等）。可以使用`pyinstaller`命令的`--onefile`开关获得更紧凑的分发：
 
-[PRE36]
+```py
+$ pyinstaller --onefile myscript.py
+(...)
+$ tree /f
+├───build
+│   └───myscript
+│           myscript.exe.manifest
+│           out00-Analysis.toc
+│           out00-EXE.toc
+│           out00-PKG.pkg
+│           out00-PKG.toc
+│           out00-PYZ.pyz
+│           out00-PYZ.toc
+│           warnmyscript.txt
+│
+└───dist
+ **myscript.exe
+
+```
 
 使用`--onefile`选项构建时，您需要分发给其他用户的唯一文件是`dist`目录中找到的单个可执行文件（这里是`myscript.exe`）。对于小型应用程序，这可能是首选选项。
 
 运行`pyinstaller`命令的一个副作用是创建`*.spec`文件。这是一个自动生成的 Python 模块，包含了如何从您的源代码创建可执行文件的规范。例如，我们已经在以下代码中使用了这个：
 
-[PRE37]
+```py
+# -*- mode: python -*-
+
+block_cipher = None
+
+a = Analysis(['myscript.py'],
+             pathex=['D:\\dev\\app'],
+             binaries=None,
+             datas=None,
+             hiddenimports=[],
+             hookspath=[],
+             runtime_hooks=[],
+             excludes=[],
+             win_no_prefer_redirects=False,
+             win_private_assemblies=False,
+             cipher=block_cipher)
+pyz = PYZ(a.pure, a.zipped_data,
+             cipher=block_cipher)
+exe = EXE(pyz,
+          a.scripts,
+          a.binaries,
+          a.zipfiles,
+          a.datas,
+          name='myscript',
+          debug=False,
+          strip=False,
+          upx=True,
+          console=True )
+```
 
 这个`.spec`文件包含了之前指定的所有`pyinstaller`参数。如果您对构建进行了大量的自定义，这将非常有用，因为这可以代替必须存储您的配置的构建脚本。创建后，您可以将其用作`pyinstaller`命令的参数，而不是您的 Python 脚本：
 
-[PRE38]
+```py
+$ pyinstaller.exe myscript.spec
+
+```
 
 请注意，这是一个真正的 Python 模块，因此您可以使用自己已经了解的语言对其进行扩展并对构建过程进行更复杂的自定义。当您针对许多不同的平台时，自定义`.spec`文件尤其有用。此外，并非所有的`pyinstaller`选项都可以通过命令行参数使用，只有在修改`.spec`文件时才能使用。
 
@@ -566,19 +1027,58 @@ cx_Freeze ([`cx-freeze.sourceforge.net/`](http://cx-freeze.sourceforge.net/))是
 
 与 PyInstaller 一样，它不允许我们执行跨平台构建，因此您需要在分发到的相同操作系统上创建您的可执行文件。cx_Freeze 的主要缺点是它不允许我们创建真正的单文件可执行文件。使用它构建的应用程序需要与相关的 DLL 文件和库一起分发。假设我们有与*PyInstaller*部分中的相同应用程序，那么示例用法也非常简单：
 
-[PRE39]
+```py
+$ cxfreeze myscript.py
+
+copying C:\Python27\lib\site-packages\cx_Freeze\bases\Console.exe -> D:\dev\app\dist\myscript.exe
+copying C:\Windows\system32\python27.dll -> D:\dev\app\dist\python27.dll
+writing zip file D:\dev\app\dist\myscript.exe
+(...)
+copying C:\Python27\DLLs\bz2.pyd -> D:\dev\app\dist\bz2.pyd
+copying C:\Python27\DLLs\unicodedata.pyd -> D:\dev\app\dist\unicodedata.pyd
+
+```
 
 生成的文件结构如下：
 
-[PRE40]
+```py
+$ tree /f
+│   myscript.py
+│
+└───dist
+ **bz2.pyd
+ **myscript.exe
+ **python27.dll
+ **unicodedata.pyd
+
+```
 
 cx_Freeze 不是提供自己的构建规范格式（就像 PyInstaller 一样），而是扩展了`distutils`包。这意味着您可以使用熟悉的`setup.py`脚本配置独立可执行文件的构建方式。如果您已经使用`setuptools`或`distutils`来分发软件包，那么 cx_Freeze 非常方便，因为额外的集成只需要对`setup.py`脚本进行小的更改。以下是一个使用`cx_Freeze.setup()`创建 Windows 独立可执行文件的`setup.py`脚本示例：
 
-[PRE41]
+```py
+import sys
+from cx_Freeze import setup, Executable
+
+# Dependencies are automatically detected, but it might need fine tuning.
+build_exe_options = {"packages": ["os"], "excludes": ["tkinter"]}
+
+setup(
+    name="myscript",
+    version="0.0.1",
+    description="My Hello World application!",
+    options={
+        "build_exe": build_exe_options
+    },
+    executables=[Executable("myscript.py")]
+)
+```
 
 有了这样一个文件，可以使用添加到`setup.py`脚本的新`build_exe`命令来创建新的可执行文件：
 
-[PRE42]
+```py
+$ python setup.py build_exe
+
+```
 
 cx_Freeze 的使用似乎比 PyInstaller 和`distutils`集成更容易一些，这是一个非常有用的功能。不幸的是，这个项目可能会给经验不足的开发人员带来一些麻烦：
 
@@ -596,7 +1096,37 @@ py2exe ([`www.py2exe.org/`](http://www.py2exe.org/))和 py2app ([`pythonhosted.o
 
 由于使用方法非常相似，只需要修改`setup.py`脚本，这些软件包似乎互补。py2app 项目的官方文档提供了以下`setup.py`脚本示例，可以根据所使用的平台使用正确的工具（py2exe 或 py2app）构建独立可执行文件：
 
-[PRE43]
+```py
+import sys
+from setuptools import setup
+
+mainscript = 'MyApplication.py'
+
+if sys.platform == 'darwin':
+    extra_options = dict(
+        setup_requires=['py2app'],
+        app=[mainscript],
+        # Cross-platform applications generally expect sys.argv to
+        # be used for opening files.
+        options=dict(py2app=dict(argv_emulation=True)),
+    )
+elif sys.platform == 'win32':
+    extra_options = dict(
+        setup_requires=['py2exe'],
+        app=[mainscript],
+    )
+else:
+    extra_options = dict(
+        # Normally unix-like platforms will use "setup.py install"
+        # and install the main script as such
+        scripts=[mainscript],
+    )
+
+setup(
+    name="MyApplication",
+    **extra_options
+)
+```
 
 使用这样的脚本，您可以使用`python setup.py py2exe`命令构建 Windows 可执行文件，并使用`python setup.py py2app`构建 Mac OS X 应用程序。当然，跨编译是不可能的。
 

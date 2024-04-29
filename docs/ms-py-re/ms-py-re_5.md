@@ -132,7 +132,7 @@ RegexBuddy 调试正则表达式
 >>> def catastrophic(n):
         print "Testing with %d characters" %n
         pat = re.compile('(a+)+c')
-**text = "%s" %('a' * n)**
+text = "%s" %('a' * n)
         pat.search(text)
 ```
 
@@ -161,8 +161,8 @@ The function catastrophic lasted: 61.110949
 >>> def catastrophic(n):
         print "Testing with %d characters" %n
         pat = re.compile('(x+)+(b+)+c')
-        **text = 'x' * n**
-        **text += 'b' * n**
+        **text = 'x' * n
+        **text += 'b' * n
         pat.search(text)
 >>> for n in range(12, 18):
         test(catastrophic, n)
@@ -184,9 +184,9 @@ The function catastrophic lasted: 276.941307
 >>> def non_catastrophic(n):
         print "Testing with %d characters" %n
         pat = re.compile('(x+)+(b+)+c')
-        **text = 'x' * n**
-        **text += 'b' * n**
-        **text += 'c'**
+        **text = 'x' * n
+        **text += 'b' * n
+        **text += 'c'
         pat.search(text)
 >>> for n in range(12, 18):
         test(non_catastrophic, n)

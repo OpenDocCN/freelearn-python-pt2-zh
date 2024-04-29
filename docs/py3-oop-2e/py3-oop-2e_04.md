@@ -25,11 +25,11 @@
 引发异常的最简单方法是做一些愚蠢的事情！你很可能已经这样做过，并看到了异常输出。例如，每当 Python 遇到你的程序中无法理解的一行时，它就会以`SyntaxError`退出，这是一种异常。这是一个常见的例子：
 
 ```py
-**>>> print "hello world"**
- **File "<stdin>", line 1**
- **print "hello world"**
- **^**
-**SyntaxError: invalid syntax**
+>>> print "hello world"
+ **File "<stdin>", line 1
+ **print "hello world"
+ **^
+SyntaxError: invalid syntax
 
 ```
 
@@ -38,37 +38,37 @@
 除了`SyntaxError`，还有一些其他常见的异常，我们可以处理，如下例所示：
 
 ```py
-**>>> x = 5 / 0**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
-**ZeroDivisionError: int division or modulo by zero**
+>>> x = 5 / 0
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+ZeroDivisionError: int division or modulo by zero
 
-**>>> lst = [1,2,3]**
-**>>> print(lst[3])**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
-**IndexError: list index out of range**
+>>> lst = [1,2,3]
+>>> print(lst[3])
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+IndexError: list index out of range
 
-**>>> lst + 2**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
-**TypeError: can only concatenate list (not "int") to list**
+>>> lst + 2
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+TypeError: can only concatenate list (not "int") to list
 
-**>>> lst.add**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
-**AttributeError: 'list' object has no attribute 'add'**
+>>> lst.add
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+AttributeError: 'list' object has no attribute 'add'
 
-**>>> d = {'a': 'hello'}**
-**>>> d['b']**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
-**KeyError: 'b'**
+>>> d = {'a': 'hello'}
+>>> d['b']
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+KeyError: 'b'
 
-**>>> print(this_is_not_a_var)**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
-**NameError: name 'this_is_not_a_var' is not defined**
+>>> print(this_is_not_a_var)
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+NameError: name 'this_is_not_a_var' is not defined
 
 ```
 
@@ -84,30 +84,30 @@
 class EvenOnly(list):
     def append(self, integer):
         if not isinstance(integer, int):
-            **raise TypeError("Only integers can be added")**
+            **raise TypeError("Only integers can be added")
         if integer % 2:
-            **raise ValueError("Only even numbers can be added")**
+            **raise ValueError("Only even numbers can be added")
         super().append(integer)
 ```
 
 这个类扩展了内置的`list`，就像我们在第二章中讨论的那样，*Python 中的对象*，并覆盖了`append`方法以检查两个条件，以确保项目是偶数。我们首先检查输入是否是`int`类型的实例，然后使用模运算符确保它可以被 2 整除。如果两个条件中的任何一个不满足，`raise`关键字会引发异常。`raise`关键字后面紧跟着作为异常引发的对象。在前面的例子中，两个对象是从内置类`TypeError`和`ValueError`新构造的。引发的对象也可以是我们自己创建的新异常类的实例（我们很快就会看到），在其他地方定义的异常，甚至是先前引发和处理的异常对象。如果我们在 Python 解释器中测试这个类，我们可以看到在异常发生时输出了有用的错误信息，就像以前一样：
 
 ```py
-**>>> e = EvenOnly()**
-**>>> e.append("a string")**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
- **File "even_integers.py", line 7, in add**
- **raise TypeError("Only integers can be added")**
-**TypeError: Only integers can be added**
+>>> e = EvenOnly()
+>>> e.append("a string")
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+ **File "even_integers.py", line 7, in add
+ **raise TypeError("Only integers can be added")
+TypeError: Only integers can be added
 
-**>>> e.append(3)**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
- **File "even_integers.py", line 9, in add**
- **raise ValueError("Only even numbers can be added")**
-**ValueError: Only even numbers can be added**
-**>>> e.append(2)**
+>>> e.append(3)
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+ **File "even_integers.py", line 9, in add
+ **raise ValueError("Only even numbers can be added")
+ValueError: Only even numbers can be added
+>>> e.append(2)
 
 ```
 
@@ -122,7 +122,7 @@ class EvenOnly(list):
 ```py
 def no_return():
     print("I am about to raise an exception")
-    **raise Exception("This is always raised")**
+    **raise Exception("This is always raised")
     print("This line will never execute")
     return "I won't be returned"
 ```
@@ -130,13 +130,13 @@ def no_return():
 如果我们执行这个函数，我们会看到第一个`print`调用被执行，然后引发异常。第二个`print`语句从未执行，`return`语句也从未执行：
 
 ```py
-**>>> no_return()**
-**I am about to raise an exception**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
- **File "exception_quits.py", line 3, in no_return**
- **raise Exception("This is always raised")**
-**Exception: This is always raised**
+>>> no_return()
+I am about to raise an exception
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+ **File "exception_quits.py", line 3, in no_return
+ **raise Exception("This is always raised")
+Exception: This is always raised
 
 ```
 
@@ -145,7 +145,7 @@ def no_return():
 ```py
 def call_exceptor():
     print("call_exceptor starts here...")
-    **no_return()**
+    **no_return()
     print("an exception was raised...")
     print("...so these lines don't run")
 ```
@@ -153,16 +153,16 @@ def call_exceptor():
 当我们调用这个函数时，我们看到第一个`print`语句被执行，以及`no_return`函数中的第一行。但一旦引发异常，就不会执行其他任何内容：
 
 ```py
-**>>> call_exceptor()**
-**call_exceptor starts here...**
-**I am about to raise an exception**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
- **File "method_calls_excepting.py", line 9, in call_exceptor**
- **no_return()**
- **File "method_calls_excepting.py", line 3, in no_return**
- **raise Exception("This is always raised")**
-**Exception: This is always raised**
+>>> call_exceptor()
+call_exceptor starts here...
+I am about to raise an exception
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+ **File "method_calls_excepting.py", line 9, in call_exceptor
+ **no_return()
+ **File "method_calls_excepting.py", line 3, in no_return
+ **raise Exception("This is always raised")
+Exception: This is always raised
 
 ```
 
@@ -202,7 +202,7 @@ executed after the exception
 def funny_division(divider):
     try:
         return 100 / divider
-    **except ZeroDivisionError:**
+    **except ZeroDivisionError:
         return "Zero is not a good idea!"
 
 print(funny_division(0))
@@ -213,14 +213,14 @@ print(funny_division("hello"))
 该功能通过`print`语句进行测试，显示其行为符合预期：
 
 ```py
-**Zero is not a good idea!**
-**2.0**
-**Traceback (most recent call last):**
- **File "catch_specific_exception.py", line 9, in <module>**
- **print(funny_division("hello"))**
- **File "catch_specific_exception.py", line 3, in funny_division**
- **return 100 / anumber**
-**TypeError: unsupported operand type(s) for /: 'int' and 'str'.**
+Zero is not a good idea!
+2.0
+Traceback (most recent call last):
+ **File "catch_specific_exception.py", line 9, in <module>
+ **print(funny_division("hello"))
+ **File "catch_specific_exception.py", line 3, in funny_division
+ **return 100 / anumber
+TypeError: unsupported operand type(s) for /: 'int' and 'str'.
 
 ```
 
@@ -234,7 +234,7 @@ def funny_division2(anumber):
         if anumber == 13:
             raise ValueError("13 is an unlucky number")
         return 100 / anumber
-    **except (ZeroDivisionError, TypeError):**
+    **except (ZeroDivisionError, TypeError):
         return "Enter a number other than zero"
 
 for val in (0, "hello", 50.0, 13):
@@ -246,15 +246,15 @@ for val in (0, "hello", 50.0, 13):
 底部的`for`循环循环遍历了几个测试输入并打印了结果。如果你对`print`语句中的`end`参数感到困惑，它只是将默认的尾随换行符转换为空格，以便与下一行的输出连接在一起。以下是程序的运行：
 
 ```py
-**Testing 0: Enter a number other than zero**
-**Testing hello: Enter a number other than zero**
-**Testing 50.0: 2.0**
-**Testing 13: Traceback (most recent call last):**
- **File "catch_multiple_exceptions.py", line 11, in <module>**
- **print(funny_division2(val))**
- **File "catch_multiple_exceptions.py", line 4, in funny_division2**
- **raise ValueError("13 is an unlucky number")**
-**ValueError: 13 is an unlucky number**
+Testing 0: Enter a number other than zero
+Testing hello: Enter a number other than zero
+Testing 50.0: 2.0
+Testing 13: Traceback (most recent call last):
+ **File "catch_multiple_exceptions.py", line 11, in <module>
+ **print(funny_division2(val))
+ **File "catch_multiple_exceptions.py", line 4, in funny_division2
+ **raise ValueError("13 is an unlucky number")
+ValueError: 13 is an unlucky number
 
 ```
 
@@ -266,13 +266,13 @@ def funny_division3(anumber):
         if anumber == 13:
             raise ValueError("13 is an unlucky number")
         return 100 / anumber
-    **except ZeroDivisionError:**
+    **except ZeroDivisionError:
         return "Enter a number other than zero"
-    **except TypeError:**
+    **except TypeError:
         return "Enter a numerical value"
-    **except ValueError:**
+    **except ValueError:
         print("No, No, not 13!")
-        **raise**
+        **raise
 
 ```
 
@@ -287,7 +287,7 @@ def funny_division3(anumber):
 ```py
 try:
     raise ValueError("This is an argument")
-**except ValueError as e:**
+except ValueError as e:
     print("The exception arguments were", e.args)
 ```
 
@@ -311,34 +311,34 @@ except TypeError:
 except Exception as e:
     print("Caught some other error: %s" %
         ( e.__class__.__name__))
-**else:**
+else:
     print("This code called if there is no exception")
-**finally:**
+finally:
     print("This cleanup code is always called")
 ```
 
 如果我们运行这个例子——它几乎涵盖了每种可能的异常处理场景——几次，每次都会得到不同的输出，这取决于`random`选择的异常。以下是一些示例运行：
 
 ```py
-**$ python finally_and_else.py**
-**raising None**
-**This code called if there is no exception**
-**This cleanup code is always called**
+$ python finally_and_else.py
+raising None
+This code called if there is no exception
+This cleanup code is always called
 
-**$ python finally_and_else.py**
-**raising <class 'TypeError'>**
-**Caught a TypeError**
-**This cleanup code is always called**
+$ python finally_and_else.py
+raising <class 'TypeError'>
+Caught a TypeError
+This cleanup code is always called
 
-**$ python finally_and_else.py**
-**raising <class 'IndexError'>**
-**Caught some other error: IndexError**
-**This cleanup code is always called**
+$ python finally_and_else.py
+raising <class 'IndexError'>
+Caught some other error: IndexError
+This cleanup code is always called
 
-**$ python finally_and_else.py**
-**raising <class 'ValueError'>**
-**Caught a ValueError**
-**This cleanup code is always called**
+$ python finally_and_else.py
+raising <class 'ValueError'>
+Caught a ValueError
+This cleanup code is always called
 
 ```
 
@@ -395,16 +395,16 @@ raise InvalidWithdrawal("You don't have $50 in your account")
 
 ```py
 class InvalidWithdrawal(Exception):
-    **def __init__(self, balance, amount):**
-        **super().__init__("account doesn't have ${}".format(**
-            **amount))**
+    **def __init__(self, balance, amount):
+        **super().__init__("account doesn't have ${}".format(
+            **amount))
         self.amount = amount
         self.balance = balance
 
     def overage(self):
         return self.amount - self.balance
 
-**raise InvalidWithdrawal(25, 50)**
+raise InvalidWithdrawal(25, 50)
 
 ```
 
@@ -415,7 +415,7 @@ class InvalidWithdrawal(Exception):
 ```py
 try:
     raise InvalidWithdrawal(25, 50)
-**except InvalidWithdrawal as e:**
+except InvalidWithdrawal as e:
     print("I'm sorry, but your withdrawal is "
             "more than your balance by "
             "${}".format(e.overage()))
@@ -491,9 +491,9 @@ inv = Inventory()
 inv.lock(item_type)
 try:
     num_left = inv.purchase(item_type)
-**except InvalidItemType:**
+except InvalidItemType:
     print("Sorry, we don't sell {}".format(item_type))
-**except OutOfStock:**
+except OutOfStock:
     print("Sorry, that item is out of stock.")
 else:
     print("Purchase complete. There are "
@@ -582,10 +582,10 @@ class Authenticator:
 
     def add_user(self, username, password):
         if username in self.users:
-            **raise UsernameAlreadyExists(username)**
+            **raise UsernameAlreadyExists(username)
         if len(password) < 6:
-            **raise PasswordTooShort(username)**
-        **self.users[username] = User(username, password)**
+            **raise PasswordTooShort(username)
+        **self.users[username] = User(username, password)
 
 ```
 
@@ -605,11 +605,11 @@ class InvalidPassword(AuthException):
     def login(self, username, password):
         try:
             user = self.users[username]
-        **except KeyError:**
-            **raise InvalidUsername(username)**
+        **except KeyError:
+            **raise InvalidUsername(username)
 
         if not user.check_password(password):
-            **raise InvalidPassword(username, user)**
+            **raise InvalidPassword(username, user)
 
         user.is_logged_in = True
         return True
@@ -715,53 +715,53 @@ authorizor = Authorizor(authenticator)
 这完成了一个基本的身份验证/授权系统。我们可以在 Python 提示符下测试系统，检查用户`joe`是否被允许在油漆部门执行任务：
 
 ```py
-**>>> import auth**
-**>>> auth.authenticator.add_user("joe", "joepassword")**
-**>>> auth.authorizor.add_permission("paint")**
-**>>> auth.authorizor.check_permission("paint", "joe")**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
- **File "auth.py", line 109, in check_permission**
- **raise NotLoggedInError(username)**
-**auth.NotLoggedInError: joe**
-**>>> auth.authenticator.is_logged_in("joe")**
-**False**
-**>>> auth.authenticator.login("joe", "joepassword")**
-**True**
-**>>> auth.authorizor.check_permission("paint", "joe")**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
- **File "auth.py", line 116, in check_permission**
- **raise NotPermittedError(username)**
-**auth.NotPermittedError: joe**
-**>>> auth.authorizor.check_permission("mix", "joe")**
-**Traceback (most recent call last):**
- **File "auth.py", line 111, in check_permission**
- **perm_set = self.permissions[perm_name]**
-**KeyError: 'mix'**
+>>> import auth
+>>> auth.authenticator.add_user("joe", "joepassword")
+>>> auth.authorizor.add_permission("paint")
+>>> auth.authorizor.check_permission("paint", "joe")
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+ **File "auth.py", line 109, in check_permission
+ **raise NotLoggedInError(username)
+auth.NotLoggedInError: joe
+>>> auth.authenticator.is_logged_in("joe")
+False
+>>> auth.authenticator.login("joe", "joepassword")
+True
+>>> auth.authorizor.check_permission("paint", "joe")
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+ **File "auth.py", line 116, in check_permission
+ **raise NotPermittedError(username)
+auth.NotPermittedError: joe
+>>> auth.authorizor.check_permission("mix", "joe")
+Traceback (most recent call last):
+ **File "auth.py", line 111, in check_permission
+ **perm_set = self.permissions[perm_name]
+KeyError: 'mix'
 
-**During handling of the above exception, another exception occurred:**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
- **File "auth.py", line 113, in check_permission**
- **raise PermissionError("Permission does not exist")**
-**auth.PermissionError: Permission does not exist**
-**>>> auth.authorizor.permit_user("mix", "joe")**
-**Traceback (most recent call last):**
- **File "auth.py", line 99, in permit_user**
- **perm_set = self.permissions[perm_name]**
-**KeyError: 'mix'**
+During handling of the above exception, another exception occurred:
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+ **File "auth.py", line 113, in check_permission
+ **raise PermissionError("Permission does not exist")
+auth.PermissionError: Permission does not exist
+>>> auth.authorizor.permit_user("mix", "joe")
+Traceback (most recent call last):
+ **File "auth.py", line 99, in permit_user
+ **perm_set = self.permissions[perm_name]
+KeyError: 'mix'
 
-**During handling of the above exception, another exception occurred:**
+During handling of the above exception, another exception occurred:
 
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
- **File "auth.py", line 101, in permit_user**
- **raise PermissionError("Permission does not exist")**
-**auth.PermissionError: Permission does not exist**
-**>>> auth.authorizor.permit_user("paint", "joe")**
-**>>> auth.authorizor.check_permission("paint", "joe")**
-**True**
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+ **File "auth.py", line 101, in permit_user
+ **raise PermissionError("Permission does not exist")
+auth.PermissionError: Permission does not exist
+>>> auth.authorizor.permit_user("paint", "joe")
+>>> auth.authorizor.check_permission("paint", "joe")
+True
 
 ```
 

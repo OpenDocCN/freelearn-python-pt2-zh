@@ -45,33 +45,33 @@
 首先，通过 Mac App Store 安装 Xcode。一旦你这样做了，你应该能够运行以下命令：
 
 ```py
-**xcode-select --install**
+xcode-select --install
 
 ```
 
 接下来是有趣的部分。因为 OS X 带有捆绑的 Python 版本（通常已过时），我建议通过 Homebrew 安装一个新的 Python 版本。安装 Homebrew 的最新说明可以在 Homebrew 主页上找到（[`brew.sh/`](http://brew.sh/)），但安装 Homebrew 的要点是这个命令：
 
 ```py
-**# /usr/bin/ruby -e "$(curl -fsSL \**
- **https://raw.githubusercontent.com/Homebrew/install/master/install)"**
+# /usr/bin/ruby -e "$(curl -fsSL \
+ **https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
 ```
 
 之后，确保使用`doctor`命令检查一切是否设置正确：
 
 ```py
-**# brew doctor**
+# brew doctor
 
 ```
 
 当所有这些都完成时，只需通过 Homebrew 安装 Python，并确保在执行脚本时使用该 Python 版本：
 
 ```py
-**# brew install python3**
-**# python3 –version**
-**Python 3.5.1**
-**which python3**
-**/usr/local/bin/python3**
+# brew install python3
+# python3 –version
+Python 3.5.1
+which python3
+/usr/local/bin/python3
 
 ```
 
@@ -84,15 +84,15 @@ Linux/Unix 系统的安装在很大程度上取决于发行版，但通常很简
 对于使用`yum`作为软件包管理器的 Fedora、Red Hat、Centos 和其他系统，请使用以下命令：
 
 ```py
-**# sudo yum install yum-utils**
-**# sudo yum-builddep python3**
+# sudo yum install yum-utils
+# sudo yum-builddep python3
 
 ```
 
 对于使用`apt`作为软件包管理器的 Debian、Ubuntu 和其他系统，请使用以下命令：
 
 ```py
-**# sudo apt-get build-dep python3.5**
+# sudo apt-get build-dep python3.5
 
 ```
 
@@ -117,14 +117,14 @@ Linux/Unix 系统的安装在很大程度上取决于发行版，但通常很简
 从 Python 调用 C 函数的一个问题是默认库是特定于平台的。虽然以下示例在 Windows 系统上可以正常运行，但在其他平台上则无法运行：
 
 ```py
-**>>> import ctypes**
-**>>> ctypes.cdll**
-**<ctypes.LibraryLoader object at 0x...>**
-**>>> libc = ctypes.cdll.msvcrt**
-**>>> libc**
-**<CDLL 'msvcrt', handle ... at ...>**
-**>>> libc.printf**
-**<_FuncPtr object at 0x...>**
+>>> import ctypes
+>>> ctypes.cdll
+<ctypes.LibraryLoader object at 0x...>
+>>> libc = ctypes.cdll.msvcrt
+>>> libc
+<CDLL 'msvcrt', handle ... at ...>
+>>> libc.printf
+<_FuncPtr object at 0x...>
 
 ```
 
@@ -135,14 +135,14 @@ Linux/Unix 系统的安装在很大程度上取决于发行版，但通常很简
 从 Linux/Unix 调用标准系统库确实需要手动加载，但幸运的是这并不太复杂。从标准 C 库中获取`printf`函数非常简单：
 
 ```py
-**>>> import ctypes**
-**>>> ctypes.cdll**
-**<ctypes.LibraryLoader object at 0x...>**
-**>>> libc = ctypes.cdll.LoadLibrary('libc.so.6')**
-**>>> libc**
-**<CDLL 'libc.so.6', handle ... at ...>**
-**>>> libc.printf**
-**<_FuncPtr object at 0x...>**
+>>> import ctypes
+>>> ctypes.cdll
+<ctypes.LibraryLoader object at 0x...>
+>>> libc = ctypes.cdll.LoadLibrary('libc.so.6')
+>>> libc
+<CDLL 'libc.so.6', handle ... at ...>
+>>> libc.printf
+<_FuncPtr object at 0x...>
 
 ```
 
@@ -151,12 +151,12 @@ Linux/Unix 系统的安装在很大程度上取决于发行版，但通常很简
 对于 OS X，也需要显式加载，但除此之外，它与常规 Linux/Unix 系统上的所有工作方式非常相似：
 
 ```py
-**>>> import ctypes**
-**>>> libc = ctypes.cdll.LoadLibrary('libc.dylib')**
-**>>> libc**
-**<CDLL 'libc.dylib', handle ... at 0x...>**
-**>>> libc.printf**
-**<_FuncPtr object at 0x...>**
+>>> import ctypes
+>>> libc = ctypes.cdll.LoadLibrary('libc.dylib')
+>>> libc
+<CDLL 'libc.dylib', handle ... at 0x...>
+>>> libc.printf
+<_FuncPtr object at 0x...>
 
 ```
 
@@ -165,11 +165,11 @@ Linux/Unix 系统的安装在很大程度上取决于发行版，但通常很简
 除了加载库的方式不同之外，还有更多的差异，但这些示例至少给出了标准的 C 库。它允许您直接从 C 实现中调用诸如`printf`之类的函数。如果由于某种原因，您在加载正确的库时遇到问题，总是可以使用`ctypes.util.find_library`函数。我始终建议显式声明而不是隐式声明，但使用这个函数可以使事情变得更容易。让我们在 OS X 系统上进行一次运行：
 
 ```py
-**>>> from ctypes import util**
-**>>> from ctypes import cdll**
-**>>> libc = cdll.LoadLibrary(util.find_library('libc'))**
-**>>> libc**
-**<CDLL '/usr/lib/libc.dylib', handle ... at 0x...>**
+>>> from ctypes import util
+>>> from ctypes import cdll
+>>> libc = cdll.LoadLibrary(util.find_library('libc'))
+>>> libc
+<CDLL '/usr/lib/libc.dylib', handle ... at 0x...>
 
 ```
 
@@ -182,24 +182,24 @@ Linux/Unix 系统的安装在很大程度上取决于发行版，但通常很简
 这些示例将假定您在前几段中的一个示例中已经将`libc`纳入了范围。
 
 ```py
-**>>> spam = ctypes.create_string_buffer(b'spam')**
-**>>> ctypes.sizeof(spam)**
-**5**
-**>>> spam.raw**
-**b'spam\x00'**
-**>>> spam.value**
-**b'spam'**
-**>>> libc.printf(spam)**
-**4**
-**spam>>>**
+>>> spam = ctypes.create_string_buffer(b'spam')
+>>> ctypes.sizeof(spam)
+5
+>>> spam.raw
+b'spam\x00'
+>>> spam.value
+b'spam'
+>>> libc.printf(spam)
+4
+spam>>>
 
 ```
 
 正如您所看到的，要调用`printf`函数，您*必须*——我无法再次强调这一点——将您的值从 Python 显式转换为 C。虽然最初可能看起来可以工作，但实际上并不行：
 
 ```py
-**>>> libc.printf(123)**
-**segmentation fault (core dumped)  python3**
+>>> libc.printf(123)
+segmentation fault (core dumped)  python3
 
 ```
 
@@ -212,41 +212,41 @@ Linux/Unix 系统的安装在很大程度上取决于发行版，但通常很简
 要将其他类型（如整数）传递给 `libc` 函数，我们也必须进行一些转换。在某些情况下，这是可选的：
 
 ```py
-**>>> format_string = ctypes.create_string_buffer(b'Number: %d\n')**
-**>>> libc.printf(format_string, 123)**
-**Number: 123**
-**12**
-**>>> x = ctypes.c_int(123)**
-**>>> libc.printf(format_string, x)**
-**Number: 123**
-**12**
+>>> format_string = ctypes.create_string_buffer(b'Number: %d\n')
+>>> libc.printf(format_string, 123)
+Number: 123
+12
+>>> x = ctypes.c_int(123)
+>>> libc.printf(format_string, x)
+Number: 123
+12
 
 ```
 
 但并非所有情况都是如此，因此强烈建议您在所有情况下明确转换您的值：
 
 ```py
-**>>> format_string = ctypes.create_string_buffer(b'Number: %.3f\n')**
-**>>> libc.printf(format_string, 123.45)**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
-**ctypes.ArgumentError: argument 2: <class 'TypeError'>: Don't know how to convert parameter 2**
-**>>> x = ctypes.c_double(123.45)**
-**>>> libc.printf(format_string, x)**
-**Number: 123.450**
-**16**
+>>> format_string = ctypes.create_string_buffer(b'Number: %.3f\n')
+>>> libc.printf(format_string, 123.45)
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+ctypes.ArgumentError: argument 2: <class 'TypeError'>: Don't know how to convert parameter 2
+>>> x = ctypes.c_double(123.45)
+>>> libc.printf(format_string, x)
+Number: 123.450
+16
 
 ```
 
 重要的是要注意，即使这些值可以用作本机 C 类型，它们仍然可以通过 `value` 属性进行更改：
 
 ```py
-**>>> x = ctypes.c_double(123.45)**
-**>>> x.value**
-**123.45**
-**>>> x.value = 456**
-**>>> x**
-**c_double(456.0)**
+>>> x = ctypes.c_double(123.45)
+>>> x.value
+123.45
+>>> x.value = 456
+>>> x
+c_double(456.0)
 
 ```
 
@@ -259,16 +259,16 @@ Linux/Unix 系统的安装在很大程度上取决于发行版，但通常很简
 我们已经看到，我们不能简单地将 Python 值传递给 C，但如果我们需要更复杂的对象呢？也就是说，不仅仅是直接可转换为 C 的裸值，而是包含多个值的复杂对象。幸运的是，我们可以很容易地使用 `ctypes` 创建（和访问）C 结构：
 
 ```py
-**>>> class Spam(ctypes.Structure):**
-**...     _fields_ = [**
-**...         ('spam', ctypes.c_int),**
-**...         ('eggs', ctypes.c_double),**
-**...     ]**
-**...>>> spam = Spam(123, 456.789)**
-**>>> spam.spam**
-**123**
-**>>> spam.eggs**
-**456.789**
+>>> class Spam(ctypes.Structure):
+...     _fields_ = [
+...         ('spam', ctypes.c_int),
+...         ('eggs', ctypes.c_double),
+...     ]
+...>>> spam = Spam(123, 456.789)
+>>> spam.spam
+123
+>>> spam.eggs
+456.789
 
 ```
 
@@ -285,44 +285,44 @@ Linux/Unix 系统的安装在很大程度上取决于发行版，但通常很简
 如果你考虑了所有这些，它绝对是可用的，但错误很快就会发生，而且 C 是不可原谅的。没有警告，只有崩溃和奇怪的行为代码。除此之外，让我们看看我们如何使用 `ctypes` 轻松地声明一个数组：
 
 ```py
-**>>> TenNumbers = 10 * ctypes.c_double**
-**>>> numbers = TenNumbers()**
-**>>> numbers[0]**
-**0.0**
+>>> TenNumbers = 10 * ctypes.c_double
+>>> numbers = TenNumbers()
+>>> numbers[0]
+0.0
 
 ```
 
 正如你所看到的，由于固定的大小和在使用之前声明类型的要求，它的使用略显笨拙。然而，它确实像你期望的那样运行，并且这些值默认初始化为零。显然，这也可以与先前讨论的结构相结合：
 
 ```py
-**>>> Spams = 5 * Spam**
-**>>> spams = Spams()**
-**>>> spams[0].eggs = 123.456**
-**>>> spams**
-**<__main__.Spam_Array_5 object at 0x...>**
-**>>> spams[0]**
-**<__main__.Spam object at 0x...>**
-**>>> spams[0].eggs**
-**123.456**
-**>>> spams[0].spam**
-**0**
+>>> Spams = 5 * Spam
+>>> spams = Spams()
+>>> spams[0].eggs = 123.456
+>>> spams
+<__main__.Spam_Array_5 object at 0x...>
+>>> spams[0]
+<__main__.Spam object at 0x...>
+>>> spams[0].eggs
+123.456
+>>> spams[0].spam
+0
 
 ```
 
 尽管你不能简单地追加这些数组来调整它们的大小，但它们实际上是可调整大小的，有一些限制。首先，新数组的大小需要大于原始数组。其次，大小需要以字节为单位指定，而不是项数。举个例子，我们有这个例子：
 
 ```py
-**>>> TenNumbers = 10 * ctypes.c_double**
-**>>> numbers = TenNumbers()**
-**>>> ctypes.resize(numbers, 11 * ctypes.sizeof(ctypes.c_double))**
-**>>> ctypes.resize(numbers, 10 * ctypes.sizeof(ctypes.c_double))**
-**>>> ctypes.resize(numbers, 9 * ctypes.sizeof(ctypes.c_double))**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
-**ValueError: minimum size is 80**
-**>>> numbers[:5] = range(5)**
-**>>> numbers[:]**
-**[0.0, 1.0, 2.0, 3.0, 4.0, 0.0, 0.0, 0.0, 0.0, 0.0]**
+>>> TenNumbers = 10 * ctypes.c_double
+>>> numbers = TenNumbers()
+>>> ctypes.resize(numbers, 11 * ctypes.sizeof(ctypes.c_double))
+>>> ctypes.resize(numbers, 10 * ctypes.sizeof(ctypes.c_double))
+>>> ctypes.resize(numbers, 9 * ctypes.sizeof(ctypes.c_double))
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+ValueError: minimum size is 80
+>>> numbers[:5] = range(5)
+>>> numbers[:]
+[0.0, 1.0, 2.0, 3.0, 4.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
 ```
 
@@ -331,24 +331,24 @@ Linux/Unix 系统的安装在很大程度上取决于发行版，但通常很简
 除了明显的内存分配问题和混合可变和不可变对象之外，还有一个奇怪的内存可变性问题：
 
 ```py
-**>>> class Point(ctypes.Structure):**
-**...     _fields_ = ('x', ctypes.c_int), ('y', ctypes.c_int)**
-**...**
-**>>> class Vertex(ctypes.Structure):**
-**...     _fields_ = ('a', Point), ('b', Point), ('c', Point)**
-**...**
-**>>> v = Vertex()**
-**>>> v.a = Point(0, 1)**
-**>>> v.b = Point(2, 3)**
-**>>> v.c = Point(4, 5)**
-**>>> v.a.x, v.a.y, v.b.x, v.b.y, v.c.x, v.c.y**
-**(0, 1, 2, 3, 4, 5)**
-**>>> v.a, v.b, v.c = v.b, v.c, v.a**
-**>>> v.a.x, v.a.y, v.b.x, v.b.y, v.c.x, v.c.y**
-**(2, 3, 4, 5, 2, 3)**
-**>>> v.a.x = 123**
-**>>> v.a.x, v.a.y, v.b.x, v.b.y, v.c.x, v.c.y**
-**(123, 3, 4, 5, 2, 3)**
+>>> class Point(ctypes.Structure):
+...     _fields_ = ('x', ctypes.c_int), ('y', ctypes.c_int)
+...
+>>> class Vertex(ctypes.Structure):
+...     _fields_ = ('a', Point), ('b', Point), ('c', Point)
+...
+>>> v = Vertex()
+>>> v.a = Point(0, 1)
+>>> v.b = Point(2, 3)
+>>> v.c = Point(4, 5)
+>>> v.a.x, v.a.y, v.b.x, v.b.y, v.c.x, v.c.y
+(0, 1, 2, 3, 4, 5)
+>>> v.a, v.b, v.c = v.b, v.c, v.a
+>>> v.a.x, v.a.y, v.b.x, v.b.y, v.c.x, v.c.y
+(2, 3, 4, 5, 2, 3)
+>>> v.a.x = 123
+>>> v.a.x, v.a.y, v.b.x, v.b.y, v.c.x, v.c.y
+(123, 3, 4, 5, 2, 3)
 
 ```
 
@@ -359,27 +359,27 @@ Linux/Unix 系统的安装在很大程度上取决于发行版，但通常很简
 `CFFI`库提供了与`ctypes`非常相似的选项，但它更直接一些。与`ctypes`库不同，C 编译器对于`CFFI`来说确实是必需的。它带来了直接以非常简单的方式调用你的 C 编译器的机会：
 
 ```py
-**>>> import cffi**
-**>>> ffi = cffi.FFI()**
-**>>> ffi.cdef('int printf(const char* format, ...);')**
-**>>> libc = ffi.dlopen(None)**
-**>>> arg = ffi.new('char[]', b'spam')**
-**>>> libc.printf(arg)**
-**4**
-**spam>>>**
+>>> import cffi
+>>> ffi = cffi.FFI()
+>>> ffi.cdef('int printf(const char* format, ...);')
+>>> libc = ffi.dlopen(None)
+>>> arg = ffi.new('char[]', b'spam')
+>>> libc.printf(arg)
+4
+spam>>>
 
 ```
 
 好吧...看起来有点奇怪对吧？我们不得不定义`printf`函数的外观，并用有效的 C 类型声明指定`printf`的参数。然而，回到声明，而不是`None`到`ffi.dlopen`，你也可以指定你希望加载的库。如果你记得`ctypes.util.find_library`函数，你可以在这种情况下再次使用它：
 
 ```py
-**>>> from ctypes import util**
-**>>> import cffi**
-**>>> libc = ffi.dlopen(util.find_library('libc'))**
-**>>> ffi.printf**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
-**AttributeError: 'FFI' object has no attribute 'printf'**
+>>> from ctypes import util
+>>> import cffi
+>>> libc = ffi.dlopen(util.find_library('libc'))
+>>> ffi.printf
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+AttributeError: 'FFI' object has no attribute 'printf'
 
 ```
 
@@ -390,35 +390,35 @@ Linux/Unix 系统的安装在很大程度上取决于发行版，但通常很简
 `CFFI`的定义与`ctypes`的定义有些相似，但不是让 Python 模拟 C，而是直接从 Python 访问纯 C。实际上，这只是一个小的语法差异。而`ctypes`是一个用于从 Python 访问 C 的库，同时尽可能接近 Python 语法，`CFFI`使用纯 C 语法来访问 C 系统，这实际上消除了一些对于熟悉 C 的人的困惑。我个人发现`CFFI`更容易使用，因为我知道实际发生了什么，而对于`ctypes`，我并不总是 100%确定。让我们用 CFFI 重复`Vertex`和`Point`的例子：
 
 ```py
-**>>> import cffi**
-**>>> ffi = cffi.FFI()**
-**>>> ffi.cdef('''**
-**... typedef struct {**
-**...     int x;**
-**...     int y;**
-**... } point;**
-**...**
-**... typedef struct {**
-**...     point a;**
-**...     point b;**
-**...     point c;**
-**... } vertex;**
-**... ''')**
-**>>> vertices = ffi.new('vertex[]', 5)**
-**>>> v = vertices[0]**
-**>>> v.a.x = 1**
-**>>> v.a.y = 2**
-**>>> v.b.x = 3**
-**>>> v.b.y = 4**
-**>>> v.c.x = 5**
-**>>> v.c.y = 6**
-**>>> v.a.x, v.a.y, v.b.x, v.b.y, v.c.x, v.c.y**
-**(1, 2, 3, 4, 5, 6)**
-**v.a, v.b, v.c = v.b, v.c, v.a**
-**v.a.x, v.a.y, v.b.x, v.b.y, v.c.x, v.c.y**
-**>>> v.a, v.b, v.c = v.b, v.c, v.a**
-**>>> v.a.x, v.a.y, v.b.x, v.b.y, v.c.x, v.c.y**
-**(3, 4, 5, 6, 3, 4)**
+>>> import cffi
+>>> ffi = cffi.FFI()
+>>> ffi.cdef('''
+... typedef struct {
+...     int x;
+...     int y;
+... } point;
+...
+... typedef struct {
+...     point a;
+...     point b;
+...     point c;
+... } vertex;
+... ''')
+>>> vertices = ffi.new('vertex[]', 5)
+>>> v = vertices[0]
+>>> v.a.x = 1
+>>> v.a.y = 2
+>>> v.b.x = 3
+>>> v.b.y = 4
+>>> v.c.x = 5
+>>> v.c.y = 6
+>>> v.a.x, v.a.y, v.b.x, v.b.y, v.c.x, v.c.y
+(1, 2, 3, 4, 5, 6)
+v.a, v.b, v.c = v.b, v.c, v.a
+v.a.x, v.a.y, v.b.x, v.b.y, v.c.x, v.c.y
+>>> v.a, v.b, v.c = v.b, v.c, v.a
+>>> v.a.x, v.a.y, v.b.x, v.b.y, v.c.x, v.c.y
+(3, 4, 5, 6, 3, 4)
 
 ```
 
@@ -429,16 +429,16 @@ Linux/Unix 系统的安装在很大程度上取决于发行版，但通常很简
 使用`CFFI`为新变量分配内存几乎是微不足道的。前面的段落向你展示了数组分配的一个例子；现在让我们看看数组定义的可能性：
 
 ```py
-**>>> import cffi**
-**>>> ffi = cffi.FFI()**
-**>>> x = ffi.new('int[10]')**
-**>>> y = ffi.new('int[]', 10)**
-**>>> x[0:10] = range(10)**
-**>>> y[0:10] = range(10, 0, -1)**
-**>>> list(x)**
-**[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]**
-**>>> list(y)**
-**[10, 9, 8, 7, 6, 5, 4, 3, 2, 1]**
+>>> import cffi
+>>> ffi = cffi.FFI()
+>>> x = ffi.new('int[10]')
+>>> y = ffi.new('int[]', 10)
+>>> x[0:10] = range(10)
+>>> y[0:10] = range(10, 0, -1)
+>>> list(x)
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+>>> list(y)
+[10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
 
 ```
 
@@ -564,14 +564,14 @@ PyMODINIT_FUNC PyInit_spam(void){
 看起来很复杂，但实际上并不难。在这种情况下，只是有很多额外的开销，因为我们只有一个函数。通常情况下，你会有几个函数，这种情况下你只需要扩展`spam_methods`数组并创建函数。下一段将更详细地解释代码，但首先让我们看一下如何运行我们的第一个示例。我们需要构建并安装模块：
 
 ```py
-**# python setup.py build install**
-**running build**
-**running build_ext**
-**running install**
-**running install_lib**
-**running install_egg_info**
-**Removing lib/python3.5/site-packages/Spam-1.0-py3.5.egg-info**
-**Writing lib/python3.5/site-packages/Spam-1.0-py3.5.egg-info**
+# python setup.py build install
+running build
+running build_ext
+running install
+running install_lib
+running install_egg_info
+Removing lib/python3.5/site-packages/Spam-1.0-py3.5.egg-info
+Writing lib/python3.5/site-packages/Spam-1.0-py3.5.egg-info
 
 ```
 
@@ -612,10 +612,10 @@ if __name__ == '__main__':
 现在让我们执行它：
 
 ```py
-**# python3 test_spam.py 10000 1000000**
-**10000 executions with n: 1000000**
-**C sum of squares: 332833500 took 0.008 seconds**
-**Python sum of squares: 332833500 took 1.778 seconds**
+# python3 test_spam.py 10000 1000000
+10000 executions with n: 1000000
+C sum of squares: 332833500 took 0.008 seconds
+Python sum of squares: 332833500 took 1.778 seconds
 
 ```
 
@@ -626,10 +626,10 @@ if __name__ == '__main__':
 Python 语言使编程变得如此简单，以至于你有时可能会忘记底层数据结构；而在 C 中，你不能这样做。只需拿我们上一章的示例，但使用不同的参数：
 
 ```py
-**# python3 test_spam.py 1000 10000000**
-**1000 executions with n: 10000000**
-**C sum of squares: 1953214233 took 0.002 seconds**
-**Python sum of squares: 10543148825 took 0.558 seconds**
+# python3 test_spam.py 1000 10000000
+1000 executions with n: 10000000
+C sum of squares: 1953214233 took 0.002 seconds
+Python sum of squares: 10543148825 took 0.558 seconds
 
 ```
 
@@ -665,19 +665,19 @@ static PyObject* spam_sum_of_squares(PyObject *self, PyObject *args){
 如果我们现在测试它，我们会发现它运行得很好：
 
 ```py
-**# python3 test_spam.py 1000 100000001000 executions with n: 10000000**
-**C sum of squares: 10543148825 took 0.002 seconds**
-**Python sum of squares: 10543148825 took 0.635 seconds**
+# python3 test_spam.py 1000 100000001000 executions with n: 10000000
+C sum of squares: 10543148825 took 0.002 seconds
+Python sum of squares: 10543148825 took 0.635 seconds
 
 ```
 
 除非我们使数字更大：
 
 ```py
-**# python3 test_spam.py 1 100000000000000 ~/Dropbox/Mastering Python/code/h14**
-**1 executions with n: 100000000000000**
-**C sum of squares: 1291890006563070912 took 0.006 seconds**
-**Python sum of squares: 333333283333335000000 took 2.081 seconds**
+# python3 test_spam.py 1 100000000000000 ~/Dropbox/Mastering Python/code/h14
+1 executions with n: 100000000000000
+C sum of squares: 1291890006563070912 took 0.006 seconds
+Python sum of squares: 333333283333335000000 took 2.081 seconds
 
 ```
 
@@ -696,8 +696,8 @@ static unsigned long long int get_number_from_object(int* overflow, PyObject* so
 我们已经看到了我们示例的结果，但如果你不熟悉 Python C API，你可能会对为什么函数参数看起来像这样感到困惑。`spam_sum_of_squares`中的基本计算与常规 C`sum_of_squares`函数是相同的，但有一些小的不同。首先，使用 Python C API 定义函数的类型应该看起来像这样：
 
 ```py
-**static PyObject* spam_sum_of_squares(PyObject *self, PyObject**
- ***args)**
+static PyObject* spam_sum_of_squares(PyObject *self, PyObject
+ ***args)
 
 ```
 
@@ -783,10 +783,10 @@ static PyMethodDef methods[] = {
 正如我们在前面的例子中看到的，整数溢出通常不容易注意到，而且不幸的是，没有很好的跨平台方法来捕获它们。然而，这些通常是更容易处理的错误；最糟糕的错误通常是内存管理。使用 Python，如果出现错误，您将得到一个可以捕获的异常。但是在 C 中，您实际上无法优雅地处理它。例如，以零除：
 
 ```py
-**# python3 -c '1/0'**
-**Traceback (most recent call last):**
- **File "<string>", line 1, in <module>**
-**ZeroDivisionError: division by zero**
+# python3 -c '1/0'
+Traceback (most recent call last):
+ **File "<string>", line 1, in <module>
+ZeroDivisionError: division by zero
 
 ```
 
@@ -810,12 +810,12 @@ static PyMethodDef spam_methods[] = {
 这是执行过程：
 
 ```py
-**# python3 setup.py clean build install**
-**...**
-**# python3 -c 'import spam; spam.eggs()'**
-**Traceback (most recent call last):**
- **File "<string>", line 1, in <module>**
-**RuntimeError: Too many eggs!**
+# python3 setup.py clean build install
+...
+# python3 -c 'import spam; spam.eggs()'
+Traceback (most recent call last):
+ **File "<string>", line 1, in <module>
+RuntimeError: Too many eggs!
 
 ```
 
@@ -903,28 +903,28 @@ static PyObject* spam_sum(PyObject* self, PyObject* args){
 这个函数可以以三种不同的方式调用：
 
 ```py
-**>>> import spam**
-**>>> x = range(10)**
-**>>> spam.sum(x)**
-**45**
-**>>> spam.sum(x, lambda y: y + 5)**
-**95**
-**>>> spam.sum(x, lambda y: y + 5, 5)**
-**100**
+>>> import spam
+>>> x = range(10)
+>>> spam.sum(x)
+45
+>>> spam.sum(x, lambda y: y + 5)
+95
+>>> spam.sum(x, lambda y: y + 5, 5)
+100
 
 ```
 
 另一个重要问题是，即使我们在转换为`long long int`时捕获了溢出错误，这段代码仍然不安全。如果我们甚至对两个非常大的数字求和（接近`long long int`限制），我们仍然会发生溢出：
 
 ```py
-**>>> import spam**
-**>>> n = (2 ** 63) - 1**
-**>>> x = n,**
-**>>> spam.sum(x)**
-**9223372036854775807**
-**>>> x = n, n**
-**>>> spam.sum(x)**
-**-2**
+>>> import spam
+>>> n = (2 ** 63) - 1
+>>> x = n,
+>>> spam.sum(x)
+9223372036854775807
+>>> x = n, n
+>>> spam.sum(x)
+-2
 
 ```
 

@@ -72,7 +72,7 @@ class PrototypeFactory(Borg):
 [default]
 exten => s,1,Dial(Zap/1|30)
 exten => s,2,Voicemail(u100)
-**exten => s,102,Voicemail(b100)**
+exten => s,102,Voicemail(b100)
 exten => i,1,Voicemail(s0)
 ```
 

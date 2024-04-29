@@ -33,27 +33,27 @@ reStructuredText 最棒的地方在于它非常直观。即使不了解标准的
 基本语法读起来就像文本，接下来的几段将展示一些更高级的功能。然而，让我们从一个简单的例子开始，演示 reStructuredText 文件可以有多简单。
 
 ```py
-**Documentation, how to use Sphinx and reStructuredText**
-**##################################################################**
+Documentation, how to use Sphinx and reStructuredText
+##################################################################
 
-**Documenting code can be both fun and useful! ...**
+Documenting code can be both fun and useful! ...
 
-**Additionally, adding ...**
+Additionally, adding ...
 
-**... So that typing `Spam.eggs.` will automatically ...**
+... So that typing `Spam.eggs.` will automatically ...
 
-**Topics covered in this chapter are as follows:**
+Topics covered in this chapter are as follows:
 
- **- The reStructuredText syntax**
- **- Setting up documentation using Sphinx**
- **- Sphinx style docstrings**
- **- Google style docstrings**
- **- NumPy style docstrings**
+ **- The reStructuredText syntax
+ **- Setting up documentation using Sphinx
+ **- Sphinx style docstrings
+ **- Google style docstrings
+ **- NumPy style docstrings
 
-**The reStructuredText syntax**
-**********************************************************************
+The reStructuredText syntax
+******************************************************************
 
-**The reStructuredText format (also known as ...**
+The reStructuredText format (also known as ...
 
 ```
 
@@ -78,14 +78,14 @@ reStructuredText 最棒的地方在于它非常直观。即使不了解标准的
 要快速将 reStructuredText 文件转换为 HTML，我们可以使用`docutils`库。本章后面讨论的`sphinx`库实际上在内部使用了`docutils`库，但具有一些我们最初不需要的额外功能。要开始，我们只需要安装`docutils`：
 
 ```py
-**pip install docutils**
+pip install docutils
 
 ```
 
 之后，我们可以轻松地将 reStructuredText 转换为 PDF、LaTeX、HTML 和其他格式。在本段中的示例中，我们将使用 HTML 格式，可以使用以下命令轻松生成：
 
 ```py
-**rst2html.py file.rst file.html**
+rst2html.py file.rst file.html
 
 ```
 
@@ -150,25 +150,25 @@ reStructuredText 的基本组件是角色，用于对输出进行内联修改，
 就我个人而言，我默认使用一个简单的系统，带有固定大小的标题，但我建议至少在部分、章节、节、子节、子子节和段落方面遵循 Python 文档的默认设置。大致如下：
 
 ```py
-**Part**
-**################################################################**
+Part
+################################################################
 
-**Chapter**
-********************************************************************
+Chapter
+****************************************************************
 
-**Section**
-**================================================================**
+Section
+================================================================
 
-**Subsection**
-**----------------------------------------------------------------**
+Subsection
+----------------------------------------------------------------
 
-**Subsubsection**
-**^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^**
+Subsubsection
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-**Paragraph**
-**""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""**
+Paragraph
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-**Content**
+Content
 
 ```
 
@@ -179,47 +179,47 @@ reStructuredText 的基本组件是角色，用于对输出进行内联修改，
 这只是标题的常见用法，但 reStructuredText 的主要思想是您可以使用几乎任何对您来说自然的东西，这意味着您可以使用以下任何字符：`= - ` : ' " ~ ^ _ * + # <>`。它还支持下划线和上划线，因此如果您喜欢，也可以选择它们：
 
 ```py
-**################################################################**
-**Part**
-**################################################################**
+################################################################
+Part
+################################################################
 
-********************************************************************
-**Chapter**
-********************************************************************
+****************************************************************
+Chapter
+****************************************************************
 
-**================================================================**
-**Section**
-**================================================================**
+================================================================
+Section
+================================================================
 
-**----------------------------------------------------------------**
-**Subsection**
-**----------------------------------------------------------------**
+----------------------------------------------------------------
+Subsection
+----------------------------------------------------------------
 
-**^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^**
-**Subsubsection**
-**^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Subsubsection
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-**""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""**
-**Paragraph**
-**""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""**
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+Paragraph
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-**Content**
+Content
 
 ```
 
 虽然我尽量保持字符数固定为 78 个字符，就像`PEP8`（第二章，*Pythonic Syntax, Common Pitfalls, and Style Guide*）为 Python 推荐的那样，但使用的字符数大多是任意的，但必须至少与标题文本一样长。这使得它可以得到以下结果：
 
 ```py
-**Section**
-**=======**
+Section
+=======
 
 ```
 
 但不是这样：
 
 ```py
-**Section**
-**====**
+Section
+====
 
 ```
 
@@ -242,17 +242,17 @@ reStructuredText 格式有几种列表样式：
 枚举列表对各种枚举很方便。枚举列表的基本前提是字母数字字符后跟一个句点、右括号或两侧括号。另外，`#`字符作为自动枚举。例如：
 
 ```py
-**1\. With**
-**2\. Numbers**
+1\. With
+2\. Numbers
 
-**a. With**
-**#. letters**
+a. With
+#. letters
 
-**i. Roman**
-**#. numerals**
+i. Roman
+#. numerals
 
-**(1) With**
-**(2) Parenthesis**
+(1) With
+(2) Parenthesis
 
 ```
 
@@ -265,14 +265,14 @@ reStructuredText 格式有几种列表样式：
 如果列表的顺序不重要，只需要一个项目列表而不需要枚举，那么项目符号列表就是你需要的。要创建一个只使用项目符号的简单列表，项目符号需要以`*`、`+`、`-`、`•`、`‣`或`⁃`开头。这个列表大多是任意的，可以通过扩展 Sphinx 或 Docutils 进行修改。例如：
 
 ```py
-**- dashes**
-**- and more dashes**
+- dashes
+- and more dashes
 
-*** asterisk**
-*** stars**
+* asterisk
+* stars
 
-**+ plus**
-**+ and plus**
++ plus
++ and plus
 
 ```
 
@@ -285,8 +285,8 @@ reStructuredText 格式有几种列表样式：
 `option`列表是专门用于记录程序命令行参数的。语法的特殊之处在于逗号空格被识别为选项的分隔符。
 
 ```py
-**-s, --spam  This is the spam option**
-**--eggs      This is the eggs option**
+-s, --spam  This is the spam option
+--eggs      This is the eggs option
 
 ```
 
@@ -299,10 +299,10 @@ reStructuredText 格式有几种列表样式：
 定义列表比其他类型的列表更加隐晦，因为实际结构只包含空格。因此，使用起来非常简单，但在文件中并不总是容易识别。
 
 ```py
-**spam**
- **Spam is a canned pork meat product**
-**eggs**
- **Is, similar to spam, also food**
+spam
+ **Spam is a canned pork meat product
+eggs
+ **Is, similar to spam, also food
 
 ```
 
@@ -315,18 +315,18 @@ reStructuredText 格式有几种列表样式：
 嵌套项目实际上不仅限于列表，还可以使用多种类型的块，但思想是相同的。只需小心保持正确级别的缩进。如果不这样做，它要么不会被识别为单独的级别，要么会出错。
 
 ```py
-**1\. With**
-**2\. Numbers**
+1\. With
+2\. Numbers
 
- **(food) food**
+ **(food) food
 
- **spam**
- **Spam is a canned pork meat product**
+ **spam
+ **Spam is a canned pork meat product
 
- **eggs**
- **Is, similar to spam, also food**
+ **eggs
+ **Is, similar to spam, also food
 
- **(other) non-food stuff**
+ **(other) non-food stuff
 
 ```
 
@@ -343,19 +343,19 @@ reStructuredText 支持许多类型的链接，其中最简单的是带有协议
 例如，请参考以下内容：
 
 ```py
-**The switch to reStructuredText and Sphinx was made with the**
-**`Python 2.6 <https://docs.python.org/whatsnew/2.6.html>`_**
-**release.**
+The switch to reStructuredText and Sphinx was made with the
+`Python 2.6 <https://docs.python.org/whatsnew/2.6.html>`_
+release.
 
 ```
 
 现在与以下内容进行比较：
 
 ```py
-**The switch to reStructuredText and Sphinx was made with the**
-**`python 2.6`_ release.**
+The switch to reStructuredText and Sphinx was made with the
+`python 2.6`_ release.
 
-**.. _`Python 2.6`: https://docs.python.org/whatsnew/2.6.html**
+.. _`Python 2.6`: https://docs.python.org/whatsnew/2.6.html
 
 ```
 
@@ -366,7 +366,7 @@ reStructuredText 支持许多类型的链接，其中最简单的是带有协议
 使用标签，您可以在指定位置轻松创建引用列表，而不会使实际文本变得更难阅读。这些标签不仅可以用于外部链接；类似于在旧的编程语言中找到的`GOTO`语句，您可以创建标签并从文档的其他部分引用它们：
 
 ```py
-**.. _label:**
+.. _label:
 
 ```
 
@@ -375,36 +375,36 @@ reStructuredText 支持许多类型的链接，其中最简单的是带有协议
 与标题一起使用引用的方式非常自然；您可以像通常一样引用它们，并添加下划线使其成为链接：
 
 ```py
-**The introduction section**
-**================================================================**
+The introduction section
+================================================================
 
-**This section contains:**
+This section contains:
 
-**- `chapter 1`_**
-**- :ref:`chapter2`**
+- `chapter 1`_
+- :ref:`chapter2`
 
- **1\. my_label_**
+ **1\. my_label_
 
- **2\. `And a label link with a custom title <my_label>`_**
+ **2\. `And a label link with a custom title <my_label>`_
 
-**Chapter 1**
-**----------------------------------------------------------------**
+Chapter 1
+----------------------------------------------------------------
 
-**Jumping back to the beginning of `chapter 1`_ is also possible.**
-**Or jumping to :ref:`Chapter 2 <chapter2>`**
+Jumping back to the beginning of `chapter 1`_ is also possible.
+Or jumping to :ref:`Chapter 2 <chapter2>`
 
-**.. _chapter2:**
+.. _chapter2:
 
-**Chapter 2 With a longer title**
-**----------------------------------------------------------------**
+Chapter 2 With a longer title
+----------------------------------------------------------------
 
-**The next chapter.**
+The next chapter.
 
-**.. _my_label:**
+.. _my_label:
 
-**The label points here.**
+The label points here.
 
-**Back to `the introduction section`_**
+Back to `the introduction section`_
 
 ```
 
@@ -417,14 +417,14 @@ reStructuredText 支持许多类型的链接，其中最简单的是带有协议
 图像指令看起来与标签语法非常相似。它们实际上有些不同，但模式非常相似。图像指令只是 reStructuredText 支持的许多指令中的一个。我们将在稍后介绍 Sphinx 和 reStructuredText 扩展时详细了解更多。目前，知道指令以两个句点开头，后跟一个空格，指令的名称和两个冒号就足够了：
 
 ```py
- **.. name_of_directive::**
+ **.. name_of_directive::
 
 ```
 
 在图像的情况下，指令当然被称为`image`：
 
 ```py
-**.. image:: python.png**
+.. image:: python.png
 
 ```
 
@@ -439,12 +439,12 @@ reStructuredText 支持许多类型的链接，其中最简单的是带有协议
 但是如何指定大小和其他属性呢？图像指令有许多其他选项（大多数其他指令也是如此）可以使用：[`docutils.sourceforge.net/docs/ref/rst/directives.html#images`](http://docutils.sourceforge.net/docs/ref/rst/directives.html#images)，它们大多数都是相当明显的。要指定图像的宽度和高度或比例（以百分比表示）：
 
 ```py
-**.. image:: python.png**
- **:width: 150**
- **:height: 100**
+.. image:: python.png
+ **:width: 150
+ **:height: 100
 
-**.. image:: python.png**
- **:scale: 10**
+.. image:: python.png
+ **:scale: 10
 
 ```
 
@@ -459,10 +459,10 @@ reStructuredText 支持许多类型的链接，其中最简单的是带有协议
 除了`image`指令之外，还有`figure`指令。不同之处在于`figure`为图像添加了标题。除此之外，使用方式与`image`相同：
 
 ```py
-**.. figure:: python.png**
- **:scale: 10**
+.. figure:: python.png
+ **:scale: 10
 
- **The Python logo**
+ **The Python logo
 
 ```
 
@@ -477,10 +477,10 @@ reStructuredText 支持许多类型的链接，其中最简单的是带有协议
 假设我们有一个徽标，在文本中经常使用。与其输入整个`.. image:: <url>`，使用简写会更方便。这就是替换非常有用的地方：
 
 ```py
-**.. |python| image:: python.png**
- **:scale: 1**
+.. |python| image:: python.png
+ **:scale: 1
 
-**The Python programming language uses the logo: |python|**
+The Python programming language uses the logo: |python|
 
 ```
 
@@ -491,9 +491,9 @@ reStructuredText 支持许多类型的链接，其中最简单的是带有协议
 这些替换可以与许多指令一起使用，尽管它们特别适用于在文档的许多地方输出变量。例如：
 
 ```py
-**.. |author| replace:: Rick van Hattem**
+.. |author| replace:: Rick van Hattem
 
-**This book was written by |author|**
+This book was written by |author|
 
 ```
 
@@ -506,10 +506,10 @@ reStructuredText 支持许多类型的链接，其中最简单的是带有协议
 在编写文档时，常见的情况是需要包含不同类型内容的块，包括数学公式的解释，代码示例等。这些指令的使用方式类似于图像指令。以下是一个代码块的示例：
 
 ```py
-**.. code:: python**
+.. code:: python
 
- **def spam(*args):**
- **print('spam got args', args)**
+ **def spam(*args):
+ **print('spam got args', args)
 
 ```
 
@@ -520,9 +520,9 @@ reStructuredText 支持许多类型的链接，其中最简单的是带有协议
 或使用 LaTeX 语法的数学，微积分基本定理：
 
 ```py
-**.. math::**
+.. math::
 
- **\int_a^b f(x)\,dx = F(b) - F(a)**
+ **\int_a^b f(x)\,dx = F(b) - F(a)
 
 ```
 
@@ -533,16 +533,16 @@ reStructuredText 支持许多类型的链接，其中最简单的是带有协议
 通过使用“空”指令后跟缩进轻松地对一堆文本/命令进行注释：
 
 ```py
-**Before comments**
+Before comments
 
-**.. Everything here will be commented**
+.. Everything here will be commented
 
- **And this as well**
- **.. code:: python**
- **def even_this_code_sample():**
- **pass  # Will be commented**
+ **And this as well
+ **.. code:: python
+ **def even_this_code_sample():
+ **pass  # Will be commented
 
-**After comments**
+After comments
 
 ```
 
@@ -553,9 +553,9 @@ reStructuredText 支持许多类型的链接，其中最简单的是带有协议
 最简单的是块引用。块引用只需要简单的缩进。
 
 ```py
-**Normal text**
+Normal text
 
- **Quoted text**
+ **Quoted text
 
 ```
 
@@ -590,7 +590,7 @@ Sphinx 的最重要优势是几乎可以从您的源代码自动生成几乎所�
 首先，我们必须确保安装了 Sphinx。尽管 Python 核心文档是使用 Sphinx 编写的，但它仍然是一个单独维护的项目，必须单独安装。幸运的是，使用 pip 很容易：
 
 ```py
-**pip install sphinx**
+pip install sphinx
 
 ```
 
@@ -611,93 +611,93 @@ Sphinx 的最重要优势是几乎可以从您的源代码自动生成几乎所�
 +   裁剪输出用`...`表示，所有问题之间跳过的默认设置
 
 ```py
-**# sphinx-quickstart**
-**Welcome to the Sphinx 1.3.3 quickstart utility.**
+# sphinx-quickstart
+Welcome to the Sphinx 1.3.3 quickstart utility.
 
-**...**
+...
 
-**Enter the root path for documentation.**
-**> Root path for the documentation [.]: docs**
+Enter the root path for documentation.
+> Root path for the documentation [.]: docs
 
-**...**
+...
 
-**The project name will occur in several places in the built documentation.**
-**> Project name: Mastering Python**
-**> Author name(s): Rick van Hattem**
+The project name will occur in several places in the built documentation.
+> Project name: Mastering Python
+> Author name(s): Rick van Hattem
 
-**# As version you might want to start below 1.0 or add an extra digit**
-**# but I would recommend leaving the default and modify the**
-**# configuration file instead. Just make it import from the Python**
-**# package instead. An example can be found in the numpy-stl package:**
-**# https://github.com/WoLpH/numpy-stl/blob/develop/docs/conf.py**
-**...**
-**> Project version: 1.0**
-**> Project release [1.0]:**
+# As version you might want to start below 1.0 or add an extra digit
+# but I would recommend leaving the default and modify the
+# configuration file instead. Just make it import from the Python
+# package instead. An example can be found in the numpy-stl package:
+# https://github.com/WoLpH/numpy-stl/blob/develop/docs/conf.py
+...
+> Project version: 1.0
+> Project release [1.0]:
 
-**...**
+...
 
-**# Enabling the epub builder can be useful for people using e-readers to**
-**# read the documentation.**
-**Sphinx can also add configuration for epub output:**
-**> Do you want to use the epub builder (y/n) [n]: y**
+# Enabling the epub builder can be useful for people using e-readers to
+# read the documentation.
+Sphinx can also add configuration for epub output:
+> Do you want to use the epub builder (y/n) [n]: y
 
-**...**
-**# Autodoc is required to document the code, definitely recommended to**
-**# enable**
-**> autodoc: automatically insert docstrings from**
- **modules (y/n) [n]: y**
+...
+# Autodoc is required to document the code, definitely recommended to
+# enable
+> autodoc: automatically insert docstrings from
+ **modules (y/n) [n]: y
 
-**# With the doctest feature we can run tests embedded in the**
-**# documentation. This is meant for doctests in the .rst files.**
-**> doctest: automatically test code snippets in**
- **doctest blocks (y/n) [n]: y**
+# With the doctest feature we can run tests embedded in the
+# documentation. This is meant for doctests in the .rst files.
+> doctest: automatically test code snippets in
+ **doctest blocks (y/n) [n]: y
 
-**# Intersphinx enables linking between Sphinx documentation sets**
-**# allowing for links to external documentation. After enabling this**
-**# you can make str link to the regular Python documentation about str**
-**# for example.**
-**> intersphinx: link between Sphinx documentation**
- **of different projects (y/n) [n]: y**
-**...**
-**# Mathjax enables LaTeX style mathematical rendering, not strictly**
-**# needed but very useful for rendering equations.**
-**> mathjax: include math, rendered in the browser**
- **by MathJax (y/n) [n]: y**
-**...**
-**> viewcode: include links to the source code of**
- **documented Python objects (y/n) [n]: y**
+# Intersphinx enables linking between Sphinx documentation sets
+# allowing for links to external documentation. After enabling this
+# you can make str link to the regular Python documentation about str
+# for example.
+> intersphinx: link between Sphinx documentation
+ **of different projects (y/n) [n]: y
+...
+# Mathjax enables LaTeX style mathematical rendering, not strictly
+# needed but very useful for rendering equations.
+> mathjax: include math, rendered in the browser
+ **by MathJax (y/n) [n]: y
+...
+> viewcode: include links to the source code of
+ **documented Python objects (y/n) [n]: y
 
-**...**
+...
 
-**Creating file docs/conf.py.**
-**Creating file docs/index.rst.**
-**Creating file docs/Makefile.**
-**Creating file docs/make.bat.**
+Creating file docs/conf.py.
+Creating file docs/index.rst.
+Creating file docs/Makefile.
+Creating file docs/make.bat.
 
-**Finished: An initial directory structure has been created.**
+Finished: An initial directory structure has been created.
 
 ```
 
 现在，您应该填充您的主文件`docs/index.rst`并创建其他文档源文件。使用 Makefile 构建文档，就像这样：
 
 ```py
- **make builder**
-**where "builder" is one of the supported builders, e.g. html, latex or linkcheck.**
+ **make builder
+where "builder" is one of the supported builders, e.g. html, latex or linkcheck.
 
 ```
 
 运行后，我们应该有一个包含 Sphinx 项目的`docs`目录。让我们看看这个命令实际为我们创建了什么：
 
 ```py
-**# find docs**
-**docs**
-**docs/_build**
-**docs/_static**
-**docs/_templates**
-**docs/conf.py**
-**docs/index.rst**
-**docs/make.bat**
-**docs/Makefile**
+# find docs
+docs
+docs/_build
+docs/_static
+docs/_templates
+docs/conf.py
+docs/index.rst
+docs/make.bat
+docs/Makefile
 
 ```
 
@@ -706,20 +706,20 @@ Sphinx 的最重要优势是几乎可以从您的源代码自动生成几乎所�
 `Makefile`和`make.bat`可用于生成文档输出。`Makefile`可用于支持 make 实用程序的任何操作系统，而`make.bat`则可用于直接支持 Windows 系统。现在让我们看一下`index.rst`源文件：
 
 ```py
-**Welcome to Mastering Python's documentation!**
-**============================================**
+Welcome to Mastering Python's documentation!
+============================================
 
-**Contents:**
+Contents:
 
-**.. toctree::**
- **:maxdepth: 2**
+.. toctree::
+ **:maxdepth: 2
 
-**Indices and tables**
-**==================**
+Indices and tables
+==================
 
-*** :ref:`genindex`**
-*** :ref:`modindex`**
-*** :ref:`search`**
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
 
 ```
 
@@ -728,8 +728,8 @@ Sphinx 的最重要优势是几乎可以从您的源代码自动生成几乎所�
 现在是时候生成`HTML`输出了：
 
 ```py
-**cd docs**
-**make html**
+cd docs
+make html
 
 ```
 
@@ -742,32 +742,32 @@ Sphinx 的最重要优势是几乎可以从您的源代码自动生成几乎所�
 除了 HTML 输出之外，默认支持许多其他格式，尽管有些需要外部库才能真正工作：
 
 ```py
-**# make**
-**Please use `make <target>' where <target> is one of**
- **html       to make standalone HTML files**
- **dirhtml    to make HTML files named index.html in directories**
- **singlehtml to make a single large HTML file**
- **pickle     to make pickle files**
- **json       to make JSON files**
- **htmlhelp   to make HTML files and a HTML help project**
- **qthelp     to make HTML files and a qthelp project**
- **applehelp  to make an Apple Help Book**
- **devhelp    to make HTML files and a Devhelp project**
- **epub       to make an epub**
- **latex      to make LaTeX files, you can set PAPER=a4 or ...**
- **latexpdf   to make LaTeX files and run them through pdflatex**
- **latexpdfja to make LaTeX files and run them through platex/...**
- **text       to make text files**
- **man        to make manual pages**
- **texinfo    to make Texinfo files**
- **info       to make Texinfo files and run them through makeinfo**
- **gettext    to make PO message catalogs**
- **changes    to make an overview of all changed/added/deprecate...**
- **xml        to make Docutils-native XML files**
- **pseudoxml  to make pseudoxml-XML files for display purposes**
- **linkcheck  to check all external links for integrity**
- **doctest    to run all doctests embedded in the documentation**
- **coverage   to run coverage check of the documentation**
+# make
+Please use `make <target>' where <target> is one of
+ **html       to make standalone HTML files
+ **dirhtml    to make HTML files named index.html in directories
+ **singlehtml to make a single large HTML file
+ **pickle     to make pickle files
+ **json       to make JSON files
+ **htmlhelp   to make HTML files and a HTML help project
+ **qthelp     to make HTML files and a qthelp project
+ **applehelp  to make an Apple Help Book
+ **devhelp    to make HTML files and a Devhelp project
+ **epub       to make an epub
+ **latex      to make LaTeX files, you can set PAPER=a4 or ...
+ **latexpdf   to make LaTeX files and run them through pdflatex
+ **latexpdfja to make LaTeX files and run them through platex/...
+ **text       to make text files
+ **man        to make manual pages
+ **texinfo    to make Texinfo files
+ **info       to make Texinfo files and run them through makeinfo
+ **gettext    to make PO message catalogs
+ **changes    to make an overview of all changed/added/deprecate...
+ **xml        to make Docutils-native XML files
+ **pseudoxml  to make pseudoxml-XML files for display purposes
+ **linkcheck  to check all external links for integrity
+ **doctest    to run all doctests embedded in the documentation
+ **coverage   to run coverage check of the documentation
 
 ```
 
@@ -778,53 +778,53 @@ Sphinx 的最重要优势是几乎可以从您的源代码自动生成几乎所�
 第一个是`h09/spam.py`，其中包含一个名为`Spam`的类和一些方法：
 
 ```py
-**class Spam(object):**
- **def __init__(self, arg, *args, **kwargs):**
- **pass**
+class Spam(object):
+ **def __init__(self, arg, *args, **kwargs):
+ **pass
 
- **def regular_method(self, arg):**
- **pass**
+ **def regular_method(self, arg):
+ **pass
 
- **@classmethod**
- **def decorated_method(self, arg):**
- **pass**
+ **@classmethod
+ **def decorated_method(self, arg):
+ **pass
 
- **def _hidden_method(self):**
- **pass**
+ **def _hidden_method(self):
+ **pass
 
 ```
 
 接下来是`h09/eggs.py`，其中包含一个继承`Spam`的`Eggs`类：
 
 ```py
-**import spam**
+import spam
 
-**class Eggs(spam.Spam):**
- **def regular_method(self):**
- **'''This regular method overrides**
- **:meth:`spam.Spam.regular_method`**
- **'''**
- **pass**
+class Eggs(spam.Spam):
+ **def regular_method(self):
+ **'''This regular method overrides
+ **:meth:`spam.Spam.regular_method`
+ **'''
+ **pass
 
 ```
 
 现在我们有了源文件，是时候生成实际的 API 文档了：
 
 ```py
-**# sphinx-apidoc h09 -o docs**
-**Creating file docs/eggs.rst.**
-**Creating file docs/spam.rst.**
-**Creating file docs/modules.rst.**
+# sphinx-apidoc h09 -o docs
+Creating file docs/eggs.rst.
+Creating file docs/spam.rst.
+Creating file docs/modules.rst.
 
 ```
 
 仅此还不足以将 API 包含在文档中。它需要添加到`toctree`中。幸运的是，只需在`index.rst`文件中的`toctree`中添加模块即可，看起来像这样：
 
 ```py
-**.. toctree::**
- **:maxdepth: 2**
+.. toctree::
+ **:maxdepth: 2
 
- **modules**
+ **modules
 
 ```
 
@@ -833,16 +833,16 @@ Sphinx 的最重要优势是几乎可以从您的源代码自动生成几乎所�
 我们还必须确保可以导入模块，否则 Sphinx 将无法读取 Python 文件。为此，我们只需将`h09`目录添加到`sys.path`中；这可以放在`conf.py`文件的任何位置：
 
 ```py
-**import os**
-**sys.path.insert(0, os.path.join(os.path.abspath('..'), 'h09'))**
+import os
+sys.path.insert(0, os.path.join(os.path.abspath('..'), 'h09'))
 
 ```
 
 现在是时候再次生成文档了：
 
 ```py
-**cd docs**
-**make html**
+cd docs
+make html
 
 ```
 
@@ -855,14 +855,14 @@ Sphinx 的最重要优势是几乎可以从您的源代码自动生成几乎所�
 `modules.rst`文件非常简单明了；只是一个以包名称为标题的模块列表：
 
 ```py
-**h09**
-**===**
+h09
+===
 
-**.. toctree::**
- **:maxdepth: 4**
+.. toctree::
+ **:maxdepth: 4
 
- **eggs**
- **spam**
+ **eggs
+ **spam
 
 ```
 
@@ -873,13 +873,13 @@ Sphinx 的最重要优势是几乎可以从您的源代码自动生成几乎所�
 `spam.rst`和`eggs.rst`同样简单，但在定制方面更为重要。在这些文件中，它添加了`automodule`指令，该指令导入 Python 模块并列出方法。列出的方法可以进行配置，默认情况下我们已经得到了非常有用的输出：
 
 ```py
-**eggs module**
-**===========**
+eggs module
+===========
 
-**.. automodule:: eggs**
- **:members:**
- **:undoc-members:**
- **:show-inheritance:**
+.. automodule:: eggs
+ **:members:
+ **:undoc-members:
+ **:show-inheritance:
 
 ```
 
@@ -906,41 +906,41 @@ Sphinx 在 reStructuredText 的默认指令之上添加了一些指令，并提�
 这是 Sphinx 中最重要的指令之一；它生成`toctree`（目录树）。`toctree`指令有一些选项，但最重要的可能是`maxdepth`，它指定树需要多深。`toctree`的顶层必须通过手动指定要读取的文件来指定，但在此之外，文档中的每个级别（部分、章节、段落等）都可以是`toctree`中的另一级，取决于深度。即使`maxdepth`选项是可选的，但如果没有它，将显示所有可用级别，这通常超出了所需范围。在大多数情况下，`maxdepth`为 2 是一个很好的默认值，使基本示例看起来像这样：
 
 ```py
-**.. toctree::**
- **:maxdepth: 2**
+.. toctree::
+ **:maxdepth: 2
 
 ```
 
 `toctree`中的项目是同一目录中的`.rst`文件，不包括扩展名。这可以包括子目录，此时目录用`.`（句号）分隔：
 
 ```py
-**.. toctree::**
- **:maxdepth: 2**
+.. toctree::
+ **:maxdepth: 2
 
- **module.a**
- **module.b**
- **module.c**
+ **module.a
+ **module.b
+ **module.c
 
 ```
 
 另一个非常有用的选项是`glob`选项。它告诉`toctree`使用 Python 中的`glob`模块自动添加所有匹配模式的文档。通过简单地添加一个带有`glob`模式的目录，您可以添加该目录中的所有文件。这使得我们之前的`toctree`变得非常简单：
 
 ```py
-**.. toctree::**
- **:maxdepth: 2**
- **:glob:**
+.. toctree::
+ **:maxdepth: 2
+ **:glob:
 
- **module.***
+ **module.*
 
 ```
 
 如果由于某种原因文档标题不如您所希望的那样，您可以轻松地将标题更改为自定义内容：
 
 ```py
-**.. toctree::**
- **:maxdepth: 2**
+.. toctree::
+ **:maxdepth: 2
 
- **The A module <module.a>**
+ **The A module <module.a>
 
 ```
 
@@ -951,13 +951,13 @@ Sphinx 最强大的功能是自动记录模块、类和函数的可能性。 `sp
 `sphinx-apidoc`的原始结果是：
 
 ```py
-**eggs module**
-**===========**
+eggs module
+===========
 
-**.. automodule:: eggs**
- **:members:**
- **:undoc-members:**
- **:show-inheritance:**
+.. automodule:: eggs
+ **:members:
+ **:undoc-members:
+ **:show-inheritance:
 
 ```
 
@@ -968,14 +968,14 @@ Sphinx 最强大的功能是自动记录模块、类和函数的可能性。 `sp
 `Eggs`类目前只有一个函数。当然，我们可以轻松地点击到父类，但在许多情况下，查看类中所有可用的函数是很有用的。因此，让我们也添加从`Spam`继承的所有函数：
 
 ```py
-**eggs module**
-**===========**
+eggs module
+===========
 
-**.. automodule:: eggs**
- **:members:**
- **:undoc-members:**
- **:show-inheritance:**
- **:inherited-members:**
+.. automodule:: eggs
+ **:members:
+ **:undoc-members:
+ **:show-inheritance:
+ **:inherited-members:
 
 ```
 
@@ -986,15 +986,15 @@ Sphinx 最强大的功能是自动记录模块、类和函数的可能性。 `sp
 已经更有用了，但我们仍然缺少隐藏的方法。让我们也添加私有成员：
 
 ```py
-**eggs module**
-**===========**
+eggs module
+===========
 
-**.. automodule:: eggs**
- **:members:**
- **:undoc-members:**
- **:show-inheritance:**
- **:inherited-members:**
- **:private-members:**
+.. automodule:: eggs
+ **:members:
+ **:undoc-members:
+ **:show-inheritance:
+ **:inherited-members:
+ **:private-members:
 
 ```
 
@@ -1011,20 +1011,20 @@ Sphinx 最强大的功能是自动记录模块、类和函数的可能性。 `sp
 然而，有一个实际的情况，如果您正在动态创建类，那么`autodoc`将无法始终正确地记录文档，并且需要一些额外的帮助。然而，还有更多，虽然通常情况下并不那么有用，因为这样做相当于重复工作。在某些情况下，`autodoc`扩展无法正确识别类的成员。例如，在动态类/函数生成的情况下就是如此。对于这种情况，向模块/类/函数添加一些手动文档可能会有用：
 
 ```py
-**eggs module**
-**===========**
+eggs module
+===========
 
-**.. automodule:: eggs**
- **:members:**
- **:undoc-members:**
- **:show-inheritance:**
+.. automodule:: eggs
+ **:members:
+ **:undoc-members:
+ **:show-inheritance:
 
- **.. class:: NonExistingClass**
- **This class doesn't actually exist, but it's in the documentation now.**
+ **.. class:: NonExistingClass
+ **This class doesn't actually exist, but it's in the documentation now.
 
- **.. method:: non_existing_function()**
+ **.. method:: non_existing_function()
 
- **And this function does not exist either.**
+ **And this function does not exist either.
 
 ```
 
@@ -1039,7 +1039,7 @@ Sphinx 最强大的功能是自动记录模块、类和函数的可能性。 `sp
 我们已经看到了 Sphinx 指令，它们是单独的块。现在我们将讨论 Sphinx 角色，这些角色可以在行内使用。角色允许您告诉 Sphinx 如何解析某些输入。这些角色的示例包括链接、数学、代码和标记。但最重要的是 Sphinx 领域内用于引用其他类的角色，甚至是外部项目。在 Sphinx 中，默认领域是 Python 领域，因此像`:py:meth:`这样的角色也可以使用`:meth:`。这些角色非常有用，可以链接到不同的包、模块、类、方法和其他对象。基本用法非常简单。要链接到一个类，请使用以下内容：
 
 ```py
-**Spam: :class:`spam.Spam`**
+Spam: :class:`spam.Spam`
 
 ```
 
@@ -1052,32 +1052,32 @@ Sphinx 最强大的功能是自动记录模块、类和函数的可能性。 `sp
 Sphinx 的一个更好的功能是，这实际上也可以跨项目实现，通过使用`:obj:`int``可以轻松地在标准 Python 文档中添加对`int`对象的引用。在其他站点上添加对您自己项目的引用也相当简单。也许您还记得`sphinx-quickstart`脚本中的`intersphinx`问题：
 
 ```py
-**> intersphinx: link between Sphinx documentation**
- **of different projects (y/n) [n]: y**
+> intersphinx: link between Sphinx documentation
+ **of different projects (y/n) [n]: y
 
 ```
 
 这就是使外部 Sphinx 文档和您的本地文档之间的交叉引用成为可能的原因。使用`intersphinx`，您可以在项目之间添加链接，几乎不需要任何努力。`conf.py`中的标准`intersphinx_mapping`有点有限：
 
 ```py
-**intersphinx_mapping = {'https://docs.python.org/': None}**
+intersphinx_mapping = {'https://docs.python.org/': None}
 
 ```
 
 然而，它可以很容易地扩展到其他文档站点：
 
 ```py
-**intersphinx_mapping = {**
- **'https://docs.python.org/': None,**
- **'sphinx': ('http://sphinx-doc.org/', None),**
-**}**
+intersphinx_mapping = {
+ **'https://docs.python.org/': None,
+ **'sphinx': ('http://sphinx-doc.org/', None),
+}
 
 ```
 
 现在我们可以轻松地链接到 Sphinx 主页上的文档：
 
 ```py
-**Link to the intersphinx module: :mod:`sphinx.ext.intersphinx`**
+Link to the intersphinx module: :mod:`sphinx.ext.intersphinx`
 
 ```
 
@@ -1094,26 +1094,26 @@ Sphinx 的一个更好的功能是，这实际上也可以跨项目实现，通�
 Sphinx 风格是使用一堆 reStructuredText 角色开发的，这是一种非常有效的方法，但是如果经常使用，可能会对可读性产生不利影响。你可能能够猜出以下内容的含义，但它的语法并不是最好的：
 
 ```py
-**:param amount: The amount of eggs to return**
-**:type amount: int**
+:param amount: The amount of eggs to return
+:type amount: int
 
 ```
 
 Google 风格（顾名思义）是由 Google 开发的。其目标是具有简单/易读的格式，既可以作为代码内文档，又可以被 Sphinx 解析。在我看来，这更接近于 reStructuredText 的原始理念，这是一种非常接近你本能地记录文档的格式。这个例子与之前展示的 Sphinx 风格例子具有相同的含义：
 
 ```py
-**Args:**
- **amount (int): The amount of eggs to return**
+Args:
+ **amount (int): The amount of eggs to return
 
 ```
 
 NumPy 风格是专门为 NumPy 项目创建的。NumPy 项目有许多函数，文档量很大，通常每个参数都有很多文档。它比 Google 格式稍微冗长，但同样易于阅读：
 
 ```py
-**Parameters**
-**----------**
-**amount : int**
- **The amount of eggs to return**
+Parameters
+----------
+amount : int
+ **The amount of eggs to return
 
 ```
 
@@ -1131,32 +1131,32 @@ def eggs(amount: int):
 首先，让我们看看传统风格，即 Sphinx 风格。虽然很容易理解所有参数的含义，但有点冗长，不太易读。尽管如此，它非常清晰，绝对不是一个糟糕的风格。
 
 ```py
-**class Spam(object):**
- **'''**
- **The Spam object contains lots of spam**
+class Spam(object):
+ **'''
+ **The Spam object contains lots of spam
 
- **:param arg: The arg is used for ...**
- **:type arg: str**
- **:param `*args`: The variable arguments are used for ...**
- **:param `**kwargs`: The keyword arguments are used for ...**
- **:ivar arg: This is where we store arg**
- **:vartype arg: str**
- **'''**
- **def __init__(self, arg, *args, **kwargs):**
- **self.arg = arg**
+ **:param arg: The arg is used for ...
+ **:type arg: str
+ **:param `*args`: The variable arguments are used for ...
+ **:param `**kwargs`: The keyword arguments are used for ...
+ **:ivar arg: This is where we store arg
+ **:vartype arg: str
+ **'''
+ **def __init__(self, arg, *args, **kwargs):
+ **self.arg = arg
 
- **def eggs(self, amount, cooked):**
- **'''We can't have spam without eggs, so here's the eggs**
+ **def eggs(self, amount, cooked):
+ **'''We can't have spam without eggs, so here's the eggs
 
- **:param amount: The amount of eggs to return**
- **:type amount: int**
- **:param bool cooked: Should the eggs be cooked?**
- **:raises: :class:`RuntimeError`: Out of eggs**
+ **:param amount: The amount of eggs to return
+ **:type amount: int
+ **:param bool cooked: Should the eggs be cooked?
+ **:raises: :class:`RuntimeError`: Out of eggs
 
- **:returns: A bunch of eggs**
- **:rtype: Eggs**
- **'''**
- **pass**
+ **:returns: A bunch of eggs
+ **:rtype: Eggs
+ **'''
+ **pass
 
 ```
 
@@ -1181,35 +1181,35 @@ Google 风格只是 Sphinx 风格文档的更易读版本。它实际上并不�
 一旦你正确配置了所有内容，我们可以同时使用 Google 和 NumPy 风格。这是`Spam`类的 Google 风格版本：
 
 ```py
-**class Spam(object):**
- **'''**
- **The Spam object contains lots of spam**
+class Spam(object):
+ **'''
+ **The Spam object contains lots of spam
 
- **Args:**
- **arg (str): The arg is used for ...**
- ***args: The variable arguments are used for ...**
- ****kwargs: The keyword arguments are used for ...**
+ **Args:
+ **arg (str): The arg is used for ...
+ ***args: The variable arguments are used for ...
+ ****kwargs: The keyword arguments are used for ...
 
- **Attributes:**
- **arg (str): This is where we store arg,**
- **'''**
- **def __init__(self, arg, *args, **kwargs):**
- **self.arg = arg**
+ **Attributes:
+ **arg (str): This is where we store arg,
+ **'''
+ **def __init__(self, arg, *args, **kwargs):
+ **self.arg = arg
 
- **def eggs(self, amount, cooked):**
- **'''We can't have spam without eggs, so here's the eggs**
+ **def eggs(self, amount, cooked):
+ **'''We can't have spam without eggs, so here's the eggs
 
- **Args:**
- **amount (int): The amount of eggs to return**
- **cooked (bool): Should the eggs be cooked?**
+ **Args:
+ **amount (int): The amount of eggs to return
+ **cooked (bool): Should the eggs be cooked?
 
- **Raises:**
- **RuntimeError: Out of eggs**
+ **Raises:
+ **RuntimeError: Out of eggs
 
- **Returns:**
- **Eggs: A bunch of eggs**
- **'''**
- **pass**
+ **Returns:
+ **Eggs: A bunch of eggs
+ **'''
+ **pass
 
 ```
 
@@ -1220,48 +1220,48 @@ Google 风格只是 Sphinx 风格文档的更易读版本。它实际上并不�
 NumPy 风格适用于大量文档。老实说，大多数人都太懒了，所以对于大多数项目来说，这并不合适。如果您计划对函数及其所有参数进行广泛的文档记录，那么 NumPy 风格可能是一个不错的选择。它比 Google 风格更冗长，但非常易读，特别是在更详细的文档中。请记住，与 Google 风格类似，这需要 Sphinx 的 Napoleon 扩展，因此请确保您已安装了 Sphinx 1.3 或更高版本。以下是`Spam`类的 NumPy 版本：
 
 ```py
-**class Spam(object):**
- **'''**
- **The Spam object contains lots of spam**
+class Spam(object):
+ **'''
+ **The Spam object contains lots of spam
 
- **Parameters**
- **----------**
- **arg : str**
- **The arg is used for ...**
- ***args**
- **The variable arguments are used for ...**
- ****kwargs**
- **The keyword arguments are used for ...**
+ **Parameters
+ **----------
+ **arg : str
+ **The arg is used for ...
+ ***args
+ **The variable arguments are used for ...
+ ****kwargs
+ **The keyword arguments are used for ...
 
- **Attributes**
- **----------**
- **arg : str**
- **This is where we store arg,**
- **'''**
- **def __init__(self, arg, *args, **kwargs):**
- **self.arg = arg**
+ **Attributes
+ **----------
+ **arg : str
+ **This is where we store arg,
+ **'''
+ **def __init__(self, arg, *args, **kwargs):
+ **self.arg = arg
 
- **def eggs(self, amount, cooked):**
- **'''We can't have spam without eggs, so here's the eggs**
+ **def eggs(self, amount, cooked):
+ **'''We can't have spam without eggs, so here's the eggs
 
- **Parameters**
- **----------**
- **amount : int**
- **The amount of eggs to return**
- **cooked : bool**
- **Should the eggs be cooked?**
+ **Parameters
+ **----------
+ **amount : int
+ **The amount of eggs to return
+ **cooked : bool
+ **Should the eggs be cooked?
 
- **Raises**
- **------**
- **RuntimeError**
- **Out of eggs**
+ **Raises
+ **------
+ **RuntimeError
+ **Out of eggs
 
- **Returns**
- **-------**
- **Eggs**
- **A bunch of eggs**
- **'''**
- **pass**
+ **Returns
+ **-------
+ **Eggs
+ **A bunch of eggs
+ **'''
+ **pass
 
 ```
 

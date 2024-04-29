@@ -31,12 +31,12 @@ class MySubClass(object):
 
 ```py
 class Contact:
-    **all_contacts = []**
+    **all_contacts = []
 
     def __init__(self, name, email):
         self.name = name
         self.email = email
-        **Contact.all_contacts.append(self)**
+        **Contact.all_contacts.append(self)
 
 ```
 
@@ -58,20 +58,20 @@ class Supplier(Contact):
 现在，如果我们在我们信任的解释器中测试这个类，我们会发现所有的联系人，包括供应商，在他们的`__init__`中都接受了名字和电子邮件地址，但只有供应商有一个功能性的订单方法：
 
 ```py
-**>>> c = Contact("Some Body", "somebody@example.net")**
-**>>> s = Supplier("Sup Plier", "supplier@example.net")**
-**>>> print(c.name, c.email, s.name, s.email)**
-**Some Body somebody@example.net Sup Plier supplier@example.net**
-**>>> c.all_contacts**
-**[<__main__.Contact object at 0xb7375ecc>,**
- **<__main__.Supplier object at 0xb7375f8c>]**
-**>>> c.order("I need pliers")**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
-**AttributeError: 'Contact' object has no attribute 'order'**
-**>>> s.order("I need pliers")**
-**If this were a real system we would send 'I need pliers' order to**
-**'Sup Plier '**
+>>> c = Contact("Some Body", "somebody@example.net")
+>>> s = Supplier("Sup Plier", "supplier@example.net")
+>>> print(c.name, c.email, s.name, s.email)
+Some Body somebody@example.net Sup Plier supplier@example.net
+>>> c.all_contacts
+[<__main__.Contact object at 0xb7375ecc>,
+ **<__main__.Supplier object at 0xb7375f8c>]
+>>> c.order("I need pliers")
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+AttributeError: 'Contact' object has no attribute 'order'
+>>> s.order("I need pliers")
+If this were a real system we would send 'I need pliers' order to
+'Sup Plier '
 
 ```
 
@@ -93,7 +93,7 @@ class ContactList(list):
         return matching_contacts
 
 class Contact:
-    **all_contacts = ContactList()**
+    **all_contacts = ContactList()
 
     def __init__(self, name, email):
         self.name = name
@@ -104,27 +104,27 @@ class Contact:
 而不是将普通列表实例化为我们的类变量，我们创建一个新的`ContactList`类，它扩展了内置的`list`。然后，我们将这个子类实例化为我们的`all_contacts`列表。我们可以测试新的搜索功能如下：
 
 ```py
-**>>> c1 = Contact("John A", "johna@example.net")**
-**>>> c2 = Contact("John B", "johnb@example.net")**
-**>>> c3 = Contact("Jenna C", "jennac@example.net")**
-**>>> [c.name for c in Contact.all_contacts.search('John')]**
-**['John A', 'John B']**
+>>> c1 = Contact("John A", "johna@example.net")
+>>> c2 = Contact("John B", "johnb@example.net")
+>>> c3 = Contact("Jenna C", "jennac@example.net")
+>>> [c.name for c in Contact.all_contacts.search('John')]
+['John A', 'John B']
 
 ```
 
 你是否想知道我们是如何将内置语法`[]`改变成我们可以继承的东西的？使用`[]`创建一个空列表实际上是使用`list()`创建一个空列表的简写；这两种语法的行为是相同的：
 
 ```py
-**>>> [] == list()**
-**True**
+>>> [] == list()
+True
 
 ```
 
 实际上，`[]`语法实际上是所谓的**语法糖**，在底层调用`list()`构造函数。`list`数据类型是一个我们可以扩展的类。事实上，列表本身扩展了`object`类：
 
 ```py
-**>>> isinstance([], object)**
-**True**
+>>> isinstance([], object)
+True
 
 ```
 
@@ -143,12 +143,12 @@ class LongNameDict(dict):
 这在交互式解释器中很容易测试：
 
 ```py
-**>>> longkeys = LongNameDict()**
-**>>> longkeys['hello'] = 1**
-**>>> longkeys['longest yet'] = 5**
-**>>> longkeys['hello2'] = 'world'**
-**>>> longkeys.longest_key()**
-**'longest yet'**
+>>> longkeys = LongNameDict()
+>>> longkeys['hello'] = 1
+>>> longkeys['longest yet'] = 5
+>>> longkeys['hello2'] = 'world'
+>>> longkeys.longest_key()
+'longest yet'
 
 ```
 
@@ -175,7 +175,7 @@ class Friend(Contact):
 ```py
 class Friend(Contact):
     def __init__(self, name, email, phone):
-        **super().__init__(name, email)**
+        **super().__init__(name, email)
         self.phone = phone
 ```
 
@@ -216,11 +216,11 @@ class EmailableContact(Contact, MailSender):
 多重继承的语法看起来像类定义中的参数列表。在括号内不是包含一个基类，而是包含两个（或更多），用逗号分隔。我们可以测试这个新的混合体，看看 mixin 的工作情况：
 
 ```py
-**>>> e = EmailableContact("John Smith", "jsmith@example.net")**
-**>>> Contact.all_contacts**
-**[<__main__.EmailableContact object at 0xb7205fac>]**
-**>>> e.send_mail("Hello, test e-mail here")**
-**Sending mail to jsmith@example.net**
+>>> e = EmailableContact("John Smith", "jsmith@example.net")
+>>> Contact.all_contacts
+[<__main__.EmailableContact object at 0xb7205fac>]
+>>> e.send_mail("Hello, test e-mail here")
+Sending mail to jsmith@example.net
 
 ```
 
@@ -300,22 +300,22 @@ class BaseClass:
 class LeftSubclass(BaseClass):
     num_left_calls = 0
     def call_me(self):
-        **BaseClass.call_me(self)**
+        **BaseClass.call_me(self)
         print("Calling method on Left Subclass")
         self.num_left_calls += 1
 
 class RightSubclass(BaseClass):
     num_right_calls = 0
     def call_me(self):
-        **BaseClass.call_me(self)**
+        **BaseClass.call_me(self)
         print("Calling method on Right Subclass")
         self.num_right_calls += 1
 
 class Subclass(LeftSubclass, RightSubclass):
     num_sub_calls = 0
     def call_me(self):
-        **LeftSubclass.call_me(self)**
-        **RightSubclass.call_me(self)**
+        **LeftSubclass.call_me(self)
+        **RightSubclass.call_me(self)
         print("Calling method on Subclass")
         self.num_sub_calls += 1
 ```
@@ -323,19 +323,19 @@ class Subclass(LeftSubclass, RightSubclass):
 这个例子简单地确保每个重写的`call_me`方法直接调用具有相同名称的父方法。它通过将信息打印到屏幕上来告诉我们每次方法被调用的次数。它还更新了类的静态变量，以显示它被调用的次数。如果我们实例化一个`Subclass`对象并调用它的方法一次，我们会得到这个输出：
 
 ```py
-**>>> s = Subclass()**
-**>>> s.call_me()**
-**Calling method on Base Class**
-**Calling method on Left Subclass**
-**Calling method on Base Class**
-**Calling method on Right Subclass**
-**Calling method on Subclass**
-**>>> print(**
-**... s.num_sub_calls,**
-**... s.num_left_calls,**
-**... s.num_right_calls,**
-**... s.num_base_calls)**
-**1 1 1 2**
+>>> s = Subclass()
+>>> s.call_me()
+Calling method on Base Class
+Calling method on Left Subclass
+Calling method on Base Class
+Calling method on Right Subclass
+Calling method on Subclass
+>>> print(
+... s.num_sub_calls,
+... s.num_left_calls,
+... s.num_right_calls,
+... s.num_base_calls)
+1 1 1 2
 
 ```
 
@@ -353,21 +353,21 @@ class BaseClass:
 class LeftSubclass(BaseClass):
     num_left_calls = 0
     def call_me(self):
-        **super().call_me()**
+        **super().call_me()
         print("Calling method on Left Subclass")
         self.num_left_calls += 1
 
 class RightSubclass(BaseClass):
     num_right_calls = 0
     def call_me(self):
-        **super().call_me()**
+        **super().call_me()
         print("Calling method on Right Subclass")
         self.num_right_calls += 1
 
 class Subclass(LeftSubclass, RightSubclass):
     num_sub_calls = 0
     def call_me(self):
-        **super().call_me()**
+        **super().call_me()
         print("Calling method on Subclass")
         self.num_sub_calls += 1
 ```
@@ -375,15 +375,15 @@ class Subclass(LeftSubclass, RightSubclass):
 变化非常小；我们只是用`super()`调用替换了天真的直接调用，尽管底部的子类只调用了一次`super`，而不是必须为左侧和右侧都进行调用。这个变化很简单，但当我们执行它时看看它的不同之处：
 
 ```py
-**>>> s = Subclass()**
-**>>> s.call_me()**
-**Calling method on Base Class**
-**Calling method on Right Subclass**
-**Calling method on Left Subclass**
-**Calling method on Subclass**
-**>>> print(s.num_sub_calls, s.num_left_calls, s.num_right_calls,**
-**s.num_base_calls)**
-**1 1 1 1**
+>>> s = Subclass()
+>>> s.call_me()
+Calling method on Base Class
+Calling method on Right Subclass
+Calling method on Left Subclass
+Calling method on Subclass
+>>> print(s.num_sub_calls, s.num_left_calls, s.num_right_calls,
+s.num_base_calls)
+1 1 1 1
 
 ```
 
@@ -416,15 +416,15 @@ Python 的函数参数语法提供了我们需要的所有工具，但它使整�
 class Contact:
     all_contacts = []
 
-    **def __init__(self, name='', email='', **kwargs):**
-        **super().__init__(**kwargs)**
+    **def __init__(self, name='', email='', **kwargs):
+        **super().__init__(**kwargs)
         self.name = name
         self.email = email
         self.all_contacts.append(self)
 
 class AddressHolder:
-    **def __init__(self, street='', city='', state='', code='',**
-            ****kwargs):**
+    **def __init__(self, street='', city='', state='', code='',
+            ****kwargs):
         super().__init__(**kwargs)
         self.street = street
         self.city = city
@@ -432,7 +432,7 @@ class AddressHolder:
         self.code = code
 
 class Friend(Contact, AddressHolder):
-    **def __init__(self, phone='', **kwargs):**
+    **def __init__(self, phone='', **kwargs):
         super().__init__(**kwargs)
         self.phone = phone
 ```
@@ -474,23 +474,23 @@ audio_file.play()
 ```py
 class AudioFile:
     def __init__(self, filename):
-        **if not filename.endswith(self.ext):**
+        **if not filename.endswith(self.ext):
             raise Exception("Invalid file format")
 
         self.filename = filename
 
 class MP3File(AudioFile):
-    **ext = "mp3"**
+    **ext = "mp3"
     def play(self):
         print("playing {} as mp3".format(self.filename))
 
 class WavFile(AudioFile):
-    **ext = "wav"**
+    **ext = "wav"
     def play(self):
         print("playing {} as wav".format(self.filename))
 
 class OggFile(AudioFile):
-    **ext = "ogg"**
+    **ext = "ogg"
     def play(self):
         print("playing {} as ogg".format(self.filename))
 ```
@@ -500,18 +500,18 @@ class OggFile(AudioFile):
 此外，`AudioFile`的每个子类都以不同的方式实现了`play()`（这个例子实际上并不播放音乐；音频压缩算法确实值得一本单独的书！）。这也是多态的实际应用。媒体播放器可以使用完全相同的代码来播放文件，无论它是什么类型的；它不在乎它正在查看`AudioFile`的哪个子类。解压音频文件的细节被*封装*起来。如果我们测试这个例子，它会按照我们的期望工作：
 
 ```py
-**>>> ogg = OggFile("myfile.ogg")**
-**>>> ogg.play()**
-**playing myfile.ogg as ogg**
-**>>> mp3 = MP3File("myfile.mp3")**
-**>>> mp3.play()**
-**playing myfile.mp3 as mp3**
-**>>> not_an_mp3 = MP3File("myfile.ogg")**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
- **File "polymorphic_audio.py", line 4, in __init__**
- **raise Exception("Invalid file format")**
-**Exception: Invalid file format**
+>>> ogg = OggFile("myfile.ogg")
+>>> ogg.play()
+playing myfile.ogg as ogg
+>>> mp3 = MP3File("myfile.mp3")
+>>> mp3.play()
+playing myfile.mp3 as mp3
+>>> not_an_mp3 = MP3File("myfile.ogg")
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+ **File "polymorphic_audio.py", line 4, in __init__
+ **raise Exception("Invalid file format")
+Exception: Invalid file format
 
 ```
 
@@ -749,8 +749,8 @@ True
 
 ```py
 class Property:
-    **def __init__(self, square_feet='', beds='',**
-            **baths='', **kwargs):**
+    **def __init__(self, square_feet='', beds='',
+            **baths='', **kwargs):
         super().__init__(**kwargs)
         self.square_feet = square_feet
         self.num_bedrooms = beds
@@ -768,7 +768,7 @@ class Property:
         return dict(square_feet=input("Enter the square feet: "),
                 beds=input("Enter number of bedrooms: "),
                 baths=input("Enter number of baths: "))
-    **prompt_init = staticmethod(prompt_init)**
+    **prompt_init = staticmethod(prompt_init)
 
 ```
 
@@ -837,10 +837,10 @@ def get_valid_input(input_string, valid_options):
 我们可以在解释器中测试这个函数，而不受我们一直在工作的所有其他类的影响。这是一个好迹象，这意味着我们设计的不同部分不会紧密耦合在一起，可以在不影响其他代码的情况下独立进行改进。
 
 ```py
-**>>> get_valid_input("what laundry?", ("coin", "ensuite", "none"))**
-**what laundry? (coin, ensuite, none) hi**
-**what laundry? (coin, ensuite, none) COIN**
-**'COIN'**
+>>> get_valid_input("what laundry?", ("coin", "ensuite", "none"))
+what laundry? (coin, ensuite, none) hi
+what laundry? (coin, ensuite, none) COIN
+'COIN'
 
 ```
 
@@ -965,33 +965,33 @@ class HouseRental(Rental, House):
 这有点令人惊讶，因为这个类本身既没有`__init__`方法也没有`display`方法！因为两个父类在这些方法中适当地调用了`super`，所以我们只需要扩展这些类，这些类就会按正确的顺序行为。当然，这在`prompt_init`中并不适用，因为它是一个不调用`super`的静态方法，所以我们要显式地实现这个方法。在我们写其他三种组合之前，我们应该测试这个类以确保它的行为正常：
 
 ```py
-**>>> init = HouseRental.prompt_init()**
-**Enter the square feet: 1**
-**Enter number of bedrooms: 2**
-**Enter number of baths: 3**
-**Is the yard fenced?  (yes, no) no**
-**Is there a garage?  (attached, detached, none) none**
-**How many stories? 4**
-**What is the monthly rent? 5**
-**What are the estimated utilities? 6**
-**Is the property furnished?  (yes, no) no**
-**>>> house = HouseRental(**init)**
-**>>> house.display()**
-**PROPERTY DETAILS**
-**================**
-**square footage: 1**
-**bedrooms: 2**
-**bathrooms: 3**
+>>> init = HouseRental.prompt_init()
+Enter the square feet: 1
+Enter number of bedrooms: 2
+Enter number of baths: 3
+Is the yard fenced?  (yes, no) no
+Is there a garage?  (attached, detached, none) none
+How many stories? 4
+What is the monthly rent? 5
+What are the estimated utilities? 6
+Is the property furnished?  (yes, no) no
+>>> house = HouseRental(**init)
+>>> house.display()
+PROPERTY DETAILS
+================
+square footage: 1
+bedrooms: 2
+bathrooms: 3
 
-**HOUSE DETAILS**
-**# of stories: 4**
-**garage: none**
-**fenced yard: no**
+HOUSE DETAILS
+# of stories: 4
+garage: none
+fenced yard: no
 
-**RENTAL DETAILS**
-**rent: 5**
-**estimated utilities: 6**
-**furnished: no**
+RENTAL DETAILS
+rent: 5
+estimated utilities: 6
+furnished: no
 
 ```
 
@@ -1060,10 +1060,10 @@ class Agent:
                 "What payment type? ",
                 ("purchase", "rental")).lower()
 
-        **PropertyClass = self.type_map[**
-            **(property_type, payment_type)]**
+        **PropertyClass = self.type_map[
+            **(property_type, payment_type)]
         init_args = PropertyClass.prompt_init()
-        **self.property_list.append(PropertyClass(**init_args))**
+        **self.property_list.append(PropertyClass(**init_args))
 
 ```
 
@@ -1072,57 +1072,57 @@ class Agent:
 现在我们的用户可以使用这个`Agent`类来添加和查看属性列表。添加功能来标记属性为可用或不可用，或编辑和删除属性也不需要太多工作。我们的原型现在已经足够好，可以带给房地产经纪人并展示其功能。以下是演示会话可能的工作方式：
 
 ```py
-**>>> agent = Agent()**
-**>>> agent.add_property()**
-**What type of property?  (house, apartment) house**
-**What payment type?  (purchase, rental) rental**
-**Enter the square feet: 900**
-**Enter number of bedrooms: 2**
-**Enter number of baths: one and a half**
-**Is the yard fenced?  (yes, no) yes**
-**Is there a garage?  (attached, detached, none) detached**
-**How many stories? 1**
-**What is the monthly rent? 1200**
-**What are the estimated utilities? included**
-**Is the property furnished?  (yes, no) no**
-**>>> agent.add_property()**
-**What type of property?  (house, apartment) apartment**
-**What payment type?  (purchase, rental) purchase**
-**Enter the square feet: 800**
-**Enter number of bedrooms: 3**
-**Enter number of baths: 2**
-**What laundry facilities does the property have?  (coin, ensuite,**
-**one) ensuite**
-**Does the property have a balcony? (yes, no, solarium) yes**
-**What is the selling price? $200,000**
-**What are the estimated taxes? 1500**
-**>>> agent.display_properties()**
-**PROPERTY DETAILS**
-**================**
-**square footage: 900**
-**bedrooms: 2**
-**bathrooms: one and a half**
+>>> agent = Agent()
+>>> agent.add_property()
+What type of property?  (house, apartment) house
+What payment type?  (purchase, rental) rental
+Enter the square feet: 900
+Enter number of bedrooms: 2
+Enter number of baths: one and a half
+Is the yard fenced?  (yes, no) yes
+Is there a garage?  (attached, detached, none) detached
+How many stories? 1
+What is the monthly rent? 1200
+What are the estimated utilities? included
+Is the property furnished?  (yes, no) no
+>>> agent.add_property()
+What type of property?  (house, apartment) apartment
+What payment type?  (purchase, rental) purchase
+Enter the square feet: 800
+Enter number of bedrooms: 3
+Enter number of baths: 2
+What laundry facilities does the property have?  (coin, ensuite,
+one) ensuite
+Does the property have a balcony? (yes, no, solarium) yes
+What is the selling price? $200,000
+What are the estimated taxes? 1500
+>>> agent.display_properties()
+PROPERTY DETAILS
+================
+square footage: 900
+bedrooms: 2
+bathrooms: one and a half
 
-**HOUSE DETAILS**
-**# of stories: 1**
-**garage: detached**
-**fenced yard: yes**
-**RENTAL DETAILS**
-**rent: 1200**
-**estimated utilities: included**
-**furnished: no**
-**PROPERTY DETAILS**
-**================**
-**square footage: 800**
-**bedrooms: 3**
-**bathrooms: 2**
+HOUSE DETAILS
+# of stories: 1
+garage: detached
+fenced yard: yes
+RENTAL DETAILS
+rent: 1200
+estimated utilities: included
+furnished: no
+PROPERTY DETAILS
+================
+square footage: 800
+bedrooms: 3
+bathrooms: 2
 
-**APARTMENT DETAILS**
-**laundry: ensuite**
-**has balcony: yes**
-**PURCHASE DETAILS**
-**selling price: $200,000**
-**estimated taxes: 1500**
+APARTMENT DETAILS
+laundry: ensuite
+has balcony: yes
+PURCHASE DETAILS
+selling price: $200,000
+estimated taxes: 1500
 
 ```
 

@@ -36,13 +36,13 @@ class MyFirstClass:
 我们可能认为这个最基本的类没有太多可以做的事情，但它确实允许我们实例化该类的对象。我们可以将该类加载到 Python 3 解释器中，以便可以与其进行交互。为此，将前面提到的类定义保存到名为`first_class.py`的文件中，然后运行命令`python -i first_class.py`。`-i`参数告诉 Python“运行代码，然后转到交互式解释器”。以下解释器会话演示了与该类的基本交互：
 
 ```py
-**>>> a = MyFirstClass()**
-**>>> b = MyFirstClass()**
-**>>> print(a)**
-**<__main__.MyFirstClass object at 0xb7b7faec>**
-**>>> print(b)**
-**<__main__.MyFirstClass object at 0xb7b7fbac>**
-**>>>**
+>>> a = MyFirstClass()
+>>> b = MyFirstClass()
+>>> print(a)
+<__main__.MyFirstClass object at 0xb7b7faec>
+>>> print(b)
+<__main__.MyFirstClass object at 0xb7b7fbac>
+>>>
 
 ```
 
@@ -80,8 +80,8 @@ print(p2.x, p2.y)
 如果我们运行这段代码，结尾的两个`print`语句会告诉我们两个对象的新属性值：
 
 ```py
-**5 4**
-**3 6**
+5 4
+3 6
 
 ```
 
@@ -107,7 +107,7 @@ print(p.x, p.y)
 这个`print`语句向我们展示了属性上的两个零：
 
 ```py
-**0 0**
+0 0
 
 ```
 
@@ -134,15 +134,15 @@ print(p.x, p.y)
 如果我们在类定义中忘记包括`self`参数会发生什么？Python 会报错：
 
 ```py
-**>>> class Point:**
-**...     def reset():**
-**...         pass**
-**...**
-**>>> p = Point()**
-**>>> p.reset()**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
-**TypeError: reset() takes no arguments (1 given)**
+>>> class Point:
+...     def reset():
+...         pass
+...
+>>> p = Point()
+>>> p.reset()
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+TypeError: reset() takes no arguments (1 given)
 
 ```
 
@@ -185,9 +185,9 @@ print(point1.calculate_distance(point1))
 结尾的`print`语句给出了以下输出：
 
 ```py
-**5.0**
-**4.472135955**
-**0.0**
+5.0
+4.472135955
+0.0
 
 ```
 
@@ -204,14 +204,14 @@ print(point1.calculate_distance(point1))
 好吧，让我们试试看。"试一试看"是 Python 学习中非常有用的工具。打开你的交互式解释器，然后开始输入。以下交互式会话显示了如果我们尝试访问一个缺失的属性会发生什么。如果你将前面的示例保存为文件，或者正在使用本书分发的示例，你可以使用命令`python -i filename.py`将其加载到 Python 解释器中：
 
 ```py
-**>>> point = Point()**
-**>>> point.x = 5**
-**>>> print(point.x)**
-**5**
-**>>> print(point.y)**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
-**AttributeError: 'Point' object has no attribute 'y'**
+>>> point = Point()
+>>> point.x = 5
+>>> print(point.x)
+5
+>>> print(point.y)
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+AttributeError: 'Point' object has no attribute 'y'
 
 ```
 
@@ -541,8 +541,8 @@ print("output: " + format_string(hello_string))
 输出将如下所示：
 
 ```py
-**input: hello world, how are you today?**
-**output: Hello World, How Are You Today?**
+input: hello world, how are you today?
+output: Hello World, How Are You Today?
 
 ```
 
@@ -579,22 +579,22 @@ class SecretString:
 如果我们加载这个类并在交互式解释器中测试它，我们会发现它隐藏了外部世界的纯文本字符串：
 
 ```py
-**>>> secret_string = SecretString("ACME: Top Secret", "antwerp")**
-**>>> print(secret_string.decrypt("antwerp"))**
-**ACME: Top Secret**
-**>>> print(secret_string.__plain_text)**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
-**AttributeError: 'SecretString' object has no attribute**
-**'__plain_text'**
+>>> secret_string = SecretString("ACME: Top Secret", "antwerp")
+>>> print(secret_string.decrypt("antwerp"))
+ACME: Top Secret
+>>> print(secret_string.__plain_text)
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+AttributeError: 'SecretString' object has no attribute
+'__plain_text'
 
 ```
 
 看起来它起作用了；没有人可以在没有密码的情况下访问我们的`plain_text`属性，所以它一定是安全的。然而，在我们过于兴奋之前，让我们看看有多容易就能破解我们的安全性：
 
 ```py
-**>>> print(secret_string._SecretString__plain_string)**
-**ACME: Top Secret**
+>>> print(secret_string._SecretString__plain_string)
+ACME: Top Secret
 
 ```
 
@@ -613,7 +613,7 @@ Python 附带了一个可爱的标准库，其中包含了一系列在运行 Pyt
 我们不会详细介绍如何将你的包转换成库，但是如果你有一个需要解决的问题，而你又不想编写代码（最好的程序员非常懒惰，更喜欢重用现有的经过验证的代码，而不是编写自己的代码），你可能可以在**Python 包索引**（**PyPI**）[`pypi.python.org/`](http://pypi.python.org/)上找到你想要的库。一旦确定了要安装的包，你可以使用一个叫做`pip`的工具来安装它。然而，`pip`并不随 Python 一起提供，但 Python 3.4 包含一个有用的工具叫做`ensurepip`，它会安装它：
 
 ```py
-**python -m ensurepip**
+python -m ensurepip
 
 ```
 
@@ -626,7 +626,7 @@ Python 附带了一个可爱的标准库，其中包含了一系列在运行 Pyt
 一旦安装了`pip`并且知道要安装的包的名称，你可以使用以下语法来安装它：
 
 ```py
-**pip install requests**
+pip install requests
 
 ```
 
@@ -635,10 +635,10 @@ Python 附带了一个可爱的标准库，其中包含了一系列在运行 Pyt
 然而，Python 3.4 提供了`venv`工具。这个工具基本上为你在工作目录中提供了一个叫做*虚拟环境*的迷你 Python 安装。当你激活这个迷你 Python 时，与 Python 相关的命令将在该目录上运行，而不是在系统目录上运行。因此，当你运行`pip`或`python`时，它不会影响系统 Python。以下是如何使用它：
 
 ```py
-**cd project_directory**
-**python -m venv env**
-**source env/bin/activate  # on Linux or MacOS**
-**env/bin/activate.bat     # on Windows**
+cd project_directory
+python -m venv env
+source env/bin/activate  # on Linux or MacOS
+env/bin/activate.bat     # on Windows
 
 ```
 
@@ -712,17 +712,17 @@ class Note:
 在继续之前，我们应该快速启动交互式解释器并测试到目前为止的代码。经常测试，因为事情从来不按照你的期望工作。事实上，当我测试这个示例的第一个版本时，我发现我忘记了`match`函数中的`self`参数！我们将在第十章中讨论自动化测试，*Python 设计模式 I*。目前，只需使用解释器检查一些东西就足够了：
 
 ```py
-**>>> from notebook import Note**
-**>>> n1 = Note("hello first")**
-**>>> n2 = Note("hello again")**
-**>>> n1.id**
-**1**
-**>>> n2.id**
-**2**
-**>>> n1.match('hello')**
-**True**
-**>>> n2.match('second')**
-**False**
+>>> from notebook import Note
+>>> n1 = Note("hello first")
+>>> n2 = Note("hello again")
+>>> n1.id
+1
+>>> n2.id
+2
+>>> n1.match('hello')
+True
+>>> n2.match('second')
+False
 
 ```
 
@@ -767,27 +767,27 @@ class Notebook:
 我们稍后会整理一下。首先，让我们测试一下，确保它能正常工作：
 
 ```py
-**>>> from notebook import Note, Notebook**
-**>>> n = Notebook()**
-**>>> n.new_note("hello world")**
-**>>> n.new_note("hello again")**
-**>>> n.notes**
-**[<notebook.Note object at 0xb730a78c>, <notebook.Note object at**
- **0xb73103ac>]**
-**>>> n.notes[0].id**
-**1**
-**>>> n.notes[1].id**
-**2**
-**>>> n.notes[0].memo**
-**'hello world'**
-**>>> n.search("hello")**
-**[<notebook.Note object at 0xb730a78c>, <notebook.Note object at**
- **0xb73103ac>]**
-**>>> n.search("world")**
-**[<notebook.Note object at 0xb730a78c>]**
-**>>> n.modify_memo(1, "hi world")**
-**>>> n.notes[0].memo**
-**'hi world'**
+>>> from notebook import Note, Notebook
+>>> n = Notebook()
+>>> n.new_note("hello world")
+>>> n.new_note("hello again")
+>>> n.notes
+[<notebook.Note object at 0xb730a78c>, <notebook.Note object at
+ **0xb73103ac>]
+>>> n.notes[0].id
+1
+>>> n.notes[1].id
+2
+>>> n.notes[0].memo
+'hello world'
+>>> n.search("hello")
+[<notebook.Note object at 0xb730a78c>, <notebook.Note object at
+ **0xb73103ac>]
+>>> n.search("world")
+[<notebook.Note object at 0xb730a78c>]
+>>> n.modify_memo(1, "hi world")
+>>> n.notes[0].memo
+'hi world'
 
 ```
 

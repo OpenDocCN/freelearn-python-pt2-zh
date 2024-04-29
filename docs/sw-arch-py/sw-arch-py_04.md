@@ -154,7 +154,7 @@ SPE - 性能工程生命周期反映软件开发生命周期
 通过使用以下命令行完成：
 
 ```py
-**$ time <command>**
+$ time <command>
 
 ```
 
@@ -295,14 +295,14 @@ Python 标准库中的`timeit`模块允许程序员测量执行小代码片段�
 例如，以下是一些简单的 Python 内联代码的计时数据，用于测量在范围内计算数字平方的列表推导的性能：
 
 ```py
-**$ python3 -m timeit '[x*x for x in range(100)]'**
-**100000 loops, best of 3: 5.5 usec per loop**
+$ python3 -m timeit '[x*x for x in range(100)]'
+100000 loops, best of 3: 5.5 usec per loop
 
-**$ python3 -m timeit '[x*x for x in range(1000)]'**
-**10000 loops, best of 3: 56.5 usec per loop**
+$ python3 -m timeit '[x*x for x in range(1000)]'
+10000 loops, best of 3: 56.5 usec per loop
 
-**$ python3 -m timeit '[x*x for x in range(10000)]'**
-**1000 loops, best of 3: 623 usec per loop**
+$ python3 -m timeit '[x*x for x in range(10000)]'
+1000 loops, best of 3: 623 usec per loop
 
 ```
 
@@ -609,9 +609,9 @@ def test():
 例如，当睡眠 1 秒时，结果如下。输出大约在 100 秒后出现（因为我们迭代了`100`次），但请注意返回值（每次调用所花费的时间）并没有改变：
 
 ```py
-**>>> t=timeit.Timer('test()','from common_items import test,setup;setup(100)', timer=process_time)**
-**>>> 1000000.0*t.timeit(number=100)/100**
-**369.8039100000002**
+>>> t=timeit.Timer('test()','from common_items import test,setup;setup(100)', timer=process_time)
+>>> 1000000.0*t.timeit(number=100)/100
+369.8039100000002
 
 ```
 
@@ -807,7 +807,7 @@ Python 生态系统提供了大量用于解决大多数问题的第三方模块�
 可以通过以下方式使用 pip 安装行分析器：
 
 ```py
-**$ pip3 install line_profiler**
+$ pip3 install line_profiler
 
 ```
 
@@ -842,7 +842,7 @@ if __name__ == "__main__":
 现在，使用行分析器运行它：
 
 ```py
-**$ kernprof -l -v primes.py**
+$ kernprof -l -v primes.py
 
 ```
 
@@ -865,7 +865,7 @@ if __name__ == "__main__":
 内存分析器可以像行分析器一样安装：
 
 ```py
-**$ pip3 install memory_profiler**
+$ pip3 install memory_profiler
 
 ```
 
@@ -1113,7 +1113,7 @@ Objgraph（**对象图**）是一个 Python 对象可视化工具，它利用`gr
 与 Python 世界中的几乎所有内容一样，它可以通过`pip`安装：
 
 ```py
-**$ pip3 install objgraph**
+$ pip3 install objgraph
 
 ```
 
@@ -1122,7 +1122,7 @@ Objgraph（**对象图**）是一个 Python 对象可视化工具，它利用`gr
 在 Debian/Ubuntu 系统中，您可以按照以下步骤安装：
 
 ```py
-**$ sudo apt install graphviz xdot -y**
+$ sudo apt install graphviz xdot -y
 
 ```
 
@@ -1151,13 +1151,13 @@ import pdb; pdb.set_trace()
 当执行这段代码时，它会停在调试器（`pdb`）处：
 
 ```py
-**$ python3 objgraph_example.py**
-**--Return--**
-**[0] > /home/user/programs/chap4/objgraph_example.py(15)<module>()->None**
-**-> import pdb; pdb.set_trace()**
-**(Pdb++) objgraph.show_backrefs(ref, max_depth=2, too_many=2, filename='refs.png')**
-**Graph written to /tmp/objgraph-xxhaqwxl.dot (6 nodes)**
-**Image generated as refs.png**
+$ python3 objgraph_example.py
+--Return--
+[0] > /home/user/programs/chap4/objgraph_example.py(15)<module>()->None
+-> import pdb; pdb.set_trace()
+(Pdb++) objgraph.show_backrefs(ref, max_depth=2, too_many=2, filename='refs.png')
+Graph written to /tmp/objgraph-xxhaqwxl.dot (6 nodes)
+Image generated as refs.png
 
 ```
 
@@ -1180,7 +1180,7 @@ Objgraph 对象引用的可视化
 Pympler 是一个用于监视和测量 Python 应用程序中对象内存使用情况的工具。它适用于 Python 2.x 和 3.x。可以使用`pip`安装如下：
 
 ```py
-**$ pip3 install pympler**
+$ pip3 install pympler
 
 ```
 
@@ -1214,12 +1214,12 @@ def sub_string(seq1, seq2):
 当对大小为 10,000 的序列运行时：
 
 ```py
-**$ python3 sub_string.py**
-**Memory usage {'awg': None, 'qlbo': None, 'gvap': No....te':** 
- **None, 'luwr':**
+$ python3 sub_string.py
+Memory usage {'awg': None, 'qlbo': None, 'gvap': No....te':** 
+ **None, 'luwr':
  **None, 'ipat': None}** 
-**size=5874384** 
-**flat=3145824**
+size=5874384** 
+flat=3145824
 
 ```
 
@@ -1673,7 +1673,7 @@ employees = map(Employee._make, csv.reader(open('employees.csv'))
 在 Python 中，`pybloom`包提供了一个简单的布隆过滤器实现（但是在撰写本文时，它不支持 Python 3.x，因此这里的示例是在 Python 2.7.x 中显示的）：
 
 ```py
-**$ pip install pybloom**
+$ pip install pybloom
 
 ```
 
@@ -1700,13 +1700,13 @@ for w in ('holmes','watson','hound','moor','queen'):
 执行此操作，我们得到以下输出：
 
 ```py
-**$ python bloomtest.py**
-**9403**
-**62154**
-**Found holmes True**
-**Found watson True**
-**Found moor True**
-**Found queen False**
+$ python bloomtest.py
+9403
+62154
+Found holmes True
+Found watson True
+Found moor True
+Found queen False
 
 ```
 

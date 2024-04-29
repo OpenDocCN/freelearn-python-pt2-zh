@@ -17,11 +17,11 @@
 让我们从最基本的 Python 内置对象开始，这是我们已经看到很多次的对象，我们在创建的每个类中都扩展了它：`object`。从技术上讲，我们可以实例化一个`object`而不编写子类。
 
 ```py
-**>>> o = object()**
-**>>> o.x = 5**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
-**AttributeError: 'object' object has no attribute 'x'**
+>>> o = object()
+>>> o.x = 5
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+AttributeError: 'object' object has no attribute 'x'
 
 ```
 
@@ -41,10 +41,10 @@ class MyObject:
 而且，正如我们已经看到的，可以在这样的类上设置属性：
 
 ```py
-**>>> m = MyObject()**
-**>>> m.x = "hello"**
-**>>> m.x**
-**'hello'**
+>>> m = MyObject()
+>>> m.x = "hello"
+>>> m.x
+'hello'
 
 ```
 
@@ -61,8 +61,8 @@ class MyObject:
 我们可以通过用逗号分隔值来创建一个元组。通常，元组用括号括起来，以使它们易于阅读并与表达式的其他部分分开，但这并不总是强制性的。以下两个赋值是相同的（它们记录了一家相当有利可图的公司的股票、当前价格、最高价和最低价）：
 
 ```py
-**>>> stock = "FB", 75.00, 75.03, 74.90**
-**>>> stock2 = ("FB", 75.00, 75.03, 74.90)**
+>>> stock = "FB", 75.00, 75.03, 74.90
+>>> stock2 = ("FB", 75.00, 75.03, 74.90)
 
 ```
 
@@ -71,11 +71,11 @@ class MyObject:
 ```py
 import datetime
 def middle(stock, date):
-    **symbol, current, high, low = stock**
+    **symbol, current, high, low = stock
     return (((high + low) / 2), date)
 
-**mid_value, date = middle(("FB", 75.00, 75.03, 74.90),**
-        **datetime.date(2014, 10, 31))**
+mid_value, date = middle(("FB", 75.00, 75.03, 74.90),
+        **datetime.date(2014, 10, 31))
 
 ```
 
@@ -86,18 +86,18 @@ def middle(stock, date):
 在 Python 中，解包是一个非常有用的功能。我们可以将变量组合在一起，使得存储和传递它们变得更简单，但是当我们需要访问它们所有时，我们可以将它们解包成单独的变量。当然，有时我们只需要访问元组中的一个变量。我们可以使用与其他序列类型（例如列表和字符串）相同的语法来访问单个值：
 
 ```py
-**>>> stock = "FB", 75.00, 75.03, 74.90**
-**>>> high = stock[2]**
-**>>> high**
-**75.03**
+>>> stock = "FB", 75.00, 75.03, 74.90
+>>> high = stock[2]
+>>> high
+75.03
 
 ```
 
 我们甚至可以使用切片表示法来提取元组的较大部分：
 
 ```py
-**>>> stock[1:3]**
-**(75.00, 75.03)**
+>>> stock[1:3]
+(75.00, 75.03)
 
 ```
 
@@ -115,7 +115,7 @@ def middle(stock, date):
 
 ```py
 from collections import namedtuple
-**Stock = namedtuple("Stock", "symbol current high low")**
+Stock = namedtuple("Stock", "symbol current high low")
 stock = Stock("FB", 75.00, high=75.03, low=74.90)
 ```
 
@@ -124,11 +124,11 @@ stock = Stock("FB", 75.00, high=75.03, low=74.90)
 然后，生成的`namedtuple`可以像普通元组一样打包、解包和以其他方式处理，但我们也可以像访问对象一样访问它的单个属性：
 
 ```py
-**>>> stock.high**
-**75.03**
-**>>> symbol, current, high, low = stock**
-**>>> current**
-**75.00**
+>>> stock.high
+75.03
+>>> symbol, current, high, low = stock
+>>> current
+75.00
 
 ```
 
@@ -139,10 +139,10 @@ stock = Stock("FB", 75.00, high=75.03, low=74.90)
 命名元组非常适合许多“仅数据”表示，但并非适用于所有情况。与元组和字符串一样，命名元组是不可变的，因此一旦设置了属性，就无法修改属性。例如，自从我们开始讨论以来，我的公司股票的当前价值已经下跌，但我们无法设置新值：
 
 ```py
-**>>> stock.current = 74.98**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
-**AttributeError: can't set attribute**
+>>> stock.current = 74.98
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+AttributeError: can't set attribute
 
 ```
 
@@ -166,34 +166,34 @@ stocks = {"GOOG": (613.30, 625.86, 610.50),
 正如我们在之前的例子中看到的，我们可以通过在方括号内请求一个键来查找字典中的值。如果键不在字典中，它会引发一个异常：
 
 ```py
-**>>> stocks["GOOG"]**
-**(613.3, 625.86, 610.5)**
-**>>> stocks["RIM"]**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
-**KeyError: 'RIM'**
+>>> stocks["GOOG"]
+(613.3, 625.86, 610.5)
+>>> stocks["RIM"]
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+KeyError: 'RIM'
 
 ```
 
 当然，我们可以捕获`KeyError`并处理它。但我们还有其他选择。记住，字典是对象，即使它们的主要目的是保存其他对象。因此，它们有几种与之相关的行为。其中最有用的方法之一是`get`方法；它接受一个键作为第一个参数，以及一个可选的默认值（如果键不存在）：
 
 ```py
-**>>> print(stocks.get("RIM"))**
-**None**
-**>>> stocks.get("RIM", "NOT FOUND")**
-**'NOT FOUND'**
+>>> print(stocks.get("RIM"))
+None
+>>> stocks.get("RIM", "NOT FOUND")
+'NOT FOUND'
 
 ```
 
 为了更多的控制，我们可以使用`setdefault`方法。如果键在字典中，这个方法的行为就像`get`一样；它返回该键的值。否则，如果键不在字典中，它不仅会返回我们在方法调用中提供的默认值（就像`get`一样），它还会将键设置为相同的值。另一种思考方式是，`setdefault`只有在该值以前没有被设置时才在字典中设置一个值。然后它返回字典中的值，无论是已经存在的值，还是新提供的默认值。
 
 ```py
-**>>> stocks.setdefault("GOOG", "INVALID")**
-**(613.3, 625.86, 610.5)**
-**>>> stocks.setdefault("BBRY", (10.50, 10.62, 10.39))**
-**(10.50, 10.62, 10.39)**
-**>>> stocks["BBRY"]**
-**(10.50, 10.62, 10.39)**
+>>> stocks.setdefault("GOOG", "INVALID")
+(613.3, 625.86, 610.5)
+>>> stocks.setdefault("BBRY", (10.50, 10.62, 10.39))
+(10.50, 10.62, 10.39)
+>>> stocks["BBRY"]
+(10.50, 10.62, 10.39)
 
 ```
 
@@ -202,12 +202,12 @@ stocks = {"GOOG": (613.30, 625.86, 610.50),
 另外三个非常有用的字典方法是`keys()`，`values()`和`items()`。前两个返回字典中所有键和所有值的迭代器。如果我们想要处理所有键或值，我们可以像列表一样使用它们，或者在`for`循环中使用它们。`items()`方法可能是最有用的；它返回一个元组的迭代器，其中包含字典中每个项目的`(key, value)`对。这与在`for`循环中使用元组解包很好地配合，以循环遍历相关的键和值。这个例子就是这样做的，以打印出字典中每个股票及其当前值：
 
 ```py
-**>>> for stock, values in stocks.items():**
-**...     print("{} last value is {}".format(stock, values[0]))**
-**...**
-**GOOG last value is 613.3**
-**BBRY last value is 10.50**
-**MSFT last value is 30.25**
+>>> for stock, values in stocks.items():
+...     print("{} last value is {}".format(stock, values[0]))
+...
+GOOG last value is 613.3
+BBRY last value is 10.50
+MSFT last value is 30.25
 
 ```
 
@@ -220,9 +220,9 @@ stocks = {"GOOG": (613.30, 625.86, 610.50),
 最后，你可能已经知道，我们可以使用与检索值相同的索引语法来在字典中设置一个值：
 
 ```py
-**>>> stocks["GOOG"] = (597.63, 610.00, 596.28)**
-**>>> stocks['GOOG']**
-**(597.63, 610.0, 596.28)**
+>>> stocks["GOOG"] = (597.63, 610.00, 596.28)
+>>> stocks['GOOG']
+(597.63, 610.0, 596.28)
 
 ```
 
@@ -273,7 +273,7 @@ for key, value in random_keys.items():
 def letter_frequency(sentence):
     frequencies = {}
     for letter in sentence:
-        **frequency = frequencies.setdefault(letter, 0)**
+        **frequency = frequencies.setdefault(letter, 0)
         frequencies[letter] = frequency + 1
     return frequencies
 ```
@@ -281,9 +281,9 @@ def letter_frequency(sentence):
 每次访问字典时，我们需要检查它是否已经有一个值，如果没有，将其设置为零。当每次请求一个空键时需要做这样的事情时，我们可以使用字典的另一个版本，称为`defaultdict`：
 
 ```py
-**from collections import defaultdict**
+from collections import defaultdict
 def letter_frequency(sentence):
-    **frequencies = defaultdict(int)**
+    **frequencies = defaultdict(int)
     for letter in sentence:
         frequencies[letter] += 1
     return frequencies
@@ -305,19 +305,19 @@ def tuple_counter():
     num_items += 1
     return (num_items, [])
 
-**d = defaultdict(tuple_counter)**
+d = defaultdict(tuple_counter)
 
 ```
 
 当我们运行这段代码时，我们可以在一个语句中访问空键并插入列表：
 
 ```py
-**>>> d = defaultdict(tuple_counter)**
-**>>> d['a'][1].append("hello")**
-**>>> d['b'][1].append('world')**
-**>>> d**
-**defaultdict(<function tuple_counter at 0x82f2c6c>,**
-**{'a': (1, ['hello']), 'b': (2, ['world'])})**
+>>> d = defaultdict(tuple_counter)
+>>> d['a'][1].append("hello")
+>>> d['b'][1].append('world')
+>>> d
+defaultdict(<function tuple_counter at 0x82f2c6c>,
+{'a': (1, ['hello']), 'b': (2, ['world'])})
 
 ```
 
@@ -379,13 +379,13 @@ print(
 
 ```py
 import string
-**CHARACTERS  = list(string.ascii_letters) + [" "]**
+CHARACTERS  = list(string.ascii_letters) + [" "]
 
 def letter_frequency(sentence):
-    **frequencies = [(c, 0) for c in CHARACTERS]**
+    **frequencies = [(c, 0) for c in CHARACTERS]
     for letter in sentence:
         index = CHARACTERS.index(letter)
-        **frequencies[index] = (letter,frequencies[index][1]+1)**
+        **frequencies[index] = (letter,frequencies[index][1]+1)
     return frequencies
 ```
 
@@ -424,10 +424,10 @@ class WeirdSortee:
         self.number = number
         self.sort_num = sort_num
 
-    **def __lt__(self, object):**
-        **if self.sort_num:**
-            **return self.number < object.number**
-        **return self.string < object.string**
+    **def __lt__(self, object):
+        **if self.sort_num:
+            **return self.number < object.number
+        **return self.string < object.string
 
     def __repr__(self):
         return"{}:{}".format(self.string, self.number)
@@ -436,22 +436,22 @@ class WeirdSortee:
 `__repr__`方法使我们在打印列表时很容易看到这两个值。`__lt__`方法的实现将对象与相同类的另一个实例（或具有`string`、`number`和`sort_num`属性的任何鸭子类型对象；如果这些属性缺失，它将失败）进行比较。以下输出展示了这个类在排序时的工作原理：
 
 ```py
-**>>> a = WeirdSortee('a', 4, True)**
-**>>> b = WeirdSortee('b', 3, True)**
-**>>> c = WeirdSortee('c', 2, True)**
-**>>> d = WeirdSortee('d', 1, True)**
-**>>> l = [a,b,c,d]**
-**>>> l**
-**[a:4, b:3, c:2, d:1]**
-**>>> l.sort()**
-**>>> l**
-**[d:1, c:2, b:3, a:4]**
-**>>> for i in l:**
-**...     i.sort_num = False**
-**...**
-**>>> l.sort()**
-**>>> l**
-**[a:4, b:3, c:2, d:1]**
+>>> a = WeirdSortee('a', 4, True)
+>>> b = WeirdSortee('b', 3, True)
+>>> c = WeirdSortee('c', 2, True)
+>>> d = WeirdSortee('d', 1, True)
+>>> l = [a,b,c,d]
+>>> l
+[a:4, b:3, c:2, d:1]
+>>> l.sort()
+>>> l
+[d:1, c:2, b:3, a:4]
+>>> for i in l:
+...     i.sort_num = False
+...
+>>> l.sort()
+>>> l
+[a:4, b:3, c:2, d:1]
 
 ```
 
@@ -486,13 +486,13 @@ class WeirdSortee:
 如果我们想要能够在我们的对象上使用运算符，这是很有用的。然而，如果我们只想自定义我们的排序顺序，即使这样也是过度的。对于这样的用例，`sort`方法可以接受一个可选的`key`参数。这个参数是一个函数，可以将列表中的每个对象转换为某种可比较的对象。例如，我们可以使用`str.lower`作为键参数，在字符串列表上执行不区分大小写的排序：
 
 ```py
-**>>> l = ["hello", "HELP", "Helo"]**
-**>>> l.sort()**
-**>>> l**
-**['HELP', 'Helo', 'hello']**
-**>>> l.sort(key=str.lower)**
-**>>> l**
-**['hello', 'Helo', 'HELP']**
+>>> l = ["hello", "HELP", "Helo"]
+>>> l.sort()
+>>> l
+['HELP', 'Helo', 'hello']
+>>> l.sort(key=str.lower)
+>>> l
+['hello', 'Helo', 'HELP']
 
 ```
 
@@ -501,11 +501,11 @@ class WeirdSortee:
 有一些排序键操作是如此常见，以至于 Python 团队已经提供了它们，这样你就不必自己编写了。例如，通常常见的是按列表中的第一个项目之外的其他内容对元组列表进行排序。`operator.itemgetter`方法可以用作键来实现这一点：
 
 ```py
-**>>> from operator import itemgetter**
-**>>> l = [('h', 4), ('n', 6), ('o', 5), ('p', 1), ('t', 3), ('y', 2)]**
-**>>> l.sort(key=itemgetter(1))**
-**>>> l**
-**[('p', 1), ('y', 2), ('t', 3), ('h', 4), ('o', 5), ('n', 6)]**
+>>> from operator import itemgetter
+>>> l = [('h', 4), ('n', 6), ('o', 5), ('p', 1), ('t', 3), ('y', 2)]
+>>> l.sort(key=itemgetter(1))
+>>> l
+[('p', 1), ('y', 2), ('t', 3), ('h', 4), ('o', 5), ('n', 6)]
 
 ```
 
@@ -528,9 +528,9 @@ song_library = [("Phantom Of The Opera", "Sarah Brightman"),
         ("Beautiful", "Sarah Brightman"),
         ("Mal's Song", "Vixy and Tony")]
 
-**artists = set()**
+artists = set()
 for song, artist in song_library:
-    **artists.add(artist)**
+    **artists.add(artist)
 
 print(artists)
 ```
@@ -538,26 +538,26 @@ print(artists)
 与列表和字典一样，没有内置的空集语法；我们使用`set()`构造函数创建一个集合。然而，我们可以使用花括号（从字典语法中借用）来创建一个集合，只要集合包含值。如果我们使用冒号来分隔值对，那就是一个字典，比如`{'key': 'value', 'key2': 'value2'}`。如果我们只用逗号分隔值，那就是一个集合，比如`{'value', 'value2'}`。可以使用`add`方法将项目单独添加到集合中。如果运行此脚本，我们会看到集合按照广告中的方式工作：
 
 ```py
-**{'Sarah Brightman', "Guns N' Roses", 'Vixy and Tony', 'Opeth'}**
+{'Sarah Brightman', "Guns N' Roses", 'Vixy and Tony', 'Opeth'}
 
 ```
 
 如果你注意输出，你会注意到项目的打印顺序并不是它们添加到集合中的顺序。集合和字典一样，是无序的。它们都使用基于哈希的数据结构来提高效率。因为它们是无序的，集合不能通过索引查找项目。集合的主要目的是将世界分为两组：“在集合中的事物”和“不在集合中的事物”。检查一个项目是否在集合中或循环遍历集合中的项目很容易，但如果我们想要对它们进行排序或排序，我们就必须将集合转换为列表。这个输出显示了这三种活动：
 
 ```py
-**>>> "Opeth" in artists**
-**True**
-**>>> for artist in artists:**
-**...     print("{} plays good music".format(artist))**
-**...**
-**Sarah Brightman plays good music**
-**Guns N' Roses plays good music**
-**Vixy and Tony play good music**
-**Opeth plays good music**
-**>>> alphabetical = list(artists)**
-**>>> alphabetical.sort()**
-**>>> alphabetical**
-**["Guns N' Roses", 'Opeth', 'Sarah Brightman', 'Vixy and Tony']**
+>>> "Opeth" in artists
+True
+>>> for artist in artists:
+...     print("{} plays good music".format(artist))
+...
+Sarah Brightman plays good music
+Guns N' Roses plays good music
+Vixy and Tony play good music
+Opeth plays good music
+>>> alphabetical = list(artists)
+>>> alphabetical.sort()
+>>> alphabetical
+["Guns N' Roses", 'Opeth', 'Sarah Brightman', 'Vixy and Tony']
 
 ```
 
@@ -585,11 +585,11 @@ print("Either but not both: {}".format(
 如果我们运行这段代码，我们会发现这三种方法确实做了打印语句所暗示的事情：
 
 ```py
-**All: {'Sarah Brightman', "Guns N' Roses", 'Vixy and Tony',**
-**'Savage Garden', 'Opeth', 'Nickelback'}**
-**Both: {"Guns N' Roses"}**
-**Either but not both: {'Savage Garden', 'Opeth', 'Nickelback',**
-**'Sarah Brightman', 'Vixy and Tony'}**
+All: {'Sarah Brightman', "Guns N' Roses", 'Vixy and Tony',
+'Savage Garden', 'Opeth', 'Nickelback'}
+Both: {"Guns N' Roses"}
+Either but not both: {'Savage Garden', 'Opeth', 'Nickelback',
+'Sarah Brightman', 'Vixy and Tony'}
 
 ```
 
@@ -619,15 +619,15 @@ print("difference: {}".format(bands.difference(my_artists)))
 这段代码简单地打印出了在一个集合上调用另一个集合时每个方法的响应。运行代码会得到以下输出：
 
 ```py
-**my_artists is to bands:**
-**issuperset: True**
-**issubset: False**
-**difference: {'Sarah Brightman', 'Vixy and Tony'}**
-************************
-**bands is to my_artists:**
-**issuperset: False**
-**issubset: True**
-**difference: set()**
+my_artists is to bands:
+issuperset: True
+issubset: False
+difference: {'Sarah Brightman', 'Vixy and Tony'}
+********************
+bands is to my_artists:
+issuperset: False
+issubset: True
+difference: set()
 
 ```
 
@@ -651,19 +651,19 @@ print("difference: {}".format(bands.difference(my_artists)))
 
 ```py
 c = a + b
-**c = a.add(b)**
+c = a.add(b)
 
 l[0] = 5
-**l.setitem(0, 5)**
+l.setitem(0, 5)
 d[key] = value
-**d.setitem(key, value)**
+d.setitem(key, value)
 
 for x in alist:
     #do something with x
-**it = alist.iterator()**
-**while it.has_next():**
- **x = it.next()**
-    **#do something with x**
+it = alist.iterator()
+while it.has_next():
+ **x = it.next()
+    **#do something with x
 
 ```
 
@@ -671,17 +671,17 @@ for x in alist:
 
 ```py
 class SillyInt(int):
-    **def __add__(self, num):**
+    **def __add__(self, num):
         return 0
 ```
 
 这是一个极端奇怪的事情，毫无疑问，但它完美地诠释了这些面向对象的原则：
 
 ```py
-**>>> a = SillyInt(1)**
-**>>> b = SillyInt(2)**
-**>>> a + b**
-**0**
+>>> a = SillyInt(1)
+>>> b = SillyInt(2)
+>>> a + b
+0
 
 ```
 
@@ -692,20 +692,20 @@ class SillyInt(int):
 `list`类上有 33 个这样的特殊方法。我们可以使用`dir`函数查看所有这些方法：
 
 ```py
-**>>> dir(list)**
+>>> dir(list)
 
-**['__add__', '__class__', '__contains__', '__delattr__','__delitem__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__gt__', '__hash__', '__iadd__', '__imul__', '__init__', '__iter__', '__le__', '__len__', '__lt__', '__mul__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__reversed__', '__rmul__', '__setattr__', '__setitem__', '__sizeof__', '__str__', '__subclasshook__', 'append', 'count', 'extend', 'index', 'insert', 'pop', 'remove', 'reverse', 'sort'**
+['__add__', '__class__', '__contains__', '__delattr__','__delitem__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__gt__', '__hash__', '__iadd__', '__imul__', '__init__', '__iter__', '__le__', '__len__', '__lt__', '__mul__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__reversed__', '__rmul__', '__setattr__', '__setitem__', '__sizeof__', '__str__', '__subclasshook__', 'append', 'count', 'extend', 'index', 'insert', 'pop', 'remove', 'reverse', 'sort'
 
 ```
 
 此外，如果我们想要了解这些方法的工作方式的其他信息，我们可以使用`help`函数：
 
 ```py
-**>>> help(list.__add__)**
-**Help on wrapper_descriptor:**
+>>> help(list.__add__)
+Help on wrapper_descriptor:
 
-**__add__(self, value, /)**
- **Return self+value.**
+__add__(self, value, /)
+ **Return self+value.
 
 ```
 
@@ -761,28 +761,28 @@ class DictSorted(dict):
 让我们看看这些方法中的一些是如何运作的，与普通字典相比：
 
 ```py
-**>>> ds = DictSorted()**
-**>>> d = {}**
-**>>> ds['a'] = 1**
-**>>> ds['b'] = 2**
-**>>> ds.setdefault('c', 3)**
-**3**
-**>>> d['a'] = 1**
-**>>> d['b'] = 2**
-**>>> d.setdefault('c', 3)**
-**3**
-**>>> for k,v in ds.items():**
-**...     print(k,v)**
-**...**
-**a 1**
-**b 2**
-**c 3**
-**>>> for k,v in d.items():**
-**...     print(k,v)**
-**...**
-**a 1**
-**c 3**
-**b 2**
+>>> ds = DictSorted()
+>>> d = {}
+>>> ds['a'] = 1
+>>> ds['b'] = 2
+>>> ds.setdefault('c', 3)
+3
+>>> d['a'] = 1
+>>> d['b'] = 2
+>>> d.setdefault('c', 3)
+3
+>>> for k,v in ds.items():
+...     print(k,v)
+...
+a 1
+b 2
+c 3
+>>> for k,v in d.items():
+...     print(k,v)
+...
+a 1
+c 3
+b 2
 
 ```
 
@@ -821,35 +821,35 @@ Python `Queue`类就像这样。它通常被用作一种通信媒介，当一个
 该类还有方法来检查`Queue`是否`full()`或`empty()`，还有一些额外的方法来处理并发访问，我们这里不讨论。这是一个演示这些原则的交互式会话：
 
 ```py
-**>>> from queue import Queue**
-**>>> lineup = Queue(maxsize=3)**
-**>>> lineup.get(block=False)**
-**Traceback (most recent call last):**
- **File "<ipython-input-5-a1c8d8492c59>", line 1, in <module>**
- **lineup.get(block=False)**
- **File "/usr/lib64/python3.3/queue.py", line 164, in get**
- **raise Empty**
-**queue.Empty**
-**>>> lineup.put("one")**
-**>>> lineup.put("two")**
-**>>> lineup.put("three")**
-**>>> lineup.put("four", timeout=1)**
-**Traceback (most recent call last):**
- **File "<ipython-input-9-4b9db399883d>", line 1, in <module>**
- **lineup.put("four", timeout=1)**
- **File "/usr/lib64/python3.3/queue.py", line 144, in put**
-**raise Full**
-**queue.Full**
-**>>> lineup.full()**
-**True**
-**>>> lineup.get()**
-**'one'**
-**>>> lineup.get()**
-**'two'**
-**>>> lineup.get()**
-**'three'**
-**>>> lineup.empty()**
-**True**
+>>> from queue import Queue
+>>> lineup = Queue(maxsize=3)
+>>> lineup.get(block=False)
+Traceback (most recent call last):
+ **File "<ipython-input-5-a1c8d8492c59>", line 1, in <module>
+ **lineup.get(block=False)
+ **File "/usr/lib64/python3.3/queue.py", line 164, in get
+ **raise Empty
+queue.Empty
+>>> lineup.put("one")
+>>> lineup.put("two")
+>>> lineup.put("three")
+>>> lineup.put("four", timeout=1)
+Traceback (most recent call last):
+ **File "<ipython-input-9-4b9db399883d>", line 1, in <module>
+ **lineup.put("four", timeout=1)
+ **File "/usr/lib64/python3.3/queue.py", line 144, in put
+raise Full
+queue.Full
+>>> lineup.full()
+True
+>>> lineup.get()
+'one'
+>>> lineup.get()
+'two'
+>>> lineup.get()
+'three'
+>>> lineup.empty()
+True
 
 ```
 
@@ -864,34 +864,34 @@ Python `Queue`类就像这样。它通常被用作一种通信媒介，当一个
 以下是 LIFO 队列的一个示例：
 
 ```py
-**>>> from queue import LifoQueue**
-**>>> stack = LifoQueue(maxsize=3)**
-**>>> stack.put("one")**
-**>>> stack.put("two")**
-**>>> stack.put("three")**
-**>>> stack.put("four", block=False)**
-**Traceback (most recent call last):**
- **File "<ipython-input-21-5473b359e5a8>", line 1, in <module>**
- **stack.put("four", block=False)**
- **File "/usr/lib64/python3.3/queue.py", line 133, in put**
- **raise Full**
-**queue.Full**
+>>> from queue import LifoQueue
+>>> stack = LifoQueue(maxsize=3)
+>>> stack.put("one")
+>>> stack.put("two")
+>>> stack.put("three")
+>>> stack.put("four", block=False)
+Traceback (most recent call last):
+ **File "<ipython-input-21-5473b359e5a8>", line 1, in <module>
+ **stack.put("four", block=False)
+ **File "/usr/lib64/python3.3/queue.py", line 133, in put
+ **raise Full
+queue.Full
 
-**>>> stack.get()**
-**'three'**
-**>>> stack.get()**
-**'two'**
-**>>> stack.get()**
-**'one'**
-**>>> stack.empty()**
-**True**
-**>>> stack.get(timeout=1)**
-**Traceback (most recent call last):**
- **File "<ipython-input-26-28e084a84a10>", line 1, in <module>**
- **stack.get(timeout=1)**
- **File "/usr/lib64/python3.3/queue.py", line 175, in get**
- **raise Empty**
-**queue.Empty**
+>>> stack.get()
+'three'
+>>> stack.get()
+'two'
+>>> stack.get()
+'one'
+>>> stack.empty()
+True
+>>> stack.get(timeout=1)
+Traceback (most recent call last):
+ **File "<ipython-input-26-28e084a84a10>", line 1, in <module>
+ **stack.get(timeout=1)
+ **File "/usr/lib64/python3.3/queue.py", line 175, in get
+ **raise Empty
+queue.Empty
 
 ```
 
@@ -912,23 +912,23 @@ Python `Queue`类就像这样。它通常被用作一种通信媒介，当一个
 这个交互式会话展示了优先队列的工作原理，使用元组作为权重来确定处理项目的顺序：
 
 ```py
-**>>> heap.put((3, "three"))**
-**>>> heap.put((4, "four"))**
-**>>> heap.put((1, "one") )**
-**>>> heap.put((2, "two"))**
-**>>> heap.put((5, "five"), block=False)**
-**Traceback (most recent call last):**
- **File "<ipython-input-23-d4209db364ed>", line 1, in <module>**
- **heap.put((5, "five"), block=False)**
- **File "/usr/lib64/python3.3/queue.py", line 133, in put**
- **raise Full**
-**Full**
-**>>> while not heap.empty():**
- **print(heap.get())**
-**(1, 'one')**
-**(2, 'two')**
-**(3, 'three')**
-**(4, 'four')**
+>>> heap.put((3, "three"))
+>>> heap.put((4, "four"))
+>>> heap.put((1, "one") )
+>>> heap.put((2, "two"))
+>>> heap.put((5, "five"), block=False)
+Traceback (most recent call last):
+ **File "<ipython-input-23-d4209db364ed>", line 1, in <module>
+ **heap.put((5, "five"), block=False)
+ **File "/usr/lib64/python3.3/queue.py", line 133, in put
+ **raise Full
+Full
+>>> while not heap.empty():
+ **print(heap.get())
+(1, 'one')
+(2, 'two')
+(3, 'three')
+(4, 'four')
 
 ```
 
@@ -956,7 +956,7 @@ Python `Queue`类就像这样。它通常被用作一种通信媒介，当一个
 现在，通过进入包含所有这些文件的目录来启动一个简单的 Web 服务器，并运行以下命令：
 
 ```py
-**python3 -m http.server**
+python3 -m http.server
 
 ```
 
@@ -1024,22 +1024,22 @@ if __name__ == "__main__":
 class LinkCollector:
     def __init__(self, url):
         self.url = "http://+" + urlparse(url).netloc
-        **self.collected_links = set()**
-        **self.visited_links = set()**
+        **self.collected_links = set()
+        **self.visited_links = set()
 
     def collect_links(self, path="/"):
         full_url = self.url + path
-        **self.visited_links.add(full_url)**
+        **self.visited_links.add(full_url)
         page = str(urlopen(full_url).read())
         links = LINK_REGEX.findall(page)
-        **links = {self.normalize_url(path, link**
-            **) for link in links}**
-        **self.collected_links = links.union(**
-                **self.collected_links)**
-        **unvisited_links = links.difference(**
-                **self.visited_links)**
-        **print(links, self.visited_links,**
-                **self.collected_links, unvisited_links)**
+        **links = {self.normalize_url(path, link
+            **) for link in links}
+        **self.collected_links = links.union(
+                **self.collected_links)
+        **unvisited_links = links.difference(
+                **self.visited_links)
+        **print(links, self.visited_links,
+                **self.collected_links, unvisited_links)
 
 ```
 
@@ -1064,18 +1064,18 @@ if __name__ == "__main__":
 它显示了我们收集到的所有链接，只显示了一次，即使我的示例中的许多页面多次链接到彼此：
 
 ```py
-**$ python3 link_collector.py http://localhost:8000**
-**http://localhost:8000/**
-**http://en.wikipedia.org/wiki/Cavalier_King_Charles_Spaniel**
-**http://beluminousyoga.com**
-**http://archlinux.me/dusty/**
-**http://localhost:8000/blog.html**
-**http://ccphillips.net/**
-**http://localhost:8000/contact.html**
-**http://localhost:8000/taichi.html**
-**http://www.archlinux.org/**
-**http://localhost:8000/esme.html**
-**http://localhost:8000/hobbies.html**
+$ python3 link_collector.py http://localhost:8000
+http://localhost:8000/
+http://en.wikipedia.org/wiki/Cavalier_King_Charles_Spaniel
+http://beluminousyoga.com
+http://archlinux.me/dusty/
+http://localhost:8000/blog.html
+http://ccphillips.net/
+http://localhost:8000/contact.html
+http://localhost:8000/taichi.html
+http://www.archlinux.org/
+http://localhost:8000/esme.html
+http://localhost:8000/hobbies.html
 
 ```
 
@@ -1094,7 +1094,7 @@ LINK_REGEX = re.compile(
 class LinkCollector:
     def __init__(self, url):
         self.url = "http://%s" % urlparse(url).netloc
-        **self.collected_links = {}**
+        **self.collected_links = {}
         self.visited_links = set()
 
     def collect_links(self, path="/"):
@@ -1104,9 +1104,9 @@ class LinkCollector:
         links = LINK_REGEX.findall(page)
         links = {self.normalize_url(path, link
             ) for link in links}
-        **self.collected_links[full_url] = links**
-        **for link in links:**
-            **self.collected_links.setdefault(link, set())**
+        **self.collected_links[full_url] = links
+        **for link in links:
+            **self.collected_links.setdefault(link, set())
         unvisited_links = links.difference(
                 self.visited_links)
         for link in unvisited_links:
@@ -1124,8 +1124,8 @@ class LinkCollector:
 if __name__ == "__main__":
     collector = LinkCollector(sys.argv[1])
     collector.collect_links()
-    **for link, item in collector.collected_links.items():**
-        **print("{}: {}".format(link, item))**
+    **for link, item in collector.collected_links.items():
+        **print("{}: {}".format(link, item))
 
 ```
 

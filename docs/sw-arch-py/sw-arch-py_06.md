@@ -244,14 +244,14 @@ if __name__ == "__main__":
 让我们尝试使用一些标准输入运行程序。我们将首先使用 Python 2.7 运行它，如下所示：
 
 ```py
-**$ python2 guessing.py**
-**Please enter your guess (between 1 and 10): 6**
-**('Entered value is', 6)**
-**Try again**
-**$ python2 guessing.py**
-**Please enter your guess (between 1 and 10): 8**
-**('Entered value is', 8)**
-**You won!**
+$ python2 guessing.py
+Please enter your guess (between 1 and 10): 6
+('Entered value is', 6)
+Try again
+$ python2 guessing.py
+Please enter your guess (between 1 and 10): 8
+('Entered value is', 8)
+You won!
 
 ```
 
@@ -557,18 +557,18 @@ except Exception as e:
 以下是在 Python2 中执行代码时的输出：
 
 ```py
-**$ python2 len_overflow.py** 
-**Not OK: 'class A(object)' with 'return 100 ** 100' - len raise Error: OverflowError('long int too large to convert to int',)**
-**Not OK: 'class B' with 'return 100 ** 100' - len raise Error: TypeError('__len__() should return an int',)**
+$ python2 len_overflow.py** 
+Not OK: 'class A(object)' with 'return 100 ** 100' - len raise Error: OverflowError('long int too large to convert to int',)
+Not OK: 'class B' with 'return 100 ** 100' - len raise Error: TypeError('__len__() should return an int',)
 
 ```
 
 在 Python 3 中执行相同的代码如下：
 
 ```py
-**$ python3 len_overflow.py** 
-**Not OK: 'class A(object)' with 'return 100 ** 100' - len raise Error: OverflowError("cannot fit 'int' into an index-sized integer",)**
-**Not OK: 'class B' with 'return 100 ** 100' - len raise Error: OverflowError("cannot fit 'int' into an index-sized integer",)**
+$ python3 len_overflow.py** 
+Not OK: 'class A(object)' with 'return 100 ** 100' - len raise Error: OverflowError("cannot fit 'int' into an index-sized integer",)
+Not OK: 'class B' with 'return 100 ** 100' - len raise Error: OverflowError("cannot fit 'int' into an index-sized integer",)
 
 ```
 

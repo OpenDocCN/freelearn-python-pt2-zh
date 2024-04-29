@@ -19,14 +19,14 @@
 尝试打开 Python 交互解释器并输入以下命令：
 
 ```py
-**import nonexistent_module**
+import nonexistent_module
 
 ```
 
 解释器将返回以下错误消息：
 
 ```py
-**ImportError: No module named 'nonexistent_module'**
+ImportError: No module named 'nonexistent_module'
 
 ```
 
@@ -138,9 +138,9 @@ def delete_backups(dir):
 如果你愿意，你可以打印出你的模块搜索路径的内容，尽管列表可能会很长，而且很难理解，因为通常有许多包含 Python 标准库各个部分的目录，以及任何你可能安装的第三方包使用的其他目录：
 
 ```py
-**>>> import sys**
-**>>> print(sys.path)**
-**['', '/usr/local/lib/python3.3/site-packages', '/Library/Frameworks/SQLite3.framework/Versions/B/Python/3.3', '/Library/Python/3.3/site-packages/numpy-override', '/Library/Python/3.3/site-packages/pip-1.5.6-py3.3.egg', '/usr/local/lib/python3.3.zip', '/usr/local/lib/python3.3', '/usr/local/lib/python3.3/plat-darwin', '/usr/local/lib/python3.3/lib-dynload', '/Library/Frameworks/Python.framework/Versions/3.3/lib/python3.3', '/Library/Frameworks/Python.framework/Versions/3.3/lib/python3.3/plat-darwin']**
+>>> import sys
+>>> print(sys.path)
+['', '/usr/local/lib/python3.3/site-packages', '/Library/Frameworks/SQLite3.framework/Versions/B/Python/3.3', '/Library/Python/3.3/site-packages/numpy-override', '/Library/Python/3.3/site-packages/pip-1.5.6-py3.3.egg', '/usr/local/lib/python3.3.zip', '/usr/local/lib/python3.3', '/usr/local/lib/python3.3/plat-darwin', '/usr/local/lib/python3.3/lib-dynload', '/Library/Frameworks/Python.framework/Versions/3.3/lib/python3.3', '/Library/Frameworks/Python.framework/Versions/3.3/lib/python3.3/plat-darwin']
 
 ```
 
@@ -197,12 +197,12 @@ print(random.choice(["yes", "no"]))
 您的程序一直正常工作，直到您决定主脚本中有太多数学函数，因此对其进行重构，将这些函数移动到一个单独的模块中。您决定将此模块命名为`math.py`，并将其存储在主程序的目录中。一旦这样做，之前的代码将会崩溃，并显示以下错误：
 
 ```py
-**Traceback (most recent call last):**
- **File "main.py", line 5, in <module>**
- **import random**
- **File "/Library/Frameworks/Python.framework/Versions/3.3/lib/python3.3/random.py", line 41, in <module>**
- **from math import log as _log, exp as _exp, pi as _pi, e as _e, ceil as _ceil**
-**ImportError: cannot import name log**
+Traceback (most recent call last):
+ **File "main.py", line 5, in <module>
+ **import random
+ **File "/Library/Frameworks/Python.framework/Versions/3.3/lib/python3.3/random.py", line 41, in <module>
+ **from math import log as _log, exp as _exp, pi as _pi, e as _e, ceil as _ceil
+ImportError: cannot import name log
 
 ```
 
@@ -232,14 +232,14 @@ print(results.group(), results.span())
 这个程序可能会帮助您弄清楚`re`模块的作用，但如果您将此脚本保存为`re.py`，当运行程序时会出现一个神秘的错误：
 
 ```py
-**$ python re.py**
-**Regular Expression: [0-9]+**
-**String: test123abc**
-**Traceback (most recent call last):**
-**...**
-**File "./re.py", line 9, in <module>**
- **results = re.search(pattern, s)**
-**AttributeError: 'module' object has no attribute 'search'**
+$ python re.py
+Regular Expression: [0-9]+
+String: test123abc
+Traceback (most recent call last):
+...
+File "./re.py", line 9, in <module>
+ **results = re.search(pattern, s)
+AttributeError: 'module' object has no attribute 'search'
 
 ```
 
@@ -275,11 +275,11 @@ from package import module
 保存这个文件后，打开一个终端或命令行窗口，并使用`cd`命令将当前目录设置为你最外层的目录（包含你的`good_imports.py`脚本的目录），然后输入`python good_imports.py`来运行这个程序。你应该会看到以下输出：
 
 ```py
-**$ python good_imports.py**
-**Calling import package.module...**
-**### Initializing module.py ###**
-**Calling import package.module as module...**
-**Calling from package import module...**
+$ python good_imports.py
+Calling import package.module...
+### Initializing module.py ###
+Calling import package.module as module...
+Calling from package import module...
 
 ```
 
@@ -305,11 +305,11 @@ import module
 这个程序将`package_dir`设置为`package`目录的完整目录路径，然后将这个目录添加到`sys.path`中。然后，它进行了两个单独的`import`语句，一个是从名为`package`的包中导入`module`，另一个是直接导入`module`。这两个`import`语句都可以工作，因为模块可以以这两种方式访问。然而，结果并不是你可能期望的：
 
 ```py
-**$ python bad_imports.py**
-**Calling import package.module as module...**
-**### Initializing module.py ###**
-**Calling import module...**
-**### Initializing module.py ###**
+$ python bad_imports.py
+Calling import package.module as module...
+### Initializing module.py ###
+Calling import module...
+### Initializing module.py ###
 
 ```
 
@@ -349,8 +349,8 @@ def run_test():
 让我们看看当你运行这个程序时会发生什么：
 
 ```py
-**$ python test.py**
-**20**
+$ python test.py
+20
 
 ```
 
@@ -365,10 +365,10 @@ print("Initializing test.py")
 然而，在这种情况下，情况并非如此。尝试再次运行程序：
 
 ```py
-**$ python test.py**
-**Initializing test.py**
-**Initializing test.py**
-**20**
+$ python test.py
+Initializing test.py
+Initializing test.py
+20
 
 ```
 
@@ -411,13 +411,13 @@ def extract_numbers(s):
 打开一个终端或命令行窗口，并使用`cd`命令切换到包含`stringutils.py`模块的目录。然后，输入`python`启动 Python 交互解释器。当 Python 命令提示符出现时，尝试输入以下内容：
 
 ```py
-**>>> import stringutils**
-**>>> print(stringutils.extract_numbers("Tes1t 123.543 -10.6 5"))**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
- **File "./stringutils.py", line 7, in extract_numbers**
- **number = s[match.start:match.end+1]**
-**TypeError: unsupported operand type(s) for +: 'builtin_function_or_method' and 'int'**
+>>> import stringutils
+>>> print(stringutils.extract_numbers("Tes1t 123.543 -10.6 5"))
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+ **File "./stringutils.py", line 7, in extract_numbers
+ **number = s[match.start:match.end+1]
+TypeError: unsupported operand type(s) for +: 'builtin_function_or_method' and 'int'
 
 ```
 
@@ -436,7 +436,7 @@ def extract_numbers(s):
 现在我们已经更改了我们的模块，让我们看看会发生什么。我们将从重新执行`print()`语句开始，看看是否有效：
 
 ```py
-**>>> print(stringutils.extract_numbers("Tes1t 123.543 -10.6 5"))**
+>>> print(stringutils.extract_numbers("Tes1t 123.543 -10.6 5"))
 
 ```
 
@@ -449,8 +449,8 @@ def extract_numbers(s):
 为了使您的更改生效，您需要**重新加载**模块。要做到这一点，请在 Python 解释器中键入以下内容：
 
 ```py
-**import importlib**
-**importlib.reload(stringutils)**
+import importlib
+importlib.reload(stringutils)
 
 ```
 
@@ -461,8 +461,8 @@ def extract_numbers(s):
 现在尝试重新执行`print()`语句：
 
 ```py
-**>>> stringutils.extract_numbers("Hell1o 123.543 -10.6 5 there")**
-**['1o', '123.543 ', '-10.6 ', '5 ']**
+>>> stringutils.extract_numbers("Hell1o 123.543 -10.6 5 there")
+['1o', '123.543 ', '-10.6 ', '5 ']
 
 ```
 
@@ -475,7 +475,7 @@ def extract_numbers(s):
 然后，再次重新加载模块并重新执行您的`print()`语句。您应该会看到以下内容：
 
 ```py
-**['1', '123.543', '-10.6', '5']**
+['1', '123.543', '-10.6', '5']
 
 ```
 
@@ -534,9 +534,9 @@ def test():
 要测试您的程序，请打开终端或命令行窗口，使用`cd`命令移动到包含您的`globtest`包的目录，并输入`python`启动 Python 交互解释器。然后，尝试输入以下内容：
 
 ```py
-**>>>** **from globtest import test**
-**>>> test.test()**
-**EN USD**
+>>>** **from globtest import test
+>>> test.test()
+EN USD
 
 ```
 

@@ -78,11 +78,23 @@
 
 代码块设置如下：
 
-[PRE0]
+```py
+"compilation": {
+    "backend": {
+      "class": "populus.compilation.backends.VyperBackend"
+    },
+    "contract_source_dirs": [
+      "./contracts"
+    ],
+    "import_remappings": []
+},
+```
 
 任何命令行输入或输出都是这样写的：
 
-[PRE1]
+```py
+$ python3.6 -m venv qt-venv $ source qt-venv/bin/activate (qt-venv) $ pip install PySide2
+```
 
 **粗体**：表示一个新术语、一个重要单词或者屏幕上看到的单词。例如，菜单中的单词或对话框中的单词会出现在文本中，就像这样。例如："点击下一步。然后你会看到一个登录屏幕。"
 

@@ -41,19 +41,19 @@
 编写生成器（作为函数）的基本技巧是使用`yield`语句。让我们以`itertools.count`生成器为例，并用一个`stop`变量扩展它：
 
 ```py
-**>>> def count(start=0, step=1, stop=10):**
-**...     n = start**
-**...     while n <= stop:**
-**...         yield n**
-**...         n += step**
+>>> def count(start=0, step=1, stop=10):
+...     n = start
+...     while n <= stop:
+...         yield n
+...         n += step
 
-**>>> for x in count(10, 2.5, 20):**
-**...     print(x)**
-**10**
-**12.5**
-**15.0**
-**17.5**
-**20.0**
+>>> for x in count(10, 2.5, 20):
+...     print(x)
+10
+12.5
+15.0
+17.5
+20.0
 
 ```
 
@@ -62,61 +62,61 @@
 那么这是如何工作的呢？这只是一个普通的`for`循环，但这与返回项目列表的常规方法之间的重要区别在于`yield`语句一次返回一个项目。这里需要注意的一点是，`return`语句会导致`StopIteration`，并且将某些东西传递给`return`将成为`StopIteration`的参数。应该注意的是，这种行为在 Python 3.3 中发生了变化；在 Python 3.2 和更早的版本中，除了`None`之外，根本不可能返回任何东西。这里有一个例子：
 
 ```py
-**>>> def generator():**
-**...     yield 'this is a generator'**
-**...     return 'returning from a generator'**
+>>> def generator():
+...     yield 'this is a generator'
+...     return 'returning from a generator'
 
-**>>> g = generator()**
-**>>> next(g)**
-**'this is a generator'**
-**>>> next(g)**
-**Traceback (most recent call last):**
- **...**
-**StopIteration: returning from a generator**
+>>> g = generator()
+>>> next(g)
+'this is a generator'
+>>> next(g)
+Traceback (most recent call last):
+ **...
+StopIteration: returning from a generator
 
 ```
 
 当然，与以往一样，有多种使用 Python 创建生成器的方法。除了函数之外，还有生成器推导和类可以做同样的事情。生成器推导与列表推导几乎完全相同，但使用括号而不是方括号，例如：
 
 ```py
-**>>> generator = (x ** 2 for x in range(4))**
+>>> generator = (x ** 2 for x in range(4))
 
-**>>> for x in generator:**
-**...    print(x)**
-**0**
-**1**
-**4**
-**9**
+>>> for x in generator:
+...    print(x)
+0
+1
+4
+9
 
 ```
 
 为了完整起见，`count`函数的类版本如下：
 
 ```py
-**>>> class Count(object):**
-**...     def __init__(self, start=0, step=1, stop=10):**
-**...         self.n = start**
-**...         self.step = step**
-**...         self.stop = stop**
-**...**
-**...     def __iter__(self):**
-**...         return self**
-**...**
-**...     def __next__(self):**
-**...         n = self.n**
-**...         if n > self.stop:**
-**...             raise StopIteration()**
-**...**
-**...         self.n += self.step**
-**...         return n**
+>>> class Count(object):
+...     def __init__(self, start=0, step=1, stop=10):
+...         self.n = start
+...         self.step = step
+...         self.stop = stop
+...
+...     def __iter__(self):
+...         return self
+...
+...     def __next__(self):
+...         n = self.n
+...         if n > self.stop:
+...             raise StopIteration()
+...
+...         self.n += self.step
+...         return n
 
-**>>> for x in Count(10, 2.5, 20):**
-**...     print(x)**
-**10**
-**12.5**
-**15.0**
-**17.5**
-**20.0**
+>>> for x in Count(10, 2.5, 20):
+...     print(x)
+10
+12.5
+15.0
+17.5
+20.0
 
 ```
 
@@ -149,26 +149,26 @@
 内存使用的优势是可以理解的；一个项目需要的内存比许多项目少。然而，懒惰部分需要一些额外的解释，因为它有一个小问题：
 
 ```py
-**>>> def generator():**
-**...     print('Before 1')**
-**...     yield 1**
-**...     print('After 1')**
-**...     print('Before 2')**
-**...     yield 2**
-**...     print('After 2')**
-**...     print('Before 3')**
-**...     yield 3**
-**...     print('After 3')**
+>>> def generator():
+...     print('Before 1')
+...     yield 1
+...     print('After 1')
+...     print('Before 2')
+...     yield 2
+...     print('After 2')
+...     print('Before 3')
+...     yield 3
+...     print('After 3')
 
-**>>> g = generator()**
-**>>> print('Got %d' % next(g))**
-**Before 1**
-**Got 1**
+>>> g = generator()
+>>> print('Got %d' % next(g))
+Before 1
+Got 1
 
-**>>> print('Got %d' % next(g))**
-**After 1**
-**Before 2**
-**Got 2**
+>>> print('Got %d' % next(g))
+After 1
+Before 2
+Got 2
 
 ```
 
@@ -192,48 +192,48 @@ eggs eggs eggs
 现在，让我们来看下面的 Linux/Unix/Mac shell 命令，以读取带有一些修改的文件：
 
 ```py
-**# cat lines.txt | grep spam | sed 's/spam/bacon/g'**
-**bacon**
-**bacon bacon**
-**bacon bacon bacon**
+# cat lines.txt | grep spam | sed 's/spam/bacon/g'
+bacon
+bacon bacon
+bacon bacon bacon
 
 ```
 
 这使用`cat`读取文件，使用`grep`输出包含`spam`的所有行，并使用`sed`命令将`spam`替换为`bacon`。现在让我们看看如何可以利用 Python 生成器来重新创建这个过程：
 
 ```py
-**>>> def cat(filename):**
-**...     for line in open(filename):**
-**...         yield line.rstrip()**
-**...**
-**>>> def grep(sequence, search):**
-**...     for line in sequence:**
-**...         if search in line:**
-**...             yield line**
-**...**
-**>>> def replace(sequence, search, replace):**
-**...     for line in sequence:**
-**...         yield line.replace(search, replace)**
-**...**
-**>>> lines = cat('lines.txt')**
-**>>> spam_lines = grep(lines, 'spam')**
-**>>> bacon_lines = replace(spam_lines, 'spam', 'bacon')**
+>>> def cat(filename):
+...     for line in open(filename):
+...         yield line.rstrip()
+...
+>>> def grep(sequence, search):
+...     for line in sequence:
+...         if search in line:
+...             yield line
+...
+>>> def replace(sequence, search, replace):
+...     for line in sequence:
+...         yield line.replace(search, replace)
+...
+>>> lines = cat('lines.txt')
+>>> spam_lines = grep(lines, 'spam')
+>>> bacon_lines = replace(spam_lines, 'spam', 'bacon')
 
-**>>> for line in bacon_lines:**
-**...     print(line)**
-**...**
-**bacon**
-**bacon bacon**
-**bacon bacon bacon**
+>>> for line in bacon_lines:
+...     print(line)
+...
+bacon
+bacon bacon
+bacon bacon bacon
 
-**# Or the one-line version, fits within 78 characters:**
-**>>> for line in replace(grep(cat('lines.txt'), 'spam'),**
-**...                     'spam', 'bacon'):**
-**...     print(line)**
-**...**
-**bacon**
-**bacon bacon**
-**bacon bacon bacon**
+# Or the one-line version, fits within 78 characters:
+>>> for line in replace(grep(cat('lines.txt'), 'spam'),
+...                     'spam', 'bacon'):
+...     print(line)
+...
+bacon
+bacon bacon
+bacon bacon bacon
 
 ```
 
@@ -248,25 +248,25 @@ Python 版本的`itertools.tee`也做了类似的事情，只是它返回了几�
 默认情况下，`tee`会将您的生成器分成一个包含两个不同生成器的元组，这就是为什么元组解包在这里能很好地工作。通过传递`n`参数，这可以很容易地改变以支持超过 2 个生成器。这是一个例子：
 
 ```py
-**>>> import itertools**
+>>> import itertools
 
-**>>> def spam_and_eggs():**
-**...     yield 'spam'**
-**...     yield 'eggs'**
+>>> def spam_and_eggs():
+...     yield 'spam'
+...     yield 'eggs'
 
-**>>> a, b = itertools.tee(spam_and_eggs())**
-**>>> next(a)**
-**'spam'**
-**>>> next(a)**
-**'eggs'**
-**>>> next(b)**
-**'spam'**
-**>>> next(b)**
-**'eggs'**
-**>>> next(b)**
-**Traceback (most recent call last):**
- **...**
-**StopIteration**
+>>> a, b = itertools.tee(spam_and_eggs())
+>>> next(a)
+'spam'
+>>> next(a)
+'eggs'
+>>> next(b)
+'spam'
+>>> next(b)
+'eggs'
+>>> next(b)
+Traceback (most recent call last):
+ **...
+StopIteration
 
 ```
 
@@ -279,45 +279,45 @@ Python 版本的`itertools.tee`也做了类似的事情，只是它返回了几�
 正如我们之前所看到的，我们可以使用生成器来过滤、修改、添加和删除项。然而，在许多情况下，您会注意到在编写生成器时，您将从子生成器和/或序列中返回。一个例子是使用`itertools`库创建`powerset`时：
 
 ```py
-**>>> import itertools**
+>>> import itertools
 
-**>>> def powerset(sequence):**
-**...     for size in range(len(sequence) + 1):**
-**...         for item in itertools.combinations(sequence, size):**
-**...             yield item**
+>>> def powerset(sequence):
+...     for size in range(len(sequence) + 1):
+...         for item in itertools.combinations(sequence, size):
+...             yield item
 
-**>>> for result in powerset('abc'):**
-**...     print(result)**
-**()**
-**('a',)**
-**('b',)**
-**('c',)**
-**('a', 'b')**
-**('a', 'c')**
-**('b', 'c')**
-**('a', 'b', 'c')**
+>>> for result in powerset('abc'):
+...     print(result)
+()
+('a',)
+('b',)
+('c',)
+('a', 'b')
+('a', 'c')
+('b', 'c')
+('a', 'b', 'c')
 
 ```
 
 这种模式是如此常见，以至于`yield`语法实际上得到了增强，使得这更加容易。Python 3.3 引入了`yield from`语法，使这种常见模式变得更加简单：
 
 ```py
-**>>> import itertools**
+>>> import itertools
 
-**>>> def powerset(sequence):**
-**...     for size in range(len(sequence) + 1):**
-**...         yield from itertools.combinations(sequence, size)**
+>>> def powerset(sequence):
+...     for size in range(len(sequence) + 1):
+...         yield from itertools.combinations(sequence, size)
 
-**>>> for result in powerset('abc'):**
-**...     print(result)**
-**()**
-**('a',)**
-**('b',)**
-**('c',)**
-**('a', 'b')**
-**('a', 'c')**
-**('b', 'c')**
-**('a', 'b', 'c')**
+>>> for result in powerset('abc'):
+...     print(result)
+()
+('a',)
+('b',)
+('c',)
+('a', 'b')
+('a', 'c')
+('b', 'c')
+('a', 'b', 'c')
 
 ```
 
@@ -326,15 +326,15 @@ Python 版本的`itertools.tee`也做了类似的事情，只是它返回了几�
 也许，这种情况下更有用的例子是递归地扁平化一个序列。
 
 ```py
-**>>> def flatten(sequence):**
-**...     for item in sequence:**
-**...         try:**
-**...             yield from flatten(item)**
-**...         except TypeError:**
-**...             yield item**
-**...**
-**>>> list(flatten([1, [2, [3, [4, 5], 6], 7], 8]))**
-**[1, 2, 3, 4, 5, 6, 7, 8]**
+>>> def flatten(sequence):
+...     for item in sequence:
+...         try:
+...             yield from flatten(item)
+...         except TypeError:
+...             yield item
+...
+>>> list(flatten([1, [2, [3, [4, 5], 6], 7], 8]))
+[1, 2, 3, 4, 5, 6, 7, 8]
 
 ```
 
@@ -349,36 +349,36 @@ Python 版本的`itertools.tee`也做了类似的事情，只是它返回了几�
 Python 上下文管理器似乎与生成器没有直接关联，但这是它们内部使用的一个很大的部分：
 
 ```py
-**>>> import datetime**
-**>>> import contextlib**
+>>> import datetime
+>>> import contextlib
 
-**# Context manager that shows how long a context was active**
-**>>> @contextlib.contextmanager**
-**... def timer(name):**
-**...     start_time = datetime.datetime.now()**
-**...     yield**
-**...     stop_time = datetime.datetime.now()**
-**...     print('%s took %s' % (name, stop_time - start_time))**
+# Context manager that shows how long a context was active
+>>> @contextlib.contextmanager
+... def timer(name):
+...     start_time = datetime.datetime.now()
+...     yield
+...     stop_time = datetime.datetime.now()
+...     print('%s took %s' % (name, stop_time - start_time))
 
-**# The write to log function writes all stdout (regular print data) to**
-**# a file. The contextlib.redirect_stdout context wrapper**
-**# temporarily redirects standard output to a given file handle, in**
-**# this case the file we just opened for writing.**
-**>>> @contextlib.contextmanager**
-**... def write_to_log(name):**
-**...     with open('%s.txt' % name, 'w') as fh:**
-**...         with contextlib.redirect_stdout(fh):**
-**...             with timer(name):**
-**...                 yield**
+# The write to log function writes all stdout (regular print data) to
+# a file. The contextlib.redirect_stdout context wrapper
+# temporarily redirects standard output to a given file handle, in
+# this case the file we just opened for writing.
+>>> @contextlib.contextmanager
+... def write_to_log(name):
+...     with open('%s.txt' % name, 'w') as fh:
+...         with contextlib.redirect_stdout(fh):
+...             with timer(name):
+...                 yield
 
-**# Use the context manager as a decorator**
-**>>> @write_to_log('some function')**
-**... def some_function():**
-**...     print('This function takes a bit of time to execute')**
-**...     ...**
-**...     print('Do more...')**
+# Use the context manager as a decorator
+>>> @write_to_log('some function')
+... def some_function():
+...     print('This function takes a bit of time to execute')
+...     ...
+...     print('Do more...')
 
-**>>> some_function()**
+>>> some_function()
 
 ```
 
@@ -387,50 +387,50 @@ Python 上下文管理器似乎与生成器没有直接关联，但这是它们�
 这就是`ExitStack`的用武之地。它允许轻松地组合多个上下文管理器：
 
 ```py
-**>>> import contextlib**
+>>> import contextlib
 
-**>>> @contextlib.contextmanager**
-**... def write_to_log(name):**
-**...     with contextlib.ExitStack() as stack:**
-**...         fh = stack.enter_context(open('stdout.txt', 'w'))**
-**...         stack.enter_context(contextlib.redirect_stdout(fh))**
-**...         stack.enter_context(timer(name))**
-**...**
-**...         yield**
+>>> @contextlib.contextmanager
+... def write_to_log(name):
+...     with contextlib.ExitStack() as stack:
+...         fh = stack.enter_context(open('stdout.txt', 'w'))
+...         stack.enter_context(contextlib.redirect_stdout(fh))
+...         stack.enter_context(timer(name))
+...
+...         yield
 
-**>>> @write_to_log('some function')**
-**... def some_function():**
-**...     print('This function takes a bit of time to execute')**
-**...     ...**
-**...     print('Do more...')**
+>>> @write_to_log('some function')
+... def some_function():
+...     print('This function takes a bit of time to execute')
+...     ...
+...     print('Do more...')
 
-**>>> some_function()**
+>>> some_function()
 
 ```
 
 看起来至少简单了一点，不是吗？虽然在这种情况下必要性有限，但当您需要进行特定的拆卸时，`ExitStack`的便利性很快就会显现出来。除了之前看到的自动处理外，还可以将上下文传递给一个新的`ExitStack`并手动处理关闭：
 
 ```py
-**>>> import contextlib**
+>>> import contextlib
 
-**>>> with contextlib.ExitStack() as stack:**
-**...     spam_fh = stack.enter_context(open('spam.txt', 'w'))**
-**...     eggs_fh = stack.enter_context(open('eggs.txt', 'w'))**
-**...     spam_bytes_written = spam_fh.write('writing to spam')**
-**...     eggs_bytes_written = eggs_fh.write('writing to eggs')**
-**...     # Move the contexts to a new ExitStack and store the**
-**...     # close method**
-**...     close_handlers = stack.pop_all().close**
+>>> with contextlib.ExitStack() as stack:
+...     spam_fh = stack.enter_context(open('spam.txt', 'w'))
+...     eggs_fh = stack.enter_context(open('eggs.txt', 'w'))
+...     spam_bytes_written = spam_fh.write('writing to spam')
+...     eggs_bytes_written = eggs_fh.write('writing to eggs')
+...     # Move the contexts to a new ExitStack and store the
+...     # close method
+...     close_handlers = stack.pop_all().close
 
-**>>> spam_bytes_written = spam_fh.write('still writing to spam')**
-**>>> eggs_bytes_written = eggs_fh.write('still writing to eggs')**
+>>> spam_bytes_written = spam_fh.write('still writing to spam')
+>>> eggs_bytes_written = eggs_fh.write('still writing to eggs')
 
-**# After closing we can't write anymore**
-**>>> close_handlers()**
-**>>> spam_bytes_written = spam_fh.write('cant write anymore')**
-**Traceback (most recent call last):**
- **...**
-**ValueError: I/O operation on closed file.**
+# After closing we can't write anymore
+>>> close_handlers()
+>>> spam_bytes_written = spam_fh.write('cant write anymore')
+Traceback (most recent call last):
+ **...
+ValueError: I/O operation on closed file.
 
 ```
 
@@ -447,17 +447,17 @@ Python 上下文管理器似乎与生成器没有直接关联，但这是它们�
 在前面的段落中，我们看到了普通生成器如何产出值。但生成器能做的不仅仅是这些。它们也可以接收值。基本用法非常简单：
 
 ```py
-**>>> def generator():**
-**...     value = yield 'spam'**
-**...     print('Generator received: %s' % value)**
-**...     yield 'Previous value: %r' % value**
+>>> def generator():
+...     value = yield 'spam'
+...     print('Generator received: %s' % value)
+...     yield 'Previous value: %r' % value
 
-**>>> g = generator()**
-**>>> print('Result from generator: %s' % next(g))**
-**Result from generator: spam**
-**>>> print(g.send('eggs'))**
-**Generator received: eggs**
-**Previous value: 'eggs'**
+>>> g = generator()
+>>> print('Result from generator: %s' % next(g))
+Result from generator: spam
+>>> print(g.send('eggs'))
+Generator received: eggs
+Previous value: 'eggs'
 
 ```
 
@@ -468,33 +468,33 @@ Python 上下文管理器似乎与生成器没有直接关联，但这是它们�
 由于生成器是惰性的，你不能直接向全新的生成器发送一个值。在值被发送到生成器之前，要么必须使用`next()`获取结果，要么必须发出`send(None)`，以便实际到达代码。这种需求是可以理解的，但有时有点乏味。让我们创建一个简单的装饰器来省略这个需求：
 
 ```py
-**>>> import functools**
+>>> import functools
 
-**>>> def coroutine(function):**
-**...     @functools.wraps(function)**
-**...     def _coroutine(*args, **kwargs):**
-**...         active_coroutine = function(*args, **kwargs)**
-**...         next(active_coroutine)**
-**...         return active_coroutine**
-**...     return _coroutine**
+>>> def coroutine(function):
+...     @functools.wraps(function)
+...     def _coroutine(*args, **kwargs):
+...         active_coroutine = function(*args, **kwargs)
+...         next(active_coroutine)
+...         return active_coroutine
+...     return _coroutine
 
-**>>> @coroutine**
-**... def spam():**
-**...     while True:**
-**...         print('Waiting for yield...')**
-**...         value = yield**
-**...         print('spam received: %s' % value)**
+>>> @coroutine
+... def spam():
+...     while True:
+...         print('Waiting for yield...')
+...         value = yield
+...         print('spam received: %s' % value)
 
-**>>> generator = spam()**
-**Waiting for yield...**
+>>> generator = spam()
+Waiting for yield...
 
-**>>> generator.send('a')**
-**spam received: a**
-**Waiting for yield...**
+>>> generator.send('a')
+spam received: a
+Waiting for yield...
 
-**>>> generator.send('b')**
-**spam received: b**
-**Waiting for yield...**
+>>> generator.send('b')
+spam received: b
+Waiting for yield...
 
 ```
 
@@ -552,33 +552,33 @@ print()
 这将生成以下输出，应该是预期的——没有奇怪的行为，只是退出协程的两种方法：
 
 ```py
-**# python3 H06.py**
-**Creating simple coroutine**
-**Setting up the coroutine**
+# python3 H06.py
+Creating simple coroutine
+Setting up the coroutine
 
-**Sending spam**
-**Got item: 'spam'**
+Sending spam
+Got item: 'spam'
 
-**Close the coroutine**
-**Normal exit**
-**Any exit**
+Close the coroutine
+Normal exit
+Any exit
 
-**Creating simple coroutine**
-**Setting up the coroutine**
+Creating simple coroutine
+Setting up the coroutine
 
-**Sending eggs**
-**Got item: 'eggs'**
+Sending eggs
+Got item: 'eggs'
 
-**Throwing runtime error**
-**Exception exit: RuntimeError('Oops...',)**
-**Any exit**
-**Traceback (most recent call last):**
-**...**
- **File ... in <module>**
- **active_coroutine.throw(RuntimeError, 'Oops...')**
- **File ... in simple_coroutine**
- **item = yield**
-**RuntimeError: Oops...**
+Throwing runtime error
+Exception exit: RuntimeError('Oops...',)
+Any exit
+Traceback (most recent call last):
+...
+ **File ... in <module>
+ **active_coroutine.throw(RuntimeError, 'Oops...')
+ **File ... in simple_coroutine
+ **item = yield
+RuntimeError: Oops...
 
 ```
 
@@ -598,119 +598,119 @@ eggs eggs eggs
 现在，协程管道。这些函数与以前的相同，但使用协程而不是生成器：
 
 ```py
-**>>> @coroutine**
-**... def replace(search, replace):**
-**...     while True:**
-**...         item = yield**
-**...         print(item.replace(search, replace))**
+>>> @coroutine
+... def replace(search, replace):
+...     while True:
+...         item = yield
+...         print(item.replace(search, replace))
 
-**>>> spam_replace = replace('spam', 'bacon')**
-**>>> for line in open('lines.txt'):**
-**...     spam_replace.send(line.rstrip())**
-**bacon**
-**eggs**
-**bacon bacon**
-**eggs eggs**
-**bacon bacon bacon**
-**eggs eggs eggs**
+>>> spam_replace = replace('spam', 'bacon')
+>>> for line in open('lines.txt'):
+...     spam_replace.send(line.rstrip())
+bacon
+eggs
+bacon bacon
+eggs eggs
+bacon bacon bacon
+eggs eggs eggs
 
 ```
 
 鉴于这个例子，你可能会想知道为什么我们现在打印值而不是产出它。嗯！我们可以，但要记住生成器会冻结，直到产出一个值。让我们看看如果我们只是`yield`值而不是调用`print`会发生什么。默认情况下，你可能会想这样做：
 
 ```py
-**>>> @coroutine**
-**... def replace(search, replace):**
-**...     while True:**
-**...         item = yield**
-**...         yield item.replace(search, replace)**
+>>> @coroutine
+... def replace(search, replace):
+...     while True:
+...         item = yield
+...         yield item.replace(search, replace)
 
-**>>> spam_replace = replace('spam', 'bacon')**
-**>>> spam_replace.send('spam')**
-**'bacon'**
-**>>> spam_replace.send('spam spam')**
-**>>> spam_replace.send('spam spam spam')**
-**'bacon bacon bacon'**
+>>> spam_replace = replace('spam', 'bacon')
+>>> spam_replace.send('spam')
+'bacon'
+>>> spam_replace.send('spam spam')
+>>> spam_replace.send('spam spam spam')
+'bacon bacon bacon'
 
 ```
 
 现在一半的值已经消失了，所以问题是，“它们去哪了？”注意第二个`yield`没有存储结果。这就是值消失的地方。我们需要将它们也存储起来：
 
 ```py
-**>>> @coroutine**
-**... def replace(search, replace):**
-**...     item = yield**
-**...     while True:**
-**...         item = yield item.replace(search, replace)**
+>>> @coroutine
+... def replace(search, replace):
+...     item = yield
+...     while True:
+...         item = yield item.replace(search, replace)
 
-**>>> spam_replace = replace('spam', 'bacon')**
-**>>> spam_replace.send('spam')**
-**'bacon'**
-**>>> spam_replace.send('spam spam')**
-**'bacon bacon'**
-**>>> spam_replace.send('spam spam spam')**
-**'bacon bacon bacon'**
+>>> spam_replace = replace('spam', 'bacon')
+>>> spam_replace.send('spam')
+'bacon'
+>>> spam_replace.send('spam spam')
+'bacon bacon'
+>>> spam_replace.send('spam spam spam')
+'bacon bacon bacon'
 
 ```
 
 但即使这样还远非最佳。我们现在基本上是在使用协程来模仿生成器的行为。虽然它能工作，但有点傻而且不是很清晰。这次让我们真正建立一个管道，让协程将数据发送到下一个协程（或多个协程），并通过将结果发送到多个协程来展示协程的力量：
 
 ```py
-**# Grep sends all matching items to the target**
-**>>> @coroutine**
-**... def grep(target, pattern):**
-**...     while True:**
-**...         item = yield**
-**...         if pattern in item:**
-**...             target.send(item)**
+# Grep sends all matching items to the target
+>>> @coroutine
+... def grep(target, pattern):
+...     while True:
+...         item = yield
+...         if pattern in item:
+...             target.send(item)
 
-**# Replace does a search and replace on the items and sends it to**
-**# the target once it's done**
-**>>> @coroutine**
-**... def replace(target, search, replace):**
-**...     while True:**
-**...         target.send((yield).replace(search, replace))**
+# Replace does a search and replace on the items and sends it to
+# the target once it's done
+>>> @coroutine
+... def replace(target, search, replace):
+...     while True:
+...         target.send((yield).replace(search, replace))
 
-**# Print will print the items using the provided formatstring**
-**>>> @coroutine**
-**... def print_(formatstring):**
-**...     while True:**
-**...         print(formatstring % (yield))**
+# Print will print the items using the provided formatstring
+>>> @coroutine
+... def print_(formatstring):
+...     while True:
+...         print(formatstring % (yield))
 
-**# Tee multiplexes the items to multiple targets**
-**>>> @coroutine**
-**... def tee(*targets):**
-**...     while True:**
-**...         item = yield**
-**...         for target in targets:**
-**...             target.send(item)**
+# Tee multiplexes the items to multiple targets
+>>> @coroutine
+... def tee(*targets):
+...     while True:
+...         item = yield
+...         for target in targets:
+...             target.send(item)
 
-**# Because we wrap the results we need to work backwards from the**
-**# inner layer to the outer layer.**
+# Because we wrap the results we need to work backwards from the
+# inner layer to the outer layer.
 
-**# First, create a printer for the items:**
-**>>> printer = print_('%s')**
+# First, create a printer for the items:
+>>> printer = print_('%s')
 
-**# Create replacers that send the output to the printer**
-**>>> replacer_spam = replace(printer, 'spam', 'bacon')**
-**>>> replacer_eggs = replace(printer, 'spam spam', 'sausage')**
+# Create replacers that send the output to the printer
+>>> replacer_spam = replace(printer, 'spam', 'bacon')
+>>> replacer_eggs = replace(printer, 'spam spam', 'sausage')
 
-**# Create a tee to send the input to both the spam and the eggs**
-**# replacers**
-**>>> branch = tee(replacer_spam, replacer_eggs)**
+# Create a tee to send the input to both the spam and the eggs
+# replacers
+>>> branch = tee(replacer_spam, replacer_eggs)
 
-**# Send all items containing spam to the tee command**
-**>>> grepper = grep(branch, 'spam')**
+# Send all items containing spam to the tee command
+>>> grepper = grep(branch, 'spam')
 
-**# Send the data to the grepper for all the processing**
-**>>> for line in open('lines.txt'):**
-**...     grepper.send(line.rstrip())**
-**bacon**
-**spam**
-**bacon bacon**
-**sausage**
-**bacon bacon bacon**
-**sausage spam**
+# Send the data to the grepper for all the processing
+>>> for line in open('lines.txt'):
+...     grepper.send(line.rstrip())
+bacon
+spam
+bacon bacon
+sausage
+bacon bacon bacon
+sausage spam
 
 ```
 
@@ -725,53 +725,53 @@ eggs eggs eggs
 既然我们知道如何编写基本的协程以及需要注意的陷阱，那么如何编写一个需要记住状态的函数呢？也就是说，一个始终给出所有发送值的平均值的函数。这是为数不多的情况之一，仍然相对安全和有用地结合协程和生成器语法：
 
 ```py
-**>>> @coroutine**
-**... def average():**
-**...     count = 1**
-**...     total = yield**
-**...     while True:**
-**...         total += yield total / count**
-**...         count += 1**
+>>> @coroutine
+... def average():
+...     count = 1
+...     total = yield
+...     while True:
+...         total += yield total / count
+...         count += 1
 
-**>>> averager = average()**
-**>>> averager.send(20)**
-**20.0**
-**>>> averager.send(10)**
-**15.0**
-**>>> averager.send(15)**
-**15.0**
-**>>> averager.send(-25)**
-**5.0**
+>>> averager = average()
+>>> averager.send(20)
+20.0
+>>> averager.send(10)
+15.0
+>>> averager.send(15)
+15.0
+>>> averager.send(-25)
+5.0
 
 ```
 
 尽管这仍然需要一些额外的逻辑才能正常工作。为了确保我们不会除以零，我们将`count`初始化为`1`。之后，我们使用`yield`获取我们的第一个项目，但在那时我们不发送任何数据，因为第一个`yield`是启动器，并且在我们获得值之前执行。一旦设置好了，我们就可以轻松地在求和的同时产生平均值。并不是太糟糕，但纯协程版本稍微更容易理解，因为我们不必担心启动：
 
 ```py
-**>>> @coroutine**
-**... def print_(formatstring):**
-**...     while True:**
-**...         print(formatstring % (yield))**
+>>> @coroutine
+... def print_(formatstring):
+...     while True:
+...         print(formatstring % (yield))
 
-**>>> @coroutine**
-**... def average(target):**
-**...     count = 0**
-**...     total = 0**
-**...     while True:**
-**...         count += 1**
-**...         total += yield**
-**...         target.send(total / count)**
+>>> @coroutine
+... def average(target):
+...     count = 0
+...     total = 0
+...     while True:
+...         count += 1
+...         total += yield
+...         target.send(total / count)
 
-**>>> printer = print_('%.1f')**
-**>>> averager = average(printer)**
-**>>> averager.send(20)**
-**20.0**
-**>>> averager.send(10)**
-**15.0**
-**>>> averager.send(15)**
-**15.0**
-**>>> averager.send(-25)**
-**5.0**
+>>> printer = print_('%.1f')
+>>> averager = average(printer)
+>>> averager.send(20)
+20.0
+>>> averager.send(10)
+15.0
+>>> averager.send(15)
+15.0
+>>> averager.send(-25)
+5.0
 
 ```
 
@@ -780,72 +780,72 @@ eggs eggs eggs
 另一个很好的例子是`itertools.groupby`，也很容易用协程实现。为了比较，我们将再次展示生成器协程和纯协程版本：
 
 ```py
-**>>> @coroutine**
-**... def groupby():**
-**...     # Fetch the first key and value and initialize the state**
-**...     # variables**
-**...     key, value = yield**
-**...     old_key, values = key, []**
-**...     while True:**
-**...         # Store the previous value so we can store it in the**
-**...         # list**
-**...         old_value = value**
-**...         if key == old_key:**
-**...             key, value = yield**
-**...         else:**
-**...             key, value = yield old_key, values**
-**...             old_key, values = key, []**
-**...         values.append(old_value)**
+>>> @coroutine
+... def groupby():
+...     # Fetch the first key and value and initialize the state
+...     # variables
+...     key, value = yield
+...     old_key, values = key, []
+...     while True:
+...         # Store the previous value so we can store it in the
+...         # list
+...         old_value = value
+...         if key == old_key:
+...             key, value = yield
+...         else:
+...             key, value = yield old_key, values
+...             old_key, values = key, []
+...         values.append(old_value)
 
-**>>> grouper = groupby()**
-**>>> grouper.send(('a', 1))**
-**>>> grouper.send(('a', 2))**
-**>>> grouper.send(('a', 3))**
-**>>> grouper.send(('b', 1))**
-**('a', [1, 2, 3])**
-**>>> grouper.send(('b', 2))**
-**>>> grouper.send(('a', 1))**
-**('b', [1, 2])**
-**>>> grouper.send(('a', 2))**
-**>>> grouper.send((None, None))**
-**('a', [1, 2])**
+>>> grouper = groupby()
+>>> grouper.send(('a', 1))
+>>> grouper.send(('a', 2))
+>>> grouper.send(('a', 3))
+>>> grouper.send(('b', 1))
+('a', [1, 2, 3])
+>>> grouper.send(('b', 2))
+>>> grouper.send(('a', 1))
+('b', [1, 2])
+>>> grouper.send(('a', 2))
+>>> grouper.send((None, None))
+('a', [1, 2])
 
 ```
 
 正如你所看到的，这个函数使用了一些技巧。我们存储了前一个`key`和`value`，以便我们可以检测到组（`key`）何时发生变化。这就是第二个问题；显然我们只有在组发生变化后才能识别出一个组，因此只有在组发生变化后才会返回结果。这意味着最后一组只有在它之后发送了不同的组之后才会发送，因此是`(None, None)`。现在，这是纯协程版本：
 
 ```py
-**>>> @coroutine**
-**... def print_(formatstring):**
-**...     while True:**
-**...         print(formatstring % (yield))**
+>>> @coroutine
+... def print_(formatstring):
+...     while True:
+...         print(formatstring % (yield))
 
-**>>> @coroutine**
-**... def groupby(target):**
-**...     old_key = None**
-**...     while True:**
-**...         key, value = yield**
-**...         if old_key != key:**
-**...             # A different key means a new group so send the**
-**...             # previous group and restart the cycle.**
-**...             if old_key and values:**
-**...                 target.send((old_key, values))**
-**...             values = []**
-**...             old_key = key**
-**...         values.append(value)**
+>>> @coroutine
+... def groupby(target):
+...     old_key = None
+...     while True:
+...         key, value = yield
+...         if old_key != key:
+...             # A different key means a new group so send the
+...             # previous group and restart the cycle.
+...             if old_key and values:
+...                 target.send((old_key, values))
+...             values = []
+...             old_key = key
+...         values.append(value)
 
-**>>> grouper = groupby(print_('group: %s, values: %s'))**
-**>>> grouper.send(('a', 1))**
-**>>> grouper.send(('a', 2))**
-**>>> grouper.send(('a', 3))**
-**>>> grouper.send(('b', 1))**
-**group: a, values: [1, 2, 3]**
-**>>> grouper.send(('b', 2))**
-**>>> grouper.send(('a', 1))**
-**group: b, values: [1, 2]**
-**>>> grouper.send(('a', 2))**
-**>>> grouper.send((None, None))**
-**group: a, values: [1, 2]**
+>>> grouper = groupby(print_('group: %s, values: %s'))
+>>> grouper.send(('a', 1))
+>>> grouper.send(('a', 2))
+>>> grouper.send(('a', 3))
+>>> grouper.send(('b', 1))
+group: a, values: [1, 2, 3]
+>>> grouper.send(('b', 2))
+>>> grouper.send(('a', 1))
+group: b, values: [1, 2]
+>>> grouper.send(('a', 2))
+>>> grouper.send((None, None))
+group: a, values: [1, 2]
 
 ```
 

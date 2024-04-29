@@ -81,18 +81,18 @@ if __name__ == "__main__":
 让我们尝试运行我们的单元测试。打开一个终端或命令行窗口，使用`cd`命令将当前目录设置为包含您的`test_quantities.py`脚本的目录，并尝试输入以下内容：
 
 ```py
-**python test_quantities.py**
+python test_quantities.py
 
 ```
 
 一切顺利的话，您应该会看到以下输出：
 
 ```py
-**..**
-**---------------------------------------------------------------**
-**Ran 2 tests in 0.000s**
+..
+---------------------------------------------------------------
+Ran 2 tests in 0.000s
 
-**OK**
+OK
 
 ```
 
@@ -105,7 +105,7 @@ if __name__ == "__main__":
 或者，您可以使用`-v`命令行选项来实现相同的结果：
 
 ```py
-**python test_quantities.py -v**
+python test_quantities.py -v
 
 ```
 
@@ -199,7 +199,7 @@ assert calc_score(2, 10) == 35
 这样做可以通过执行以下命令简单地测试您的模块或包：
 
 ```py
-**python test.py**
+python test.py
 
 ```
 
@@ -262,7 +262,7 @@ GitHub（[`github.com/`](https://github.com/)）是一个流行的基于 Web 的
 要安装所需的软件，请转到[`git-scm.com/downloads`](https://git-scm.com/downloads)并下载适用于您特定操作系统的安装程序。下载完成后，运行安装程序，并按照安装`git`命令行工具的说明进行操作。完成后，打开终端或命令行窗口，尝试输入以下命令：
 
 ```py
-**git --version**
+git --version
 
 ```
 
@@ -283,7 +283,7 @@ GitHub（[`github.com/`](https://github.com/)）是一个流行的基于 Web 的
 现在 GitHub 上已经创建了存储库，我们的下一个任务是**克隆**该存储库的副本到您计算机的硬盘上。为此，创建一个名为`test-package`的新目录来保存存储库的本地副本，打开终端或命令行窗口，并使用`cd`命令移动到您的新`test-package`目录。然后，输入以下命令：
 
 ```py
-**git clone https://<username>@github.com/<username>/test-package.git .**
+git clone https://<username>@github.com/<username>/test-package.git .
 
 ```
 
@@ -292,11 +292,11 @@ GitHub（[`github.com/`](https://github.com/)）是一个流行的基于 Web 的
 因为存储库目前是空的，您在目录中看不到任何内容。但是，有一些隐藏文件`git`用来跟踪您对存储库的本地副本。要查看这些隐藏文件，您可以从终端窗口使用`ls`命令：
 
 ```py
-**$ ls -al**
-**drwxr-xr-x@  7 erik  staff   238 19 Feb 21:28 .**
-**drwxr-xr-x@  7 erik  staff   238 19 Feb 14:35 ..**
-**drwxr-xr-x@ 14 erik  staff   476 19 Feb 21:28 .git**
-**-rw-r--r--@  1 erik  staff   844 19 Feb 15:09 .gitignore**
+$ ls -al
+drwxr-xr-x@  7 erik  staff   238 19 Feb 21:28 .
+drwxr-xr-x@  7 erik  staff   238 19 Feb 14:35 ..
+drwxr-xr-x@ 14 erik  staff   476 19 Feb 21:28 .git
+-rw-r--r--@  1 erik  staff   844 19 Feb 15:09 .gitignore
 
 ```
 
@@ -356,41 +356,41 @@ def run():
 要使我们的更改生效，我们需要**提交**更改到存储库。我们将首先查看我们的本地副本与存储库中的副本有何不同。为此，请返回到您的终端窗口，`cd`进入`test-package`目录，并键入以下命令：
 
 ```py
-**git status**
+git status
 
 ```
 
 您应该看到以下输出：
 
 ```py
-**# On branch master**
-**# Untracked files:**
-**#   (use "git add <file>..." to include in what will be committed)**
-**#**
-**#  README.rst**
-**#  <username>_test_package/**
-**nothing added to commit but untracked files present (use "git add" to track)**
+# On branch master
+# Untracked files:
+#   (use "git add <file>..." to include in what will be committed)
+#
+#  README.rst
+#  <username>_test_package/
+nothing added to commit but untracked files present (use "git add" to track)
 
 ```
 
 描述可能有点令人困惑，但并不太复杂。基本上，GitHub 告诉您有一个新文件`README.rst`和一个新目录，名为`<username>_test_package`，它不知道（或者在 GitHub 的说法中是“未跟踪”）。让我们将这些新条目添加到我们的存储库中：
 
 ```py
-**git add README.rst**
-**git add <username>_test_package**
+git add README.rst
+git add <username>_test_package
 
 ```
 
 确保您将`<username>`替换为您的 GitHub 用户名。如果您现在键入`git status`，您将看到我们创建的文件已添加到存储库的本地副本中：
 
 ```py
-**# On branch master**
-**# Changes to be committed:**
-**#   (use "git reset HEAD <file>..." to unstage)**
-**#**
-**#  new file:   README.rst**
-**#  new file:   <username>_test_package/__init__.py**
-**#  new file:   <username>_test_package/test.py**
+# On branch master
+# Changes to be committed:
+#   (use "git reset HEAD <file>..." to unstage)
+#
+#  new file:   README.rst
+#  new file:   <username>_test_package/__init__.py
+#  new file:   <username>_test_package/test.py
 
 ```
 
@@ -399,7 +399,7 @@ def run():
 现在我们已经包含了我们的新文件，让我们将更改提交到存储库。键入以下命令：
 
 ```py
-**git commit -a -m 'Initial commit.'**
+git commit -a -m 'Initial commit.'
 
 ```
 
@@ -408,7 +408,7 @@ def run():
 现在我们已经提交了更改，我们需要从本地计算机上传到 GitHub 存储库。为此，请键入以下命令：
 
 ```py
-**git push**
+git push
 
 ```
 
@@ -478,14 +478,14 @@ setup(name="<username>-test-package",
 有了这两个文件，您最终可以将您的新软件包提交到 Python 软件包索引。要做到这一点，请在您的终端或命令行窗口中键入以下命令：
 
 ```py
-**python setup.py register**
+python setup.py register
 
 ```
 
 此命令将尝试使用 Python 软件包索引注册您的新软件包。您将被要求输入您的 PyPI 用户名和密码，并有机会存储这些信息，以便您不必每次都重新输入。一旦软件包成功注册，您可以通过输入以下命令上传软件包内容：
 
 ```py
-**python setup.py sdist upload**
+python setup.py sdist upload
 
 ```
 
@@ -500,14 +500,14 @@ setup(name="<username>-test-package",
 完成所有这些后，你可以通过输入以下命令创建与你的包的 1.0 版本相对应的标签：
 
 ```py
-**git tag 1.0 -m 'Version 1.0 of the <username>_test_package.'**
+git tag 1.0 -m 'Version 1.0 of the <username>_test_package.'
 
 ```
 
 确保你用你的 GitHub 用户名替换`<username>`，以便包名正确。最后，使用以下`git push`命令的变体将新创建的标签复制到 GitHub 服务器：
 
 ```py
-**git push --tags**
+git push --tags
 
 ```
 
@@ -522,14 +522,14 @@ setup(name="<username>-test-package",
 现在让我们使用 pip 来安装我们在上一节中创建的测试包。由于我们知道我们的包已经被命名为`<username>_test_package`，其中`<username>`是你的 GitHub 用户名，你可以通过在终端或命令行窗口中输入以下命令，直接将这个包安装到你的`site-packages`目录中：
 
 ```py
-**pip install <username>_test_package**
+pip install <username>_test_package
 
 ```
 
 确保你用你的 GitHub 用户名替换`<username>`。请注意，如果你没有权限写入 Python 安装的`site-packages`目录，你可能需要在这个命令的开头添加`sudo`：
 
 ```py
-**sudo pip install <username>_test_package**
+sudo pip install <username>_test_package
 
 ```
 
@@ -538,18 +538,18 @@ setup(name="<username>-test-package",
 一切顺利的话，你应该看到各种命令被运行，因为你新创建的包被下载和安装。假设这成功了，你可以开始你的 Python 解释器，并访问你的新包，就像它是 Python 标准库的一部分一样。例如：
 
 ```py
-**>>> from <username>_test_package import test**
-**>>> test.run()**
-**IFIbH**
-**AAchwnW**
-**qVtRUuSyb**
-**UPF**
-**zXkY**
-**TMJEAZm**
-**wRJCqgomV**
-**oMzmv**
-**LaDeVg**
-**RDfMqScM**
+>>> from <username>_test_package import test
+>>> test.run()
+IFIbH
+AAchwnW
+qVtRUuSyb
+UPF
+zXkY
+TMJEAZm
+wRJCqgomV
+oMzmv
+LaDeVg
+RDfMqScM
 
 ```
 
@@ -558,21 +558,21 @@ setup(name="<username>-test-package",
 除了一些例外情况，您可以使用 pip 从 Python 软件包索引安装任何软件包。默认情况下，pip 将安装软件包的最新可用版本；要指定特定版本，您可以在安装软件包时提供版本号，就像这样：
 
 ```py
-**pip install <username>_test_package == 1.0**
+pip install <username>_test_package == 1.0
 
 ```
 
 这将安装您的测试软件包的 1.0 版本。如果您已经安装了一个软件包，并且有一个更新的版本可用，您可以使用`--upgrade`命令行选项将软件包升级到更新的版本：
 
 ```py
-**pip install --upgrade <username>_test_package**
+pip install --upgrade <username>_test_package
 
 ```
 
 您还可以使用`list`命令获取已安装的软件包列表：
 
 ```py
-**pip list**
+pip list
 
 ```
 
@@ -589,7 +589,7 @@ reportlab==3.2.0
 按照惯例，要求文件的名称为`requirements.txt`，并放置在项目的顶层目录中。要求文件非常有用，因为它们使得通过一个命令轻松地重新创建 Python 开发环境成为可能，包括程序所依赖的所有软件包。这是通过以下方式完成的：
 
 ```py
-**pip install -r requirements.txt**
+pip install -r requirements.txt
 
 ```
 
@@ -598,7 +598,7 @@ reportlab==3.2.0
 虽然您可以手动创建一个要求文件，但通常会使用 pip 为您创建此文件。安装所需的模块和软件包后，您可以使用以下命令创建`requirements.txt`文件：
 
 ```py
-**pip freeze > requirements.txt**
+pip freeze > requirements.txt
 
 ```
 

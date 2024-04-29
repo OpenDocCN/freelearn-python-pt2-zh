@@ -78,23 +78,81 @@
 
 假设我们有一个对象，必须通过最新的“标签”从 Git 存储库中拉取代码的版本。可能会有多个此对象的实例，当每个客户端调用获取代码的方法时，此对象将使用其属性中的“标签”版本。在任何时候，此“标签”都可以更新为更新版本，我们希望任何其他实例（新创建的或已创建的）在调用“获取”操作时使用这个新分支，如下面的代码所示：
 
-[PRE0]
+```py
+class GitFetcher:
+    _current_tag = None
+
+    def __init__(self, tag):
+        self.current_tag = tag
+
+    @property
+    def current_tag(self):
+        if self._current_tag is None:
+            raise AttributeError("tag was never set")
+        return self._current_tag
+
+    @current_tag.setter
+    def current_tag(self, new_tag):
+        self.__class__._current_tag = new_tag
+
+    def pull(self):
+        logger.info("pulling from %s", self.current_tag)
+        return self.current_tag
+```
 
 读者只需验证创建具有不同版本的`GitFetcher`类型的多个对象将导致所有对象在任何时候都设置为最新版本，如下面的代码所示：
 
-[PRE1]
+```py
+>>> f1 = GitFetcher(0.1)
+>>> f2 = GitFetcher(0.2)
+>>> f1.current_tag = 0.3
+>>> f2.pull()
+0.3
+>>> f1.pull()
+0.3
+```
 
 如果我们需要更多属性，或者希望更好地封装共享属性，使设计更清晰，我们可以使用描述符。
 
 像下面代码中所示的描述符解决了问题，虽然它需要更多的代码，但它也封装了更具体的责任，部分代码实际上从我们的原始类中移开，使它们中的任何一个更具凝聚性和符合单一责任原则：
 
-[PRE2]
+```py
+class SharedAttribute:
+    def __init__(self, initial_value=None):
+        self.value = initial_value
+        self._name = None
+
+    def __get__(self, instance, owner):
+        if instance is None:
+            return self
+        if self.value is None:
+            raise AttributeError(f"{self._name} was never set")
+        return self.value
+
+    def __set__(self, instance, new_value):
+        self.value = new_value
+
+    def __set_name__(self, owner, name):
+        self._name = name
+```
 
 除了这些考虑因素外，模式现在更具可重用性。如果我们想重复这个逻辑，我们只需创建一个新的描述符对象，它将起作用（符合 DRY 原则）。
 
 如果我们现在想做同样的事情，但是针对当前的分支，我们创建这个新的类属性，而类的其余部分保持不变，同时仍然具有所需的逻辑，如下面的代码所示：
 
-[PRE3]
+```py
+class GitFetcher:
+    current_tag = SharedAttribute()
+    current_branch = SharedAttribute()
+
+    def __init__(self, tag, branch=None):
+        self.current_tag = tag
+        self.current_branch = branch
+
+    def pull(self):
+        logger.info("pulling from %s", self.current_tag)
+        return self.current_tag
+```
 
 这种新方法的平衡和权衡现在应该是清楚的。这种新实现使用了更多的代码，但它是可重用的，因此从长远来看它节省了代码行数（和重复的逻辑）。再次参考三个或更多实例的规则，以决定是否应该创建这样的抽象。
 
@@ -108,7 +166,33 @@
 
 在这种情况下，我们将之前的对象分成两个部分——一个用于 Git 标签，另一个用于分支。我们使用的代码将使 borg 模式起作用：
 
-[PRE4]
+```py
+class BaseFetcher:
+    def __init__(self, source):
+        self.source = source
+
+class TagFetcher(BaseFetcher):
+    _attributes = {}
+
+    def __init__(self, source):
+        self.__dict__ = self.__class__._attributes
+        super().__init__(source)
+
+    def pull(self):
+        logger.info("pulling from tag %s", self.source)
+        return f"Tag = {self.source}"
+
+class BranchFetcher(BaseFetcher):
+    _attributes = {}
+
+    def __init__(self, source):
+        self.__dict__ = self.__class__._attributes
+        super().__init__(source)
+
+    def pull(self):
+        logger.info("pulling from branch %s", self.source)
+        return f"Branch = {self.source}"
+```
 
 这两个对象都有一个基类，共享它们的初始化方法。但是它们必须再次实现它，以使 borg 逻辑起作用。其思想是使用一个类属性，它是一个字典，用于存储属性，然后使每个对象的字典（在初始化时）使用这个完全相同的字典。这意味着对一个对象的字典的任何更新都会反映在类中，因为它们的类是相同的，而字典是可变对象，是作为引用传递的。换句话说，当我们创建这种类型的新对象时，它们都将使用相同的字典，并且这个字典会不断更新。
 
@@ -116,7 +200,31 @@
 
 实现 DRY 原则的一种可能的抽象方式是创建一个 mixin 类，如下面的代码所示：
 
-[PRE5]
+```py
+class SharedAllMixin:
+    def __init__(self, *args, **kwargs):
+        try:
+            self.__class__._attributes
+        except AttributeError:
+            self.__class__._attributes = {}
+
+        self.__dict__ = self.__class__._attributes
+        super().__init__(*args, **kwargs)
+
+class BaseFetcher:
+    def __init__(self, source):
+        self.source = source
+
+class TagFetcher(SharedAllMixin, BaseFetcher):
+    def pull(self):
+        logger.info("pulling from tag %s", self.source)
+        return f"Tag = {self.source}"
+
+class BranchFetcher(SharedAllMixin, BaseFetcher):
+    def pull(self):
+        logger.info("pulling from branch %s", self.source)
+        return f"Branch = {self.source}"
+```
 
 这一次，我们使用 mixin 类在每个类中创建具有属性的字典（如果它尚不存在），然后继续相同的逻辑。
 
@@ -150,13 +258,30 @@
 
 通过继承，我们导入外部类并创建一个新类，该类将定义新方法，调用具有不同名称的方法。在这个例子中，假设外部依赖项有一个名为`search（）`的方法，它只接受一个参数进行搜索，因为它以不同的方式查询，所以我们的`adapter`方法不仅调用外部方法，而且还相应地转换参数，如下面的代码所示：
 
-[PRE6]
+```py
+from _adapter_base import UsernameLookup
+
+class UserSource(UsernameLookup):
+    def fetch(self, user_id, username):
+        user_namespace = self._adapt_arguments(user_id, username)
+        return self.search(user_namespace)
+
+    @staticmethod
+    def _adapt_arguments(user_id, username):
+        return f"{user_id}:{username}"
+```
 
 也许我们的类已经从另一个类派生出来了，在这种情况下，这将成为多重继承的情况，Python 支持这一点，所以这不应该是一个问题。然而，正如我们以前多次看到的那样，继承会带来更多的耦合（谁知道有多少其他方法是从外部库中继承而来的？），而且它是不灵活的。从概念上讲，这也不是正确的选择，因为我们将继承保留给规范的情况（一种**是一个**的关系），在这种情况下，我们完全不清楚我们的对象是否必须是第三方库提供的那种对象之一（特别是因为我们并不完全理解那个对象）。
 
 因此，更好的方法是使用组合。假设我们可以为我们的对象提供一个`UsernameLookup`的实例，那么代码就会变得很简单，只需在采用参数之前重定向请求，如下面的代码所示：
 
-[PRE7]
+```py
+class UserSource:
+    ...
+    def fetch(self, user_id, username):
+        user_namespace = self._adapt_arguments(user_id, username)
+        return self.username_lookup.search(user_namespace)
+```
 
 如果我们需要采用多种方法，并且我们可以想出一种通用的方法来调整它们的签名，那么使用`__getattr__()`魔术方法将请求重定向到包装对象可能是值得的，但是像所有通用实现一样，我们应该小心不要给解决方案增加更多的复杂性。
 
@@ -168,7 +293,32 @@
 
 想象一个在线商店的简化版本，在这个商店里我们有产品。假设我们提供了将这些产品分组的可能性，并且我们给顾客每组产品提供折扣。产品有一个价格，当顾客来付款时，就会要求这个价格。但是一组分组的产品也有一个必须计算的价格。我们将有一个代表这个包含产品的组的对象，并且将责任委托给每个特定产品询问价格（这个产品也可能是另一组产品），等等，直到没有其他东西需要计算。这个实现如下代码所示：
 
-[PRE8]
+```py
+class Product:
+    def __init__(self, name, price):
+        self._name = name
+        self._price = price
+
+    @property
+    def price(self):
+        return self._price
+
+class ProductBundle:
+    def __init__(
+        self,
+        name,
+        perc_discount,
+        *products: Iterable[Union[Product, "ProductBundle"]]
+    ) -> None:
+        self._name = name
+        self._perc_discount = perc_discount
+        self._products = products
+
+    @property
+    def price(self):
+        total = sum(p.price for p in self._products)
+        return total * (1 - self._perc_discount)
+```
 
 我们通过一个属性公开公共接口，并将`price`作为私有属性。`ProductBundle`类使用这个属性来计算值，并首先添加它包含的所有产品的价格。
 
@@ -186,7 +336,14 @@
 
 在其最基本的形式中，查询只返回创建时提供的数据的字典。客户端期望使用此对象的`render()`方法。
 
-[PRE9]
+```py
+class DictQuery:
+    def __init__(self, **kwargs):
+        self._raw_query = kwargs
+
+    def render(self) -> dict:
+        return self._raw_query
+```
 
 现在我们想通过对数据应用转换来以不同的方式呈现查询（过滤值，标准化等）。我们可以创建装饰器并将它们应用于`render`方法，但这不够灵活，如果我们想在运行时更改它们怎么办？或者如果我们只想选择其中一些，而不选择其他一些呢？
 
@@ -194,21 +351,64 @@
 
 由于 Python 具有鸭子类型，我们不需要创建一个新的基类，并使这些新对象成为该层次结构的一部分，以及`DictQuery`。只需创建一个具有`render()`方法的新类就足够了（再次，多态性不应该需要继承）。这个过程在下面的代码中显示：
 
-[PRE10]
+```py
+class QueryEnhancer:
+    def __init__(self, query: DictQuery):
+        self.decorated = query
+
+    def render(self):
+        return self.decorated.render()
+
+class RemoveEmpty(QueryEnhancer):
+    def render(self):
+        original = super().render()
+        return {k: v for k, v in original.items() if v}
+
+class CaseInsensitive(QueryEnhancer):
+    def render(self):
+        original = super().render()
+        return {k: v.lower() for k, v in original.items()}
+```
 
 `QueryEnhancer`短语具有与`DictQuery`的客户端期望的接口兼容的接口，因此它们是可互换的。这个对象被设计为接收一个装饰过的对象。它将从中获取值并将其转换，返回代码的修改版本。
 
 如果我们想要删除所有评估为`False`的值并将它们标准化以形成我们的原始查询，我们将不得不使用以下模式：
 
-[PRE11]
+```py
+>>> original = DictQuery(key="value", empty="", none=None, upper="UPPERCASE", title="Title")
+>>> new_query = CaseInsensitive(RemoveEmpty(original))
+>>> original.render()
+{'key': 'value', 'empty': '', 'none': None, 'upper': 'UPPERCASE', 'title': 'Title'}
+>>> new_query.render()
+{'key': 'value', 'upper': 'uppercase', 'title': 'title'}
+```
 
 这是一个我们也可以以不同方式实现的模式，利用 Python 的动态特性和函数是对象的事实。我们可以使用提供给基本装饰器对象（`QueryEnhancer`）的函数来实现这种模式，并将每个装饰步骤定义为一个函数，如下面的代码所示：
 
-[PRE12]
+```py
+class QueryEnhancer:
+    def __init__(
+        self,
+        query: DictQuery,
+        *decorators: Iterable[Callable[[Dict[str, str]], Dict[str, str]]]
+    ) -> None:
+        self._decorated = query
+        self._decorators = decorators
+
+    def render(self):
+        current_result = self._decorated.render()
+        for deco in self._decorators:
+            current_result = deco(current_result)
+        return current_result
+```
 
 就客户端而言，由于这个类通过其`render()`方法保持兼容性，因此没有改变。但在内部，这个对象的使用方式略有不同，如下面的代码所示：
 
-[PRE13]
+```py
+>>> query = DictQuery(foo="bar", empty="", none=None, upper="UPPERCASE", title="Title")
+>>> QueryEnhancer(query, remove_empty, case_insensitive).render()
+{'foo': 'bar', 'upper': 'uppercase', 'title': 'title'}
+```
 
 在前面的代码中，`remove_empty`和`case_insensitive`只是转换字典的常规函数。
 
@@ -256,13 +456,54 @@ Python 本身就有一个例子，使用`os`模块。这个模块将操作系统
 
 这里的想法是，我们将以稍微不同的方式创建事件。每个事件仍然具有确定是否可以处理特定日志行的逻辑，但它还将具有一个后继者。这个后继者是一个新的事件，是行中的下一个事件，它将继续处理文本行，以防第一个事件无法这样做。逻辑很简单——我们链接这些事件，每个事件都尝试处理数据。如果可以，它就返回结果。如果不能，它将把它传递给它的后继者并重复，如下所示的代码：
 
-[PRE14]
+```py
+import re
+
+class Event:
+    pattern = None
+
+    def __init__(self, next_event=None):
+        self.successor = next_event
+
+    def process(self, logline: str):
+        if self.can_process(logline):
+            return self._process(logline)
+
+        if self.successor is not None:
+            return self.successor.process(logline)
+
+    def _process(self, logline: str) -> dict:
+        parsed_data = self._parse_data(logline)
+        return {
+            "type": self.__class__.__name__,
+            "id": parsed_data["id"],
+            "value": parsed_data["value"],
+        }
+
+    @classmethod
+    def can_process(cls, logline: str) -> bool:
+        return cls.pattern.match(logline) is not None
+
+    @classmethod
+    def _parse_data(cls, logline: str) -> dict:
+        return cls.pattern.match(logline).groupdict()
+
+class LoginEvent(Event):
+    pattern = re.compile(r"(?P<id>\d+):\s+login\s+(?P<value>\S+)")
+
+class LogoutEvent(Event):
+    pattern = re.compile(r"(?P<id>\d+):\s+logout\s+(?P<value>\S+)")
+```
 
 通过这种实现，我们创建了`event`对象，并按照它们将被处理的特定顺序排列它们。由于它们都有一个`process()`方法，它们对于这个消息是多态的，所以它们被排列的顺序对于客户端来说是完全透明的，它们中的任何一个也是透明的。不仅如此，`process()`方法也具有相同的逻辑；它尝试提取信息，如果提供的数据对于处理它的对象类型是正确的，如果不是，它就继续到下一个对象。
 
 这样，我们可以按以下方式`process`登录事件：
 
-[PRE15]
+```py
+>>> chain = LogoutEvent(LoginEvent())
+>>> chain.process("567: login User")
+{'type': 'LoginEvent', 'id': '567', 'value': 'User'}
+```
 
 注意`LogoutEvent`作为其后继者接收了`LoginEvent`，当它被要求处理无法处理的内容时，它会重定向到正确的对象。从字典的`type`键上可以看出，`LoginEvent`实际上是创建了该字典的对象。
 
@@ -274,11 +515,16 @@ Python 本身就有一个例子，使用`os`模块。这个模块将操作系统
 
 例如，现在我们添加了一个通用类型，将登录和注销会话事件分组，如下所示的代码：
 
-[PRE16]
+```py
+class SessionEvent(Event):
+    pattern = re.compile(r"(?P<id>\d+):\s+log(in|out)\s+(?P<value>\S+)")
+```
 
 如果由于某种原因，在应用程序的某个部分，我们希望在登录事件之前捕获这个，可以通过以下`chain`来实现：
 
-[PRE17]
+```py
+chain = SessionEvent(LoginEvent(LogoutEvent()))
+```
 
 通过改变顺序，我们可以，例如，说一个通用会话事件比登录事件具有更高的优先级，但不是注销事件，依此类推。
 
@@ -328,7 +574,96 @@ Python 本身就有一个例子，使用`os`模块。这个模块将操作系统
 
 我们定义一个基本的抽象类，其中包含要实现的方法集，然后为我们要表示的每种特定`state`创建一个子类。然后，`MergeRequest`对象将所有操作委托给`state`，如下面的代码所示：
 
-[PRE18]
+```py
+class InvalidTransitionError(Exception):
+    """Raised when trying to move to a target state from an unreachable 
+    source
+    state.
+    """
+
+class MergeRequestState(abc.ABC):
+    def __init__(self, merge_request):
+        self._merge_request = merge_request
+
+    @abc.abstractmethod
+    def open(self):
+        ...
+
+    @abc.abstractmethod
+    def close(self):
+        ...
+
+    @abc.abstractmethod
+    def merge(self):
+        ...
+
+    def __str__(self):
+        return self.__class__.__name__
+
+class Open(MergeRequestState):
+    def open(self):
+        self._merge_request.approvals = 0
+
+    def close(self):
+        self._merge_request.approvals = 0
+        self._merge_request.state = Closed
+
+    def merge(self):
+        logger.info("merging %s", self._merge_request)
+        logger.info("deleting branch %s", 
+        self._merge_request.source_branch)
+        self._merge_request.state = Merged
+
+class Closed(MergeRequestState):
+    def open(self):
+        logger.info("reopening closed merge request %s", 
+         self._merge_request)
+        self._merge_request.state = Open
+
+    def close(self):
+        pass
+
+    def merge(self):
+        raise InvalidTransitionError("can't merge a closed request")
+
+class Merged(MergeRequestState):
+    def open(self):
+        raise InvalidTransitionError("already merged request")
+
+    def close(self):
+        raise InvalidTransitionError("already merged request")
+
+    def merge(self):
+        pass
+
+class MergeRequest:
+    def __init__(self, source_branch: str, target_branch: str) -> None:
+        self.source_branch = source_branch
+        self.target_branch = target_branch
+        self._state = None
+        self.approvals = 0
+        self.state = Open
+
+    @property
+    def state(self):
+        return self._state
+
+    @state.setter
+    def state(self, new_state_cls):
+        self._state = new_state_cls(self)
+
+    def open(self):
+        return self.state.open()
+
+    def close(self):
+        return self.state.close()
+
+    def merge(self):
+        return self.state.merge()
+
+    def __str__(self):
+        return f"{self.target_branch}:{self.source_branch}"
+```
 
 以下列表概述了一些关于实现细节和设计决策的澄清：
 
@@ -344,7 +679,25 @@ Python 本身就有一个例子，使用`os`模块。这个模块将操作系统
 
 以下代码显示了如何使用对象的一些示例：
 
-[PRE19]
+```py
+>>> mr = MergeRequest("develop", "master") 
+>>> mr.open()
+>>> mr.approvals
+0
+>>> mr.approvals = 3
+>>> mr.close()
+>>> mr.approvals
+0
+>>> mr.open()
+INFO:log:reopening closed merge request master:develop
+>>> mr.merge()
+INFO:log:merging master:develop
+INFO:log:deleting branch develop
+>>> mr.close()
+Traceback (most recent call last):
+...
+InvalidTransitionError: already merged request
+```
 
 状态转换的操作被委托给`MergeRequest`始终持有的`state`对象（这可以是`ABC`的任何子类）。它们都知道如何以不同的方式响应相同的消息，因此这些对象将根据每个转换采取相应的操作（删除分支、引发异常等），然后将`MergeRequest`移动到下一个状态。
 
@@ -352,7 +705,33 @@ Python 本身就有一个例子，使用`os`模块。这个模块将操作系统
 
 我们可以通过`__getattr__()`来实现，如下面的代码所示：
 
-[PRE20]
+```py
+class MergeRequest:
+    def __init__(self, source_branch: str, target_branch: str) -> None:
+        self.source_branch = source_branch
+        self.target_branch = target_branch
+        self._state: MergeRequestState
+        self.approvals = 0
+        self.state = Open
+
+    @property
+    def state(self):
+        return self._state
+
+    @state.setter
+    def state(self, new_state_cls):
+        self._state = new_state_cls(self)
+
+    @property
+    def status(self):
+        return str(self.state)
+
+    def __getattr__(self, method):
+        return getattr(self.state, method)
+
+    def __str__(self):
+        return f"{self.target_branch}:{self.source_branch}"
+```
 
 一方面，我们重用一些代码并删除重复的行是好事。这使得抽象基类更有意义。在某个地方，我们希望将所有可能的操作记录下来，列在一个地方。那个地方过去是`MergeRequest`类，但现在这些方法都消失了，所以唯一剩下的真相来源是`MergeRequestState`。幸运的是，`state`属性上的类型注解对用户来说非常有帮助，可以知道在哪里查找接口定义。
 
@@ -372,7 +751,9 @@ Python 本身就有一个例子，使用`os`模块。这个模块将操作系统
 
 我们不知道用户将如何使用我们传递的数据，但我们知道他们期望得到一个字典。因此，可能会发生以下错误：
 
-[PRE21]
+```py
+AttributeError: 'NoneType' object has no attribute 'keys'
+```
 
 在这种情况下，修复方法相当简单——`process()`方法的默认值应该是一个空字典，而不是`None`。
 

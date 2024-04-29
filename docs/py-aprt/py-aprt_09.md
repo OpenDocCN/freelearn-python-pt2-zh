@@ -417,9 +417,9 @@ Norwegian Blue
 
 ```py
 >>> banner("Sun, Moon and Stars", "*")
-*******************
+***************
 Sun, Moon and Stars
-*******************
+***************
 
 ```
 
@@ -429,9 +429,9 @@ Sun, Moon and Stars
 
 ```py
 >>> banner("Sun, Moon and Stars", border="*")
-*******************
+***************
 Sun, Moon and Stars
-*******************
+***************
 
 ```
 

@@ -19,8 +19,8 @@ Python 中有许多函数，可以在某些类型的对象上执行任务或计�
 最简单的例子是`len()`函数，它计算某种容器对象中的项目数量，例如字典或列表。你以前见过它：
 
 ```py
-**>>> len([1,2,3,4])**
-**4**
+>>> len([1,2,3,4])
+4
 
 ```
 
@@ -44,15 +44,15 @@ Python 中有许多函数，可以在某些类型的对象上执行任务或计�
 normal_list=[1,2,3,4,5]
 
 class CustomSequence():
- **def __len__(self):**
+ **def __len__(self):
         return 5
 
- **def __getitem__(self, index):**
+ **def __getitem__(self, index):
         return "x{0}".format(index)
 
 class FunkyBackwards():
 
- **def __reversed__(self):**
+ **def __reversed__(self):
         return "BACKWARDS!"
 
 for seq in normal_list, CustomSequence(), FunkyBackwards():
@@ -64,9 +64,9 @@ for seq in normal_list, CustomSequence(), FunkyBackwards():
 最后的 `for` 循环打印了正常列表的反转版本，以及两个自定义序列的实例。输出显示 `reversed` 在所有三个上都起作用，但当我们自己定义 `__reversed__` 时结果大不相同：
 
 ```py
-**list: 5, 4, 3, 2, 1,**
-**CustomSequence: x4, x3, x2, x1, x0,**
-**FunkyBackwards: B, A, C, K, W, A, R, D, S, !,**
+list: 5, 4, 3, 2, 1,
+CustomSequence: x4, x3, x2, x1, x0,
+FunkyBackwards: B, A, C, K, W, A, R, D, S, !,
 
 ```
 
@@ -87,7 +87,7 @@ import sys
 filename = sys.argv[1]
 
 with open(filename) as file:
- **for index, line in enumerate(file):**
+ **for index, line in enumerate(file):
         print("{0}: {1}".format(index+1, line), end='')
 ```
 
@@ -127,7 +127,7 @@ with open(filename) as file:
 当然，我们并不总是想要读取文件；通常我们想要向其中写入数据！要打开一个文件进行写入，我们需要将`mode`参数作为第二个位置参数传递，值为`"w"`：
 
 ```py
-**contents = "Some file contents"**
+contents = "Some file contents"
 file = open("filename", "w")
 file.write(contents)
 file.close()
@@ -162,7 +162,7 @@ file.close()
 如果我们在类似文件的对象上运行`dir`，我们会看到它有两个名为`__enter__`和`__exit__`的特殊方法。这些方法将文件对象转换为所谓的**上下文管理器**。基本上，如果我们使用一种称为`with`语句的特殊语法，这些方法将在嵌套代码执行之前和之后被调用。对于文件对象，`__exit__`方法确保文件被关闭，即使引发异常。我们不再需要显式管理文件的关闭。这是`with`语句在实践中的样子：
 
 ```py
-**with open('filename') as file:**
+with open('filename') as file:
     for line in file:
         print(line, end='')
 ```
@@ -174,11 +174,11 @@ file.close()
 最有趣的是，因为`with`语句可以应用于具有适当特殊方法的任何对象，我们可以在自己的框架中使用它。例如，记住字符串是不可变的，但有时您需要从多个部分构建一个字符串。出于效率考虑，通常通过将组件字符串存储在列表中并在最后将它们连接来完成。让我们创建一个简单的上下文管理器，允许我们构建一个字符序列，并在退出时自动将其转换为字符串：
 
 ```py
-**class StringJoiner(list):**
+class StringJoiner(list):
     def __enter__(self):
         return self
 
-    **def __exit__(self, type, value, tb):**
+    **def __exit__(self, type, value, tb):
         self.result = "".join(self)
 ```
 
@@ -188,7 +188,7 @@ file.close()
 
 ```py
 import random, string
-**with StringJoiner() as joiner:**
+with StringJoiner() as joiner:
     for i in range(15):
         joiner.append(random.choice(string.ascii_letters))
 
@@ -269,8 +269,8 @@ default_arguments("a string", variable, 14, b=True)
 令人惊讶的是，我们甚至可以使用等号语法来改变位置参数的顺序，只要所有参数都被提供：
 
 ```py
-**>>> default_arguments(y=1,z=2,x=3,a="hi")**
-**3 1 2 hi False**
+>>> default_arguments(y=1,z=2,x=3,a="hi")
+3 1 2 hi False
 
 ```
 
@@ -294,14 +294,14 @@ print(number)
 这在空容器（如列表、集合和字典）中有些棘手。例如，通常要求调用代码提供一个我们的函数将要操作的列表，但列表是可选的。我们希望将一个空列表作为默认参数。我们不能这样做；它将在代码首次构造时创建一个列表：
 
 ```py
-**>>> def hello(b=[]):**
-**...     b.append('a')**
-**...     print(b)**
-**...**
-**>>> hello()**
-**['a']**
-**>>> hello()**
-**['a', 'a']**
+>>> def hello(b=[]):
+...     b.append('a')
+...     print(b)
+...
+>>> hello()
+['a']
+>>> hello()
+['a', 'a']
 
 ```
 
@@ -314,7 +314,7 @@ print(number)
 例如，一个接受链接或链接列表并下载网页的函数可以使用这样的可变参数，或者**varargs**。我们可以接受任意数量的参数，其中每个参数都是不同的链接。我们通过在函数定义中指定`*`运算符来实现这一点：
 
 ```py
-**def get_pages(*links):**
+def get_pages(*links):
     for link in links:
         #download the link with urllib
         print(link)
@@ -340,7 +340,7 @@ class Options:
             'password': None,
             'debug': False,
             }
-    **def __init__(self, **kwargs):**
+    **def __init__(self, **kwargs):
         self.options = dict(Options.default_options)
         self.options.update(kwargs)
 
@@ -351,14 +351,14 @@ class Options:
 这个类中所有有趣的东西都发生在`__init__`方法中。我们在类级别有一个默认选项和值的字典。`__init__`方法的第一件事是复制这个字典。我们这样做是为了避免直接修改字典，以防我们实例化两组不同的选项。（请记住，类级别的变量在类的实例之间是共享的。）然后，`__init__`使用新字典上的`update`方法将任何非默认值更改为提供的关键字参数。`__getitem__`方法简单地允许我们使用新类使用索引语法。以下是演示该类工作的会话：
 
 ```py
-**>>> options = Options(username="dusty", password="drowssap",**
- **debug=True)**
-**>>> options['debug']**
-**True**
-**>>> options['port']**
-**21**
-**>>> options['username']**
-**'dusty'**
+>>> options = Options(username="dusty", password="drowssap",
+ **debug=True)
+>>> options['debug']
+True
+>>> options['port']
+21
+>>> options['username']
+'dusty'
 
 ```
 
@@ -371,8 +371,8 @@ class Options:
 ```py
 import shutil
 import os.path
-**def augmented_move(target_folder, *filenames,**
-        **verbose=False, **specific):**
+def augmented_move(target_folder, *filenames,
+        **verbose=False, **specific):
     '''Move all filenames into the target_folder, allowing
     specific treatment of certain files.'''
 
@@ -401,7 +401,7 @@ import os.path
 在常见情况下，假设所讨论的文件存在，可以调用此函数：
 
 ```py
-**>>> augmented_move("move_here", "one", "two")**
+>>> augmented_move("move_here", "one", "two")
 
 ```
 
@@ -410,8 +410,8 @@ import os.path
 如果我们想要看到输出，我们可以这样调用它：
 
 ```py
-**>>> augmented_move("move_here", "three", verbose=True)**
-**Moving three**
+>>> augmented_move("move_here", "three", verbose=True)
+Moving three
 
 ```
 
@@ -420,19 +420,19 @@ import os.path
 如果我们想要复制或忽略列表中的一些文件，而不是移动它们，我们可以传递额外的关键字参数：
 
 ```py
-**>>> augmented_move("move_here", "four", "five", "six",**
- **four="copy", five="ignore")**
+>>> augmented_move("move_here", "four", "five", "six",
+ **four="copy", five="ignore")
 
 ```
 
 这将移动第六个文件并复制第四个文件，但不会显示任何输出，因为我们没有指定`verbose`。当然，我们也可以这样做，关键字参数可以以任何顺序提供：
 
 ```py
-**>>> augmented_move("move_here", "seven", "eight", "nine",**
- **seven="copy", verbose=True, eight="ignore")**
-**Copying seven**
-**Ignoring eight**
-**Moving nine**
+>>> augmented_move("move_here", "seven", "eight", "nine",
+ **seven="copy", verbose=True, eight="ignore")
+Copying seven
+Ignoring eight
+Moving nine
 
 ```
 
@@ -451,18 +451,18 @@ more_args = {
 
 print("Unpacking a sequence:", end=" ")
 
-**show_args(*some_args)**
+show_args(*some_args)
 print("Unpacking a dict:", end=" ")
 
-**show_args(**more_args)**
+show_args(**more_args)
 
 ```
 
 当我们运行它时，它看起来是这样的：
 
 ```py
-**Unpacking a sequence: 0 1 2**
-**Unpacking a dict: ONE TWO THREE**
+Unpacking a sequence: 0 1 2
+Unpacking a dict: ONE TWO THREE
 
 ```
 
@@ -497,8 +497,8 @@ def another_function(function):
     print("Now I'll call the function passed in")
     function()
 
-**another_function(my_function)**
-**another_function(second_function)**
+another_function(my_function)
+another_function(second_function)
 
 ```
 
@@ -526,7 +526,7 @@ import datetime
 import time
 
 class TimedEvent:
-    **def __init__(self, endtime, callback):**
+    **def __init__(self, endtime, callback):
         self.endtime = endtime
         self.callback = callback
 
@@ -537,7 +537,7 @@ class Timer:
     def __init__(self):
         self.events = []
 
-    **def call_after(self, delay, callback):**
+    **def call_after(self, delay, callback):
         end_time = datetime.datetime.now() + \
                 datetime.timedelta(seconds=delay)
 
@@ -547,7 +547,7 @@ class Timer:
         while True:
             ready_events = (e for e in self.events if e.ready())
             for event in ready_events:
-                **event.callback(self)**
+                **event.callback(self)
                 self.events.remove(event)
             time.sleep(0.5)
 ```
@@ -637,7 +637,7 @@ def fake_print():
 
 a = A()
 a.print()
-**a.print = fake_print**
+a.print = fake_print
 a.print()
 ```
 
@@ -667,7 +667,7 @@ class Repeater:
     def __init__(self):
         self.count = 0
 
-    **def __call__(self, timer):**
+    **def __call__(self, timer):
         format_time("{now}: repeat {0}", self.count)
         self.count += 1
 
@@ -689,7 +689,7 @@ timer.run()
 现在，在我们开始处理这个项目之前，我们应该有一种安全的方法来测试它，而不会向一群真实的人发送电子邮件。幸运的是，Python 在这方面有所帮助；就像测试 HTTP 服务器一样，它有一个内置的**简单邮件传输协议**（**SMTP**）服务器，我们可以指示它捕获我们发送的任何消息，而不实际发送它们。我们可以使用以下命令运行服务器：
 
 ```py
-**python -m smtpd -n -c DebuggingServer localhost:1025**
+python -m smtpd -n -c DebuggingServer localhost:1025
 
 ```
 
@@ -736,36 +736,36 @@ def send_email(subject, message, from_addr, *to_addrs,
 如果我们在一个终端中运行我们的调试 SMTP 服务器，我们可以在 Python 解释器中测试这段代码：
 
 ```py
-**>>> send_email("A model subject", "The message contents",**
- **"from@example.com", "to1@example.com", "to2@example.com")**
+>>> send_email("A model subject", "The message contents",
+ **"from@example.com", "to1@example.com", "to2@example.com")
 
 ```
 
 然后，如果我们检查调试 SMTP 服务器的输出，我们会得到以下内容：
 
 ```py
-**---------- MESSAGE FOLLOWS ----------**
-**Content-Type: text/plain; charset="us-ascii"**
-**MIME-Version: 1.0**
-**Content-Transfer-Encoding: 7bit**
-**Subject: A model subject**
-**From: from@example.com**
-**To: to1@example.com**
-**X-Peer: 127.0.0.1**
+---------- MESSAGE FOLLOWS ----------
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: A model subject
+From: from@example.com
+To: to1@example.com
+X-Peer: 127.0.0.1
 
-**The message contents**
-**------------ END MESSAGE ------------**
-**---------- MESSAGE FOLLOWS ----------**
-**Content-Type: text/plain; charset="us-ascii"**
-**MIME-Version: 1.0**
-**Content-Transfer-Encoding: 7bit**
-**Subject: A model subject**
-**From: from@example.com**
-**To: to2@example.com**
-**X-Peer: 127.0.0.1**
+The message contents
+------------ END MESSAGE ------------
+---------- MESSAGE FOLLOWS ----------
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: A model subject
+From: from@example.com
+To: to2@example.com
+X-Peer: 127.0.0.1
 
-**The message contents**
-**------------ END MESSAGE ------------**
+The message contents
+------------ END MESSAGE ------------
 
 ```
 
@@ -817,33 +817,33 @@ def send_mailing(self, subject, message, from_addr,
 可以通过确保 SMTP 调试服务器在一个命令提示符中运行，并在第二个提示符中使用以下代码来加载代码来测试程序：
 
 ```py
-**python -i mailing_list.py**
+python -i mailing_list.py
 
 ```
 
 使用以下命令创建一个`MailingList`对象：
 
 ```py
-**>>> m = MailingList()**
+>>> m = MailingList()
 
 ```
 
 然后创建一些虚假的电子邮件地址和组，类似于：
 
 ```py
-**>>> m.add_to_group("friend1@example.com", "friends")**
-**>>> m.add_to_group("friend2@example.com", "friends")**
-**>>> m.add_to_group("family1@example.com", "family")**
-**>>> m.add_to_group("pro1@example.com", "professional")**
+>>> m.add_to_group("friend1@example.com", "friends")
+>>> m.add_to_group("friend2@example.com", "friends")
+>>> m.add_to_group("family1@example.com", "family")
+>>> m.add_to_group("pro1@example.com", "professional")
 
 ```
 
 最后，使用以下命令发送电子邮件到特定组：
 
 ```py
-**>>> m.send_mailing("A Party",**
-**"Friends and family only: a party", "me@example.com", "friends",**
-**"family", headers={"Reply-To": "me2@example.com"})**
+>>> m.send_mailing("A Party",
+"Friends and family only: a party", "me@example.com", "friends",
+"family", headers={"Reply-To": "me2@example.com"})
 
 ```
 
@@ -862,8 +862,8 @@ def send_mailing(self, subject, message, from_addr,
 但是忘了那个，让我们只是写一些基本的代码，使用大量的一厢情愿来假装这种简单的数据格式是安全的：
 
 ```py
-**email1@mydomain.com group1,group2**
-**email2@mydomain.com group2,group3**
+email1@mydomain.com group1,group2
+email2@mydomain.com group2,group3
 
 ```
 
@@ -902,31 +902,31 @@ def send_mailing(self, subject, message, from_addr,
 我们可以在解释器中测试这两种方法，如下所示：
 
 ```py
-**>>> m = MailingList('addresses.db')**
-**>>> m.add_to_group('friend1@example.com', 'friends')**
-**>>> m.add_to_group('family1@example.com', 'friends')**
-**>>> m.add_to_group('family1@example.com', 'family')**
-**>>> m.save()**
+>>> m = MailingList('addresses.db')
+>>> m.add_to_group('friend1@example.com', 'friends')
+>>> m.add_to_group('family1@example.com', 'friends')
+>>> m.add_to_group('family1@example.com', 'family')
+>>> m.save()
 
 ```
 
 生成的`addresses.db`文件包含以下行，如预期的那样：
 
 ```py
-**friend1@example.com friends**
-**family1@example.com friends,family**
+friend1@example.com friends
+family1@example.com friends,family
 
 ```
 
 我们还可以成功地将这些数据加载回`MailingList`对象中：
 
 ```py
-**>>> m = MailingList('addresses.db')**
-**>>> m.email_map**
-**defaultdict(<class 'set'>, {})**
-**>>> m.load()**
-**>>> m.email_map**
-**defaultdict(<class 'set'>, {'friend2@example.com': {'friends\n'}, 'family1@example.com': {'family\n'}, 'friend1@example.com': {'friends\n'}})**
+>>> m = MailingList('addresses.db')
+>>> m.email_map
+defaultdict(<class 'set'>, {})
+>>> m.load()
+>>> m.email_map
+defaultdict(<class 'set'>, {'friend2@example.com': {'friends\n'}, 'family1@example.com': {'family\n'}, 'friend1@example.com': {'friends\n'}})
 
 ```
 
@@ -944,9 +944,9 @@ def send_mailing(self, subject, message, from_addr,
 这些简单的方法只是将它们的工作委托给 load 和 save，但现在我们可以在交互式解释器中编写这样的代码，并知道以前存储的所有地址都已经被加载，并且在我们完成时整个列表将保存到文件中：
 
 ```py
-**>>> with MailingList('addresses.db') as ml:**
-**...    ml.add_to_group('friend2@example.com', 'friends')**
-**...    ml.send_mailing("What's up", "hey friends, how's it going", 'me@example.com', 'friends')**
+>>> with MailingList('addresses.db') as ml:
+...    ml.add_to_group('friend2@example.com', 'friends')
+...    ml.send_mailing("What's up", "hey friends, how's it going", 'me@example.com', 'friends')
 
 ```
 

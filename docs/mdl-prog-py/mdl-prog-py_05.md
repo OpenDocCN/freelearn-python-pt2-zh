@@ -268,41 +268,41 @@ def to_string(recipe, num_servings):
 让我们看看这个模块是如何工作的。打开终端或命令行窗口，使用`cd`命令转到创建`recipes.py`文件的目录，并输入`python`启动 Python 解释器。然后，尝试输入以下内容以创建披萨面团的食谱：
 
 ```py
-**import recipes**
-**recipe = recipes.new("Pizza Dough", num_servings=1)**
-**recipes.add_ingredient(recipe, "Greek Yogurt", 1, "cup")**
-**recipes.add_ingredient(recipe, "Self-Raising Flour", 1.5, "cups")**
-**recipes.add_instruction(recipe, "Combine yogurt and 2/3 of the flour in a bowl and mix with a beater until combined")**
-**recipes.add_instruction(recipe, "Slowly add additional flour until it forms a stiff dough")**
-**recipes.add_instruction(recipe, "Turn out onto a floured surface and knead until dough is tacky")**
-**recipes.add_instruction(recipe, "Roll out into a circle of the desired thickness and place on a greased and lined baking tray")**
+import recipes
+recipe = recipes.new("Pizza Dough", num_servings=1)
+recipes.add_ingredient(recipe, "Greek Yogurt", 1, "cup")
+recipes.add_ingredient(recipe, "Self-Raising Flour", 1.5, "cups")
+recipes.add_instruction(recipe, "Combine yogurt and 2/3 of the flour in a bowl and mix with a beater until combined")
+recipes.add_instruction(recipe, "Slowly add additional flour until it forms a stiff dough")
+recipes.add_instruction(recipe, "Turn out onto a floured surface and knead until dough is tacky")
+recipes.add_instruction(recipe, "Roll out into a circle of the desired thickness and place on a greased and lined baking tray")
 
 ```
 
 到目前为止一切顺利。现在让我们使用`to_string()`函数打印出食谱的详细信息，并将其加倍到两份：
 
 ```py
-**for s in recipes.to_string(recipe, num_servings=2):**
- **print s**
+for s in recipes.to_string(recipe, num_servings=2):
+ **print s
 
 ```
 
 一切顺利的话，食谱应该已经打印出来了：
 
 ```py
-**Recipe for Pizza Dough, 2 servings:**
+Recipe for Pizza Dough, 2 servings:
 
-**Ingredients:**
+Ingredients:
 
- **Greek Yogurt - 2 cup**
- **Self-rising Flour - 3.0 cups**
+ **Greek Yogurt - 2 cup
+ **Self-rising Flour - 3.0 cups
 
-**Instructions:**
+Instructions:
 
-**1\. Combine yogurt and 2/3 of the flour in a bowl and mix with a beater until combined**
-**2\. Slowly add additional flour until it forms a stiff dough**
-**3\. Turn out onto a floured surface and knead until dough is tacky**
-**4\. Roll out into a circle of the desired thickness and place on a greased and lined baking tray**
+1\. Combine yogurt and 2/3 of the flour in a bowl and mix with a beater until combined
+2\. Slowly add additional flour until it forms a stiff dough
+3\. Turn out onto a floured surface and knead until dough is tacky
+4\. Roll out into a circle of the desired thickness and place on a greased and lined baking tray
 
 ```
 
@@ -404,15 +404,15 @@ print(a)
 一切顺利的话，你应该看到一个 2 x 2 的矩阵显示出来：
 
 ```py
-**[[1 2]**
- **[3 4]]**
+[[1 2]
+ **[3 4]]
 
 ```
 
 现在我们已经安装了 NumPy，让我们开始编写我们的包装模块。创建一个新的 Python 源文件，命名为`numpy_wrapper.py`，并输入以下内容到这个文件中：
 
 ```py
-**import numpy**
+import numpy
 
 ```
 
@@ -585,9 +585,9 @@ def get_indices(array):
 如果你运行你的程序，你应该会看到类似这样的输出：
 
 ```py
-**Branch 125000371 transferred $24,729,847 to bank WFBIUS6S, average = $14,954,617**
-**Branch 125000402 transferred $26,818,710 to bank CERYUS33, average = $16,338,043**
-**Branch 125001067 transferred $27,081,511 to bank EQTYUS44, average = $17,763,644**
+Branch 125000371 transferred $24,729,847 to bank WFBIUS6S, average = $14,954,617
+Branch 125000402 transferred $26,818,710 to bank CERYUS33, average = $16,338,043
+Branch 125001067 transferred $27,081,511 to bank EQTYUS44, average = $17,763,644
 
 ```
 
@@ -664,7 +664,7 @@ if module_name != "":
 尝试运行这个程序，当提示时，输入`module_a`。你应该会看到以下消息显示：
 
 ```py
-**Hello from module_a**
+Hello from module_a
 
 ```
 
@@ -673,7 +673,7 @@ if module_name != "":
 当然，`importlib`并不仅限于导入与当前模块相同目录中的模块；如果需要，你可以包括包名。例如：
 
 ```py
-**module = importlib.import_module("package.sub_package.module")**
+module = importlib.import_module("package.sub_package.module")
 
 ```
 
@@ -727,16 +727,16 @@ def logout():
 
 ```py
 cur_user = None
-**login_hook = None**
+login_hook = None
 
-**def set_login_hook(hook):**
- **login_hook = hook**
+def set_login_hook(hook):
+ **login_hook = hook
 
 def login(username, password):
     if is_password_correct(username, password):
         cur_user = username
- **if login_hook != None:**
- **login_hook(username)**
+ **if login_hook != None:
+ **login_hook(username)
         return True
     else:
         return False

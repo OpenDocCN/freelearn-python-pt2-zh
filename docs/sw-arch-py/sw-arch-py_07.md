@@ -128,9 +128,9 @@ def hash_stream(stream, chunk_size=4096):
 所有代码都是 Python3，除非另有明确说明。
 
 ```py
-**>>> import hash_stream**
-**>>> hash_stream.hash_stream(open('hash_stream.py'))**
-**'e51e8ddf511d64aeb460ef12a43ce480'**
+>>> import hash_stream
+>>> hash_stream.hash_stream(open('hash_stream.py'))
+'e51e8ddf511d64aeb460ef12a43ce480'
 
 ```
 
@@ -165,11 +165,11 @@ def hash_stream_md5(stream, chunk_size=4096):
 ```
 
 ```py
-**>>> import hash_stream**
-**>>> hash_stream.hash_stream_md5(open('hash_stream.py'))**
-**'e752a82db93e145fcb315277f3045f8d'**
-**>>> hash_stream.hash_stream_sha1(open('hash_stream.py'))**
-**'360e3bd56f788ee1a2d8c7eeb3e2a5a34cca1710'**
+>>> import hash_stream
+>>> hash_stream.hash_stream_md5(open('hash_stream.py'))
+'e752a82db93e145fcb315277f3045f8d'
+>>> hash_stream.hash_stream_sha1(open('hash_stream.py'))
+'360e3bd56f788ee1a2d8c7eeb3e2a5a34cca1710'
 
 ```
 
@@ -195,21 +195,21 @@ class StreamHasher(object):
 首先让我们尝试使用`md5`，如下所示：
 
 ```py
-**>>> import hasher**
-**>>> from hashlib import md5**
-**>>> md5h = hasher.StreamHasher(algorithm=md5)**
-**>>> md5h.get_hash(open('hasher.py'))**
-**'7d89cdc1f11ec62ec918e0c6e5ea550d'**
+>>> import hasher
+>>> from hashlib import md5
+>>> md5h = hasher.StreamHasher(algorithm=md5)
+>>> md5h.get_hash(open('hasher.py'))
+'7d89cdc1f11ec62ec918e0c6e5ea550d'
 
 ```
 
 现在使用`sha1`：
 
 ```py
-**>>> from hashlib import sha1**
-**>>> shah_h = hasher.StreamHasher(algorithm=sha1)**
-**>>> shah_h.get_hash(open('hasher.py'))**
-**'1f0976e070b3320b60819c6aef5bd6b0486389dd'**
+>>> from hashlib import sha1
+>>> shah_h = hasher.StreamHasher(algorithm=sha1)
+>>> shah_h.get_hash(open('hasher.py'))
+'1f0976e070b3320b60819c6aef5bd6b0486389dd'
 
 ```
 
@@ -245,13 +245,13 @@ class StreamHasher(object):
 在上一段代码中我们做了什么？我们只是将`get_hash`函数重命名为`Get_Call`。让我们看看这会产生什么影响。
 
 ```py
-**>>> from hashlib import md5, sha1**
-**>>> md5_h = hasher.StreamHasher(md5)**
-**>>> md5_h(open('hasher.py'))**
-**'ad5d5673a3c9a4f421240c4dbc139b22'**
-**>>> sha_h = hasher.StreamHasher(sha1)**
-**>>> sha_h(open('hasher.py'))**
-**'d174e2fae1d6e1605146ca9d7ca6ee927a74d6f2'**
+>>> from hashlib import md5, sha1
+>>> md5_h = hasher.StreamHasher(md5)
+>>> md5_h(open('hasher.py'))
+'ad5d5673a3c9a4f421240c4dbc139b22'
+>>> sha_h = hasher.StreamHasher(sha1)
+>>> sha_h(open('hasher.py'))
+'d174e2fae1d6e1605146ca9d7ca6ee927a74d6f2'
 
 ```
 
@@ -315,11 +315,11 @@ class Singleton(object):
 ```
 
 ```py
-**>>> from singleton import Singleton**
-**>>> s1 = Singleton()**
-**>>> s2 = Singleton()**
-**>>> s1==s2**
-**True**
+>>> from singleton import Singleton
+>>> s1 = Singleton()
+>>> s2 = Singleton()
+>>> s1==s2
+True
 
 ```
 
@@ -2158,29 +2158,29 @@ Python 中的所有容器/序列类型，即列表、元组、字符串和集合
 例如，我们可以这样遍历列表：
 
 ```py
-**>>> for i in range(5):**
-**...         print(i)**
-**...** 
-**0**
-**1**
-**2**
-**3**
-**4**
+>>> for i in range(5):
+...         print(i)
+...** 
+0
+1
+2
+3
+4
 
 ```
 
 在内部，类似于以下的事情发生：
 
 ```py
-**>>> I = iter(range(5))**
-**>>> for i in I:**
-**...         print(i)**
-**...** 
-**0**
-**1**
-**2**
-**3**
-**4**
+>>> I = iter(range(5))
+>>> for i in I:
+...         print(i)
+...** 
+0
+1
+2
+3
+4
 
 ```
 
@@ -2189,35 +2189,35 @@ Python 中的所有容器/序列类型，即列表、元组、字符串和集合
 +   **列表**：
 
 ```py
-**>>> fruits = ['apple','oranges','grapes']**
-**>>> iter(fruits)**
-**<list_iterator object at 0x7fd626bedba8>**
+>>> fruits = ['apple','oranges','grapes']
+>>> iter(fruits)
+<list_iterator object at 0x7fd626bedba8>
 
 ```
 
 +   **元组**：
 
 ```py
-**>>> prices_per_kg = (('apple', 350), ('oranges', 80), ('grapes', 120))**
-**>>> iter(prices_per_kg)**
-**<tuple_iterator object at 0x7fd626b86fd0>**
+>>> prices_per_kg = (('apple', 350), ('oranges', 80), ('grapes', 120))
+>>> iter(prices_per_kg)
+<tuple_iterator object at 0x7fd626b86fd0>
 
 ```
 
 +   **集合**：
 
 ```py
-**>>> subjects = {'Maths','Chemistry','Biology','Physics'}**
-**>>> iter(subjects)**
-**<set_iterator object at 0x7fd626b91558>**
+>>> subjects = {'Maths','Chemistry','Biology','Physics'}
+>>> iter(subjects)
+<set_iterator object at 0x7fd626b91558>
 
 ```
 
 即使在 Python3 中，字典也有自己的特殊键迭代器类型：
 
 ```py
-**>>> iter(dict(prices_per_kg))**
-**<dict_keyiterator object at 0x7fd626c35ae8>**
+>>> iter(dict(prices_per_kg))
+<dict_keyiterator object at 0x7fd626c35ae8>
 
 ```
 

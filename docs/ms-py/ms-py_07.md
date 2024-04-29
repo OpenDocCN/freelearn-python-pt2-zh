@@ -117,21 +117,21 @@ async def sleeper():
 并行处理有很多用途：服务器同时处理多个请求，加快繁重任务的速度，等待外部资源等等。通用协程在某些情况下可以帮助处理多个请求和外部资源，但它们仍然是同步的，因此受到限制。使用`asyncio`，我们可以超越通用协程的限制，轻松处理阻塞资源，而不必担心阻塞主线程。让我们快速看一下代码如何在多个并行函数中不会阻塞：
 
 ```py
-**>>> import asyncio**
+>>> import asyncio
 
-**>>> async def sleeper(delay):**
-**...     await asyncio.sleep(delay)**
-**...     print('Finished sleeper with delay: %d' % delay)**
+>>> async def sleeper(delay):
+...     await asyncio.sleep(delay)
+...     print('Finished sleeper with delay: %d' % delay)
 
-**>>> loop = asyncio.get_event_loop()**
-**>>> results = loop.run_until_complete(asyncio.wait((**
-**...     sleeper(1),**
-**...     sleeper(3),**
-**...     sleeper(2),**
-**... )))**
-**Finished sleeper with delay: 1**
-**Finished sleeper with delay: 2**
-**Finished sleeper with delay: 3**
+>>> loop = asyncio.get_event_loop()
+>>> results = loop.run_until_complete(asyncio.wait((
+...     sleeper(1),
+...     sleeper(3),
+...     sleeper(2),
+... )))
+Finished sleeper with delay: 1
+Finished sleeper with delay: 2
+Finished sleeper with delay: 3
 
 ```
 
@@ -164,42 +164,42 @@ async def sleeper():
 这些类的创建并不是你需要直接担心的事情。这是因为推荐的方式是通过`asyncio.ensure_future`或`loop.create_task`来创建类。前者实际上在内部执行了`loop.create_task`，但如果你只想在主/默认事件循环上执行它而不必事先指定，那么这种方式更方便。使用起来非常简单。要手动创建自己的未来，只需告诉事件循环为你执行`create_task`。下面的示例由于所有的设置代码而有点复杂，但 C 的使用应该是清楚的。最重要的一点是事件循环应该被链接，以便任务知道如何/在哪里运行：
 
 ```py
-**>>> import asyncio**
+>>> import asyncio
 
-**>>> async def sleeper(delay):**
-**...     await asyncio.sleep(delay)**
-**...     print('Finished sleeper with delay: %d' % delay)**
+>>> async def sleeper(delay):
+...     await asyncio.sleep(delay)
+...     print('Finished sleeper with delay: %d' % delay)
 
-**# Create an event loop**
-**>>> loop = asyncio.get_event_loop()**
+# Create an event loop
+>>> loop = asyncio.get_event_loop()
 
-**# Create the task**
-**>>> result = loop.call_soon(loop.create_task, sleeper(1))**
+# Create the task
+>>> result = loop.call_soon(loop.create_task, sleeper(1))
 
-**# Make sure the loop stops after 2 seconds**
-**>>> result = loop.call_later(2, loop.stop)**
+# Make sure the loop stops after 2 seconds
+>>> result = loop.call_later(2, loop.stop)
 
-**# Start the loop and make it run forever. Or at least until the loop.stop gets**
-**# called in 2 seconds.**
-**>>> loop.run_forever()**
-**Finished sleeper with delay: 1**
+# Start the loop and make it run forever. Or at least until the loop.stop gets
+# called in 2 seconds.
+>>> loop.run_forever()
+Finished sleeper with delay: 1
 
 ```
 
 现在，稍微了解一下调试异步函数。调试异步函数曾经非常困难，甚至是不可能的，因为没有好的方法来查看函数在哪里以及如何停滞。幸运的是，情况已经改变。在`Task`类的情况下，只需调用`task.get_stack`或`task.print_stack`就可以看到它当前所在的位置。使用方法可以简单到如下：
 
 ```py
-**>>> import asyncio**
+>>> import asyncio
 
-**>>> async def stack_printer():**
-**...     for task in asyncio.Task.all_tasks():**
-**...         task.print_stack()**
+>>> async def stack_printer():
+...     for task in asyncio.Task.all_tasks():
+...         task.print_stack()
 
-**# Create an event loop**
-**>>> loop = asyncio.get_event_loop()**
+# Create an event loop
+>>> loop = asyncio.get_event_loop()
 
-**# Create the task**
-**>>> result = loop.run_until_complete(stack_printer())**
+# Create the task
+>>> result = loop.run_until_complete(stack_printer())
 
 ```
 
@@ -287,74 +287,74 @@ asyncio.set_event_loop_policy(policy)
 所有这些函数都返回`asyncio.Handle`对象。只要任务尚未执行，这些对象就允许通过`handle.cancel`函数取消任务。但是要小心取消来自其他线程，因为取消也不是线程安全的。要以线程安全的方式执行它，我们还必须将取消函数作为任务执行：`loop.call_soon_threadsafe(handle.cancel)`。以下是一个示例用法：
 
 ```py
-**>>> import time**
-**>>> import asyncio**
+>>> import time
+>>> import asyncio
 
-**>>> t = time.time()**
+>>> t = time.time()
 
-**>>> def printer(name):**
-**...     print('Started %s at %.1f' % (name, time.time() - t))**
-**...     time.sleep(0.2)**
-**...     print('Finished %s at %.1f' % (name, time.time() - t))**
+>>> def printer(name):
+...     print('Started %s at %.1f' % (name, time.time() - t))
+...     time.sleep(0.2)
+...     print('Finished %s at %.1f' % (name, time.time() - t))
 
-**>>> loop = asyncio.get_event_loop()**
-**>>> result = loop.call_at(loop.time() + .2, printer, 'call_at')**
-**>>> result = loop.call_later(.1, printer, 'call_later')**
-**>>> result = loop.call_soon(printer, 'call_soon')**
-**>>> result = loop.call_soon_threadsafe(printer, 'call_soon_threadsafe')**
+>>> loop = asyncio.get_event_loop()
+>>> result = loop.call_at(loop.time() + .2, printer, 'call_at')
+>>> result = loop.call_later(.1, printer, 'call_later')
+>>> result = loop.call_soon(printer, 'call_soon')
+>>> result = loop.call_soon_threadsafe(printer, 'call_soon_threadsafe')
 
-**>>> # Make sure we stop after a second**
-**>>> result = loop.call_later(1, loop.stop)**
+>>> # Make sure we stop after a second
+>>> result = loop.call_later(1, loop.stop)
 
-**>>> loop.run_forever()**
-**Started call_soon at 0.0**
-**Finished call_soon at 0.2**
-**Started call_soon_threadsafe at 0.2**
-**Finished call_soon_threadsafe at 0.4**
-**Started call_later at 0.4**
-**Finished call_later at 0.6**
-**Started call_at at 0.6**
-**Finished call_at at 0.8**
+>>> loop.run_forever()
+Started call_soon at 0.0
+Finished call_soon at 0.2
+Started call_soon_threadsafe at 0.2
+Finished call_soon_threadsafe at 0.4
+Started call_later at 0.4
+Finished call_later at 0.6
+Started call_at at 0.6
+Finished call_at at 0.8
 
 ```
 
 你可能会想知道为什么我们在这里没有使用协程装饰器。原因是循环不允许直接运行协程。要通过这些调用函数运行协程，我们需要确保它被包装在`asyncio.Task`中。正如我们在前一段中看到的那样，这很容易——幸运的是：
 
 ```py
-**>>> import time**
-**>>> import asyncio**
+>>> import time
+>>> import asyncio
 
-**>>> t = time.time()**
+>>> t = time.time()
 
-**>>> async def printer(name):**
-**...     print('Started %s at %.1f' % (name, time.time() - t))**
-**...     await asyncio.sleep(0.2)**
-**...     print('Finished %s at %.1f' % (name, time.time() - t))**
+>>> async def printer(name):
+...     print('Started %s at %.1f' % (name, time.time() - t))
+...     await asyncio.sleep(0.2)
+...     print('Finished %s at %.1f' % (name, time.time() - t))
 
-**>>> loop = asyncio.get_event_loop()**
+>>> loop = asyncio.get_event_loop()
 
-**>>> result = loop.call_at(**
-**...     loop.time() + .2, loop.create_task, printer('call_at'))**
-**>>> result = loop.call_later(.1, loop.create_task,**
-**...     printer('call_later'))**
-**>>> result = loop.call_soon(loop.create_task,**
-**...     printer('call_soon'))**
+>>> result = loop.call_at(
+...     loop.time() + .2, loop.create_task, printer('call_at'))
+>>> result = loop.call_later(.1, loop.create_task,
+...     printer('call_later'))
+>>> result = loop.call_soon(loop.create_task,
+...     printer('call_soon'))
 
-**>>> result = loop.call_soon_threadsafe(**
-**...     loop.create_task, printer('call_soon_threadsafe'))**
+>>> result = loop.call_soon_threadsafe(
+...     loop.create_task, printer('call_soon_threadsafe'))
 
-**>>> # Make sure we stop after a second**
-**>>> result = loop.call_later(1, loop.stop)**
+>>> # Make sure we stop after a second
+>>> result = loop.call_later(1, loop.stop)
 
-**>>> loop.run_forever()**
-**Started call_soon at 0.0**
-**Started call_soon_threadsafe at 0.0**
-**Started call_later at 0.1**
-**Started call_at at 0.2**
-**Finished call_soon at 0.2**
-**Finished call_soon_threadsafe at 0.2**
-**Finished call_later at 0.3**
-**Finished call_at at 0.4**
+>>> loop.run_forever()
+Started call_soon at 0.0
+Started call_soon_threadsafe at 0.0
+Started call_later at 0.1
+Started call_at at 0.2
+Finished call_soon at 0.2
+Finished call_soon_threadsafe at 0.2
+Finished call_later at 0.3
+Finished call_at at 0.4
 
 ```
 
@@ -375,95 +375,95 @@ asyncio.set_event_loop_policy(policy)
 首先，让我们看传统的顺序版本：
 
 ```py
-**>>> import time**
-**>>> import subprocess**
-**>>>**
-**>>>**
-**>>> t = time.time()**
-**>>>**
-**>>>**
-**>>> def process_sleeper():**
-**...     print('Started sleep at %.1f' % (time.time() - t))**
-**...     process = subprocess.Popen(['sleep', '0.1'])**
-**...     process.wait()**
-**...     print('Finished sleep at %.1f' % (time.time() - t))**
-**...**
-**>>>**
-**>>> for i in range(3):**
-**...     process_sleeper()**
-**Started sleep at 0.0**
-**Finished sleep at 0.1**
-**Started sleep at 0.1**
-**Finished sleep at 0.2**
-**Started sleep at 0.2**
-**Finished sleep at 0.3**
+>>> import time
+>>> import subprocess
+>>>
+>>>
+>>> t = time.time()
+>>>
+>>>
+>>> def process_sleeper():
+...     print('Started sleep at %.1f' % (time.time() - t))
+...     process = subprocess.Popen(['sleep', '0.1'])
+...     process.wait()
+...     print('Finished sleep at %.1f' % (time.time() - t))
+...
+>>>
+>>> for i in range(3):
+...     process_sleeper()
+Started sleep at 0.0
+Finished sleep at 0.1
+Started sleep at 0.1
+Finished sleep at 0.2
+Started sleep at 0.2
+Finished sleep at 0.3
 
 ```
 
 由于一切都是按顺序执行的，所以等待的时间是休眠命令休眠的 0.1 秒的三倍。因此，与其同时等待所有这些，这次让我们并行运行它们：
 
 ```py
-**>>> import time**
-**>>> import subprocess **
+>>> import time
+>>> import subprocess 
 
-**>>> t = time.time()**
+>>> t = time.time()
 
-**>>> def process_sleeper():**
-**...     print('Started sleep at %.1f' % (time.time() - t))**
-**...     return subprocess.Popen(['sleep', '0.1'])**
-**...**
-**>>>**
-**>>> processes = []**
-**>>> for i in range(5):**
-**...     processes.append(process_sleeper())**
-**Started sleep at 0.0**
-**Started sleep at 0.0**
-**Started sleep at 0.0**
-**Started sleep at 0.0**
-**Started sleep at 0.0**
+>>> def process_sleeper():
+...     print('Started sleep at %.1f' % (time.time() - t))
+...     return subprocess.Popen(['sleep', '0.1'])
+...
+>>>
+>>> processes = []
+>>> for i in range(5):
+...     processes.append(process_sleeper())
+Started sleep at 0.0
+Started sleep at 0.0
+Started sleep at 0.0
+Started sleep at 0.0
+Started sleep at 0.0
 
-**>>> for process in processes:**
-**...     returncode = process.wait()**
-**...     print('Finished sleep at %.1f' % (time.time() - t))**
-**Finished sleep at 0.1**
-**Finished sleep at 0.1**
-**Finished sleep at 0.1**
-**Finished sleep at 0.1**
-**Finished sleep at 0.1**
+>>> for process in processes:
+...     returncode = process.wait()
+...     print('Finished sleep at %.1f' % (time.time() - t))
+Finished sleep at 0.1
+Finished sleep at 0.1
+Finished sleep at 0.1
+Finished sleep at 0.1
+Finished sleep at 0.1
 
 ```
 
 虽然从运行时间上看这样做要好得多，但我们的程序结构现在有点混乱。我们需要两个循环，一个用于启动进程，另一个用于测量完成时间。此外，我们还必须将打印语句移到函数外部，这通常也是不可取的。这次，我们将尝试`asyncio`版本：
 
 ```py
-**>>> import time**
-**>>> import asyncio**
+>>> import time
+>>> import asyncio
 
-**>>> t = time.time()**
+>>> t = time.time()
 
-**>>> async def async_process_sleeper():**
-**...     print('Started sleep at %.1f' % (time.time() - t))**
-**...     process = await asyncio.create_subprocess_exec('sleep', '0.1')**
-**...     await process.wait()**
-**...     print('Finished sleep at %.1f' % (time.time() - t))**
+>>> async def async_process_sleeper():
+...     print('Started sleep at %.1f' % (time.time() - t))
+...     process = await asyncio.create_subprocess_exec('sleep', '0.1')
+...     await process.wait()
+...     print('Finished sleep at %.1f' % (time.time() - t))
 
-**>>> loop = asyncio.get_event_loop()**
-**>>> for i in range(5):**
-**...     task = loop.create_task(async_process_sleeper())**
+>>> loop = asyncio.get_event_loop()
+>>> for i in range(5):
+...     task = loop.create_task(async_process_sleeper())
 
-**>>> future = loop.call_later(.5, loop.stop)**
+>>> future = loop.call_later(.5, loop.stop)
 
-**>>> loop.run_forever()**
-**Started sleep at 0.0**
-**Started sleep at 0.0**
-**Started sleep at 0.0**
-**Started sleep at 0.0**
-**Started sleep at 0.0**
-**Finished sleep at 0.1**
-**Finished sleep at 0.1**
-**Finished sleep at 0.1**
-**Finished sleep at 0.1**
-**Finished sleep at 0.1**
+>>> loop.run_forever()
+Started sleep at 0.0
+Started sleep at 0.0
+Started sleep at 0.0
+Started sleep at 0.0
+Started sleep at 0.0
+Finished sleep at 0.1
+Finished sleep at 0.1
+Finished sleep at 0.1
+Finished sleep at 0.1
+Finished sleep at 0.1
 
 ```
 
@@ -516,14 +516,14 @@ if __name__ == '__main__':
 代码足够简单，但这段代码中有一些对我们来说不明显但却需要的部分。虽然创建子进程和编写代码是相当明显的，但您可能会对`process.stdin.write_eof()`这一行感到疑惑。问题在于缓冲。为了提高性能，大多数程序默认会对输入和输出进行缓冲。在 Python 程序的情况下，结果是除非我们发送**文件结束**（**eof**），否则程序将继续等待更多的输入。另一种选择是关闭`stdin`流或以某种方式与 Python 程序通信，告诉它我们不会再发送任何输入。然而，这当然是需要考虑的事情。另一个选择是使用`yield` from `process.stdin.drain()`，但那只处理了代码的发送方；接收方可能仍在等待更多的输入。不过，让我们看一下输出：
 
 ```py
-**# python3 processes.py**
-**x: 256**
-**y: 16**
-**z: 4**
-**i: 0**
-**i: 1**
-**i: 2**
-**i: 3**
+# python3 processes.py
+x: 256
+y: 16
+z: 4
+i: 0
+i: 1
+i: 2
+i: 3
 
 ```
 
@@ -624,37 +624,37 @@ if __name__ == '__main__':
 服务器：
 
 ```py
-**# python3 simple_connections.py server**
-**0.4 Client connected ('127.0.0.1', 59990)**
-**0.4 Started sending to ('127.0.0.1', 59990)**
-**0.4 client: ('127.0.0.1', 59990), 0**
-**0.4 client: ('127.0.0.1', 59990), 1**
-**0.4 client: ('127.0.0.1', 59990), 2**
-**0.4 Finished sending to ('127.0.0.1', 59990)**
-**2.0 Client connected ('127.0.0.1', 59991)**
-**2.0 Started sending to ('127.0.0.1', 59991)**
-**2.0 client: ('127.0.0.1', 59991), 0**
-**2.0 client: ('127.0.0.1', 59991), 1**
-**2.0 Finished sending to ('127.0.0.1', 59991)**
+# python3 simple_connections.py server
+0.4 Client connected ('127.0.0.1', 59990)
+0.4 Started sending to ('127.0.0.1', 59990)
+0.4 client: ('127.0.0.1', 59990), 0
+0.4 client: ('127.0.0.1', 59990), 1
+0.4 client: ('127.0.0.1', 59990), 2
+0.4 Finished sending to ('127.0.0.1', 59990)
+2.0 Client connected ('127.0.0.1', 59991)
+2.0 Started sending to ('127.0.0.1', 59991)
+2.0 client: ('127.0.0.1', 59991), 0
+2.0 client: ('127.0.0.1', 59991), 1
+2.0 Finished sending to ('127.0.0.1', 59991)
 
 ```
 
 第一个客户端：
 
 ```py
-**# python3 simple_connections.py client 3**
-**1.4 Got line:  client: ('127.0.0.1', 59990), 0**
-**2.4 Got line:  client: ('127.0.0.1', 59990), 1**
-**3.4 Got line:  client: ('127.0.0.1', 59990), 2**
+# python3 simple_connections.py client 3
+1.4 Got line:  client: ('127.0.0.1', 59990), 0
+2.4 Got line:  client: ('127.0.0.1', 59990), 1
+3.4 Got line:  client: ('127.0.0.1', 59990), 2
 
 ```
 
 第二个客户端：
 
 ```py
-**# python3 simple_connections.py client 2**
-**3.0 Got line:  client: ('127.0.0.1', 59991), 0**
-**4.0 Got line:  client: ('127.0.0.1', 59991), 1**
+# python3 simple_connections.py client 2
+3.0 Got line:  client: ('127.0.0.1', 59991), 0
+4.0 Got line:  client: ('127.0.0.1', 59991), 1
 
 ```
 

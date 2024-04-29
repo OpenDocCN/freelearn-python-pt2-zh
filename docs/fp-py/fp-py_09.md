@@ -28,11 +28,18 @@
 
 从数学上讲，我们可能会说两个集合的乘积，![枚举笛卡尔积](img/B03652_09_01.jpg)，有 52 对如下：
 
-[PRE0]
+```py
+{(1, C), (1, D), (1, H), (1, S), (2, C), (2, D), (2, H), (2, S), ..., (13, C), (13, D), (13, H), (13, S)}
+
+```
 
 我们可以通过执行以下命令来产生前述结果：
 
-[PRE1]
+```py
+>>> list(product(range(1, 14), '♣♦♥♠'))
+[(1, '♣'), (1, '♦'), (1, '♥'), (1, '♠'),(2, '♣'), (2, '♦'), (2, '♥'), (2, '♠'),… (13, '♣'), (13, '♦'), (13, '♥'), (13, '♠')]
+
+```
 
 产品的计算可以扩展到任意数量的可迭代集合。使用大量的集合可能会导致非常大的结果集。
 
@@ -42,7 +49,11 @@
 
 我们可以使用`join()`函数来连接两个表，如下所示的命令：
 
-[PRE2]
+```py
+def join(t1, t2, where):):
+ **return filter(where, product(t1, t2)))))
+
+```
 
 计算两个可迭代对象`t1`和`t2`的所有组合。`filter()`函数将应用给定的`where`函数来通过或拒绝不符合给定条件的项目，以匹配每个可迭代对象的适当行。当`where`函数返回一个简单的布尔值时，这将起作用。
 
@@ -50,19 +61,30 @@
 
 假设我们有一个`Color`对象的表如下：
 
-[PRE3]
+```py
+[Color(rgb=(239, 222, 205), name='Almond'), Color(rgb=(255, 255, 153), name='Canary'), Color(rgb=(28, 172, 120), name='Green'),...Color(rgb=(255, 174, 66), name='Yellow Orange')]
+
+```
 
 有关更多信息，请参见第六章，*递归和减少*，在那里我们向您展示了如何解析颜色文件以创建`namedtuple`对象。在这种情况下，我们将 RGB 保留为三元组，而不是分解每个单独的字段。
 
 一幅图像将有一个像素集合：
 
-[PRE4]
+```py
+pixels= [(([(r, g, b), (r, g, b), (r, g, b), ...)
+
+```
 
 实际上，**Python Imaging Library**（**PIL**）包以多种形式呈现像素。其中之一是从（*x*，*y*）坐标到 RGB 三元组的映射。有关更多信息，请访问[Pillow 项目文档](https://pypi.python.org/pypi/Pillow)。
 
 给定一个`PIL.Image`对象，我们可以使用以下命令迭代像素集合：
 
-[PRE5]
+```py
+def pixel_iter(image):
+ **w, h = img.size
+ **return ((c, img.getpixel(c)) for c in product(range(w), range(h)))
+
+```
 
 我们已经确定了每个坐标的范围，基于图像大小。`product(range(w), range(h))`方法的计算创建了所有可能的坐标组合。实际上，这是两个嵌套的`for`循环。
 
@@ -78,13 +100,22 @@
 
 以下是欧几里得距离和曼哈顿距离函数：
 
-[PRE6]
+```py
+def euclidean(pixel, color):
+ **return math.sqrt(sum(map(lambda x, y: (x-y)**2, pixel, color.rgb)))))))
+def manhattan(pixel, color):
+ **return sum(map(lambda x, y: abs(x-y), pixel, color.rgb)))))
+
+```
 
 欧几里得距离测量 RGB 空间中三个点之间直角三角形的斜边。曼哈顿距离对三个点之间的直角三角形的每条边求和。欧几里得距离提供了精度，而曼哈顿距离提供了计算速度。
 
 展望未来，我们的目标是一个看起来像这样的结构。对于每个单独的像素，我们可以计算该像素颜色与有限颜色集中可用颜色之间的距离。单个像素的这种计算结果可能如下所示：
 
-[PRE7]
+```py
+(((0, 0), (92, 139, 195), Color(rgb=(239, 222, 205), name='Almond'), 169.10943202553784), ((0, 0), (92, 139, 195), Color(rgb=(255, 255, 153), name='Canary'), 204.42357985320578), ((0, 0), (92, 139, 195), Color(rgb=(28, 172, 120), name='Green'), 103.97114984456024), ((0, 0), (92, 139, 195), Color(rgb=(48, 186, 143), name='Mountain Meadow'), 82.75868534480233), ((0, 0), (92, 139, 195), Color(rgb=(255, 73, 108), name='Radical Red'), 196.19887869200477), ((0, 0), (92, 139, 195), Color(rgb=(253, 94, 83), name='Sunset Orange'), 201.2212712413874), ((0, 0), (92, 139, 195), Color(rgb=(255, 174, 66), name='Yellow Orange'), 210.7961100210343))
+
+```
 
 我们展示了一个包含多个四元组的整体元组。每个四元组包含以下内容：
 
@@ -98,7 +129,10 @@
 
 我们可以看到最小的欧几里得距离是最接近的匹配颜色。这种缩减很容易用`min()`函数实现。如果将整个元组分配给一个变量名`choices`，像素级的缩减将如下所示：
 
-[PRE8]
+```py
+min(choices, key=lambda xypcd: xypcd[3]))])
+
+```
 
 我们称每个四元组为 xypcd，即 xy 坐标、像素、颜色和距离。然后，最小距离计算将选择一个单个的四元组作为像素和颜色之间的最佳匹配。
 
@@ -108,13 +142,25 @@
 
 将像素映射到颜色的一种方法是使用`product()`函数枚举所有像素和所有颜色：
 
-[PRE9]
+```py
+xy = lambda xyp_c: xyp_c[0][0]
+p = lambda xyp_c: xyp_c[0][1]
+c = lambda xyp_c: xyp_c[1]
+distances= (( = ((xy(item), p(item), c(item), euclidean(p(item), c(item)))
+ **for item in product(pixel_iter(img), colors)))))
+
+```
 
 这个核心是`product(pixel_iter(img), colors)`方法，它创建了所有像素与所有颜色的组合。我们将对数据进行一些重组以使其扁平化。我们将应用`euclidean()`函数来计算像素颜色和`Color`对象之间的距离。
 
 最终颜色的选择使用了`groupby()`函数和`min(choices,...)`表达式，如下面的命令片段所示：
 
-[PRE10]
+```py
+for _, choices in groupby(distances, key=lambda xy_p_c_d:
+ **xy_p_c_d[0]):
+ **print(min(choices, key=lambda xypcd: xypcd[3])))]))
+
+```
 
 像素和颜色的整体乘积是一个长而扁平的可迭代对象。我们将可迭代对象分组成小集合，其中坐标匹配。这将把大的可迭代对象分成小的可迭代对象，每个对象只与一个像素相关联的颜色。然后我们可以为每种颜色选择最小的颜色距离。
 
@@ -146,7 +192,17 @@
 
 当考虑预先计算从源颜色到目标颜色的所有转换时，我们需要一些任意图像的整体统计数据。与本书相关的代码包括`IMG_2705.jpg`。以下是从指定图像收集一些数据的基本算法：
 
-[PRE11]
+```py
+from collections import defaultdict, Counter
+palette = defaultdict(list)
+for xy_p in pixel_iter(img):
+ **xy, p = xy_p
+ **palette[p].append(xy)
+w, h = img.size
+print(""("Total pixels", w*h)
+print(""("Total colors", len(palette)))))
+
+```
 
 我们将所有给定颜色的像素收集到一个按颜色组织的列表中。从中，我们将学到以下事实中的第一个：
 
@@ -166,7 +222,10 @@
 
 我们可以使用以下命令片段将掩码值应用于 RGB 字节：
 
-[PRE12]
+```py
+masked_color= tuple(map(lambda x: x&0b11100000, c))
+
+```
 
 这将挑选出红色、绿色和蓝色值的最重要的 3 位。如果我们使用这个来创建一个`Counter`对象，我们会看到我们有 214 个不同的值。
 
@@ -178,7 +237,10 @@
 
 +   计算源到目标颜色的映射。在这种情况下，让我们使用 3 位颜色值作为输出。每个 R、G 和 B 值来自`range(0, 256, 32)`方法中的八个值。我们可以使用这个表达式来枚举所有的输出颜色：
 
-[PRE13]
+```py
+product(range(0,256,32), range(0,256,32), range(0,256,32))
+
+```
 
 +   然后我们可以计算到源调色板中最近颜色的欧几里得距离，只需计算 68,096 次。这大约需要 0.14 秒。这只需要做一次，就可以计算出 20 万个映射。
 
@@ -202,7 +264,13 @@
 
 以下是一种构建颜色映射的方法，它同时结合了到给定一组颜色的距离和源颜色的截断：
 
-[PRE14]
+```py
+bit3 = range(0, 256, 0b100000)
+best = (min(((((euclidean(rgb, c), rgb, c) for c in colors)
+ **for rgb in product(bit3, bit3, bit3)))))
+color_map = dict(((((b[1], b[2].rgb) for b in best)
+
+```
 
 我们创建了一个`range`对象`bit3`，它将遍历所有 8 个 3 位颜色值。
 
@@ -216,7 +284,15 @@
 
 以下是图像替换的命令：
 
-[PRE15]
+```py
+clone = img.copy()
+for xy, p in pixel_iter(img):
+ **r, g, b = p
+ **repl = color_map[(([(0b11100000&r, 0b11100000&g, 0b11100000&b)]])]
+ **clone.putpixel(xy, repl)
+clone.show()
+
+```
 
 这只是使用一些 PIL 功能来用其他像素替换图片中的所有像素。
 
@@ -240,7 +316,13 @@
 
 假设我们有一个包含 36 个值的成本矩阵，显示了六个代理人和六个任务的成本。我们可以将问题表述如下：
 
-[PRE16]
+```py
+perms = permutations(range(6)))))
+alt= [(([(sum(cost[x][y] for y, x in enumerate(perm)), perm) for perm in perms]
+m = min(alt)[0]
+print([[([ans for s, ans in alt if s == m]))])
+
+```
 
 我们已经创建了六个代理人的所有任务的排列。我们已经计算了分配给每个代理人的每个任务的成本矩阵的所有成本之和。最小成本就是最佳解决方案。在许多情况下，可能会有多个最佳解决方案；我们将找到所有这些解决方案。
 
@@ -252,33 +334,61 @@
 
 例如，有 2,598,960 种 5 张牌的扑克手。我们可以通过执行以下命令列举所有 200 万手：
 
-[PRE17]
+```py
+hands = list(combinations(tuple(product(range(13), '♠♥♦♣')), 5))
+
+```
 
 更实际的是，我们有一个包含多个变量的数据集。一个常见的探索技术是确定数据集中所有变量对之间的相关性。如果有*v*个变量，那么我们将枚举必须通过执行以下命令进行比较的所有变量：
 
-[PRE18]
+```py
+combinations(range(v), 2)
+
+```
 
 让我们从[`www.tylervigen.com`](http://www.tylervigen.com)获取一些样本数据，以展示这将如何工作。我们将选择三个具有相同时间范围的数据集：数字 7、43 和 3890。我们将简单地将数据层压成网格，重复年份列。
 
 这是年度数据的第一行和剩余行的样子：
 
-[PRE19]
+```py
+[('year', 'Per capita consumption of cheese (US)Pounds (USDA)', 'Number of people who died by becoming tangled in their bedsheetsDeaths (US) (CDC)', 'year', 'Per capita consumption of mozzarella cheese (US)Pounds (USDA)', 'Civil engineering doctorates awarded (US)Degrees awarded (National Science Foundation)', 'year', 'US crude oil imports from VenezuelaMillions of barrels (Dept. of Energy)', 'Per capita consumption of high fructose corn syrup (US)Pounds (USDA)'),
+(2000, 29.8, 327, 2000, 9.3, 480, 2000, 446, 62.6),(2001, 30.1, 456, 2001, 9.7, 501, 2001, 471, 62.5),(2002, 30.5, 509, 2002, 9.7, 540, 2002, 438, 62.8),(2003, 30.6, 497, 2003, 9.7, 552, 2003, 436, 60.9),(2004, 31.3, 596, 2004, 9.9, 547, 2004, 473, 59.8),(2005, 31.7, 573, 2005, 10.2, 622, 2005, 449, 59.1),(2006, 32.6, 661, 2006, 10.5, 655, 2006, 416, 58.2),(2007, 33.1, 741, 2007, 11, 701, 2007, 420, 56.1),(2008, 32.7, 809, 2008, 10.6, 712, 2008, 381, 53),(2009, 32.8, 717, 2009, 10.6, 708, 2009, 352, 50.1)]
+
+```
 
 这是我们如何使用`combinations()`函数来生成数据集中九个变量的所有组合，每次取两个：
 
-[PRE20]
+```py
+combinations(range(9), 2)
+
+```
 
 有 36 种可能的组合。我们将不得不拒绝涉及`year`和`year`的组合。这些将与值 1.00 显然相关。
 
 这是一个从我们的数据集中挑选数据列的函数：
 
-[PRE21]
+```py
+def column(source, x):
+ **for row in source:
+ **yield row[x]
+
+```
 
 这使我们能够使用第四章中的`corr()`函数，比较两列数据。
 
 这是我们如何计算所有相关组合的方法：
 
-[PRE22]
+```py
+from itertools import *
+from Chapter_4.ch04_ex4 import corr
+for p, q in combinations(range(9), 2):
+ **header_p, *data_p = list(column(source, p))
+ **header_q, *data_q = list(column(source, q))
+ **if header_p == header_q: continue
+ **r_pq = corr(data_p, data_q)
+ **print("{"{("{2: 4.2f}: {0} vs {1}".format(header_p, header_q, r_pq)))))
+
+```
 
 对于每一列的组合，我们从数据集中提取了两列数据，并使用多重赋值将标题与剩余的数据行分开。如果标题匹配，我们正在比较一个变量与自身。这将对来自冗余年份列的`year`和`year`的三种组合为`True`。
 
@@ -286,7 +396,20 @@
 
 结果如下：
 
-[PRE23]
+```py
+0.96: year vs Per capita consumption of cheese (US)Pounds (USDA)
+0.95: year vs Number of people who died by becoming tangled in their bedsheetsDeaths (US) (CDC)
+0.92: year vs Per capita consumption of mozzarella cheese (US)Pounds (USDA)
+0.98: year vs Civil engineering doctorates awarded (US)Degrees awarded (National Science Foundation)
+-0.80: year vs US crude oil imports from VenezuelaMillions of barrels (Dept. of Energy)
+-0.95: year vs Per capita consumption of high fructose corn syrup (US)Pounds (USDA)
+0.95: Per capita consumption of cheese (US)Pounds (USDA) vs Number of people who died by becoming tangled in their bedsheetsDeaths (US) (CDC)
+0.96: Per capita consumption of cheese (US)Pounds (USDA) vs year
+0.98: Per capita consumption of cheese (US)Pounds (USDA) vs Per capita consumption of mozzarella cheese (US)Pounds (USDA)
+...
+0.88: US crude oil imports from VenezuelaMillions of barrels (Dept. of Energy) vs Per capita consumption of high fructose corn syrup (US)Pounds (USDA)
+
+```
 
 这种模式的含义一点也不清楚。我们使用了一个简单的表达式`combinations(range(9), 2)`，来枚举所有可能的数据组合。这种简洁、表达力强的技术使我们更容易专注于数据分析问题，而不是组合算法的考虑。
 

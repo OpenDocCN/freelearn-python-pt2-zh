@@ -109,8 +109,8 @@ def max_subarray(sequence):
 现在让我们试一下：
 
 ```py
-**>>>  max_subarray([-5, 20, -10, 30, 15])**
-**65**
+>>>  max_subarray([-5, 20, -10, 30, 15])
+65
 
 ```
 
@@ -141,39 +141,39 @@ def max_subarray(sequence):
 现在代码执行并打印出这个输出：
 
 ```py
-**>>> max_subarray([-5, 20, -10, 30, 15])**
-**((), '=>', 0)**
-**((-5,), '=>', -5)**
-**((20,), '=>', 20)**
-**((-10,), '=>', -10)**
-**((30,), '=>', 30)**
-**((15,), '=>', 15)**
-**((-5, 20), '=>', 15)**
-**((-5, -10), '=>', -15)**
-**((-5, 30), '=>', 25)**
-**((-5, 15), '=>', 10)**
-**((20, -10), '=>', 10)**
-**((20, 30), '=>', 50)**
-**((20, 15), '=>', 35)**
-**((-10, 30), '=>', 20)**
-**((-10, 15), '=>', 5)**
-**((30, 15), '=>', 45)**
-**((-5, 20, -10), '=>', 5)**
-**((-5, 20, 30), '=>', 45)**
-**((-5, 20, 15), '=>', 30)**
-**((-5, -10, 30), '=>', 15)**
-**((-5, -10, 15), '=>', 0)**
-**((-5, 30, 15), '=>', 40)**
-**((20, -10, 30), '=>', 40)**
-**((20, -10, 15), '=>', 25)**
-**((20, 30, 15), '=>', 65)**
-**((-10, 30, 15), '=>', 35)**
-**((-5, 20, -10, 30), '=>', 35)**
-**((-5, 20, -10, 15), '=>', 20)**
-**((-5, 20, 30, 15), '=>', 60)**
-**((-5, -10, 30, 15), '=>', 30)**
-**((20, -10, 30, 15), '=>', 55)**
-**65**
+>>> max_subarray([-5, 20, -10, 30, 15])
+((), '=>', 0)
+((-5,), '=>', -5)
+((20,), '=>', 20)
+((-10,), '=>', -10)
+((30,), '=>', 30)
+((15,), '=>', 15)
+((-5, 20), '=>', 15)
+((-5, -10), '=>', -15)
+((-5, 30), '=>', 25)
+((-5, 15), '=>', 10)
+((20, -10), '=>', 10)
+((20, 30), '=>', 50)
+((20, 15), '=>', 35)
+((-10, 30), '=>', 20)
+((-10, 15), '=>', 5)
+((30, 15), '=>', 45)
+((-5, 20, -10), '=>', 5)
+((-5, 20, 30), '=>', 45)
+((-5, 20, 15), '=>', 30)
+((-5, -10, 30), '=>', 15)
+((-5, -10, 15), '=>', 0)
+((-5, 30, 15), '=>', 40)
+((20, -10, 30), '=>', 40)
+((20, -10, 15), '=>', 25)
+((20, 30, 15), '=>', 65)
+((-10, 30, 15), '=>', 35)
+((-5, 20, -10, 30), '=>', 35)
+((-5, 20, -10, 15), '=>', 20)
+((-5, 20, 30, 15), '=>', 60)
+((-5, -10, 30, 15), '=>', 30)
+((20, -10, 30, 15), '=>', 55)
+65
 
 ```
 
@@ -950,7 +950,7 @@ Python 中的`schematics`库提供了一种使用简单类型生成这些数据�
 `schematics`是一个可通过以下命令使用`pip`安装的库：
 
 ```py
-**$ pip install schematics**
+$ pip install schematics
 
 ```
 
@@ -968,10 +968,10 @@ class Person(Model):
 生成模拟数据时，返回一个模拟对象，并使用此对象创建一个*primitive*：
 
 ```py
-**>>> Person.get_mock_object().to_primitive()**
-**{'age': u'12', 'name': u'Y7bnqRt'}**
-**>>> Person.get_mock_object().to_primitive()**
-**{'age': u'1', 'name': u'xyrh40EO3'}**
+>>> Person.get_mock_object().to_primitive()
+{'age': u'12', 'name': u'Y7bnqRt'}
+>>> Person.get_mock_object().to_primitive()
+{'age': u'1', 'name': u'xyrh40EO3'}
 
 ```
 
@@ -1036,12 +1036,12 @@ class Person(Model):
 ```
 
 ```py
-**>>> Person.get_mock_object().to_primitive()**
-**{'age': 36, 'name': 'Qixi'}**
-**>>> Person.get_mock_object().to_primitive()**
-**{'age': 58, 'name': 'Ziru'}**
-**>>> Person.get_mock_object().to_primitive()**
-**{'age': 32, 'name': 'Zanu'}**
+>>> Person.get_mock_object().to_primitive()
+{'age': 36, 'name': 'Qixi'}
+>>> Person.get_mock_object().to_primitive()
+{'age': 58, 'name': 'Ziru'}
+>>> Person.get_mock_object().to_primitive()
+{'age': 32, 'name': 'Zanu'}
 
 ```
 
@@ -1105,14 +1105,14 @@ class Patient(Model):
 现在，创建任意大小的随机数据就像在*Patient*类上调用`get_mock_object`方法一样简单：
 
 ```py
-**patients = map(lambda x: Patient.get_mock_object().to_primitive(), range(n))**
+patients = map(lambda x: Patient.get_mock_object().to_primitive(), range(n))
 
 ```
 
 例如，要创建 10,000 个随机患者数据，我们可以使用以下方法：
 
 ```py
-**>>> patients = map(lambda x: Patient.get_mock_object().to_primitive(), range(1000))**
+>>> patients = map(lambda x: Patient.get_mock_object().to_primitive(), range(1000))
 
 ```
 
@@ -1139,12 +1139,12 @@ Python 自带了对日志记录的标准库支持，通过名为`logging`的模�
 在 Python 中配置简单的日志记录相当容易，如下所示：
 
 ```py
-**>>> import logging**
-**>>> logging.warning('I will be back!')**
-**WARNING:root:I will be back!**
+>>> import logging
+>>> logging.warning('I will be back!')
+WARNING:root:I will be back!
 
-**>>> logging.info('Hello World')**
-**>>>**
+>>> logging.info('Hello World')
+>>>
 
 ```
 
@@ -1153,38 +1153,38 @@ Python 自带了对日志记录的标准库支持，通过名为`logging`的模�
 以下代码将日志记录更改为以`info`级别记录，并添加一个目标文件来保存日志：
 
 ```py
-**>>> logging.basicConfig(filename='application.log', level=logging.DEBUG)**
-**>>> logging.info('Hello World')**
+>>> logging.basicConfig(filename='application.log', level=logging.DEBUG)
+>>> logging.info('Hello World')
 
 ```
 
 如果我们检查`application.log`文件，我们会发现它包含以下行：
 
 ```py
-**INFO:root:Hello World**
+INFO:root:Hello World
 
 ```
 
 为了在日志行中添加时间戳，我们需要配置日志格式。可以按以下方式完成：
 
 ```py
-**>>> logging.basicConfig(format='%(asctime)s %(message)s')**
+>>> logging.basicConfig(format='%(asctime)s %(message)s')
 
 ```
 
 结合起来，我们得到最终的日志配置如下：
 
 ```py
-**>>> logging.basicConfig(format='%(asctime)s %(message)s', filename='application.log', level=logging.DEBUG)**
-**>>> logging.info('Hello World!')**
+>>> logging.basicConfig(format='%(asctime)s %(message)s', filename='application.log', level=logging.DEBUG)
+>>> logging.info('Hello World!')
 
 ```
 
 现在，`application.log`的内容看起来像下面这样：
 
 ```py
-**INFO:root:Hello World**
-**2016-12-26 19:10:37,236 Hello World!**
+INFO:root:Hello World
+2016-12-26 19:10:37,236 Hello World!
 
 ```
 
@@ -1193,33 +1193,33 @@ Python 自带了对日志记录的标准库支持，通过名为`logging`的模�
 逗号分隔的参数的直接日志记录不起作用。例如：
 
 ```py
-**>>> import logging**
-**>>> logging.basicConfig(level=logging.DEBUG)**
-**>>> x,y=10,20**
-**>>> logging.info('Addition of',x,'and',y,'produces',x+y)**
-**--- Logging error ---**
-**Traceback (most recent call last):**
- **File "/usr/lib/python3.5/logging/__init__.py", line 980, in emit**
- **msg = self.format(record)**
- **File "/usr/lib/python3.5/logging/__init__.py", line 830, in format**
- **return fmt.format(record)**
- **File "/usr/lib/python3.5/logging/__init__.py", line 567, in format**
- **record.message = record.getMessage()**
- **File "/usr/lib/python3.5/logging/__init__.py", line 330, in getMessage**
- **msg = msg % self.args**
-**TypeError: not all arguments converted during string formatting**
-**Call stack:**
- **File "<stdin>", line 1, in <module>**
-**Message: 'Addition of'**
-**Arguments: (10, 'and', 20, 'produces', 30)**
+>>> import logging
+>>> logging.basicConfig(level=logging.DEBUG)
+>>> x,y=10,20
+>>> logging.info('Addition of',x,'and',y,'produces',x+y)
+--- Logging error ---
+Traceback (most recent call last):
+ **File "/usr/lib/python3.5/logging/__init__.py", line 980, in emit
+ **msg = self.format(record)
+ **File "/usr/lib/python3.5/logging/__init__.py", line 830, in format
+ **return fmt.format(record)
+ **File "/usr/lib/python3.5/logging/__init__.py", line 567, in format
+ **record.message = record.getMessage()
+ **File "/usr/lib/python3.5/logging/__init__.py", line 330, in getMessage
+ **msg = msg % self.args
+TypeError: not all arguments converted during string formatting
+Call stack:
+ **File "<stdin>", line 1, in <module>
+Message: 'Addition of'
+Arguments: (10, 'and', 20, 'produces', 30)
 
 ```
 
 但是，我们可以使用以下方法：
 
 ```py
-**>>> logging.info('Addition of %s and %s produces %s',x,y,x+y)**
-**INFO:root:Addition of 10 and 20 produces 30**
+>>> logging.info('Addition of %s and %s produces %s',x,y,x+y)
+INFO:root:Addition of 10 and 20 produces 30
 
 ```
 
@@ -1270,21 +1270,21 @@ def create_logger(app_name, logfilename=None,
 让我们看看它的运行情况：
 
 ```py
-**>>> log=create_logger('myapp',logfilename='app.log', console=True)**
-**>>> log**
-**<logging.Logger object at 0x7fc09afa55c0>**
-**>>> log.info('Started application')**
-**2016-12-26 19:38:12 : INFO     - Started application**
-**>>> log.info('Initializing objects...')**
-**2016-12-26 19:38:25 : INFO     - Initializing objects…**
+>>> log=create_logger('myapp',logfilename='app.log', console=True)
+>>> log
+<logging.Logger object at 0x7fc09afa55c0>
+>>> log.info('Started application')
+2016-12-26 19:38:12 : INFO     - Started application
+>>> log.info('Initializing objects...')
+2016-12-26 19:38:25 : INFO     - Initializing objects…
 
 ```
 
 在同一目录中检查 app.log 文件会发现以下内容：
 
 ```py
-**2016-12-26 19:38:12 : INFO    —Started application**
-**2016-12-26 19:38:25 : INFO    —Initializing objects…**
+2016-12-26 19:38:12 : INFO    —Started application
+2016-12-26 19:38:25 : INFO    —Initializing objects…
 
 ```
 
@@ -1385,11 +1385,11 @@ class LoggerWrapper(object):
 假设最后的代码产生了以下输出：
 
 ```py
-**2016-12-26 20:08:28 [00:00:00]: INFO    —Starting application...**
-**2016-12-26 20:08:28 [00:00:00]: INFO     - Initializing objects.**
-**2016-12-26 20:08:42 [00:00:14]: INFO     - Initialization complete.**
-**2016-12-26 20:08:42 [00:00:00]: INFO     - Loading configuration and data ...**
-**2016-12-26 20:10:37 [00:01:55]: INFO     - Loading complete. Listening for connections**
+2016-12-26 20:08:28 [00:00:00]: INFO    —Starting application...
+2016-12-26 20:08:28 [00:00:00]: INFO     - Initializing objects.
+2016-12-26 20:08:42 [00:00:14]: INFO     - Initialization complete.
+2016-12-26 20:08:42 [00:00:00]: INFO     - Loading configuration and data ...
+2016-12-26 20:10:37 [00:01:55]: INFO     - Loading complete. Listening for connections
 
 ```
 
@@ -1452,10 +1452,10 @@ def create_logger(app_name, logfilename=None, level=logging.INFO,
 让我们检查 syslog，看看它是否真的被记录了下来：
 
 ```py
-**$ tail -3 /var/log/syslog**
-**Dec 26 20:39:54 ubuntu-pro-book kernel: [36696.308437] psmouse serio1: TouchPad at isa0060/serio1/input0 - driver resynced.**
-**Dec 26 20:44:39 ubuntu-pro-book 2016-12-26 20:44:39 : INFO     - Myapp - starting up...**
-**Dec 26 20:45:01 ubuntu-pro-book CRON[11522]: (root) CMD (command -v debian-sa1 > /dev/null && debian-sa1 1 1)**
+$ tail -3 /var/log/syslog
+Dec 26 20:39:54 ubuntu-pro-book kernel: [36696.308437] psmouse serio1: TouchPad at isa0060/serio1/input0 - driver resynced.
+Dec 26 20:44:39 ubuntu-pro-book 2016-12-26 20:44:39 : INFO     - Myapp - starting up...
+Dec 26 20:45:01 ubuntu-pro-book CRON[11522]: (root) CMD (command -v debian-sa1 > /dev/null && debian-sa1 1 1)
 
 ```
 
@@ -1470,7 +1470,7 @@ Python 调试器，或者称为 pdb，是 Python 运行时的一部分。
 可以在从头开始运行脚本时调用 Pdb，如下所示：
 
 ```py
-**$ python3 -m pdb script.py**
+$ python3 -m pdb script.py
 
 ```
 
@@ -1501,39 +1501,39 @@ def max_subarray(sequence):
 在程序运行后立即进入调试器的第一个循环中：
 
 ```py
-**>>> max_subarray([20, -5, -10, 30, 10])**
-**> /home/user/programs/maxsubarray.py(8)max_subarray()**
-**-> max_ending_here = max(0, max_ending_here + x)**
-**-> for x in sequence:**
-**(Pdb) max_so_far**
-**20**
+>>> max_subarray([20, -5, -10, 30, 10])
+> /home/user/programs/maxsubarray.py(8)max_subarray()
+-> max_ending_here = max(0, max_ending_here + x)
+-> for x in sequence:
+(Pdb) max_so_far
+20
 
 ```
 
 您可以使用(*s*)来停止执行。Pdb 将执行当前行，并停止：
 
 ```py
-**> /home/user/programs/maxsubarray.py(7)max_subarray()**
-**-> max_ending_here = max(0, max_ending_here + x)**
+> /home/user/programs/maxsubarray.py(7)max_subarray()
+-> max_ending_here = max(0, max_ending_here + x)
 
 ```
 
 您可以通过简单地输入变量名称并按[*Enter*]来检查变量：
 
 ```py
-**(Pdb) max_so_far**
-**20**
+(Pdb) max_so_far
+20
 
 ```
 
 可以使用(*w*)或 where 打印当前堆栈跟踪。箭头(→)表示当前堆栈帧：
 
 ```py
-**(Pdb) w**
+(Pdb) w
 
-**<stdin>(1)<module>()**
-**> /home/user/programs/maxsubarray.py(7)max_subarray()**
-**-> max_ending_here = max(0, max_ending_here + x)**
+<stdin>(1)<module>()
+> /home/user/programs/maxsubarray.py(7)max_subarray()
+-> max_ending_here = max(0, max_ending_here + x)
 
 ```
 
@@ -1541,29 +1541,29 @@ def max_subarray(sequence):
 
 ```py
 > /home/user/programs/maxsubarray.py(6)max_subarray()
-**-> for x in sequence:**
-**(Pdb) max_so_far**
-**20**
-**(Pdb) c**
-**> /home/user/programs/maxsubarray.py(6)max_subarray()**
-**-> for x in sequence:**
-**(Pdb) max_so_far**
-**20**
-**(Pdb) c**
-**> /home/user/programs/maxsubarray.py(6)max_subarray()**
-**-> for x in sequence:**
-**(Pdb) max_so_far**
-**35**
-**(Pdb) max_ending_here**
-**35**
+-> for x in sequence:
+(Pdb) max_so_far
+20
+(Pdb) c
+> /home/user/programs/maxsubarray.py(6)max_subarray()
+-> for x in sequence:
+(Pdb) max_so_far
+20
+(Pdb) c
+> /home/user/programs/maxsubarray.py(6)max_subarray()
+-> for x in sequence:
+(Pdb) max_so_far
+35
+(Pdb) max_ending_here
+35
 
 ```
 
 在前面的代码中，我们继续了`for`循环的三次迭代，直到最大值从 20 变为 35。让我们检查一下我们在序列中的位置：
 
 ```py
-**(Pdb) x**
-**30**
+(Pdb) x
+30
 
 ```
 
@@ -1587,28 +1587,28 @@ def max_subarray(sequence):
 可以使用(*u*)或`up`和(*d*)或*down*命令在堆栈帧上下移动：
 
 ```py
-**(Pdb) up**
-**> <stdin>(1)<module>()**
-**(Pdb) up**
-***** Oldest frame**
-**(Pdb) list**
-**[EOF]**
-**(Pdb) d**
-**> /home/user/programs/maxsubarray.py(6)max_subarray()**
-**-> for x in sequence:**
+(Pdb) up
+> <stdin>(1)<module>()
+(Pdb) up
+*** Oldest frame
+(Pdb) list
+[EOF]
+(Pdb) d
+> /home/user/programs/maxsubarray.py(6)max_subarray()
+-> for x in sequence:
 
 ```
 
 现在让我们从函数中返回：
 
 ```py
-**(Pdb) r**
-**> /home/user/programs/maxsubarray.py(6)max_subarray()**
-**-> for x in sequence:**
-**(Pdb) r**
-**--Return--**
-**> /home/user/programs/maxsubarray.py(11)max_subarray()->45**
-**-> return max_so_far**
+(Pdb) r
+> /home/user/programs/maxsubarray.py(6)max_subarray()
+-> for x in sequence:
+(Pdb) r
+--Return--
+> /home/user/programs/maxsubarray.py(11)max_subarray()->45
+-> return max_so_far
 
 ```
 

@@ -74,11 +74,38 @@
 
 在以下示例中，我们将模拟一个需要向外部系统发送关于每个特定任务获得的结果的指标的过程（和往常一样，只要我们专注于代码，细节就不重要）。我们有一个代表领域问题上某个任务的`Process`对象，并且它使用一个`metrics`客户端（一个外部依赖，因此我们无法控制）来将实际的指标发送到外部实体（这可能是发送数据到`syslog`或`statsd`，例如）：
 
-[PRE0]
+```py
+class MetricsClient:
+    """3rd-party metrics client"""
+
+    def send(self, metric_name, metric_value):
+        if not isinstance(metric_name, str):
+            raise TypeError("expected type str for metric_name")
+
+        if not isinstance(metric_value, str):
+            raise TypeError("expected type str for metric_value")
+
+        logger.info("sending %s = %s", metric_name, metric_value)
+
+class Process:
+
+    def __init__(self):
+        self.client = MetricsClient() # A 3rd-party metrics client
+
+    def process_iterations(self, n_iterations):
+        for i in range(n_iterations):
+            result = self.run_process()
+            self.client.send("iteration.{}".format(i), result)
+```
 
 在第三方客户端的模拟版本中，我们规定提供的参数必须是字符串类型。因此，如果`run_process`方法的`result`不是字符串，我们可能期望它会失败，而事实上确实如此：
 
-[PRE1]
+```py
+Traceback (most recent call last):
+...
+    raise TypeError("expected type str for metric_value")
+TypeError: expected type str for metric_value
+```
 
 记住，这种验证不在我们的控制之内，我们无法改变代码，因此在继续之前，我们必须为方法提供正确类型的参数。但由于这是我们发现的一个错误，我们首先想要编写一个单元测试，以确保它不会再次发生。我们这样做实际上是为了证明我们修复了问题，并且保护免受这个错误的影响，无论代码被重构多少次。
 
@@ -86,7 +113,21 @@
 
 最后，我们决定不费太多力气，只测试我们需要的部分，所以我们不直接在`main`方法上与`client`交互，而是委托给一个`wrapper`方法，新的类看起来是这样的：
 
-[PRE2]
+```py
+class WrappedClient:
+
+    def __init__(self):
+        self.client = MetricsClient()
+
+    def send(self, metric_name, metric_value):
+        return self.client.send(str(metric_name), str(metric_value))
+
+class Process:
+    def __init__(self):
+        self.client = WrappedClient()
+
+    ... # rest of the code remains unchanged
+```
 
 在这种情况下，我们选择为指标创建我们自己的版本的`client`，也就是说，一个围绕我们以前使用的第三方库的包装器。为此，我们放置了一个类（具有相同的接口），将根据需要转换类型。
 
@@ -94,7 +135,18 @@
 
 既然我们已经将方法分离出来，让我们为其编写实际的单元测试。在本例中使用的`unittest`模块的详细信息将在我们探讨测试工具和库的章节中更详细地探讨，但现在阅读代码将给我们一个关于如何测试的第一印象，并且会使之前的概念变得不那么抽象：
 
-[PRE3]
+```py
+import unittest
+from unittest.mock import Mock
+
+class TestWrappedClient(unittest.TestCase):
+    def test_send_converts_types(self):
+        wrapped_client = WrappedClient()
+        wrapped_client.client = Mock()
+        wrapped_client.send("value", 1)
+
+        wrapped_client.client.send.assert_called_with("value", "1")
+```
 
 `Mock`是`unittest.mock`模块中可用的一种类型，它是一个非常方便的对象，可以询问各种事情。例如，在这种情况下，我们将其用于替代第三方库（模拟成系统边界，如下一节所述），以检查它是否按预期调用（再次强调，我们不测试库本身，只测试它是否被正确调用）。注意我们运行了一个类似于我们的`Process`对象的调用，但我们期望参数被转换为字符串。
 
@@ -136,7 +188,37 @@
 
 代码可能如下所示：
 
-[PRE4]
+```py
+from enum import Enum
+
+class MergeRequestStatus(Enum):
+    APPROVED = "approved"
+    REJECTED = "rejected"
+    PENDING = "pending"
+
+class MergeRequest:
+    def __init__(self):
+        self._context = {
+            "upvotes": set(),
+            "downvotes": set(),
+        }
+
+    @property
+    def status(self):
+        if self._context["downvotes"]:
+            return MergeRequestStatus.REJECTED
+        elif len(self._context["upvotes"]) >= 2:
+            return MergeRequestStatus.APPROVED
+        return MergeRequestStatus.PENDING
+
+    def upvote(self, by_user):
+        self._context["downvotes"].discard(by_user)
+        self._context["upvotes"].add(by_user)
+
+    def downvote(self, by_user):
+        self._context["upvotes"].discard(by_user)
+        self._context["downvotes"].add(by_user)
+```
 
 # unittest
 
@@ -148,7 +230,29 @@
 
 我们可能想要验证我们的情况的一些条件的示例包括：
 
-[PRE5]
+```py
+class TestMergeRequestStatus(unittest.TestCase):
+
+    def test_simple_rejected(self):
+        merge_request = MergeRequest()
+        merge_request.downvote("maintainer")
+        self.assertEqual(merge_request.status, MergeRequestStatus.REJECTED)
+
+    def test_just_created_is_pending(self):
+        self.assertEqual(MergeRequest().status, MergeRequestStatus.PENDING)
+
+    def test_pending_awaiting_review(self):
+        merge_request = MergeRequest()
+        merge_request.upvote("core-dev")
+        self.assertEqual(merge_request.status, MergeRequestStatus.PENDING)
+
+    def test_approved(self):
+        merge_request = MergeRequest()
+        merge_request.upvote("dev1")
+        merge_request.upvote("dev2")
+
+        self.assertEqual(merge_request.status, MergeRequestStatus.APPROVED)
+```
 
 单元测试的 API 提供了许多有用的比较方法，其中最常见的是`assertEquals(<actual>, <expected>[, message])`，它可以用来比较操作的结果与我们期望的值，可选地使用在错误情况下显示的消息。
 
@@ -158,11 +262,55 @@
 
 在添加了两个新状态（`OPEN`和`CLOSED`）和一个新的`close()`方法之后，我们修改了之前的投票方法，以处理此检查：
 
-[PRE6]
+```py
+class MergeRequest:
+    def __init__(self):
+        self._context = {
+            "upvotes": set(),
+            "downvotes": set(),
+        }
+        self._status = MergeRequestStatus.OPEN
+
+    def close(self):
+        self._status = MergeRequestStatus.CLOSED
+
+    ...
+    def _cannot_vote_if_closed(self):
+        if self._status == MergeRequestStatus.CLOSED:
+            raise MergeRequestException("can't vote on a closed merge 
+            request")
+
+    def upvote(self, by_user):
+        self._cannot_vote_if_closed()
+
+        self._context["downvotes"].discard(by_user)
+        self._context["upvotes"].add(by_user)
+
+    def downvote(self, by_user):
+        self._cannot_vote_if_closed()
+
+        self._context["upvotes"].discard(by_user)
+        self._context["downvotes"].add(by_user)
+```
 
 现在，我们想要检查这个验证是否有效。为此，我们将使用`asssertRaises`和`assertRaisesRegex`方法：
 
-[PRE7]
+```py
+    def test_cannot_upvote_on_closed_merge_request(self):
+        self.merge_request.close()
+        self.assertRaises(
+            MergeRequestException, self.merge_request.upvote, "dev1"
+        )
+
+    def test_cannot_downvote_on_closed_merge_request(self):
+        self.merge_request.close()
+        self.assertRaisesRegex(
+            MergeRequestException,
+            "can't vote on a closed merge request",
+            self.merge_request.downvote,
+            "dev1",
+        )
+```
 
 前者期望在调用第二个参数中的可调用对象时引发提供的异常，使用函数的其余部分的参数（`*args`和`**kwargs`），如果不是这种情况，它将失败，并表示预期引发的异常未被引发。后者也是如此，但它还检查引发的异常是否包含与提供的正则表达式匹配的消息。即使引发了异常，但消息不同（不匹配正则表达式），测试也会失败。
 
@@ -174,11 +322,58 @@
 
 实现这一目标的最佳方法是将该组件分离为另一个类，使用组合，然后继续使用自己的测试套件测试这个新的抽象：
 
-[PRE8]
+```py
+class AcceptanceThreshold:
+    def __init__(self, merge_request_context: dict) -> None:
+        self._context = merge_request_context
+
+    def status(self):
+        if self._context["downvotes"]:
+            return MergeRequestStatus.REJECTED
+        elif len(self._context["upvotes"]) >= 2:
+            return MergeRequestStatus.APPROVED
+        return MergeRequestStatus.PENDING
+
+class MergeRequest:
+    ...
+    @property
+    def status(self):
+        if self._status == MergeRequestStatus.CLOSED:
+            return self._status
+
+        return AcceptanceThreshold(self._context).status()
+```
 
 有了这些变化，我们可以再次运行测试并验证它们是否通过，这意味着这次小的重构没有破坏当前功能（单元测试确保回归）。有了这一点，我们可以继续实现编写特定于新类的测试的目标：
 
-[PRE9]
+```py
+class TestAcceptanceThreshold(unittest.TestCase):
+    def setUp(self):
+        self.fixture_data = (
+            (
+                {"downvotes": set(), "upvotes": set()},
+                MergeRequestStatus.PENDING
+            ),
+            (
+                {"downvotes": set(), "upvotes": {"dev1"}},
+                MergeRequestStatus.PENDING,
+            ),
+            (
+                {"downvotes": "dev1", "upvotes": set()},
+                MergeRequestStatus.REJECTED
+            ),
+            (
+                {"downvotes": set(), "upvotes": {"dev1", "dev2"}},
+                MergeRequestStatus.APPROVED
+            ),
+        )
+
+    def test_status_resolution(self):
+        for context, expected in self.fixture_data:
+            with self.subTest(context=context):
+                status = AcceptanceThreshold(context).status()
+                self.assertEqual(status, expected)
+```
 
 在`setUp()`方法中，我们定义了要在整个测试中使用的数据装置。在这种情况下，实际上并不需要，因为我们可以直接放在方法中，但是如果我们希望在执行任何测试之前运行一些代码，这就是写入的地方，因为这个方法在每次运行测试之前都会被调用一次。
 
@@ -186,7 +381,14 @@
 
 为了模拟我们正在运行所有参数，测试会遍历所有数据，并对每个实例执行代码。这里一个有趣的辅助方法是使用`subTest`，在这种情况下，我们使用它来标记被调用的测试条件。如果其中一个迭代失败，`unittest`会报告相应的变量值，这些变量被传递给`subTest`（在这种情况下，它被命名为`context`，但任何一系列关键字参数都可以起到同样的作用）。例如，一个错误可能看起来像这样：
 
-[PRE10]
+```py
+FAIL: (context={'downvotes': set(), 'upvotes': {'dev1', 'dev2'}})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "" test_status_resolution
+    self.assertEqual(status, expected)
+AssertionError: <MergeRequestStatus.APPROVED: 'approved'> != <MergeRequestStatus.REJECTED: 'rejected'>
+```
 
 如果选择参数化测试，请尽量提供每个参数实例的上下文信息，以便更容易进行调试。
 
@@ -204,11 +406,38 @@ Pytest 是一个很棒的测试框架，可以通过`pip install pytest`进行�
 
 一些简单断言的示例如下：
 
-[PRE11]
+```py
+def test_simple_rejected():
+    merge_request = MergeRequest()
+    merge_request.downvote("maintainer")
+    assert merge_request.status == MergeRequestStatus.REJECTED
+
+def test_just_created_is_pending():
+    assert MergeRequest().status == MergeRequestStatus.PENDING
+
+def test_pending_awaiting_review():
+    merge_request = MergeRequest()
+    merge_request.upvote("core-dev")
+    assert merge_request.status == MergeRequestStatus.PENDING
+```
 
 布尔相等比较不需要更多的简单断言语句，而其他类型的检查，比如异常的检查需要我们使用一些函数：
 
-[PRE12]
+```py
+def test_invalid_types():
+    merge_request = MergeRequest()
+    pytest.raises(TypeError, merge_request.upvote, {"invalid-object"})
+
+def test_cannot_vote_on_closed_merge_request():
+    merge_request = MergeRequest()
+    merge_request.close()
+    pytest.raises(MergeRequestException, merge_request.upvote, "dev1")
+    with pytest.raises(
+        MergeRequestException,
+        match="can't vote on a closed merge request",
+    ):
+        merge_request.downvote("dev1")
+```
 
 在这种情况下，`pytest.raises`相当于`unittest.TestCase.assertRaises`，它也接受作为方法和上下文管理器调用。如果我们想检查异常的消息，而不是使用不同的方法（如`assertRaisesRegex`），则必须使用相同的函数，但作为上下文管理器，并提供`match`参数与我们想要识别的表达式。
 
@@ -222,7 +451,28 @@ Pytest 是一个很棒的测试框架，可以通过`pip install pytest`进行�
 
 注意测试函数的主体如何被简化为一行（在移除内部`for`循环和其嵌套的上下文管理器后），并且每个测试用例的数据都正确地与函数的主体隔离开来，这样更容易扩展和维护：
 
-[PRE13]
+```py
+@pytest.mark.parametrize("context,expected_status", (
+    (
+        {"downvotes": set(), "upvotes": set()},
+        MergeRequestStatus.PENDING
+    ),
+    (
+        {"downvotes": set(), "upvotes": {"dev1"}},
+        MergeRequestStatus.PENDING,
+    ),
+    (
+        {"downvotes": "dev1", "upvotes": set()},
+        MergeRequestStatus.REJECTED
+    ),
+    (
+        {"downvotes": set(), "upvotes": {"dev1", "dev2"}},
+        MergeRequestStatus.APPROVED
+    ),
+))
+def test_acceptance_threshold_status_resolution(context, expected_status):
+    assert AcceptanceThreshold(context).status() == expected_status
+```
 
 使用`@pytest.mark.parametrize`来消除重复，尽可能使测试主体保持内聚，并明确指定代码必须支持的参数（测试输入或场景）。
 
@@ -232,7 +482,35 @@ Pytest 是一个很棒的测试框架，可以通过`pip install pytest`进行�
 
 例如，我们可能想要创建一个处于特定状态的`MergeRequest`对象，并在多个测试中使用该对象。我们通过创建一个函数并应用`@pytest.fixture`装饰器来将我们的对象定义为 fixture。想要使用该 fixture 的测试将必须具有与定义的函数相同名称的参数，`pytest`将确保提供它： 
 
-[PRE14]
+```py
+@pytest.fixture
+def rejected_mr():
+    merge_request = MergeRequest()
+
+    merge_request.downvote("dev1")
+    merge_request.upvote("dev2")
+    merge_request.upvote("dev3")
+    merge_request.downvote("dev4")
+
+    return merge_request
+
+def test_simple_rejected(rejected_mr):
+    assert rejected_mr.status == MergeRequestStatus.REJECTED
+
+def test_rejected_with_approvals(rejected_mr):
+    rejected_mr.upvote("dev2")
+    rejected_mr.upvote("dev3")
+    assert rejected_mr.status == MergeRequestStatus.REJECTED
+
+def test_rejected_to_pending(rejected_mr):
+    rejected_mr.upvote("dev1")
+    assert rejected_mr.status == MergeRequestStatus.PENDING
+
+def test_rejected_to_approved(rejected_mr):
+    rejected_mr.upvote("dev1")
+    rejected_mr.upvote("dev2")
+    assert rejected_mr.status == MergeRequestStatus.APPROVED
+```
 
 记住，测试也会影响主要代码，因此干净代码的原则也适用于它们。在这种情况下，我们在之前章节中探讨过的**不要重复自己**（**DRY**）原则再次出现，我们可以借助`pytest`的 fixture 来实现它。
 
@@ -252,11 +530,23 @@ Pytest 是一个很棒的测试框架，可以通过`pip install pytest`进行�
 
 为了向您展示这是什么样子，使用以下命令：
 
-[PRE15]
+```py
+pytest \
+    --cov-report term-missing \
+    --cov=coverage_1 \
+    test_coverage_1.py
+```
 
 这将产生类似以下的输出：
 
-[PRE16]
+```py
+test_coverage_1.py ................ [100%]
+
+----------- coverage: platform linux, python 3.6.5-final-0 -----------
+Name         Stmts Miss Cover Missing
+---------------------------------------------
+coverage_1.py 38      1  97%    53
+```
 
 在这里，它告诉我们有一行没有单元测试，因此我们可以查看并了解如何为其编写单元测试。这是一个常见的情况，我们意识到为了覆盖这些缺失的行，我们需要通过创建更小的方法来重构代码。结果，我们的代码看起来会好得多，就像我们在本章开头看到的例子一样。
 
@@ -308,25 +598,81 @@ Python 是解释性的，而覆盖工具利用这一点来识别在测试运行�
 
 当我们的代码需要调用魔术方法时，尝试使用`Mock`将导致错误。请参阅以下代码，以了解此示例：
 
-[PRE17]
+```py
+class GitBranch:
+    def __init__(self, commits: List[Dict]):
+        self._commits = {c["id"]: c for c in commits}
+
+    def __getitem__(self, commit_id):
+        return self._commits[commit_id]
+
+    def __len__(self):
+        return len(self._commits)
+
+def author_by_id(commit_id, branch):
+    return branch[commit_id]["author"]
+```
 
 我们想测试这个函数；但是，另一个测试需要调用`author_by_id`函数。由于某种原因，因为我们没有测试该函数，提供给该函数（并返回）的任何值都将是好的：
 
-[PRE18]
+```py
+def test_find_commit():
+    branch = GitBranch([{"id": "123", "author": "dev1"}])
+    assert author_by_id("123", branch) == "dev1"
+
+def test_find_any():
+    author = author_by_id("123", Mock()) is not None
+    # ... rest of the tests..
+```
 
 正如预期的那样，这不起作用：
 
-[PRE19]
+```py
+def author_by_id(commit_id, branch):
+    > return branch[commit_id]["author"]
+    E TypeError: 'Mock' object is not subscriptable
+```
 
 使用`MagicMock`将起作用。我们甚至可以配置此类型模拟的魔术方法，以返回我们需要的内容，以便控制我们测试的执行：
 
-[PRE20]
+```py
+def test_find_any():
+    mbranch = MagicMock()
+    mbranch.__getitem__.return_value = {"author": "test"}
+    assert author_by_id("123", mbranch) == "test"
+```
 
 # 测试替身的用例
 
 为了看到模拟的可能用途，我们需要向我们的应用程序添加一个新组件，该组件将负责通知“构建”“状态”的合并请求。当“构建”完成时，将使用合并请求的 ID 和“构建”的“状态”调用此对象，并通过向特定的固定端点发送 HTTP`POST`请求来使用此信息更新合并请求的“状态”：
 
-[PRE21]
+```py
+# mock_2.py
+
+from datetime import datetime
+
+import requests
+from constants import STATUS_ENDPOINT
+
+class BuildStatus:
+    """The CI status of a pull request."""
+
+    @staticmethod
+    def build_date() -> str:
+        return datetime.utcnow().isoformat()
+
+    @classmethod
+    def notify(cls, merge_request_id, status):
+        build_status = {
+            "id": merge_request_id,
+            "status": status,
+            "built_at": cls.build_date(),
+        }
+        response = requests.post(STATUS_ENDPOINT, json=build_status)
+        response.raise_for_status()
+        return response
+
+```
 
 这个类有很多副作用，但其中一个是一个重要的难以克服的外部依赖。如果我们试图在不修改任何内容的情况下对其进行测试，那么它将在尝试执行 HTTP 连接时立即失败并出现连接错误。
 
@@ -336,7 +682,27 @@ Python 是解释性的，而覆盖工具利用这一点来识别在测试运行�
 
 现在我们已经确定了代码中需要替换的要点，让我们编写单元测试：
 
-[PRE22]
+```py
+# test_mock_2.py
+
+from unittest import mock
+
+from constants import STATUS_ENDPOINT
+from mock_2 import BuildStatus
+
+@mock.patch("mock_2.requests")
+def test_build_notification_sent(mock_requests):
+    build_date = "2018-01-01T00:00:01"
+    with mock.patch("mock_2.BuildStatus.build_date", 
+    return_value=build_date):
+        BuildStatus.notify(123, "OK")
+
+    expected_payload = {"id": 123, "status": "OK", "built_at": 
+    build_date}
+    mock_requests.post.assert_called_with(
+        STATUS_ENDPOINT, json=expected_payload
+    )
+```
 
 首先，我们使用`mock.patch`作为装饰器来替换`requests`模块。这个函数的结果将创建一个`mock`对象，将作为参数传递给测试（在这个例子中命名为`mock_requests`）。然后，我们再次使用这个函数，但这次作为上下文管理器，来改变计算“构建”日期的类的方法的返回值，用我们控制的值替换它，我们将在断言中使用。
 
@@ -366,15 +732,66 @@ Python 是解释性的，而覆盖工具利用这一点来识别在测试运行�
 
 我们仍然需要用双重对象（模拟）替换这些方法，但如果我们重构代码，我们可以以更好的方式来做。让我们将这些方法分开成更小的方法，最重要的是注入依赖，而不是固定它。现在代码应用了依赖反转原则，并且期望与支持接口的东西一起工作（在这个例子中是隐式的），比如`requests`模块提供的接口：
 
-[PRE23]
+```py
+from datetime import datetime
+
+from constants import STATUS_ENDPOINT
+
+class BuildStatus:
+
+    endpoint = STATUS_ENDPOINT
+
+    def __init__(self, transport):
+        self.transport = transport
+
+    @staticmethod
+    def build_date() -> str:
+        return datetime.utcnow().isoformat()
+
+    def compose_payload(self, merge_request_id, status) -> dict:
+        return {
+            "id": merge_request_id,
+            "status": status,
+            "built_at": self.build_date(),
+        }
+
+    def deliver(self, payload):
+        response = self.transport.post(self.endpoint, json=payload)
+        response.raise_for_status()
+        return response
+
+    def notify(self, merge_request_id, status):
+        return self.deliver(self.compose_payload(merge_request_id, status))
+```
 
 我们将方法分开（不再是 notify，而是 compose + deliver），创建了一个新的`compose_payload()`方法（这样我们可以替换，而不需要打补丁类），并要求注入`transport`依赖。现在`transport`是一个依赖项，更容易更改该对象为我们想要的任何双重对象。
 
 甚至可以暴露这个对象的一个 fixture，并根据需要替换双重对象：
 
-[PRE24]
+```py
+@pytest.fixture
+def build_status():
+    bstatus = BuildStatus(Mock())
+    bstatus.build_date = Mock(return_value="2018-01-01T00:00:01")
+    return bstatus
 
-[PRE25]
+def test_build_notification_sent(build_status):
+
+    build_status.notify(1234, "OK")
+
+    expected_payload = {
+        "id": 1234,
+        "status": "OK",
+        "built_at": build_status.build_date(),
+    }
+
+```
+
+```py
+    build_status.transport.post.assert_called_with(
+        build_status.endpoint, json=expected_payload
+    )
+```
 
 # 生产代码并不是唯一在演变的东西
 
@@ -390,7 +807,33 @@ Python 是解释性的，而覆盖工具利用这一点来识别在测试运行�
 
 我们可以创建一个封装这一结构的断言的方法，并在所有测试中重复使用它，而不是重复断言：
 
-[PRE26]
+```py
+class TestMergeRequestStatus(unittest.TestCase):
+    def setUp(self):
+        self.merge_request = MergeRequest()
+
+    def assert_rejected(self):
+        self.assertEqual(
+            self.merge_request.status, MergeRequestStatus.REJECTED
+        )
+
+    def assert_pending(self):
+        self.assertEqual(
+            self.merge_request.status, MergeRequestStatus.PENDING
+        )
+
+    def assert_approved(self):
+        self.assertEqual(
+            self.merge_request.status, MergeRequestStatus.APPROVED
+        )
+
+    def test_simple_rejected(self):
+        self.merge_request.downvote("maintainer")
+        self.assert_rejected()
+
+    def test_just_created_is_pending(self):
+        self.assert_pending()
+```
 
 如果合并请求的状态检查发生变化（或者我们想要添加额外的检查），只有一个地方（`assert_approved()`方法）需要修改。更重要的是，通过创建这些更高级的抽象，最初只是单元测试的代码开始演变成可能最终成为具有自己 API 或领域语言的测试框架，使测试更具有声明性。
 
@@ -424,23 +867,71 @@ Python 是解释性的，而覆盖工具利用这一点来识别在测试运行�
 
 为了快速向您展示这是如何工作的，并让您对此有一个实际的想法，我们将使用一个不同版本的代码来计算合并请求的状态，这是基于批准和拒绝的数量。这一次，我们已经改变了代码，改为一个简单版本，根据这些数字返回结果。我们已经将包含状态常量的枚举移到一个单独的模块中，所以现在看起来更加紧凑：
 
-[PRE27]
+```py
+# File mutation_testing_1.py
+from mrstatus import MergeRequestStatus as Status
+
+def evaluate_merge_request(upvote_count, downvotes_count):
+    if downvotes_count > 0:
+        return Status.REJECTED
+    if upvote_count >= 2:
+        return Status.APPROVED
+    return Status.PENDING
+```
 
 现在我们将添加一个简单的单元测试，检查其中一个条件及其预期的“结果”：
 
-[PRE28]
+```py
+# file: test_mutation_testing_1.py
+class TestMergeRequestEvaluation(unittest.TestCase):
+    def test_approved(self):
+        result = evaluate_merge_request(3, 0)
+        self.assertEqual(result, Status.APPROVED)
+```
 
 现在，我们将安装`mutpy`，一个用于 Python 的变异测试工具，使用`pip install mutpy`，并告诉它使用这些测试运行此模块的变异测试：
 
-[PRE29]
+```py
+$ mut.py \
+    --target mutation_testing_$N \
+    --unit-test test_mutation_testing_$N \
+    --operator AOD `# delete arithmetic operator` \
+    --operator AOR `# replace arithmetic operator` \
+    --operator COD `# delete conditional operator` \
+    --operator COI `# insert conditional operator` \
+    --operator CRP `# replace constant` \
+    --operator ROR `# replace relational operator` \
+    --show-mutants
+```
 
 结果将会看起来类似于这样：
 
-[PRE30]
+```py
+[*] Mutation score [0.04649 s]: 100.0%
+ - all: 4
+ - killed: 4 (100.0%)
+ - survived: 0 (0.0%)
+ - incompetent: 0 (0.0%)
+ - timeout: 0 (0.0%)
+```
 
 这是一个好迹象。让我们拿一个特定的实例来分析发生了什么。输出中的一行显示了以下变异体：
 
-[PRE31]
+```py
+ - [# 1] ROR mutation_testing_1:11 : 
+------------------------------------------------------
+ 7: from mrstatus import MergeRequestStatus as Status
+ 8: 
+ 9: 
+ 10: def evaluate_merge_request(upvote_count, downvotes_count):
+~11:     if downvotes_count < 0:
+ 12:         return Status.REJECTED
+ 13:     if upvote_count >= 2:
+ 14:         return Status.APPROVED
+ 15:     return Status.PENDING
+------------------------------------------------------
+[0.00401 s] killed by test_approved (test_mutation_testing_1.TestMergeRequestEvaluation)
+```
 
 请注意，这个变异体由原始版本和第 11 行中操作符改变（`>`改为`<`）组成，结果告诉我们这个变异体被测试杀死了。这意味着使用这个代码版本（假设有人错误地进行了这个更改），函数的结果将是`APPROVED`，而测试期望它是`REJECTED`，所以测试失败，这是一个好迹象（测试捕捉到了引入的错误）。
 

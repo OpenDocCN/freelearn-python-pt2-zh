@@ -168,17 +168,17 @@ print("SunRise & Sunset: ",jsonResult['results']['sunrise']," & ",jsonResult['re
 如我们所见，`status_code`是`200`（即`OK`），`Content-Type`是 JSON 类型。这给了我们确认，我们可以使用与 JSON 相关的库继续前进。但是，在这种情况下，我们使用了`requests`库中的`json()`函数，这减少了我们对额外库的依赖，并将响应对象转换为`dict`对象。通过收到的`dict`，我们可以使用`key:value`对访问所需的元素：
 
 ```py
-**Type Results <class 'requests.models.Response'>**
-**Status Code: 200**
-**Headers-ContentType: application/json**
+Type Results <class 'requests.models.Response'>
+Status Code: 200
+Headers-ContentType: application/json
 
-**Headers: {'Access-Control-Allow-Origin':'*','Content-Type':'application/json','Vary':'Accept-Encoding', 'Server':'nginx','Connection':'keep-alive','Content-Encoding':'gzip','Transfer-Encoding':'chunked','Date': 'Mon, 04 Mar 2019 07:48:29 GMT'}**
+Headers: {'Access-Control-Allow-Origin':'*','Content-Type':'application/json','Vary':'Accept-Encoding', 'Server':'nginx','Connection':'keep-alive','Content-Encoding':'gzip','Transfer-Encoding':'chunked','Date': 'Mon, 04 Mar 2019 07:48:29 GMT'}
 
-**Type JSON Results <class 'dict'>**
+Type JSON Results <class 'dict'>
 
-**{'status':'OK','results':{'civil_twilight_end':'12:44:16 PM','astronomical_twilight_end':'1:38:31 PM', 'civil_twilight_begin':'12:16:32 AM','sunrise':'12:39:54 AM',......,'sunset':'12:20:54 PM','solar_noon': '6:30:24 AM','day_length':'11:41:00'}}**
+{'status':'OK','results':{'civil_twilight_end':'12:44:16 PM','astronomical_twilight_end':'1:38:31 PM', 'civil_twilight_begin':'12:16:32 AM','sunrise':'12:39:54 AM',......,'sunset':'12:20:54 PM','solar_noon': '6:30:24 AM','day_length':'11:41:00'}}
 
-**SunRise & Sunset: 12:39:54 AM & 12:20:54 PM** 
+SunRise & Sunset: 12:39:54 AM & 12:20:54 PM** 
 ```
 
 # 案例 2 - 展示 API 的状态码和信息响应

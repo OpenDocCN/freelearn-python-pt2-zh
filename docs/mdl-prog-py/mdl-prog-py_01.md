@@ -29,14 +29,14 @@ print("Hello World!")
 这个一行程序将保存在磁盘上的一个文件中，通常命名为`hello.py`，并且通过在终端或命令行窗口中输入以下命令来执行：
 
 ```py
-**python hello.py**
+python hello.py
 
 ```
 
 然后 Python 解释器将忠实地打印出您要求它打印的消息：
 
 ```py
-**Hello World!**
+Hello World!
 
 ```
 
@@ -501,21 +501,21 @@ for n in range(1000):
 如果你运行这个程序，你会发现它按预期工作：
 
 ```py
-**$ python test_cache.py**
-**After 1 iterations, cache has 1 entries**
-**After 2 iterations, cache has 2 entries**
-**After 3 iterations, cache has 3 entries**
-**...**
-**After 98 iterations, cache has 98 entries**
-**After 99 iterations, cache has 99 entries**
-**After 100 iterations, cache has**
- **100 entries**
-**After 101 iterations, cache has 100 entries**
-**After 102 iterations, cache has 100 entries**
-**...**
-**After 998 iterations, cache has 100 entries**
-**After 999 iterations, cache has 100 entries**
-**After 1000 iterations, cache has 100 entries**
+$ python test_cache.py
+After 1 iterations, cache has 1 entries
+After 2 iterations, cache has 2 entries
+After 3 iterations, cache has 3 entries
+...
+After 98 iterations, cache has 98 entries
+After 99 iterations, cache has 99 entries
+After 100 iterations, cache has
+ **100 entries
+After 101 iterations, cache has 100 entries
+After 102 iterations, cache has 100 entries
+...
+After 998 iterations, cache has 100 entries
+After 999 iterations, cache has 100 entries
+After 1000 iterations, cache has 100 entries
 
 ```
 

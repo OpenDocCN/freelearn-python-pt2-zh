@@ -44,7 +44,7 @@
 
 ```py
 >>> import re
->>> pattern = **re.compile(r'<HTML>')**
+>>> pattern = **re.compile(r'<HTML>')
 >>> pattern.match("<HTML>")
 ```
 

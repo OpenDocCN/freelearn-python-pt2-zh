@@ -252,11 +252,11 @@ def thumbnail_image(url, size=(64, 64), format='.png'):
 假设我们想要将五个图像 URL 转换为它们的缩略图：
 
 ```py
-**img_urls = ['https://dummyimage.com/256x256/000/fff.jpg',**
- **'https://dummyimage.com/320x240/fff/00.jpg',**
- **'https://dummyimage.com/640x480/ccc/aaa.jpg',**
- **'https://dummyimage.com/128x128/ddd/eee.jpg',**
- **'https://dummyimage.com/720x720/111/222.jpg']**
+img_urls = ['https://dummyimage.com/256x256/000/fff.jpg',
+ **'https://dummyimage.com/320x240/fff/00.jpg',
+ **'https://dummyimage.com/640x480/ccc/aaa.jpg',
+ **'https://dummyimage.com/128x128/ddd/eee.jpg',
+ **'https://dummyimage.com/720x720/111/222.jpg']
 for url in img_urls:
     thumbnail_image(urls)
 ```
@@ -1169,8 +1169,8 @@ class PrimeChecker(threading.Thread):
 使用`sys.getsizeof`，我们可以进行一个粗略的计算：
 
 ```py
-**>>> sys.getsizeof([100000]*1000)*100000/(1024.0*1024.0)**
-**769.04296875**
+>>> sys.getsizeof([100000]*1000)*100000/(1024.0*1024.0)
+769.04296875
 
 ```
 
@@ -1270,7 +1270,7 @@ print('Sorted')
 在对读取文件的进程进行时间测量时，总会受到内核缓冲区缓存的影响。您会发现，连续运行相同的性能测试会显示巨大的改进，因为 Linux 会将文件的内容缓存在其缓冲区缓存中。因此，应在清除缓冲区缓存后进行相同输入大小的后续测试。在 Linux 中，可以通过以下命令完成：
 
 ```py
-**$ echo 3 > /proc/sys/vm/drop_caches**
+$ echo 3 > /proc/sys/vm/drop_caches
 
 ```
 

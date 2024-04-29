@@ -57,11 +57,11 @@ class DateAgeAdapter:
 
     def __init__(self, birthday):
         birthday = self._str_date(birthday)
- **self.calculator = AgeCalculator(birthday)**
+ **self.calculator = AgeCalculator(birthday)
 
     def get_age(self, date):
         date = self._str_date(date)
- **return self.calculator.calculate_age(date)**
+ **return self.calculator.calculate_age(date)
 
 ```
 
@@ -79,13 +79,13 @@ class AgeableDate(datetime.date):
 正是这样的代码让人怀疑 Python 是否应该合法。我们已经为我们的子类添加了一个`split`方法，它接受一个参数（我们忽略）并返回一个年、月和日的元组。这与原始的`AgeCalculator`类完美配合，因为代码在特殊格式的字符串上调用`strip`，而在这种情况下，`strip`返回一个年、月和日的元组。`AgeCalculator`代码只关心`strip`是否存在并返回可接受的值；它并不关心我们是否真的传入了一个字符串。它真的能工作：
 
 ```py
-**>>> bd = AgeableDate(1975, 6, 14)**
-**>>> today = AgeableDate.today()**
-**>>> today**
-**AgeableDate(2015, 8, 4)**
-**>>> a = AgeCalculator(bd)**
-**>>> a.calculate_age(today)**
-**40**
+>>> bd = AgeableDate(1975, 6, 14)
+>>> today = AgeableDate.today()
+>>> today
+AgeableDate(2015, 8, 4)
+>>> a = AgeCalculator(bd)
+>>> a.calculate_age(today)
+40
 
 ```
 
@@ -186,13 +186,13 @@ class EmailFacade:
 import weakref
 
 class CarModel:
- **_models = weakref.WeakValueDictionary()**
+ **_models = weakref.WeakValueDictionary()
 
     def __new__(cls, model_name, *args, **kwargs):
- **model = cls._models.get(model_name)**
+ **model = cls._models.get(model_name)
         if not model:
             model = super().__new__(cls)
- **cls._models[model_name] = model**
+ **cls._models[model_name] = model
 
         return model
 ```
@@ -203,7 +203,7 @@ class CarModel:
     def __init__(self, model_name, air=False, tilt=False,
             cruise_control=False, power_locks=False,
             alloy_wheels=False, usb_charger=False):
- **if not hasattr(self, "initted"):**
+ **if not hasattr(self, "initted"):
             self.model_name = model_name
             self.air = air
             self.tilt = tilt
@@ -219,7 +219,7 @@ class CarModel:
 让我们为我们的享元添加一个方法，假设它查找特定车型的序列号，并确定它是否曾经参与过任何事故。这个方法需要访问汽车的序列号，这个序列号因汽车而异；它不能与享元一起存储。因此，这些数据必须由调用代码传递给方法：
 
 ```py
- **def check_serial(self, serial_number):**
+ **def check_serial(self, serial_number):
         print("Sorry, we are unable to check "
                 "the serial number {0} on the {1} "
                 "at this time".format(
@@ -242,34 +242,34 @@ class Car:
 我们还可以跟踪可用模型以及停车场上的个别汽车：
 
 ```py
-**>>> dx = CarModel("FIT DX")**
-**>>> lx = CarModel("FIT LX", air=True, cruise_control=True,**
-**... power_locks=True, tilt=True)**
-**>>> car1 = Car(dx, "blue", "12345")**
-**>>> car2 = Car(dx, "black", "12346")**
-**>>> car3 = Car(lx, "red", "12347")**
+>>> dx = CarModel("FIT DX")
+>>> lx = CarModel("FIT LX", air=True, cruise_control=True,
+... power_locks=True, tilt=True)
+>>> car1 = Car(dx, "blue", "12345")
+>>> car2 = Car(dx, "black", "12346")
+>>> car3 = Car(lx, "red", "12347")
 
 ```
 
 现在，让我们演示弱引用的工作方式：
 
 ```py
-**>>> id(lx)**
-**3071620300**
-**>>> del lx**
-**>>> del car3**
-**>>> import gc**
-**>>> gc.collect()**
-**0**
-**>>> lx = CarModel("FIT LX", air=True, cruise_control=True,**
-**... power_locks=True, tilt=True)**
-**>>> id(lx)**
-**3071576140**
-**>>> lx = CarModel("FIT LX")**
-**>>> id(lx)**
-**3071576140**
-**>>> lx.air**
-**True**
+>>> id(lx)
+3071620300
+>>> del lx
+>>> del car3
+>>> import gc
+>>> gc.collect()
+0
+>>> lx = CarModel("FIT LX", air=True, cruise_control=True,
+... power_locks=True, tilt=True)
+>>> id(lx)
+3071576140
+>>> lx = CarModel("FIT LX")
+>>> id(lx)
+3071576140
+>>> lx.air
+True
 
 ```
 
@@ -317,7 +317,7 @@ class ToolbarButton:
         self.iconname = iconname
 
     def click(self):
- **self.command.execute()**
+ **self.command.execute()
 
 class MenuItem:
     def __init__(self, menu_name, menuitem_name):
@@ -325,7 +325,7 @@ class MenuItem:
         self.item = menuitem_name
 
     def click(self):
- **self.command.execute()**
+ **self.command.execute()
 
 class KeyboardShortcut:
     def __init__(self, key, modifier):
@@ -333,7 +333,7 @@ class KeyboardShortcut:
         self.modifier = modifier
 
     def keypress(self):
- **self.command.execute()**
+ **self.command.execute()
 
 ```
 
@@ -394,7 +394,7 @@ class MenuItem:
 
 window = Window()
 menu_item = MenuItem()
-**menu_item.command = window.exit**
+menu_item.command = window.exit
 
 ```
 
@@ -419,8 +419,8 @@ class SaveCommand:
     def __init__(self, document):
         self.document = document
 
- **def __call__(self):**
- **self.document.save()**
+ **def __call__(self):
+ **self.document.save()
 
 document = Document("a_file.txt")
 shortcut = KeyboardShortcut()
@@ -618,8 +618,8 @@ class File:
 
 ```py
 class Component:
- **def __init__(self, name):**
- **self.name = name**
+ **def __init__(self, name):
+ **self.name = name
 
     def move(self, new_path):
         new_folder =get_path(new_path)
@@ -632,7 +632,7 @@ class Component:
 
 class Folder(Component):
     def __init__(self, name):
- **super().__init__(name)**
+ **super().__init__(name)
         self.children = {}
 
     def add_child(self, child):
@@ -643,19 +643,19 @@ class Folder(Component):
 
 class File(Component):
     def __init__(self, name, contents):
- **super().__init__(name)**
+ **super().__init__(name)
         self.contents = contents
 
     def copy(self, new_path):
         pass
 
-**root = Folder('')**
-**def get_path(path):**
- **names = path.split('/')[1:]**
- **node = root**
- **for name in names:**
- **node = node.children[name]**
- **return node**
+root = Folder('')
+def get_path(path):
+ **names = path.split('/')[1:]
+ **node = root
+ **for name in names:
+ **node = node.children[name]
+ **return node
 
 ```
 
@@ -672,26 +672,26 @@ class File(Component):
 好了，这就够简单的了。让我们看看我们的复合文件层次结构是否正常工作：
 
 ```py
-**$ python3 -i 1261_09_18_add_child.py**
+$ python3 -i 1261_09_18_add_child.py
 
-**>>> folder1 = Folder('folder1')**
-**>>> folder2 = Folder('folder2')**
-**>>> root.add_child(folder1)**
-**>>> root.add_child(folder2)**
-**>>> folder11 = Folder('folder11')**
-**>>> folder1.add_child(folder11)**
-**>>> file111 = File('file111', 'contents')**
-**>>> folder11.add_child(file111)**
-**>>> file21 = File('file21', 'other contents')**
-**>>> folder2.add_child(file21)**
-**>>> folder2.children**
-**{'file21': <__main__.File object at 0xb7220a4c>}**
-**>>> folder2.move('/folder1/folder11')**
-**>>> folder11.children**
-**{'folder2': <__main__.Folder object at 0xb722080c>, 'file111': <__main__.File object at 0xb72209ec>}**
-**>>> file21.move('/folder1')**
-**>>> folder1.children**
-**{'file21': <__main__.File object at 0xb7220a4c>, 'folder11': <__main__.Folder object at 0xb722084c>}**
+>>> folder1 = Folder('folder1')
+>>> folder2 = Folder('folder2')
+>>> root.add_child(folder1)
+>>> root.add_child(folder2)
+>>> folder11 = Folder('folder11')
+>>> folder1.add_child(folder11)
+>>> file111 = File('file111', 'contents')
+>>> folder11.add_child(file111)
+>>> file21 = File('file21', 'other contents')
+>>> folder2.add_child(file21)
+>>> folder2.children
+{'file21': <__main__.File object at 0xb7220a4c>}
+>>> folder2.move('/folder1/folder11')
+>>> folder11.children
+{'folder2': <__main__.Folder object at 0xb722080c>, 'file111': <__main__.File object at 0xb72209ec>}
+>>> file21.move('/folder1')
+>>> folder1.children
+{'file21': <__main__.File object at 0xb7220a4c>, 'folder11': <__main__.Folder object at 0xb722084c>}
 
 ```
 

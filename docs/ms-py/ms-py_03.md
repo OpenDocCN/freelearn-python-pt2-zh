@@ -100,64 +100,64 @@ o_n_squared(items)  # n*n = 10*10 = 100 operations
 虽然你可能已经熟悉了列表的使用，但你可能不知道`list`对象的时间复杂度。幸运的是，`list`的许多时间复杂度非常低；`append`，`get`，`set`和`len`都需要`O(1)`的时间-这是最好的可能性。但是，你可能不知道`remove`和`insert`的时间复杂度是`O(n)`。因此，要从 1000 个项目中删除一个项目，Python 将不得不遍历 1000 个项目。在内部，`remove`和`insert`操作执行类似于这样的操作：
 
 ```py
-**>>> def remove(items, value):**
-**...     new_items = []**
-**...     found = False**
-**...     for item in items:**
-**...         # Skip the first item which is equal to value**
-**...         if not found and item == value:**
-**...             found = True**
-**...             continue**
-**...         new_items.append(item)**
-**...**
-**...     if not found:**
-**...         raise ValueError('list.remove(x): x not in list')**
-**...**
-**...     return new_items**
+>>> def remove(items, value):
+...     new_items = []
+...     found = False
+...     for item in items:
+...         # Skip the first item which is equal to value
+...         if not found and item == value:
+...             found = True
+...             continue
+...         new_items.append(item)
+...
+...     if not found:
+...         raise ValueError('list.remove(x): x not in list')
+...
+...     return new_items
 
-**>>> def insert(items, index, value):**
-**...     new_items = []**
-**...     for i, item in enumerate(items):**
-**...         if i == index:**
-**...             new_items.append(value)**
-**...         new_items.append(item)**
-**...     return new_items**
+>>> def insert(items, index, value):
+...     new_items = []
+...     for i, item in enumerate(items):
+...         if i == index:
+...             new_items.append(value)
+...         new_items.append(item)
+...     return new_items
 
-**>>> items = list(range(10))**
-**>>> items**
-**[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]**
+>>> items = list(range(10))
+>>> items
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-**>>> items = remove(items, 5)**
-**>>> items**
-**[0, 1, 2, 3, 4, 6, 7, 8, 9]**
+>>> items = remove(items, 5)
+>>> items
+[0, 1, 2, 3, 4, 6, 7, 8, 9]
 
-**>>> items = insert(items, 2, 5)**
-**>>> items**
-**[0, 1, 5, 2, 3, 4, 6, 7, 8, 9]**
+>>> items = insert(items, 2, 5)
+>>> items
+[0, 1, 5, 2, 3, 4, 6, 7, 8, 9]
 
 ```
 
 要从列表中删除或插入单个项目，Python 需要复制整个列表，这在列表较大时特别耗费资源。当执行一次时，当然不是那么糟糕。但是当执行大量删除时，`filter`或`list`推导是一个更快的解决方案，因为如果结构良好，它只需要复制列表一次。例如，假设我们希望从列表中删除一组特定的数字。我们有很多选项。第一个是使用`remove`，然后是列表推导，然后是`filter`语句。第四章, *功能编程-可读性与简洁性*，将更详细地解释`list`推导和`filter`语句。但首先，让我们看看这个例子：
 
 ```py
-**>>> primes = set((1, 2, 3, 5, 7))**
+>>> primes = set((1, 2, 3, 5, 7))
 
-**# Classic solution**
-**>>> items = list(range(10))**
-**>>> for prime in primes:**
-**...     items.remove(prime)**
-**>>> items**
-**[0, 4, 6, 8, 9]**
+# Classic solution
+>>> items = list(range(10))
+>>> for prime in primes:
+...     items.remove(prime)
+>>> items
+[0, 4, 6, 8, 9]
 
-**# List comprehension**
-**>>> items = list(range(10))**
-**>>> [item for item in items if item not in primes]**
-**[0, 4, 6, 8, 9]**
+# List comprehension
+>>> items = list(range(10))
+>>> [item for item in items if item not in primes]
+[0, 4, 6, 8, 9]
 
-**# Filter**
-**>>> items = list(range(10))**
-**>>> list(filter(lambda item: item not in primes, items))**
-**[0, 4, 6, 8, 9]**
+# Filter
+>>> items = list(range(10))
+>>> list(filter(lambda item: item not in primes, items))
+[0, 4, 6, 8, 9]
 
 ```
 
@@ -172,33 +172,33 @@ o_n_squared(items)  # n*n = 10*10 = 100 operations
 它们可以这样实现：
 
 ```py
-**>>> def in_(items, value):**
-**...     for item in items:**
-**...         if item == value:**
-**...             return True**
-**...     return False**
+>>> def in_(items, value):
+...     for item in items:
+...         if item == value:
+...             return True
+...     return False
 
-**>>> def min_(items):**
-**...     current_min = items[0]**
-**...     for item in items[1:]:**
-**...         if current_min > item:**
-**...             current_min = item**
-**...     return current_min**
+>>> def min_(items):
+...     current_min = items[0]
+...     for item in items[1:]:
+...         if current_min > item:
+...             current_min = item
+...     return current_min
 
-**>>> def max_(items):**
-**...     current_max = items[0]**
-**...     for item in items[1:]:**
-**...         if current_max < item:**
-**...             current_max = item**
-**...     return current_max**
+>>> def max_(items):
+...     current_max = items[0]
+...     for item in items[1:]:
+...         if current_max < item:
+...             current_max = item
+...     return current_max
 
-**>>> items = range(5)**
-**>>> in_(items, 3)**
-**True**
-**>>> min_(items)**
-**0**
-**>>> max_(items)**
-**4**
+>>> items = range(5)
+>>> in_(items, 3)
+True
+>>> min_(items)
+0
+>>> max_(items)
+4
 
 ```
 
@@ -211,53 +211,53 @@ o_n_squared(items)  # n*n = 10*10 = 100 operations
 让我们看看这在实践中是如何工作的。为了举例说明，我将使用我能想到的最简单的哈希算法，即数字的最高位。所以，对于`12345`，它将返回`1`，对于`56789`，它将返回`5`：
 
 ```py
-**>>> def most_significant(value):**
-**...     while value >= 10:**
-**...         value //= 10**
-**...     return value**
+>>> def most_significant(value):
+...     while value >= 10:
+...         value //= 10
+...     return value
 
-**>>> most_significant(12345)**
-**1**
-**>>> most_significant(99)**
-**9**
-**>>> most_significant(0)**
-**0**
+>>> most_significant(12345)
+1
+>>> most_significant(99)
+9
+>>> most_significant(0)
+0
 
 ```
 
 现在我们将使用这种哈希方法使用一个列表的列表来模拟一个`dict`。我们知道我们的哈希方法只能返回`0`到`9`之间的数字，所以我们在列表中只需要 10 个桶。现在我们将添加一些值，并展示 spam in eggs 可能如何工作：
 
 ```py
-**>>> def add(collection, key, value):**
-**...     index = most_significant(key)**
-**...     collection[index].append((key, value))**
+>>> def add(collection, key, value):
+...     index = most_significant(key)
+...     collection[index].append((key, value))
 
-**>>> def contains(collection, key):**
-**...     index = most_significant(key)**
-**...     for k, v in collection[index]:**
-**...         if k == key:**
-**...             return True**
-**...     return False**
+>>> def contains(collection, key):
+...     index = most_significant(key)
+...     for k, v in collection[index]:
+...         if k == key:
+...             return True
+...     return False
 
-**# Create the collection of 10 lists**
-**>>> collection = [[], [], [], [], [], [], [], [], [], []]**
+# Create the collection of 10 lists
+>>> collection = [[], [], [], [], [], [], [], [], [], []]
 
-**# Add some items, using key/value pairs**
-**>>> add(collection, 123, 'a')**
-**>>> add(collection, 456, 'b')**
-**>>> add(collection, 789, 'c')**
-**>>> add(collection, 101, 'c')**
+# Add some items, using key/value pairs
+>>> add(collection, 123, 'a')
+>>> add(collection, 456, 'b')
+>>> add(collection, 789, 'c')
+>>> add(collection, 101, 'c')
 
-**# Look at the collection**
-**>>> collection**
-**[[], [(123, 'a'), (101, 'c')], [], [],**
- **[(456, 'b')], [], [], [(789, 'c')], [], []]**
+# Look at the collection
+>>> collection
+[[], [(123, 'a'), (101, 'c')], [], [],
+ **[(456, 'b')], [], [], [(789, 'c')], [], []]
 
-**# Check if the contains works correctly**
-**>>> contains(collection, 123)**
-**True**
-**>>> contains(collection, 1)**
-**False**
+# Check if the contains works correctly
+>>> contains(collection, 123)
+True
+>>> contains(collection, 1)
+False
 
 ```
 
@@ -274,18 +274,18 @@ o_n_squared(items)  # n*n = 10*10 = 100 operations
 `set`是一种使用散列方法获取唯一值集合的结构。在内部，它与`dict`非常相似，具有相同的散列冲突问题，但`set`有一些方便的功能需要展示：
 
 ```py
-**# All output in the table below is generated using this function**
-**>>> def print_set(expression, set_):**
-**...     'Print set as a string sorted by letters'**
-**...     print(expression, ''.join(sorted(set_)))**
+# All output in the table below is generated using this function
+>>> def print_set(expression, set_):
+...     'Print set as a string sorted by letters'
+...     print(expression, ''.join(sorted(set_)))
 
-**>>> spam = set('spam')**
-**>>> print_set('spam:', spam)**
-**spam: amps**
+>>> spam = set('spam')
+>>> print_set('spam:', spam)
+spam: amps
 
-**>>> eggs = set('eggs')**
-**>>> print_set('eggs:', spam)**
-**eggs: amps**
+>>> eggs = set('eggs')
+>>> print_set('eggs:', spam)
+eggs: amps
 
 ```
 
@@ -314,30 +314,30 @@ o_n_squared(items)  # n*n = 10*10 = 100 operations
 在权限系统中，这是一个非常常见的场景——从组中批量添加和/或删除用户。在许多权限数据库中，不容易一次设置整个列表，因此你需要一个要插入的列表和一个要删除的列表。这就是`set`真正方便的地方：
 
 ```py
-**The set function takes a sequence as argument so the double ( is**
-**required.**
-**>>> current_users = set((**
-**...     'a',**
-**...     'b',**
-**...     'd',**
-**... ))**
+The set function takes a sequence as argument so the double ( is
+required.
+>>> current_users = set((
+...     'a',
+...     'b',
+...     'd',
+... ))
 
-**>>> new_users = set((**
-**...     'b',**
-**...     'c',**
-**...     'd',**
-**...     'e',**
-**... ))**
+>>> new_users = set((
+...     'b',
+...     'c',
+...     'd',
+...     'e',
+... ))
 
-**>>> to_insert = new_users - current_users**
-**>>> sorted(to_insert)**
-**['c', 'e']**
-**>>> to_delete = current_users - new_users**
-**>>> sorted(to_delete)**
-**['a']**
-**>>> unchanged = new_users & current_users**
-**>>> sorted(unchanged)**
-**['b', 'd']**
+>>> to_insert = new_users - current_users
+>>> sorted(to_insert)
+['c', 'e']
+>>> to_delete = current_users - new_users
+>>> sorted(to_delete)
+['a']
+>>> unchanged = new_users & current_users
+>>> sorted(unchanged)
+['b', 'd']
 
 ```
 
@@ -350,32 +350,32 @@ o_n_squared(items)  # n*n = 10*10 = 100 operations
 首先，它们是可散列的。这意味着你可以将`tuple`用作`dict`中的键，这是`list`无法做到的：
 
 ```py
-**>>> spam = 1, 2, 3**
-**>>> eggs = 4, 5, 6**
+>>> spam = 1, 2, 3
+>>> eggs = 4, 5, 6
 
-**>>> data = dict()**
-**>>> data[spam] = 'spam'**
-**>>> data[eggs] = 'eggs'**
+>>> data = dict()
+>>> data[spam] = 'spam'
+>>> data[eggs] = 'eggs'
 
-**>>> import pprint  # Using pprint for consistent and sorted output**
-**>>> pprint.pprint(data)**
-**{(1, 2, 3): 'spam', (4, 5, 6): 'eggs'}**
+>>> import pprint  # Using pprint for consistent and sorted output
+>>> pprint.pprint(data)
+{(1, 2, 3): 'spam', (4, 5, 6): 'eggs'}
 
 ```
 
 然而，它实际上可以比简单的数字更复杂。只要`tuple`的所有元素都是可散列的，它就可以工作。这意味着你可以使用嵌套的元组、字符串、数字和任何其他`hash()`函数返回一致结果的东西：
 
 ```py
-**>>> spam = 1, 'abc', (2, 3, (4, 5)), 'def'**
-**>>> eggs = 4, (spam, 5), 6**
+>>> spam = 1, 'abc', (2, 3, (4, 5)), 'def'
+>>> eggs = 4, (spam, 5), 6
 
-**>>> data = dict()**
-**>>> data[spam] = 'spam'**
-**>>> data[eggs] = 'eggs'**
-**>>> import pprint  # Using pprint for consistent and sorted output**
-**>>> pprint.pprint(data)**
-**{(1, 'abc', (2, 3, (4, 5)), 'def'): 'spam',**
- **(4, ((1, 'abc', (2, 3, (4, 5)), 'def'), 5), 6): 'eggs'}**
+>>> data = dict()
+>>> data[spam] = 'spam'
+>>> data[eggs] = 'eggs'
+>>> import pprint  # Using pprint for consistent and sorted output
+>>> pprint.pprint(data)
+{(1, 'abc', (2, 3, (4, 5)), 'def'): 'spam',
+ **(4, ((1, 'abc', (2, 3, (4, 5)), 'def'), 5), 6): 'eggs'}
 
 ```
 
@@ -384,79 +384,79 @@ o_n_squared(items)  # n*n = 10*10 = 100 operations
 也许更有用的是元组也支持元组打包和解包：
 
 ```py
-**# Assign using tuples on both sides**
-**>>> a, b, c = 1, 2, 3**
-**>>> a**
-**1**
+# Assign using tuples on both sides
+>>> a, b, c = 1, 2, 3
+>>> a
+1
 
-**# Assign a tuple to a single variable**
-**>>> spam = a, (b, c)**
-**>>> spam**
-**(1, (2, 3))**
+# Assign a tuple to a single variable
+>>> spam = a, (b, c)
+>>> spam
+(1, (2, 3))
 
-**# Unpack a tuple to two variables**
-**>>> a, b = spam**
-**>>> a**
-**1**
-**>>> b**
-**(2, 3)**
+# Unpack a tuple to two variables
+>>> a, b = spam
+>>> a
+1
+>>> b
+(2, 3)
 
 ```
 
 除了常规的打包和解包外，从 Python 3 开始，我们实际上可以使用可变数量的项目打包和解包对象：
 
 ```py
-**# Unpack with variable length objects which actually assigns as a**
-**list, not a tuple**
-**>>> spam, *eggs = 1, 2, 3, 4**
-**>>> spam**
-**1**
-**>>> eggs**
-**[2, 3, 4]**
+# Unpack with variable length objects which actually assigns as a
+list, not a tuple
+>>> spam, *eggs = 1, 2, 3, 4
+>>> spam
+1
+>>> eggs
+[2, 3, 4]
 
-**# Which can be unpacked as well of course**
-**>>> a, b, c = eggs**
-**>>> c**
-**4**
+# Which can be unpacked as well of course
+>>> a, b, c = eggs
+>>> c
+4
 
-**# This works for ranges as well**
-**>>> spam, *eggs = range(10)**
-**>>> spam**
-**0**
-**>>> eggs**
-**[1, 2, 3, 4, 5, 6, 7, 8, 9]**
+# This works for ranges as well
+>>> spam, *eggs = range(10)
+>>> spam
+0
+>>> eggs
+[1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-**# Which works both ways**
-**>>> a**
-**2**
-**>>> a, b, *c = a, *eggs**
-**>>> a, b**
-**(2, 1)**
-**>>> c**
-**[2, 3, 4, 5, 6, 7, 8, 9]**
+# Which works both ways
+>>> a
+2
+>>> a, b, *c = a, *eggs
+>>> a, b
+(2, 1)
+>>> c
+[2, 3, 4, 5, 6, 7, 8, 9]
 
 ```
 
 这种方法在许多情况下都可以应用，甚至用于函数参数：
 
 ```py
-**>>> def eggs(*args):**
-**...     print('args:', args)**
+>>> def eggs(*args):
+...     print('args:', args)
 
-**>>> eggs(1, 2, 3)**
-**args: (1, 2, 3)**
+>>> eggs(1, 2, 3)
+args: (1, 2, 3)
 
 ```
 
 同样，从函数返回多个参数也很有用：
 
 ```py
-**>>> def spam_eggs():**
-**...     return 'spam', 'eggs'**
+>>> def spam_eggs():
+...     return 'spam', 'eggs'
 
-**>>> spam, eggs = spam_eggs()**
-**>>> print('spam: %s, eggs: %s' % (spam, eggs))**
-**spam: spam, eggs: eggs**
+>>> spam, eggs = spam_eggs()
+>>> print('spam: %s, eggs: %s' % (spam, eggs))
+spam: spam, eggs: eggs
 
 ```
 
@@ -548,69 +548,69 @@ for map_ in combined.maps:
 `counter`是一个用于跟踪元素出现次数的类。它的基本用法如您所期望的那样：
 
 ```py
-**>>> import collections**
+>>> import collections
 
-**>>> counter = collections.Counter('eggs')**
-**>>> for k in 'eggs':**
-**...     print('Count for %s: %d' % (k, counter[k]))**
-**Count for e: 1**
-**Count for g: 2**
-**Count for g: 2**
-**Count for s: 1**
+>>> counter = collections.Counter('eggs')
+>>> for k in 'eggs':
+...     print('Count for %s: %d' % (k, counter[k]))
+Count for e: 1
+Count for g: 2
+Count for g: 2
+Count for s: 1
 
 ```
 
 但是，`counter`不仅仅可以返回计数。它还有一些非常有用且快速（它使用`heapq`）的方法来获取最常见的元素。即使向计数器添加了一百万个元素，它仍然在一秒内执行：
 
 ```py
-**>>> import math**
-**>>> import collections**
+>>> import math
+>>> import collections
 
-**>>> counter = collections.Counter()**
-**>>> for i in range(0, 100000):**
-**...    counter[math.sqrt(i) // 25] += 1**
+>>> counter = collections.Counter()
+>>> for i in range(0, 100000):
+...    counter[math.sqrt(i) // 25] += 1
 
-**>>> for key, count in counter.most_common(5):**
-**...     print('%s: %d' % (key, count))**
-**11.0: 14375**
-**10.0: 13125**
-**9.0: 11875**
-**8.0: 10625**
-**12.0: 10000**
+>>> for key, count in counter.most_common(5):
+...     print('%s: %d' % (key, count))
+11.0: 14375
+10.0: 13125
+9.0: 11875
+8.0: 10625
+12.0: 10000
 
 ```
 
 但等等，还有更多！除了获取最频繁的元素之外，还可以像我们之前看到的`set`操作一样添加、减去、交集和"联合"计数器。那么添加两个计数器和对它们进行联合有什么区别呢？正如您所期望的那样，它们是相似的，但有一点不同。让我们看看它的工作原理：
 
 ```py
-**>>> import collections**
+>>> import collections
 
-**>>> def print_counter(expression, counter):**
-**...     sorted_characters = sorted(counter.elements())**
-**...     print(expression, ''.join(sorted_characters))**
+>>> def print_counter(expression, counter):
+...     sorted_characters = sorted(counter.elements())
+...     print(expression, ''.join(sorted_characters))
 
-**>>> eggs = collections.Counter('eggs')**
-**>>> spam = collections.Counter('spam')**
-**>>> print_counter('eggs:', eggs)**
-**eggs: eggs**
-**>>> print_counter('spam:', spam)**
-**spam: amps**
-**>>> print_counter('eggs & spam:', eggs & spam)**
-**eggs & spam: s**
-**>>> print_counter('spam & eggs:', spam & eggs)**
-**spam & eggs: s**
-**>>> print_counter('eggs - spam:', eggs - spam)**
-**eggs - spam: egg**
-**>>> print_counter('spam - eggs:', spam - eggs)**
-**spam - eggs: amp**
-**>>> print_counter('eggs + spam:', eggs + spam)**
-**eggs + spam: aeggmpss**
-**>>> print_counter('spam + eggs:', spam + eggs)**
-**spam + eggs: aeggmpss**
-**>>> print_counter('eggs | spam:', eggs | spam)**
-**eggs | spam: aeggmps**
-**>>> print_counter('spam | eggs:', spam | eggs)**
-**spam | eggs: aeggmps**
+>>> eggs = collections.Counter('eggs')
+>>> spam = collections.Counter('spam')
+>>> print_counter('eggs:', eggs)
+eggs: eggs
+>>> print_counter('spam:', spam)
+spam: amps
+>>> print_counter('eggs & spam:', eggs & spam)
+eggs & spam: s
+>>> print_counter('spam & eggs:', spam & eggs)
+spam & eggs: s
+>>> print_counter('eggs - spam:', eggs - spam)
+eggs - spam: egg
+>>> print_counter('spam - eggs:', spam - eggs)
+spam - eggs: amp
+>>> print_counter('eggs + spam:', eggs + spam)
+eggs + spam: aeggmpss
+>>> print_counter('spam + eggs:', spam + eggs)
+spam + eggs: aeggmpss
+>>> print_counter('eggs | spam:', eggs | spam)
+eggs | spam: aeggmps
+>>> print_counter('spam | eggs:', spam | eggs)
+spam | eggs: aeggmps
 
 ```
 
@@ -641,21 +641,21 @@ for map_ in combined.maps:
 它作为队列的使用非常简单：
 
 ```py
-**>>> import collections**
+>>> import collections
 
-**>>> queue = collections.deque()**
-**>>> queue.append(1)**
-**>>> queue.append(2)**
-**>>> queue**
-**deque([1, 2])**
-**>>> queue.popleft()**
-**1**
-**>>> queue.popleft()**
-**2**
-**>>> queue.popleft()**
-**Traceback (most recent call last):**
- **...**
-**IndexError: pop from an empty deque**
+>>> queue = collections.deque()
+>>> queue.append(1)
+>>> queue.append(2)
+>>> queue
+deque([1, 2])
+>>> queue.popleft()
+1
+>>> queue.popleft()
+2
+>>> queue.popleft()
+Traceback (most recent call last):
+ **...
+IndexError: pop from an empty deque
 
 ```
 
@@ -664,40 +664,40 @@ for map_ in combined.maps:
 作为堆栈的使用几乎相同，但我们必须使用`pop`而不是`popleft`（或者使用`appendleft`而不是`append`）：
 
 ```py
-**>>> import collections**
+>>> import collections
 
-**>>> queue = collections.deque()**
-**>>> queue.append(1)**
-**>>> queue.append(2)**
-**>>> queue**
-**deque([1, 2])**
-**>>> queue.pop()**
-**2**
-**>>> queue.pop()**
-**1**
-**>>> queue.pop()**
-**Traceback (most recent call last):**
- **...**
-**IndexError: pop from an empty deque**
+>>> queue = collections.deque()
+>>> queue.append(1)
+>>> queue.append(2)
+>>> queue
+deque([1, 2])
+>>> queue.pop()
+2
+>>> queue.pop()
+1
+>>> queue.pop()
+Traceback (most recent call last):
+ **...
+IndexError: pop from an empty deque
 
 ```
 
 另一个非常有用的功能是`deque`可以使用`maxlen`参数作为循环队列。通过使用这个参数，它可以用来保留最后的`n`个状态消息或类似的东西：
 
 ```py
-**>>> import collections**
+>>> import collections
 
-**>>> circular = collections.deque(maxlen=2)**
-**>>> for i in range(5):**
-**...     circular.append(i)**
-**...     circular**
-**deque([0], maxlen=2)**
-**deque([0, 1], maxlen=2)**
-**deque([1, 2], maxlen=2)**
-**deque([2, 3], maxlen=2)**
-**deque([3, 4], maxlen=2)**
-**>>> circular**
-**deque([3, 4], maxlen=2)**
+>>> circular = collections.deque(maxlen=2)
+>>> for i in range(5):
+...     circular.append(i)
+...     circular
+deque([0], maxlen=2)
+deque([0, 1], maxlen=2)
+deque([1, 2], maxlen=2)
+deque([2, 3], maxlen=2)
+deque([3, 4], maxlen=2)
+>>> circular
+deque([3, 4], maxlen=2)
 
 ```
 
@@ -727,18 +727,18 @@ nodes = [
 现在让我们将这个图放入一个普通的字典中：
 
 ```py
-**>>> graph = dict()**
-**>>> for from_, to in nodes:**
-**...     if from_ not in graph:**
-**...         graph[from_] = []**
-**...     graph[from_].append(to)**
+>>> graph = dict()
+>>> for from_, to in nodes:
+...     if from_ not in graph:
+...         graph[from_] = []
+...     graph[from_].append(to)
 
-**>>> import pprint**
-**>>> pprint.pprint(graph)**
-**{'a': ['b', 'c'],**
- **'b': ['a', 'd'],**
- **'c': ['a'],**
- **'d': ['a', 'b', 'c']}**
+>>> import pprint
+>>> pprint.pprint(graph)
+{'a': ['b', 'c'],
+ **'b': ['a', 'd'],
+ **'c': ['a'],
+ **'d': ['a', 'b', 'c']}
 
 ```
 
@@ -747,29 +747,29 @@ nodes = [
 真正的 Python 版本使用`defaultdict`代替：
 
 ```py
-**>>> import collections**
+>>> import collections
 
-**>>> graph = collections.defaultdict(list)**
-**>>> for from_, to in nodes:**
-**...     graph[from_].append(to)**
+>>> graph = collections.defaultdict(list)
+>>> for from_, to in nodes:
+...     graph[from_].append(to)
 
-**>>> import pprint**
-**>>> pprint.pprint(graph)**
-**defaultdict(<class 'list'>,**
- **{'a': ['b', 'c'],**
- **'b': ['a', 'd'],**
- **'c': ['a'],**
- **'d': ['a', 'b', 'c']})**
+>>> import pprint
+>>> pprint.pprint(graph)
+defaultdict(<class 'list'>,
+ **{'a': ['b', 'c'],
+ **'b': ['a', 'd'],
+ **'c': ['a'],
+ **'d': ['a', 'b', 'c']})
 
 ```
 
 这是一段美妙的代码吗？`defaultdict`实际上可以被看作是`counter`对象的前身。它没有`counter`那么花哨，也没有所有`counter`的功能，但在许多情况下它可以胜任：
 
 ```py
-**>>> counter = collections.defaultdict(int)**
-**>>> counter['spam'] += 5**
-**>>> counter**
-**defaultdict(<class 'int'>, {'spam': 5})**
+>>> counter = collections.defaultdict(int)
+>>> counter['spam'] += 5
+>>> counter
+defaultdict(<class 'int'>, {'spam': 5})
 
 ```
 
@@ -785,39 +785,39 @@ def tree(): return collections.defaultdict(tree)
 太棒了，不是吗？这是我们实际上如何使用它的方式：
 
 ```py
-**>>> import json**
-**>>> import collections**
+>>> import json
+>>> import collections
 
-**>>> def tree():**
-**...     return collections.defaultdict(tree)**
+>>> def tree():
+...     return collections.defaultdict(tree)
 
-**>>> colours = tree()**
-**>>> colours['other']['black'] = 0x000000**
-**>>> colours['other']['white'] = 0xFFFFFF**
-**>>> colours['primary']['red'] = 0xFF0000**
-**>>> colours['primary']['green'] = 0x00FF00**
-**>>> colours['primary']['blue'] = 0x0000FF**
-**>>> colours['secondary']['yellow'] = 0xFFFF00**
-**>>> colours['secondary']['aqua'] = 0x00FFFF**
-**>>> colours['secondary']['fuchsia'] = 0xFF00FF**
+>>> colours = tree()
+>>> colours['other']['black'] = 0x000000
+>>> colours['other']['white'] = 0xFFFFFF
+>>> colours['primary']['red'] = 0xFF0000
+>>> colours['primary']['green'] = 0x00FF00
+>>> colours['primary']['blue'] = 0x0000FF
+>>> colours['secondary']['yellow'] = 0xFFFF00
+>>> colours['secondary']['aqua'] = 0x00FFFF
+>>> colours['secondary']['fuchsia'] = 0xFF00FF
 
-**>>> print(json.dumps(colours, sort_keys=True, indent=4))**
-**{**
- **"other": {**
- **"black": 0,**
- **"white": 16777215**
- **},**
- **"primary": {**
- **"blue": 255,**
- **"green": 65280,**
- **"red": 16711680**
- **},**
- **"secondary": {**
- **"aqua": 65535,**
- **"fuchsia": 16711935,**
- **"yellow": 16776960**
- **}**
-**}**
+>>> print(json.dumps(colours, sort_keys=True, indent=4))
+{
+ **"other": {
+ **"black": 0,
+ **"white": 16777215
+ **},
+ **"primary": {
+ **"blue": 255,
+ **"green": 65280,
+ **"red": 16711680
+ **},
+ **"secondary": {
+ **"aqua": 65535,
+ **"fuchsia": 16711935,
+ **"yellow": 16776960
+ **}
+}
 
 ```
 
@@ -828,28 +828,28 @@ def tree(): return collections.defaultdict(tree)
 `namedtuple`对象确实就像名字暗示的那样 - 一个带有名称的元组。它有一些有用的用例，尽管我必须承认我在实际中并没有找到太多用例，除了一些 Python 模块，比如 inspect 和`urllib.parse`。2D 或 3D 空间中的点是它明显有用的一个很好的例子：
 
 ```py
-**>>> import collections**
+>>> import collections
 
-**>>> Point = collections.namedtuple('Point', ['x', 'y', 'z'])**
-**>>> point_a = Point(1, 2, 3)**
-**>>> point_a**
-**Point(x=1, y=2, z=3)**
+>>> Point = collections.namedtuple('Point', ['x', 'y', 'z'])
+>>> point_a = Point(1, 2, 3)
+>>> point_a
+Point(x=1, y=2, z=3)
 
-**>>> point_b = Point(x=4, z=5, y=6)**
-**>>> point_b**
-**Point(x=4, y=6, z=5)**
+>>> point_b = Point(x=4, z=5, y=6)
+>>> point_b
+Point(x=4, y=6, z=5)
 
 ```
 
 关于`namedtuple`，并没有太多可以说的；它做你期望的事情，最大的优势是属性可以通过名称和索引执行，这使得元组解包非常容易：
 
 ```py
-**>>> x, y, z = point_a**
-**>>> print('X: %d, Y: %d, Z: %d' % (x, y, z))**
-**X: 1, Y: 2, Z: 3**
-**>>> print('X: %d, Y: %d, Z: %d' % point_b)**
-**X: 4, Y: 6, Z: 5**
-**>>> print('X: %d' % point_a.x)**
+>>> x, y, z = point_a
+>>> print('X: %d, Y: %d, Z: %d' % (x, y, z))
+X: 1, Y: 2, Z: 3
+>>> print('X: %d, Y: %d, Z: %d' % point_b)
+X: 4, Y: 6, Z: 5
+>>> print('X: %d' % point_a.x)
 
 ```
 
@@ -858,29 +858,29 @@ def tree(): return collections.defaultdict(tree)
 `enum`包与`namedtuple`非常相似，但目标和接口完全不同。基本的`enum`对象使得在模块中拥有常量变得非常容易，同时避免了魔术数字。这是一个基本的例子：
 
 ```py
-**>>> import enum**
+>>> import enum
 
-**>>> class Color(enum.Enum):**
-**...     red = 1**
-**...     green = 2**
-**...     blue = 3**
+>>> class Color(enum.Enum):
+...     red = 1
+...     green = 2
+...     blue = 3
 
-**>>> Color.red**
-**<Color.red: 1>**
-**>>> Color['red']**
-**<Color.red: 1>**
-**>>> Color(1)**
-**<Color.red: 1>**
-**>>> Color.red.name**
-**'red'**
-**>>> Color.red.value**
-**1**
-**>>> isinstance(Color.red, Color)**
-**True**
-**>>> Color.red is Color['red']**
-**True**
-**>>> Color.red is Color(1)**
-**True**
+>>> Color.red
+<Color.red: 1>
+>>> Color['red']
+<Color.red: 1>
+>>> Color(1)
+<Color.red: 1>
+>>> Color.red.name
+'red'
+>>> Color.red.value
+1
+>>> isinstance(Color.red, Color)
+True
+>>> Color.red is Color['red']
+True
+>>> Color.red is Color(1)
+True
 
 ```
 
@@ -889,16 +889,16 @@ def tree(): return collections.defaultdict(tree)
 以下代码展示了基本 API 的使用：
 
 ```py
-**>>> for color in Color:**
-**...     color**
-**<Color.red: 1>**
-**<Color.green: 2>**
-**<Color.blue: 3>**
+>>> for color in Color:
+...     color
+<Color.red: 1>
+<Color.green: 2>
+<Color.blue: 3>
 
-**>>> colors = dict()**
-**>>> colors[Color.green] = 0x00FF00**
-**>>> colors**
-**{<Color.green: 2>: 65280}**
+>>> colors = dict()
+>>> colors[Color.green] = 0x00FF00
+>>> colors
+{<Color.green: 2>: 65280}
 
 ```
 
@@ -907,26 +907,26 @@ def tree(): return collections.defaultdict(tree)
 这是常规的`enum`：
 
 ```py
-**>>> import enum**
+>>> import enum
 
-**>>> class Spam(enum.Enum):**
-**...     EGGS = 'eggs'**
+>>> class Spam(enum.Enum):
+...     EGGS = 'eggs'
 
-**>>> Spam.EGGS == 'eggs'**
-**False**
+>>> Spam.EGGS == 'eggs'
+False
 
 ```
 
 以下是带有`str`继承的`enum`：
 
 ```py
-**>>> import enum**
+>>> import enum
 
-**>>> class Spam(str, enum.Enum):**
-**...     EGGS = 'eggs'**
+>>> class Spam(str, enum.Enum):
+...     EGGS = 'eggs'
 
-**>>> Spam.EGGS == 'eggs'**
-**True**
+>>> Spam.EGGS == 'eggs'
+True
 
 ```
 
@@ -935,24 +935,24 @@ def tree(): return collections.defaultdict(tree)
 `OrderdDict`是一个跟踪插入顺序的`dict`。而普通的`dict`会按照哈希的顺序返回键，`OrderedDict`会按照插入的顺序返回键。所以，它不是按键或值排序的，但这也很容易实现：
 
 ```py
-**>>> import collections**
+>>> import collections
 
-**>>> spam = collections.OrderedDict()**
-**>>> spam['b'] = 2**
-**>>> spam['c'] = 3**
-**>>> spam['a'] = 1**
-**>>> spam**
-**OrderedDict([('b', 2), ('c', 3), ('a', 1)])**
+>>> spam = collections.OrderedDict()
+>>> spam['b'] = 2
+>>> spam['c'] = 3
+>>> spam['a'] = 1
+>>> spam
+OrderedDict([('b', 2), ('c', 3), ('a', 1)])
 
-**>>> for key, value in spam.items():**
-**...     key, value**
-**('b', 2)**
-**('c', 3)**
-**('a', 1)**
+>>> for key, value in spam.items():
+...     key, value
+('b', 2)
+('c', 3)
+('a', 1)
 
-**>>> eggs = collections.OrderedDict(sorted(spam.items()))**
-**>>> eggs**
-**OrderedDict([('a', 1), ('b', 2), ('c', 3)])**
+>>> eggs = collections.OrderedDict(sorted(spam.items()))
+>>> eggs
+OrderedDict([('a', 1), ('b', 2), ('c', 3)])
 
 ```
 
@@ -973,22 +973,22 @@ def tree(): return collections.defaultdict(tree)
 基本用法非常简单：
 
 ```py
-**>>> import heapq**
+>>> import heapq
 
-**>>> heap = [1, 3, 5, 7, 2, 4, 3]**
-**>>> heapq.heapify(heap)**
-**>>> heap**
-**[1, 2, 3, 7, 3, 4, 5]**
+>>> heap = [1, 3, 5, 7, 2, 4, 3]
+>>> heapq.heapify(heap)
+>>> heap
+[1, 2, 3, 7, 3, 4, 5]
 
-**>>> while heap:**
-**...     heapq.heappop(heap), heap**
-**(1, [2, 3, 3, 7, 5, 4])**
-**(2, [3, 3, 4, 7, 5])**
-**(3, [3, 5, 4, 7])**
-**(3, [4, 5, 7])**
-**(4, [5, 7])**
-**(5, [7])**
-**(7, [])**
+>>> while heap:
+...     heapq.heappop(heap), heap
+(1, [2, 3, 3, 7, 5, 4])
+(2, [3, 3, 4, 7, 5])
+(3, [3, 5, 4, 7])
+(3, [4, 5, 7])
+(4, [5, 7])
+(5, [7])
+(7, [])
 
 ```
 
@@ -1019,26 +1019,26 @@ def tree(): return collections.defaultdict(tree)
 为了说明，我们有这些行：
 
 ```py
-**>>> import bisect**
+>>> import bisect
 
-**Using the regular sort:**
-**>>> sorted_list = []**
-**>>> sorted_list.append(5)  # O(1)**
-**>>> sorted_list.append(3)  # O(1)**
-**>>> sorted_list.append(1)  # O(1)**
-**>>> sorted_list.append(2)  # O(1)**
-**>>> sorted_list.sort()  # O(n * log(n)) = O(4 * log(4)) = O(8)**
-**>>> sorted_list**
-**[1, 2, 3, 5]**
+Using the regular sort:
+>>> sorted_list = []
+>>> sorted_list.append(5)  # O(1)
+>>> sorted_list.append(3)  # O(1)
+>>> sorted_list.append(1)  # O(1)
+>>> sorted_list.append(2)  # O(1)
+>>> sorted_list.sort()  # O(n * log(n)) = O(4 * log(4)) = O(8)
+>>> sorted_list
+[1, 2, 3, 5]
 
-**Using bisect:**
-**>>> sorted_list = []**
-**>>> bisect.insort(sorted_list, 5)  # O(n) = O(1)**
-**>>> bisect.insort(sorted_list, 3)  # O(n) = O(2)**
-**>>> bisect.insort(sorted_list, 1)  # O(n) = O(3)**
-**>>> bisect.insort(sorted_list, 2)  # O(n) = O(4)**
-**>>> sorted_list**
-**[1, 2, 3, 5]**
+Using bisect:
+>>> sorted_list = []
+>>> bisect.insort(sorted_list, 5)  # O(n) = O(1)
+>>> bisect.insort(sorted_list, 3)  # O(n) = O(2)
+>>> bisect.insort(sorted_list, 1)  # O(n) = O(3)
+>>> bisect.insort(sorted_list, 2)  # O(n) = O(4)
+>>> sorted_list
+[1, 2, 3, 5]
 
 ```
 
@@ -1047,19 +1047,19 @@ def tree(): return collections.defaultdict(tree)
 不过，在列表中进行搜索非常快；因为它是排序的，我们可以使用一个非常简单的二分搜索算法。例如，如果我们想要检查列表中是否存在一些数字呢？
 
 ```py
-**>>> import bisect**
+>>> import bisect
 
-**>>> sorted_list = [1, 2, 3, 5]**
-**>>> def contains(sorted_list, value):**
-**...     i = bisect.bisect_left(sorted_list, value)**
-**...     return i < len(sorted_list) and sorted_list[i] == value**
+>>> sorted_list = [1, 2, 3, 5]
+>>> def contains(sorted_list, value):
+...     i = bisect.bisect_left(sorted_list, value)
+...     return i < len(sorted_list) and sorted_list[i] == value
 
-**>>> contains(sorted_list, 2)**
-**True**
-**>>> contains(sorted_list, 4)**
-**False**
-**>>> contains(sorted_list, 6)**
-**False**
+>>> contains(sorted_list, 2)
+True
+>>> contains(sorted_list, 4)
+False
+>>> contains(sorted_list, 6)
+False
 
 ```
 

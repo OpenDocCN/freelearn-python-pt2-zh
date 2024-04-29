@@ -65,9 +65,9 @@
 ```py
 import unittest
 
-**class CheckNumbers(unittest.TestCase):**
+class CheckNumbers(unittest.TestCase):
     def test_int_float(self):
- **self.assertEqual(1, 1.0)**
+ **self.assertEqual(1, 1.0)
 
 if __name__ == "__main__":
     unittest.main()
@@ -76,11 +76,11 @@ if __name__ == "__main__":
 这段代码简单地继承了`TestCase`类，并添加了一个调用`TestCase.assertEqual`方法的方法。这个方法要么成功，要么引发异常，这取决于这两个参数是否相等。如果我们运行这段代码，`unittest`的`main`函数将给我们以下输出：
 
 ```py
-**.**
-**--------------------------------------------------------------**
-**Ran 1 test in 0.000s**
+.
+--------------------------------------------------------------
+Ran 1 test in 0.000s
 
-**OK**
+OK
 
 ```
 
@@ -94,19 +94,19 @@ if __name__ == "__main__":
 这段代码的输出更加阴险，因为整数和字符串不被视为相等：
 
 ```py
-**.F**
-**============================================================**
-**FAIL: test_str_float (__main__.CheckNumbers)**
-**--------------------------------------------------------------**
-**Traceback (most recent call last):**
- **File "simplest_unittest.py", line 8, in test_str_float**
- **self.assertEqual(1, "1")**
-**AssertionError: 1 != '1'**
+.F
+============================================================
+FAIL: test_str_float (__main__.CheckNumbers)
+--------------------------------------------------------------
+Traceback (most recent call last):
+ **File "simplest_unittest.py", line 8, in test_str_float
+ **self.assertEqual(1, "1")
+AssertionError: 1 != '1'
 
-**--------------------------------------------------------------**
-**Ran 2 tests in 0.001s**
+--------------------------------------------------------------
+Ran 2 tests in 0.001s
 
-**FAILED (failures=1)**
+FAILED (failures=1)
 
 ```
 
@@ -130,12 +130,12 @@ def average(seq):
 
 class TestAverage(unittest.TestCase):
     def test_zero(self):
- **self.assertRaises(ZeroDivisionError,**
- **average,**
- **[])**
+ **self.assertRaises(ZeroDivisionError,
+ **average,
+ **[])
 
     def test_with_zero(self):
- **with self.assertRaises(ZeroDivisionError):**
+ **with self.assertRaises(ZeroDivisionError):
             average([])
 
 if __name__ == "__main__":
@@ -193,7 +193,7 @@ from stats import StatsList
 import unittest
 
 class TestValidInputs(unittest.TestCase):
-    **def setUp(self):**
+    **def setUp(self):
         self.stats = StatsList([1,2,2,3,3,4])
 
     def test_mean(self):
@@ -244,21 +244,21 @@ import unittest
 import sys
 
 class SkipTests(unittest.TestCase):
- **@unittest.expectedFailure**
+ **@unittest.expectedFailure
     def test_fails(self):
         self.assertEqual(False, True)
 
- **@unittest.skip("Test is useless")**
+ **@unittest.skip("Test is useless")
     def test_skip(self):
         self.assertEqual(False, True)
 
- **@unittest.skipIf(sys.version_info.minor == 4,**
- **"broken on 3.4")**
+ **@unittest.skipIf(sys.version_info.minor == 4,
+ **"broken on 3.4")
     def test_skipif(self):
         self.assertEqual(False, True)
 
- **@unittest.skipUnless(sys.platform.startswith('linux'),**
- **"broken unless on linux")**
+ **@unittest.skipUnless(sys.platform.startswith('linux'),
+ **"broken unless on linux")
     def test_skipunless(self):
         self.assertEqual(False, True)
 
@@ -269,19 +269,19 @@ if __name__ == "__main__":
 第一个测试失败，但被报告为预期失败；第二个测试从未运行。其他两个测试可能会运行，也可能不会，这取决于当前的 Python 版本和操作系统。在我运行 Python 3.4 的 Linux 系统上，输出如下：
 
 ```py
-**xssF**
-**=============================================================**
-**FAIL: test_skipunless (__main__.SkipTests)**
-**--------------------------------------------------------------**
-**Traceback (most recent call last):**
- **File "skipping_tests.py", line 21, in test_skipunless**
- **self.assertEqual(False, True)**
-**AssertionError: False != True**
+xssF
+=============================================================
+FAIL: test_skipunless (__main__.SkipTests)
+--------------------------------------------------------------
+Traceback (most recent call last):
+ **File "skipping_tests.py", line 21, in test_skipunless
+ **self.assertEqual(False, True)
+AssertionError: False != True
 
-**--------------------------------------------------------------**
-**Ran 4 tests in 0.001s**
+--------------------------------------------------------------
+Ran 4 tests in 0.001s
 
-**FAILED (failures=1, skipped=2, expected failures=1)**
+FAILED (failures=1, skipped=2, expected failures=1)
 
 ```
 
@@ -320,23 +320,23 @@ class TestNumbers:
 请注意，类不必扩展任何特殊对象才能被选为测试（尽管`py.test`可以很好地运行标准的`unittest TestCases`）。如果我们运行`py.test <filename>`，输出如下：
 
 ```py
-**============== test session starts ==============**
-**python: platform linux2 -- Python 3.4.1 -- pytest-2.6.4**
-**test object 1: class_pytest.py**
+============== test session starts ==============
+python: platform linux2 -- Python 3.4.1 -- pytest-2.6.4
+test object 1: class_pytest.py
 
-**class_pytest.py .F**
+class_pytest.py .F
 
-**=================== FAILURES====================**
-**___________ TestNumbers.test_int_str ____________**
+=================== FAILURES====================
+___________ TestNumbers.test_int_str ____________
 
-**self = <class_pytest.TestNumbers object at 0x85b4fac>**
+self = <class_pytest.TestNumbers object at 0x85b4fac>
 
- **def test_int_str(self):**
-**>       assert 1 == "1"**
-**E       assert 1 == '1'**
+ **def test_int_str(self):
+>       assert 1 == "1"
+E       assert 1 == '1'
 
-**class_pytest.py:7: AssertionError**
-**====== 1 failed, 1 passed in 0.10 seconds =======**
+class_pytest.py:7: AssertionError
+====== 1 failed, 1 passed in 0.10 seconds =======
 
 ```
 
@@ -359,11 +359,11 @@ class TestNumbers:
 这个简短的描述并没有很好地解释这些方法究竟在什么时候被调用，所以让我们看一个例子，确切地说明了它们何时被调用：
 
 ```py
-**def setup_module(module):**
+def setup_module(module):
     print("setting up MODULE {0}".format(
         module.__name__))
 
-**def teardown_module(module):**
+def teardown_module(module):
     print("tearing down MODULE {0}".format(
         module.__name__))
 
@@ -371,19 +371,19 @@ def test_a_function():
     print("RUNNING TEST FUNCTION")
 
 class BaseTest:
- **def setup_class(cls):**
+ **def setup_class(cls):
         print("setting up CLASS {0}".format(
             cls.__name__))
 
- **def teardown_class(cls):**
+ **def teardown_class(cls):
         print("tearing down CLASS {0}\n".format(
             cls.__name__))
 
- **def setup_method(self, method):**
+ **def setup_method(self, method):
         print("setting up METHOD {0}".format(
             method.__name__))
 
- **def teardown_method(self, method):**
+ **def teardown_method(self, method):
         print("tearing down  METHOD {0}".format(
             method.__name__))
 
@@ -407,28 +407,28 @@ class TestClass2(BaseTest):
 如果我们使用`py.test`运行这些测试，并且禁用`print`函数输出抑制（通过传递`-s`或`--capture=no`标志），它们会向我们显示各种函数在与测试本身相关的情况下被调用的时间：
 
 ```py
-**py.test setup_teardown.py -s**
-**setup_teardown.py**
-**setting up MODULE setup_teardown**
-**RUNNING TEST FUNCTION**
-**.setting up CLASS TestClass1**
-**setting up METHOD test_method_1**
-**RUNNING METHOD 1-1**
-**.tearing down  METHOD test_method_1**
-**setting up METHOD test_method_2**
-**RUNNING METHOD 1-2**
-**.tearing down  METHOD test_method_2**
-**tearing down CLASS TestClass1**
-**setting up CLASS TestClass2**
-**setting up METHOD test_method_1**
-**RUNNING METHOD 2-1**
-**.tearing down  METHOD test_method_1**
-**setting up METHOD test_method_2**
-**RUNNING METHOD 2-2**
-**.tearing down  METHOD test_method_2**
-**tearing down CLASS TestClass2**
+py.test setup_teardown.py -s
+setup_teardown.py
+setting up MODULE setup_teardown
+RUNNING TEST FUNCTION
+.setting up CLASS TestClass1
+setting up METHOD test_method_1
+RUNNING METHOD 1-1
+.tearing down  METHOD test_method_1
+setting up METHOD test_method_2
+RUNNING METHOD 1-2
+.tearing down  METHOD test_method_2
+tearing down CLASS TestClass1
+setting up CLASS TestClass2
+setting up METHOD test_method_1
+RUNNING METHOD 2-1
+.tearing down  METHOD test_method_1
+setting up METHOD test_method_2
+RUNNING METHOD 2-2
+.tearing down  METHOD test_method_2
+tearing down CLASS TestClass2
 
-**tearing down MODULE setup_teardown**
+tearing down MODULE setup_teardown
 
 ```
 
@@ -445,7 +445,7 @@ class TestClass2(BaseTest):
 ```py
 from stats import StatsList
 
-**def pytest_funcarg__valid_stats(request):**
+def pytest_funcarg__valid_stats(request):
     return StatsList([1,2,2,3,3,4])
 
 def test_mean(valid_stats):
@@ -483,7 +483,7 @@ def pytest_funcarg__temp_dir(request):
 
     def cleanup():
         shutil.rmtree(dir)
- **request.addfinalizer(cleanup)**
+ **request.addfinalizer(cleanup)
     return dir
 
 def test_osfiles(temp_dir):
@@ -521,20 +521,20 @@ import subprocess
 import socket
 import time
 
-**def pytest_funcarg__echoserver(request):**
- **def setup():**
- **p = subprocess.Popen(**
- **['python3', 'echo_server.py'])**
- **time.sleep(1)**
- **return p**
+def pytest_funcarg__echoserver(request):
+ **def setup():
+ **p = subprocess.Popen(
+ **['python3', 'echo_server.py'])
+ **time.sleep(1)
+ **return p
 
- **def cleanup(p):**
- **p.terminate()**
+ **def cleanup(p):
+ **p.terminate()
 
- **return request.cached_setup(**
- **setup=setup,**
- **teardown=cleanup,**
- **scope="session")**
+ **return request.cached_setup(
+ **setup=setup,
+ **teardown=cleanup,
+ **scope="session")
 
 def pytest_funcarg__clientsocket(request):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -565,11 +565,11 @@ def test_echo2(echoserver, clientsocket):
 
 ```py
 import sys
-**import py.test**
+import py.test
 
 def test_simple_skip():
     if sys.platform != "fakeos":
- **py.test.skip("Test works only on fakeOS")**
+ **py.test.skip("Test works only on fakeOS")
 
     fakeos.do_something_fake()
     assert fakeos.did_not_happen
@@ -582,7 +582,7 @@ def test_simple_skip():
 ```py
 import py.test
 
-**@py.test.mark.skipif("sys.version_info <= (3,0)")**
+@py.test.mark.skipif("sys.version_info <= (3,0)")
 def test_python3():
     assert b"hello".decode() == "hello"
 ```
@@ -624,17 +624,17 @@ class FlightStatusTracker:
 相反，我们只需要测试`set()`方法被调用的次数是否正确，以及传入的参数是否正确。我们可以在测试中使用`Mock()`对象来替换有问题的方法，以便我们可以内省。以下示例说明了模拟的使用：
 
 ```py
-**from unittest.mock import Mock**
+from unittest.mock import Mock
 import py.test
 def pytest_funcarg__tracker():
     return FlightStatusTracker()
 
 def test_mock_method(tracker):
- **tracker.redis.set = Mock()**
+ **tracker.redis.set = Mock()
     with py.test.raises(ValueError) as ex:
         tracker.change_status("AC101", "lost")
     assert ex.value.args[0] == "LOST is not a valid status"
- **assert tracker.redis.set.call_count == 0**
+ **assert tracker.redis.set.call_count == 0
 
 ```
 
@@ -648,14 +648,14 @@ def test_mock_method(tracker):
 from unittest.mock import patch
 def test_patch(tracker):
     tracker.redis.set = Mock()
- **fake_now = datetime.datetime(2015, 4, 1)**
- **with patch('datetime.datetime') as dt:**
- **dt.now.return_value = fake_now**
+ **fake_now = datetime.datetime(2015, 4, 1)
+ **with patch('datetime.datetime') as dt:
+ **dt.now.return_value = fake_now
         tracker.change_status("AC102", "on time")
     dt.now.assert_called_once_with()
- **tracker.redis.set.assert_called_once_with(**
- **"flightno:AC102",**
- **"2015-04-01T00:00:00|ON TIME")**
+ **tracker.redis.set.assert_called_once_with(
+ **"flightno:AC102",
+ **"2015-04-01T00:00:00|ON TIME")
 
 ```
 
@@ -691,35 +691,35 @@ def test_patch(tracker):
 我们没有空间来涵盖覆盖 API 的所有细节，所以我们只看一些典型的例子。如果我们有一个运行所有单元测试的 Python 脚本（例如，使用`unittest.main`，自定义测试运行器或`discover`），我们可以使用以下命令进行覆盖分析：
 
 ```py
-**coverage run coverage_unittest.py**
+coverage run coverage_unittest.py
 
 ```
 
 这个命令将正常退出，但它会创建一个名为`.coverage`的文件，其中包含运行的数据。现在我们可以使用`coverage report`命令来获取代码覆盖的分析：
 
 ```py
-**>>> coverage report**
+>>> coverage report
 
 ```
 
 输出如下：
 
 ```py
-**Name                           Stmts   Exec  Cover**
-**--------------------------------------------------**
-**coverage_unittest                  7      7   100%**
-**stats                             19      6    31%**
-**--------------------------------------------------**
-**TOTAL                             26     13    50%**
+Name                           Stmts   Exec  Cover
+--------------------------------------------------
+coverage_unittest                  7      7   100%
+stats                             19      6    31%
+--------------------------------------------------
+TOTAL                             26     13    50%
 
 ```
 
 这个基本报告列出了被执行的文件（我们的单元测试和一个导入的模块）。还列出了每个文件中的代码行数，以及测试执行的代码行数。然后将这两个数字合并，估计代码覆盖的数量。如果我们在报告命令中传递`-m`选项，它还会额外添加一个看起来像这样的列：
 
 ```py
-**Missing**
-**-----------**
-**8-12, 15-23**
+Missing
+-----------
+8-12, 15-23
 
 ```
 
@@ -828,7 +828,7 @@ class VigenereCipher:
         self.keyword = keyword
 
     def encode(self, plaintext):
- **return "XECWQXUIVCRKHWA"**
+ **return "XECWQXUIVCRKHWA"
 
 ```
 

@@ -53,20 +53,20 @@ def perimeter(polygon):
 ```py
 import math
 
-**class Point:**
- **def __init__(self, x, y):**
- **self.x = x**
- **self.y = y**
+class Point:
+ **def __init__(self, x, y):
+ **self.x = x
+ **self.y = y
 
     def distance(self, p2):
         return math.sqrt((self.x-p2.x)**2 + (self.y-p2.y)**2)
 
-**class Polygon:**
- **def __init__(self):**
- **self.vertices = []**
+class Polygon:
+ **def __init__(self):
+ **self.vertices = []
 
- **def add_point(self, point):**
- **self.vertices.append((point))**
+ **def add_point(self, point):
+ **self.vertices.append((point))
 
     def perimeter(self):
         perimeter = 0
@@ -81,22 +81,22 @@ import math
 现在，为了更好地理解这两个 API 的区别，让我们比较一下两种使用情况。这是如何使用面向对象的代码来计算正方形的周长：
 
 ```py
-**>>> square = Polygon()**
-**>>> square.add_point(Point(1,1))**
-**>>> square.add_point(Point(1,2))**
-**>>> square.add_point(Point(2,2))**
-**>>> square.add_point(Point(2,1))**
-**>>> square.perimeter()**
-**4.0**
+>>> square = Polygon()
+>>> square.add_point(Point(1,1))
+>>> square.add_point(Point(1,2))
+>>> square.add_point(Point(2,2))
+>>> square.add_point(Point(2,1))
+>>> square.perimeter()
+4.0
 
 ```
 
 你可能会认为这相当简洁易读，但让我们将其与基于函数的代码进行比较：
 
 ```py
-**>>> square = [(1,1), (1,2), (2,2), (2,1)]**
-**>>> perimeter(square)**
-**4.0**
+>>> square = [(1,1), (1,2), (2,2), (2,1)]
+>>> perimeter(square)
+4.0
 
 ```
 
@@ -154,12 +154,12 @@ class Color:
 变量前缀带有下划线，以表明它们是私有的（其他语言实际上会强制它们为私有）。然后，get 和 set 方法提供对每个变量的访问。这个类在实践中将被使用如下：
 
 ```py
-**>>> c = Color("#ff0000", "bright red")**
-**>>> c.get_name()**
-**'bright red'**
-**>>> c.set_name("red")**
-**>>> c.get_name()**
-**'red'**
+>>> c = Color("#ff0000", "bright red")
+>>> c.get_name()
+'bright red'
+>>> c.set_name("red")
+>>> c.get_name()
+'red'
 
 ```
 
@@ -205,7 +205,7 @@ class Color:
     def _get_name(self):
         return self._name
 
- **name = property(_get_name, _set_name)**
+ **name = property(_get_name, _set_name)
 
 ```
 
@@ -214,18 +214,18 @@ class Color:
 最后，我们在底部有`property`声明。这就是魔法。它在`Color`类上创建了一个名为`name`的新属性，现在替换了先前的`name`属性。它将此属性设置为属性，每当访问或更改属性时，它都会调用我们刚刚创建的两个方法。这个新版本的`Color`类可以像以前的版本一样使用，但是现在在设置`name`属性时进行验证：
 
 ```py
-**>>> c = Color("#0000ff", "bright red")**
-**>>> print(c.name)**
-**bright red**
-**>>> c.name = "red"**
-**>>> print(c.name)**
-**red**
-**>>> c.name = ""**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
- **File "setting_name_property.py", line 8, in _set_name**
- **raise Exception("Invalid Name")**
-**Exception: Invalid Name**
+>>> c = Color("#0000ff", "bright red")
+>>> print(c.name)
+bright red
+>>> c.name = "red"
+>>> print(c.name)
+red
+>>> c.name = ""
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+ **File "setting_name_property.py", line 8, in _set_name
+ **raise Exception("Invalid Name")
+Exception: Invalid Name
 
 ```
 
@@ -258,14 +258,14 @@ class Silly:
 如果我们实际使用这个类，当我们要求它时，它确实打印出正确的字符串：
 
 ```py
-**>>> s = Silly()**
-**>>> s.silly = "funny"**
-**You are making silly funny**
-**>>> s.silly**
-**You are getting silly**
-**'funny'**
-**>>> del s.silly**
-**Whoah, you killed silly!**
+>>> s = Silly()
+>>> s.silly = "funny"
+You are making silly funny
+>>> s.silly
+You are getting silly
+'funny'
+>>> del s.silly
+Whoah, you killed silly!
 
 ```
 
@@ -377,19 +377,19 @@ class WebPage:
 我们可以测试这段代码，以确保页面只被检索一次：
 
 ```py
-**>>> import time**
-**>>> webpage = WebPage("http://ccphillips.net/")**
-**>>> now = time.time()**
-**>>> content1 = webpage.content**
-**Retrieving New Page...**
-**>>> time.time() - now**
-**22.43316888809204**
-**>>> now = time.time()**
-**>>> content2 = webpage.content**
-**>>> time.time() - now**
-**1.9266459941864014**
-**>>> content2 == content1**
-**True**
+>>> import time
+>>> webpage = WebPage("http://ccphillips.net/")
+>>> now = time.time()
+>>> content1 = webpage.content
+Retrieving New Page...
+>>> time.time() - now
+22.43316888809204
+>>> now = time.time()
+>>> content2 = webpage.content
+>>> time.time() - now
+1.9266459941864014
+>>> content2 == content1
+True
 
 ```
 
@@ -407,9 +407,9 @@ class AverageList(list):
 这个非常简单的类继承自`list`，因此我们可以免费获得类似列表的行为。我们只需向类添加一个属性，然后，我们的列表就可以有一个平均值：
 
 ```py
-**>>> a = AverageList([1,2,3,4])**
-**>>> a.average**
-**2.5**
+>>> a = AverageList([1,2,3,4])
+>>> a.average
+2.5
 
 ```
 
@@ -493,7 +493,7 @@ if __name__ == "__main__":
 示例中的最后两行允许我们通过传递`zip`文件名、搜索字符串和替换字符串作为参数从命令行运行程序：
 
 ```py
-**python zipsearch.py hello.zip hello hi**
+python zipsearch.py hello.zip hello hi
 
 ```
 
@@ -669,20 +669,20 @@ class Document:
 这个简单的类允许我们完全控制编辑基本文档。看看它的运行情况：
 
 ```py
-**>>> doc = Document()**
-**>>> doc.filename = "test_document"**
-**>>> doc.insert('h')**
-**>>> doc.insert('e')**
-**>>> doc.insert('l')**
-**>>> doc.insert('l')**
-**>>> doc.insert('o')**
-**>>> "".join(doc.characters)**
-**'hello'**
-**>>> doc.back()**
-**>>> doc.delete()**
-**>>> doc.insert('p')**
-**>>> "".join(doc.characters)**
-**'hellp'**
+>>> doc = Document()
+>>> doc.filename = "test_document"
+>>> doc.insert('h')
+>>> doc.insert('e')
+>>> doc.insert('l')
+>>> doc.insert('l')
+>>> doc.insert('o')
+>>> "".join(doc.characters)
+'hello'
+>>> doc.back()
+>>> doc.delete()
+>>> doc.insert('p')
+>>> "".join(doc.characters)
+'hellp'
 
 ```
 
@@ -749,23 +749,23 @@ class Document:
 我们只需更新任何访问旧光标整数的内容，以使用新对象。我们可以测试 `home` 方法是否真的移动到换行符：
 
 ```py
-**>>> d = Document()**
-**>>> d.insert('h')**
-**>>> d.insert('e')**
-**>>> d.insert('l')**
-**>>> d.insert('l')**
-**>>> d.insert('o')**
-**>>> d.insert('\n')**
-**>>> d.insert('w')**
-**>>> d.insert('o')**
-**>>> d.insert('r')**
-**>>> d.insert('l')**
-**>>> d.insert('d')**
-**>>> d.cursor.home()**
-**>>> d.insert("*")**
-**>>> print("".join(d.characters))**
-**hello**
-***world**
+>>> d = Document()
+>>> d.insert('h')
+>>> d.insert('e')
+>>> d.insert('l')
+>>> d.insert('l')
+>>> d.insert('o')
+>>> d.insert('\n')
+>>> d.insert('w')
+>>> d.insert('o')
+>>> d.insert('r')
+>>> d.insert('l')
+>>> d.insert('d')
+>>> d.cursor.home()
+>>> d.insert("*")
+>>> print("".join(d.characters))
+hello
+*world
 
 ```
 
@@ -780,9 +780,9 @@ class Document:
 这使得我们的测试变得更简单：
 
 ```py
-**>>> print(d.string)**
-**hello**
-**world**
+>>> print(d.string)
+hello
+world
 
 ```
 
@@ -834,7 +834,7 @@ class Character:
 ```py
     @property
     def string(self):
- **return "".join((str(c) for c in self.characters))**
+ **return "".join((str(c) for c in self.characters))
 
 ```
 
@@ -863,31 +863,31 @@ class Character:
 这完成了字符的格式化。我们可以测试一下，看看它是否有效：
 
 ```py
-**>>> d = Document()**
-**>>> d.insert('h')**
-**>>> d.insert('e')**
-**>>> d.insert(Character('l', bold=True))**
-**>>> d.insert(Character('l', bold=True))**
-**>>> d.insert('o')**
-**>>> d.insert('\n')**
-**>>> d.insert(Character('w', italic=True))**
-**>>> d.insert(Character('o', italic=True))**
-**>>> d.insert(Character('r', underline=True))**
-**>>> d.insert('l')**
-**>>> d.insert('d')**
-**>>> print(d.string)**
-**he*l*lo**
-**/w/o_rld**
-**>>> d.cursor.home()**
-**>>> d.delete()**
-**>>> d.insert('W')**
-**>>> print(d.string)**
-**he*l*lo**
-**W/o_rld**
-**>>> d.characters[0].underline = True**
-**>>> print(d.string)**
-**_he*l*lo**
-**W/o_rld**
+>>> d = Document()
+>>> d.insert('h')
+>>> d.insert('e')
+>>> d.insert(Character('l', bold=True))
+>>> d.insert(Character('l', bold=True))
+>>> d.insert('o')
+>>> d.insert('\n')
+>>> d.insert(Character('w', italic=True))
+>>> d.insert(Character('o', italic=True))
+>>> d.insert(Character('r', underline=True))
+>>> d.insert('l')
+>>> d.insert('d')
+>>> print(d.string)
+he*l*lo
+/w/o_rld
+>>> d.cursor.home()
+>>> d.delete()
+>>> d.insert('W')
+>>> print(d.string)
+he*l*lo
+W/o_rld
+>>> d.characters[0].underline = True
+>>> print(d.string)
+_he*l*lo
+W/o_rld
 
 ```
 

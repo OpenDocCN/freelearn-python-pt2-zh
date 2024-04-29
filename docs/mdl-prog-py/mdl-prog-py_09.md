@@ -17,14 +17,14 @@
 现在我们已经更多地了解了模块化编程和相关技术，可以帮助使其更加有效，让我们再次通过这个练习。这一次，我们将选择一个简单的包，用于计算某个事件或对象的发生次数。例如，想象一下，您需要记录在农场散步时看到每种动物的数量。当您看到每种动物时，通过将其传递给计数器来记录其存在，最后，计数器将告诉您每种动物您看到了多少只。例如：
 
 ```py
-**>>> counter.reset()**
-**>>> counter.add("sheep")**
-**>>> counter.add("cow")**
-**>>> counter.add("sheep")**
-**>>> counter.add("rabbit")**
-**>>> counter.add("cow")**
-**>>> print(counter.totals())**
-**[("cow", 2), ("rabbit", 1), ("sheep", 2)]**
+>>> counter.reset()
+>>> counter.add("sheep")
+>>> counter.add("cow")
+>>> counter.add("sheep")
+>>> counter.add("rabbit")
+>>> counter.add("cow")
+>>> print(counter.totals())
+[("cow", 2), ("rabbit", 1), ("sheep", 2)]
 
 ```
 
@@ -140,19 +140,19 @@ def totals():
 这完成了我们对`counter`包的第一个实现。我们将尝试使用我们在上一章学到的临时测试技术来测试它：打开一个终端或命令行窗口，使用`cd`命令将当前目录设置为最外层的`counter`目录。然后，输入`python`启动 Python 交互解释器，并尝试输入以下命令：
 
 ```py
-**import counter**
-**counter.reset()**
-**counter.add(1)**
-**counter.add(2)**
-**counter.add(1)**
-**print(counter.totals())**
+import counter
+counter.reset()
+counter.add(1)
+counter.add(2)
+counter.add(1)
+print(counter.totals())
 
 ```
 
 一切顺利的话，您应该会看到以下输出：
 
 ```py
-**[(1, 2), (2, 1)]**
+[(1, 2), (2, 1)]
 
 ```
 
@@ -192,18 +192,18 @@ if __name__ == "__main__":
 要运行这些测试，退出 Python 交互解释器，按下*Control* + *D*，然后在命令行中输入以下内容：
 
 ```py
-**python tests.py**
+python tests.py
 
 ```
 
 一切顺利的话，您应该会看到以下输出，表明您的两个单元测试都没有出现错误：
 
 ```py
-**..**
-**---------------------------------------------------------------------**
-**Ran 2 tests in 0.000s**
+..
+---------------------------------------------------------------------
+Ran 2 tests in 0.000s
 
-**OK**
+OK
 
 ```
 
@@ -375,13 +375,13 @@ def add(value):
     if _ranges == None:
         key = value
     else:
- **key = None**
+ **key = None
         for i in range(len(_ranges)-1):
             if value >= _ranges[i] and value < _ranges[i+1]:
                 key = (_ranges[i], _ranges[i+1])
                 break
- **if key == None:**
- **raise RuntimeError("Value out of range: {}".format(value))**
+ **if key == None:
+ **raise RuntimeError("Value out of range: {}".format(value))
 
     try:
         _counts[key] += 1

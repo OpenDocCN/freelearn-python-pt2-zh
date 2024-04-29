@@ -24,7 +24,11 @@ PyMonad 模块可在**Python Package Index**（**PyPi**）上找到。为了将 
 
 安装了`pymonad`包后，可以使用以下命令进行确认：
 
-[PRE0]
+```py
+>>> import pymonad
+>>> help(pymonad)
+
+```
 
 这将显示`docstring`模块，并确认事情确实安装正确。
 
@@ -42,19 +46,38 @@ PyMonad 模块可在**Python Package Index**（**PyPi**）上找到。为了将 
 
 让我们以 Python 中的一个具体例子为例，例如，我们有一个如下所示的函数：
 
-[PRE1]
+```py
+from pymonad import curry
+@curry
+def systolic_bp(bmi, age, gender_male, treatment):
+ **return 68.15+0.58*bmi+0.65*age+0.94*gender_male+6.44*treatment
+
+```
 
 这是一个基于多元回归的简单模型，用于预测收缩压。这从**体重指数**（**BMI**）、年龄、性别（1 表示男性）和先前治疗历史（1 表示先前治疗）预测血压。有关模型及其推导方式的更多信息，请访问[`sphweb.bumc.bu.edu/otlt/MPH-Modules/BS/BS704_Multivariable/BS704_Multivariable7.html`](http://sphweb.bumc.bu.edu/otlt/MPH-Modules/BS/BS704_Multivariable/BS704_Multivariable7.html)。
 
 我们可以使用带有所有四个参数的`systolic_bp()`函数，如下所示：
 
-[PRE2]
+```py
+>>> systolic_bp(25, 50, 1, 0)
+116.09
+>>> systolic_bp(25, 50, 0, 1)
+121.59
+
+```
 
 一个 BMI 为 25、年龄为 50、没有先前治疗历史的男性可能会有 116 的血压。第二个例子展示了一个类似的女性，她有治疗史，可能会有 121 的血压。
 
 因为我们使用了`@curry`装饰器，我们可以创建类似于部分应用函数的中间结果。看一下以下命令片段：
 
-[PRE3]
+```py
+>>> treated= systolic_bp(25, 50, 0)
+>>> treated(0)
+115.15
+>>> treated(1)
+121.59
+
+```
 
 在前面的例子中，我们评估了`systolic_bp(25, 50, 0)`方法来创建一个柯里化函数，并将其分配给变量`treatment`。BMI、年龄和性别值通常不会改变。我们现在可以将新函数`treatment`应用于剩余的参数，根据患者的历史得到不同的血压期望。
 
@@ -62,7 +85,14 @@ PyMonad 模块可在**Python Package Index**（**PyPi**）上找到。为了将 
 
 这是创建一些额外柯里化函数的示例：
 
-[PRE4]
+```py
+>>> g_t= systolic_bp(25, 50)
+>>> g_t(1, 0)
+116.09
+>>> g_t(0, 1)
+121.59
+
+```
 
 这是基于我们初始模型的基于性别的治疗函数。我们必须提供性别和治疗值才能从模型中得到最终值。
 
@@ -70,11 +100,29 @@ PyMonad 模块可在**Python Package Index**（**PyPi**）上找到。为了将 
 
 虽然柯里化在使用普通函数时很容易进行可视化，但当我们将柯里化应用于高阶函数时，其真正价值就显现出来了。在理想情况下，`functools.reduce()`函数将是“可柯里化的”，这样我们就可以这样做：
 
-[PRE5]
+```py
+sum= reduce(operator.add)
+prod= reduce(operator.mul)
+
+```
 
 然而，`pymonad`库无法对`reduce()`函数进行柯里化，因此这实际上不起作用。然而，如果我们定义自己的`reduce()`函数，我们可以像之前展示的那样对其进行柯里化。以下是一个可以像之前展示的那样使用的自制`reduce()`函数的示例：
 
-[PRE6]
+```py
+import collections.abc
+from pymonad import curry
+@curry
+def myreduce(function, iterable_or_sequence):
+ **if isinstance(iterable_or_sequence, collections.abc.Sequence):
+ **iterator= iter(iterable_or_sequence)
+ **else:
+ **iterator= iterable_or_sequence
+ **s = next(iterator)
+ **for v in iterator:
+ **s = function(s,v)
+ **return s
+
+```
 
 `myreduce()`函数将表现得像内置的`reduce()`函数。`myreduce()`函数适用于可迭代对象或序列对象。给定一个序列，我们将创建一个迭代器；给定一个可迭代对象，我们将简单地使用它。我们将结果初始化为迭代器中的第一项。我们将函数应用于正在进行的总和（或乘积）和每个后续项。
 
@@ -84,7 +132,16 @@ PyMonad 模块可在**Python Package Index**（**PyPi**）上找到。为了将 
 
 由于`myreduce()`函数是一个柯里化函数，我们现在可以使用它来基于我们的高阶函数`myreduce()`创建函数：
 
-[PRE7]
+```py
+>>> from operator import *
+>>> sum= myreduce(add)
+>>> sum([1,2,3])
+6
+>>> max= myreduce(lambda x,y: x if x > y else y)
+>>> max([2,5,3])
+5
+
+```
 
 我们使用柯里化的 reduce 应用于`add`运算符定义了我们自己版本的`sum()`函数。我们还使用`lambda`对象定义了我们自己版本的默认`max()`函数，它选择两个值中较大的一个。
 
@@ -96,7 +153,19 @@ PyMonad 模块可在**Python Package Index**（**PyPi**）上找到。为了将 
 
 我们可以手动创建柯里化函数，而不使用`pymonad`库中的装饰器；其中一种方法是执行以下命令：
 
-[PRE8]
+```py
+def f(x, *args):
+ **def f1(y, *args):
+ **def f2(z):
+ **return (x+y)*z
+ **if args:
+ **return f2(*args)
+ **return f2
+ **if args:
+ **return f1(*args)
+ **return f1
+
+```
 
 这将一个函数柯里化成一个函数`f(x)`，它返回一个函数。在概念上，我们然后对中间函数进行柯里化，创建`f1(y)`和`f2(z)`函数。
 
@@ -112,31 +181,55 @@ PyMonad 模块可在**Python Package Index**（**PyPi**）上找到。为了将 
 
 这是我们计算乘积的第一个函数：
 
-[PRE9]
+```py
+import  operator
+prod = myreduce(operator.mul)
+
+```
 
 这是基于我们之前定义的柯里化`myreduce()`函数。它使用`operator.mul()`函数来计算可迭代对象的“乘法减少”：我们可以称一个乘积为序列的 a 次减少。
 
 这是我们的第二个柯里化函数，它将产生一系列值：
 
-[PRE10]
+```py
+@curry
+def alt_range(n):
+ **if n == 0: return range(1,2) # Only 1
+ **if n % 2 == 0:
+ **return range(2,n+1,2)
+ **else:
+ **return range(1,n+1,2)
+
+```
 
 `alt_range()`函数的结果将是偶数值或奇数值。如果`n`是奇数，它将只有值直到（包括）`n`。如果`n`是偶数，它将只有偶数值直到`n`。这些序列对于实现半阶乘或双阶乘函数很重要。
 
 以下是如何将 `prod()` 和 `alt_range()` 函数组合成一个新的柯里化函数：
 
-[PRE11]
+```py
+>>> semi_fact= prod * alt_range
+>>> semi_fact(9)
+945
+
+```
 
 这里的 PyMonad `*` 运算符将两个函数组合成一个名为 `semi_fact` 的复合函数。`alt_range()` 函数被应用到参数上。然后，`prod()` 函数被应用到 `alt_range` 函数的结果上。
 
 通过在 Python 中手动执行这些操作，实际上是在创建一个新的 `lambda` 对象：
 
-[PRE12]
+```py
+semi_fact= lambda x: prod(alt_range(x))
+
+```
 
 柯里化函数的组合涉及的语法比创建一个新的 `lambda` 对象要少一些。
 
 理想情况下，我们希望像这样使用函数组合和柯里化函数：
 
-[PRE13]
+```py
+sumwhile= sum * takewhile(lambda x: x > 1E-7)
+
+```
 
 这将定义一个可以处理无限序列的 `sum()` 函数版本，在达到阈值时停止生成值。这似乎行不通，因为 `pymonad` 库似乎无法像处理内部的 `List` 对象一样处理无限可迭代对象。
 
@@ -144,7 +237,10 @@ PyMonad 模块可在**Python Package Index**（**PyPi**）上找到。为了将 
 
 函子的概念是简单数据的函数表示。数字 3.14 的函子版本是一个零参数函数，返回这个值。考虑以下示例：
 
-[PRE14]
+```py
+pi= lambda : 3.14
+
+```
 
 我们创建了一个具有简单值的零参数 `lambda` 对象。
 
@@ -170,7 +266,15 @@ PyMonad 模块可在**Python Package Index**（**PyPi**）上找到。为了将 
 
 我们可以使用这些 `Maybe` 对象的柯里化函数来优雅地处理缺失的数据。以下是一个简短的示例：
 
-[PRE15]
+```py
+>>> x1= systolic_bp * Just(25) & Just(50) & Just(1) & Just(0)
+>>> x1.getValue()
+116.09
+>>> x2= systolic_bp * Just(25) & Just(50) & Just(1) & Nothing
+>>> x2.getValue() is None
+True
+
+```
 
 `*` 运算符是函数组合：我们正在将 `systolic_bp()` 函数与一个参数复合。`&` 运算符构建一个复合函子，可以作为多参数柯里化函数的参数传递。
 
@@ -188,11 +292,24 @@ PyMonad 模块可在**Python Package Index**（**PyPi**）上找到。为了将 
 
 这是比较：
 
-[PRE16]
+```py
+>>> list(range(10))
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+>>> List(range(10))
+[range(0, 10)]
+
+```
 
 `List()`函子没有评估`range()`对象，它只是保留了它而没有被评估。`PyMonad.List()`函数用于收集函数而不对其进行评估。我们可以根据需要稍后对其进行评估：
 
-[PRE17]
+```py
+>>> x= List(range(10))
+>>> x
+[range(0, 10)]
+>>> list(x[0])
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+```
 
 我们创建了一个带有`range()`对象的惰性`List`对象。然后我们提取并评估了该列表中位置`0`处的`range()`对象。
 
@@ -204,13 +321,26 @@ PyMonad 模块可在**Python Package Index**（**PyPi**）上找到。为了将 
 
 这是`range()`函数的柯里化版本。它的下限是 1 而不是 0。对于某些数学工作很方便，因为它允许我们避免内置`range()`函数中的位置参数的复杂性。
 
-[PRE18]
+```py
+@curry
+def range1n(n):
+ **if n == 0: return range(1,2) # Only 1
+ **return range(1,n+1)
+
+```
 
 我们简单地包装了内置的`range()`函数，使其可以由 PyMonad 包进行柯里化。
 
 由于`List`对象是一个函子，我们可以将函数映射到`List`对象。该函数应用于`List`对象中的每个项目。这是一个例子：
 
-[PRE19]
+```py
+>>> fact= prod * range1n
+>>> seq1 = List(*range(20))
+>>> f1 = fact * seq1
+>>> f1[:10]
+[1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880]
+
+```
 
 我们定义了一个复合函数`fact()`，它是从先前显示的`prod()`和`range1n()`函数构建的。这是阶乘函数，![Using the lazy List() functor](img/B03652_14_16.jpg)。我们创建了一个`List()`函子`seq1`，它是一个包含 20 个值的序列。我们将`fact()`函数映射到`seq1`函子，从而创建了一个阶乘值的序列`f1`。我们之前展示了其中的前 10 个值。
 
@@ -220,17 +350,32 @@ PyMonad 模块可在**Python Package Index**（**PyPi**）上找到。为了将 
 
 这是另一个我们将用来扩展此示例的小函数：
 
-[PRE20]
+```py
+@curry
+def n21(n):
+ **return 2*n+1
+
+```
 
 这个小的`n21()`函数执行简单的计算。但是，它是柯里化的，因此我们可以将其应用于像`List()`函数这样的函子。这是前面示例的下一部分：
 
-[PRE21]
+```py
+>>> semi_fact= prod * alt_range
+>>> f2 = semi_fact * n21 * seq1
+>>> f2[:10]
+[1, 3, 15, 105, 945, 10395, 135135, 2027025, 34459425, 654729075]
+
+```
 
 我们从先前显示的`prod()`和`alt_range()`函数定义了一个复合函数。函数`f2`是半阶乘或双阶乘，![Using the lazy List() functor](img/B03652_14_07.jpg)。函数`f2`的值是通过将我们的小`n21()`函数应用于`seq1`序列来构建的。这创建了一个新序列。然后我们将`semi_fact`函数应用于这个新序列，以创建一个![Using the lazy List() functor](img/B03652_14_17.jpg)值的序列，与![Using the lazy List() functor](img/B03652_14_16.jpg)值的序列相对应。
 
 现在我们可以将`/`运算符映射到`map()`和`operator.truediv`并行函子：
 
-[PRE22]
+```py
+>>> 2*sum(map(operator.truediv, f1, f2))
+3.1415919276751456
+
+```
 
 `map()`函数将给定的运算符应用于两个函子，产生一系列分数，我们可以将它们相加。
 
@@ -252,11 +397,17 @@ PyMonad 库的名称来自函数式编程概念中的**单子**，即具有严�
 
 强制求值的技术是单子和将返回一个单子的函数之间的绑定。一个*扁平*表达式将变成嵌套的绑定，不能被优化编译器重新排序。`bind()`函数映射到`>>`运算符，允许我们编写这样的表达式：
 
-[PRE23]
+```py
+Just(some file) >> read header >> read next >> read next
+
+```
 
 前面的表达式将转换为以下形式：
 
-[PRE24]
+```py
+bind(bind(bind(Just(some file), read header), read next), read next)
+
+```
 
 `bind()`函数确保在对这个表达式进行求值时施加了严格的从左到右的顺序。另外，注意前面的表达式是函数组合的一个例子。当我们使用`>>`运算符创建一个单子时，我们正在创建一个复杂的对象，当我们最终使用`getValue()`方法时，它将被求值。
 
@@ -298,13 +449,23 @@ Craps 涉及有人掷骰子（射击者）和额外的赌徒。游戏的进行�
 
 我们需要一个随机数源：
 
-[PRE25]
+```py
+import random
+def rng():
+ **return (random.randint(1,6), random.randint(1,6))
+
+```
 
 前面的函数将为我们生成一对骰子。
 
 以下是我们对整个游戏的期望：
 
-[PRE26]
+```py
+def craps():
+ **outcome= Just(("",0, []) ) >> come_out_roll(rng) >> point_roll(rng)
+ **print(outcome.getValue())
+
+```
 
 我们创建一个初始单子，`Just(("",0, []))`，来定义我们要处理的基本类型。游戏将产生一个三元组，其中包含结果、点数和一系列投掷。最初，它是一个默认的三元组，用于定义我们要处理的类型。
 
@@ -318,13 +479,38 @@ Craps 涉及有人掷骰子（射击者）和额外的赌徒。游戏的进行�
 
 `come_out_roll()`函数看起来像这样：
 
-[PRE27]
+```py
+@curry
+def come_out_roll(dice, status):
+ **d= dice()
+ **if sum(d) in (7, 11):
+ **return Just(("win", sum(d), [d]))
+ **elif sum(d) in (2, 3, 12):
+ **return Just(("lose", sum(d), [d]))
+ **else:
+ **return Just(("point", sum(d), [d]))
+
+```
 
 我们掷骰子一次，以确定我们是首次投掷赢，输，还是点数。我们返回一个适当的单子值，其中包括结果，点数值和骰子的投掷。立即赢得和立即输掉的点数值并不真正有意义。我们可以合理地在这里返回`0`，因为实际上并没有建立点数。
 
 `point_roll()`函数看起来像这样：
 
-[PRE28]
+```py
+@curry
+def point_roll(dice, status):
+ **prev, point, so_far = status
+ **if prev != "point":
+ **return Just(status)
+ **d = dice()
+ **if sum(d) == 7:
+ **return Just(("craps", point, so_far+[d]))
+ **elif sum(d) == point:
+ **return Just(("win", point, so_far+[d]))
+ **else:
+ **return Just(("point", point, so_far+[d])) >> point_roll(dice)
+
+```
 
 我们将`status`单子分解为元组的三个单独值。我们可以使用小的`lambda`对象来提取第一个，第二个和第三个值。我们也可以使用`operator.itemgetter()`函数来提取元组的项目。相反，我们使用了多重赋值。
 
@@ -334,7 +520,11 @@ Craps 涉及有人掷骰子（射击者）和额外的赌徒。游戏的进行�
 
 典型的输出看起来像这样：
 
-[PRE29]
+```py
+>>> craps()
+('craps', 5, [(2, 3), (1, 3), (1, 5), (1, 6)])
+
+```
 
 最终的单子有一个显示结果的字符串。它有建立的点数和骰子投掷的顺序。每个结果都有一个特定的赔付，我们可以用来确定投注者赌注的总波动。
 

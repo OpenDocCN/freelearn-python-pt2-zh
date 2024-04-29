@@ -881,10 +881,10 @@ class Log_Producer(multiprocessing.Process):
         self.proc_id= proc_id
         self.destination= queue
         super().__init__()
- **self.log= logging.getLogger(**
- **"{0}.{1}".format(self.__class__.__qualname__, self.proc_id) )**
- **self.log.handlers = [ self.handler_class( self.destination ) ]**
- **self.log.setLevel( logging.INFO )**
+ **self.log= logging.getLogger(
+ **"{0}.{1}".format(self.__class__.__qualname__, self.proc_id) )
+ **self.log.handlers = [ self.handler_class( self.destination ) ]
+ **self.log.setLevel( logging.INFO )
     def run( self ):
         self.log.info( "Producer {0} Started".format(self.proc_id) )
         for i in range(100):
@@ -1437,14 +1437,14 @@ def ackermann( m, n ):
 我们可以从命令行运行`doctest`：
 
 ```py
-**python3.3 -m doctest p3_c15.py**
+python3.3 -m doctest p3_c15.py
 
 ```
 
 如果一切正确，这是无声的。我们可以通过添加`-v`选项来显示一些细节：
 
 ```py
-**python3.3 -m doctest -v p3_c15.py**
+python3.3 -m doctest -v p3_c15.py
 
 ```
 
@@ -1457,14 +1457,14 @@ def ackermann( m, n ):
 有一个特殊的注释字符串，我们可以用于更复杂的输出。我们可以附加以下两个命令中的任何一个来启用（或禁用）可用的各种指令。以下是第一个命令：
 
 ```py
-**# doctest: +DIRECTIVE**
+# doctest: +DIRECTIVE
 
 ```
 
 以下是第二个命令：
 
 ```py
-**# doctest: -DIRECTIVE**
+# doctest: -DIRECTIVE
 
 ```
 
@@ -1563,7 +1563,7 @@ t.run( all_tests )
 也有办法使用`unittest`模块的测试发现功能来做到这一点。我们可以从命令行执行包范围的测试，类似以下代码：
 
 ```py
-**python3.3 -m unittest test/*.py**
+python3.3 -m unittest test/*.py
 
 ```
 
@@ -1657,7 +1657,7 @@ class Test_Blog_Queries( unittest.TestCase ):
     @staticmethod
     def setUpClass():
         engine= build_test_db()
- **Test_Blog_Queries.Session = sessionmaker(bind=engine)**
+ **Test_Blog_Queries.Session = sessionmaker(bind=engine)
         session= Test_Blog_Queries.Session()
 
         tag_rr= Tag( phrase="#RedRanger" )
@@ -2016,7 +2016,7 @@ class Test_Performance( unittest.TestCase ):
 我们经常使用这样的一行：
 
 ```py
-**#!/usr/bin/env python3.3**
+#!/usr/bin/env python3.3
 
 ```
 
@@ -2212,7 +2212,7 @@ parser.add_argument( "-V", "--version", action="version", version=__version__ )
 
 ```py
 parser.add_argument( "--samples", action="store",
-    **default=int(os.environ.get("SIM_SAMPLES",100)),**
+    **default=int(os.environ.get("SIM_SAMPLES",100)),
     type=int, help="Samples to generate" )
 ```
 
@@ -2435,7 +2435,7 @@ def simulate_blackjack( config ):
     simulate= Simulate( table, player, config.samples )
     with open(config.outputfile, "w", newline="") as target:
         wtr= csv.writer( target )
-        **wtr.writerows( simulate )**
+        **wtr.writerows( simulate )
 
 ```
 
@@ -3068,7 +3068,7 @@ from betting import Flat, Martingale, OneThreeTwoSix
 这向我们展示了如何构建一个类似模块的包，实际上是从其他子模块导入的部分组装。然后整体应用程序可以这样做：
 
 ```py
-**from blackjack import ***
+from blackjack import *
 table= Table( decks=6, limit=500, dealer=Hit17(),
         split=NoReSplitAces(), payout=(3,2)  )
 player= Player( play=Strategy_1(),  betting=Martingale(), rounds=100, stake=100 )
@@ -3905,7 +3905,7 @@ Sphinx 教程非常出色。从那里开始，确保你可以使用`sphinx-quick
 
 ```py
 Enter the root path for documentation.
-**> Root path for the documentation [.]: doc**
+> Root path for the documentation [.]: doc
 
 ```
 
@@ -3915,7 +3915,7 @@ Enter the root path for documentation.
 You have two options for placing the build directory for Sphinx output.
 Either, you use a directory "_build" within the root path, or you separate
 "source" and "build" directories within the root path.
-**> Separate source and build directories (y/N) [n]: y**
+> Separate source and build directories (y/N) [n]: y
 
 ```
 
@@ -3930,14 +3930,14 @@ Please indicate if you want to use one of the following Sphinx extensions:
 我们几乎总是希望包括`autodoc`功能来从文档字符串生成文档。如果我们在 Python 编程之外使用 Sphinx 来生成文档，也许我们可以关闭`autodoc`：
 
 ```py
-**> autodoc: automatically insert docstrings from modules (y/N) [n]: y**
+> autodoc: automatically insert docstrings from modules (y/N) [n]: y
 
 ```
 
 如果我们有`doctest`示例，我们可以让 Sphinx 为我们运行 doctest。对于小型项目，大部分测试是通过`doctest`完成的，这可能非常方便。对于较大的项目，我们通常会有一个包含 doctest 的单元测试脚本。通过 Sphinx 以及正式的单元测试执行 doctest 仍然是一个好主意：
 
 ```py
-**> doctest: automatically test code snippets in doctest blocks (y/N) [n]: y**
+> doctest: automatically test code snippets in doctest blocks (y/N) [n]: y
 
 ```
 
@@ -3962,7 +3962,7 @@ Please indicate if you want to use one of the following Sphinx extensions:
 对于涉及任何数学的项目，拥有 LaTeX 工具集使我们能够将数学漂亮地排版为图像，并包含到 HTML 中。它还保留了 LaTeX 输出中的原始数学。MathJax 是一个基于 Web 的 JavaScript 库，也以以下方式工作：
 
 ```py
-**> pngmath: include math, rendered as PNG images (y/N) [n]: y**
+> pngmath: include math, rendered as PNG images (y/N) [n]: y
 > mathjax: include math, rendered in the browser by MathJax (y/N) [n]:
 ```
 
@@ -3975,7 +3975,7 @@ Please indicate if you want to use one of the following Sphinx extensions:
 大多数应用程序文档描述了一个 API。我们应该包括`autodoc`和`viewcode`功能。`viewcode`选项允许读者查看源代码，以便他们可以详细了解实现：
 
 ```py
-**> viewcode: include links to the source code of documented Python objects (y/N) [n]: y**
+> viewcode: include links to the source code of documented Python objects (y/N) [n]: y
 
 ```
 

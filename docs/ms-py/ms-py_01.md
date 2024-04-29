@@ -43,9 +43,9 @@ Python 哲学的一个方面一直以来都是最重要的，也将永远如此�
 创建环境非常容易。基本命令是`pyvenv PATH_TO_THE_NEW_VIRTUAL_ENVIRONMENT`，所以让我们试一试。请注意，此命令适用于 Linux、Unix 和 Mac；Windows 命令将很快跟进：
 
 ```py
-**# pyvenv test_venv**
-**# . ./test_venv/bin/activate**
-**(test_venv) #**
+# pyvenv test_venv
+# . ./test_venv/bin/activate
+(test_venv) #
 
 ```
 
@@ -62,14 +62,14 @@ Python 哲学的一个方面一直以来都是最重要的，也将永远如此�
 +   运行模块：
 
 ```py
-**python -m venv test_venv**
+python -m venv test_venv
 
 ```
 
 +   直接运行脚本：
 
 ```py
-**python Python\Tools\Scripts\pyvenv.py test_venv**
+python Python\Tools\Scripts\pyvenv.py test_venv
 
 ```
 
@@ -78,9 +78,9 @@ Python 哲学的一个方面一直以来都是最重要的，也将永远如此�
 以下是 Windows 的完整示例：
 
 ```py
-**C:\envs>python -m venv test_venv**
-**C:\envs>test_venv\Scripts\activate.bat**
-**(test_venv) C:\envs>**
+C:\envs>python -m venv test_venv
+C:\envs>test_venv\Scripts\activate.bat
+(test_venv) C:\envs>
 
 ```
 
@@ -174,25 +174,25 @@ Python 哲学的一个方面一直以来都是最重要的，也将永远如此�
 例如，在标准的 Ubuntu 机器上安装`pillow`时，您会得到几页错误、警告和其他消息，最后是这样的：
 
 ```py
- **x86_64-linux-gnu-gcc: error: build/temp.linux-x86_64-3.4/libImaging/Jpeg2KDecode.o: No such file or directory**
- **x86_64-linux-gnu-gcc: error: build/temp.linux-x86_64-3.4/libImaging/Jpeg2KEncode.o: No such file or directory**
- **x86_64-linux-gnu-gcc: error: build/temp.linux-x86_64-3.4/libImaging/BoxBlur.o: No such file or directory**
- **error: command 'x86_64-linux-gnu-gcc' failed with exit status 1**
+ **x86_64-linux-gnu-gcc: error: build/temp.linux-x86_64-3.4/libImaging/Jpeg2KDecode.o: No such file or directory
+ **x86_64-linux-gnu-gcc: error: build/temp.linux-x86_64-3.4/libImaging/Jpeg2KEncode.o: No such file or directory
+ **x86_64-linux-gnu-gcc: error: build/temp.linux-x86_64-3.4/libImaging/BoxBlur.o: No such file or directory
+ **error: command 'x86_64-linux-gnu-gcc' failed with exit status 1
 
- **----------------------------------------**
-**Command "python3 -c "import setuptools, tokenize;__file__='/tmp/pip-build-_f0ryusw/pillow/setup.py';exec(compile(getattr(tokenize, 'open', open)(__file__).read().replace('\r\n', '\n'), __file__, 'exec'))" install --record /tmp/pip-kmmobum2-record/install-record.txt --single-version-externally-managed --compile --install-headers include/site/python3.4/pillow" failed with error code 1 in /tmp/pip-build-_f0ryusw/pillow**
+ **----------------------------------------
+Command "python3 -c "import setuptools, tokenize;__file__='/tmp/pip-build-_f0ryusw/pillow/setup.py';exec(compile(getattr(tokenize, 'open', open)(__file__).read().replace('\r\n', '\n'), __file__, 'exec'))" install --record /tmp/pip-kmmobum2-record/install-record.txt --single-version-externally-managed --compile --install-headers include/site/python3.4/pillow" failed with error code 1 in /tmp/pip-build-_f0ryusw/pillow
 
 ```
 
 看到这样的消息后，您可能会想要搜索其中的一行，比如`x86_64-linux-gnu-gcc: error: build/temp.linux-x86_64-3.4/libImaging/Jpeg2KDecode.o: No such file or directory`。虽然这可能会给您一些相关的结果，但很可能不会。在这种安装中的技巧是向上滚动，直到看到有关缺少头文件的消息。这是一个例子：
 
 ```py
- **In file included from libImaging/Imaging.h:14:0,**
- **from libImaging/Resample.c:16:**
- **libImaging/ImPlatform.h:10:20: fatal error: Python.h: No such file or directory**
- **#include "Python.h"**
- **^**
- **compilation terminated.**
+ **In file included from libImaging/Imaging.h:14:0,
+ **from libImaging/Resample.c:16:
+ **libImaging/ImPlatform.h:10:20: fatal error: Python.h: No such file or directory
+ **#include "Python.h"
+ **^
+ **compilation terminated.
 
 ```
 
@@ -203,14 +203,14 @@ Python 哲学的一个方面一直以来都是最重要的，也将永远如此�
 在 Debian 和 Ubuntu 中，要安装的软件包是`python3-dev`或`python2-dev`（如果您仍在使用 Python 2）。要执行的命令如下：
 
 ```py
-**# sudo apt-get install python3-dev**
+# sudo apt-get install python3-dev
 
 ```
 
 但是，这只安装了开发头文件。如果您希望编译器和其他头文件与安装捆绑在一起，那么`build-dep`命令也非常有用。以下是一个示例：
 
 ```py
-**# sudo apt-get build-dep python3**
+# sudo apt-get build-dep python3
 
 ```
 
@@ -219,14 +219,14 @@ Python 哲学的一个方面一直以来都是最重要的，也将永远如此�
 Red Hat、CentOS 和 Fedora 是基于 rpm 的发行版，它们使用`yum`软件包管理器来安装所需的软件。大多数开发头文件都可以通过`<package-name>-devel`获得，并且可以轻松安装。要安装 Python 3 开发头文件，请使用以下命令：
 
 ```py
-**# sudo apt-get install python3-devel**
+# sudo apt-get install python3-devel
 
 ```
 
 为了确保您具有构建软件包（如 Python）所需的所有要求，例如开发头文件和编译器，`yum-builddep`命令是可用的：
 
 ```py
-**# yum-builddep python3**
+# yum-builddep python3
 
 ```
 
@@ -239,14 +239,14 @@ Red Hat、CentOS 和 Fedora 是基于 rpm 的发行版，它们使用`yum`软件
 然后，您需要安装 Xcode 命令行工具：
 
 ```py
-**# xcode-select --install**
+# xcode-select --install
 
 ```
 
 最后，您需要安装**Homebrew**软件包管理器。步骤可在[`brew.sh/`](http://brew.sh/)找到，但安装命令如下：
 
 ```py
-**# /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"**
+# /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
 ```
 
@@ -257,7 +257,7 @@ Red Hat、CentOS 和 Fedora 是基于 rpm 的发行版，它们使用`yum`软件
 完成所有这些步骤后，您应该有一个可用的 Homebrew 安装。可以使用`brew doctor`命令验证`Homebrew`的工作情况。如果输出中没有主要错误，那么您应该准备通过 brew 安装您的第一个软件包。现在我们只需要安装 Python，就完成了：
 
 ```py
-**# brew install python3**
+# brew install python3
 
 ```
 

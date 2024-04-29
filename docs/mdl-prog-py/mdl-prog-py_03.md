@@ -211,14 +211,14 @@ print(pi)
 每当你创建一个全局变量或函数时，Python 解释器都会将该变量或函数的名称添加到所谓的**全局命名空间**中。全局命名空间包含了你在全局级别定义的所有名称。要查看这是如何工作的，输入以下命令到 Python 解释器中：
 
 ```py
-**>>> print(globals())**
+>>> print(globals())
 
 ```
 
 `globals()`内置函数返回一个带有全局命名空间当前内容的字典：
 
 ```py
-**{'__package__': None, '__doc__': None, '__name__': '__main__', '__builtins__': <module 'builtins' (built-in)>, '__loader__': <class '_frozen_importlib.BuiltinImporter'>}**
+{'__package__': None, '__doc__': None, '__name__': '__main__', '__builtins__': <module 'builtins' (built-in)>, '__loader__': <class '_frozen_importlib.BuiltinImporter'>}
 
 ```
 
@@ -229,18 +229,18 @@ print(pi)
 现在，让我们定义一个新的顶级函数：
 
 ```py
-**>>> def test():**
-**...     print("Hello")**
-**...**
-**>>>**
+>>> def test():
+...     print("Hello")
+...
+>>>
 
 ```
 
 如果我们现在打印全局名称的字典，我们的`test()`函数将被包括在内：
 
 ```py
-**>>> print(globals())**
-**{...'test': <function test at 0x1028225f0>...}**
+>>> print(globals())
+{...'test': <function test at 0x1028225f0>...}
 
 ```
 
@@ -257,8 +257,8 @@ print(pi)
 当某物在全局命名空间中时，您可以通过程序中的任何位置的名称访问它：
 
 ```py
-**>>> test()**
-**Hello**
+>>> test()
+Hello
 
 ```
 
@@ -269,26 +269,26 @@ print(pi)
 现在，当您使用`import`语句时，您正在向全局命名空间添加条目：
 
 ```py
-**>>> import string**
-**>>> print(globals())**
-**{...'string': <module 'string' from '/Library/Frameworks/Python.framework/Versions/3.3/lib/python3.3/string.py'>...}**
+>>> import string
+>>> print(globals())
+{...'string': <module 'string' from '/Library/Frameworks/Python.framework/Versions/3.3/lib/python3.3/string.py'>...}
 
 ```
 
 正如您所看到的，您导入的模块已添加到全局命名空间中，允许您通过名称访问该模块，例如像这样：
 
 ```py
-**>>> print(string.capwords("this is a test"))**
-**This Is A Test**
+>>> print(string.capwords("this is a test"))
+This Is A Test
 
 ```
 
 同样，如果您使用`import`语句的`from...import`版本，您导入的项目将直接添加到全局命名空间中：
 
 ```py
-**>>> from string import capwords**
-**>>> print(globals())**
-**{...'capwords': <function capwords at 0x1020fb7a0>...}**
+>>> from string import capwords
+>>> print(globals())
+{...'capwords': <function capwords at 0x1020fb7a0>...}
 
 ```
 
@@ -514,7 +514,7 @@ def make_sale(items):
 虽然这是一个假设的例子，你可以看到`module_1`从`module_2`导入了一些东西，而`module_2`又从`module_1`导入了一些东西。如果你尝试运行包含这两个模块的程序，当导入`module_1`时，你会看到以下错误：
 
 ```py
-**ImportError: cannot import name calc_total**
+ImportError: cannot import name calc_total
 
 ```
 
@@ -555,8 +555,8 @@ if __name__ == "__main__":
 这个模块定义了一些功能，比如一个名为`double()`的函数，然后使用`if __name__ == "__main__"`的技巧来演示和测试模块在从命令行运行时的功能。让我们尝试运行这个模块，看看它是如何工作的：
 
 ```py
-**% python double.py** 
-**double(3) = 6**
+% python double.py** 
+double(3) = 6
 
 ```
 
@@ -602,8 +602,8 @@ import sys
 现在你可以直接运行这个模块，就像它是一个独立的程序一样：
 
 ```py
-**% python funkycase.py "The quick brown fox"**
-**tHe qUiCk bRoWn fOx**
+% python funkycase.py "The quick brown fox"
+tHe qUiCk bRoWn fOx
 
 ```
 
@@ -616,7 +616,7 @@ import sys
 当你创建一个可以从命令行运行的模块时，有一个需要注意的问题：如果你的模块使用相对导入，当你直接使用 Python 解释器运行时，你的导入将会失败，并出现*尝试相对导入非包*的错误。这个错误是因为当模块从命令行运行时，它会忘记它在包层次结构中的位置。只要你的模块不使用任何命令行参数，你可以通过使用 Python 的`-m`命令行选项来解决这个问题，就像这样：
 
 ```py
-**python -m my_module.py**
+python -m my_module.py
 
 ```
 

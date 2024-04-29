@@ -90,15 +90,28 @@
 
 代码块设置如下：
 
-[PRE0]
+```py
+class Point:
+    def __init__(self, lat, long):
+        self.lat = lat
+        self.long = long
+```
 
 当我们希望引起您对代码块的特定部分的注意时，相关行或项目将以粗体显示：
 
-[PRE1]
+```py
+setup(
+    name="apptool",
+    description="Description of the intention of the package",
+    long_description=long_description,
+```
 
 任何命令行输入或输出都以以下方式书写：
 
-[PRE2]
+```py
+>>> locate.__annotations__
+ {'latitude': float, 'longitue': float, 'return': __main__.Point}
+```
 
 **粗体**：表示新术语、重要单词或屏幕上看到的单词。例如，菜单或对话框中的单词会以这种方式出现在文本中。例如："从管理面板中选择系统信息。"
 

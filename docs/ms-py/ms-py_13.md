@@ -53,18 +53,18 @@ if __name__ == '__main__':
 使用 Python 3.5，它具有新的改进的 GIL 实现（在 Python 3.2 中引入），性能相当可比，但没有改进：
 
 ```py
-**# python3 test_multithreading.py**
-**The single threaded loops took: 0:00:02.623443**
-**The multithreaded loops took: 0:00:02.597900**
+# python3 test_multithreading.py
+The single threaded loops took: 0:00:02.623443
+The multithreaded loops took: 0:00:02.597900
 
 ```
 
 使用仍然具有旧 GIL 的 Python 2.7，单线程变体的性能要好得多：
 
 ```py
-**# python2 test_multithreading.py**
-**The single threaded loops took: 0:00:02.010967**
-**The multithreaded loops took: 0:00:03.924950**
+# python2 test_multithreading.py
+The single threaded loops took: 0:00:02.010967
+The multithreaded loops took: 0:00:03.924950
 
 ```
 
@@ -105,8 +105,8 @@ if __name__ == '__main__':
 运行时，我们看到了巨大的改进：
 
 ```py
-**# python3 test_multiprocessing.py**
-**The multiprocessed loops took: 0:00:00.671249**
+# python3 test_multiprocessing.py
+The multiprocessed loops took: 0:00:00.671249
 
 ```
 
@@ -152,16 +152,16 @@ if __name__ == '__main__':
 但现在，测试不同数量的进程：
 
 ```py
-**# python3 test_multiprocessing.py 1**
-**The multithreaded loops took: 0:00:05.297707**
-**# python3 test_multiprocessing.py 2**
-**The multithreaded loops took: 0:00:02.701344**
-**# python3 test_multiprocessing.py 4**
-**The multithreaded loops took: 0:00:01.477845**
-**# python3 test_multiprocessing.py 8**
-**The multithreaded loops took: 0:00:01.579218**
-**# python3 test_multiprocessing.py 16**
-**The multithreaded loops took: 0:00:01.595239**
+# python3 test_multiprocessing.py 1
+The multithreaded loops took: 0:00:05.297707
+# python3 test_multiprocessing.py 2
+The multithreaded loops took: 0:00:02.701344
+# python3 test_multiprocessing.py 4
+The multithreaded loops took: 0:00:01.477845
+# python3 test_multiprocessing.py 8
+The multithreaded loops took: 0:00:01.579218
+# python3 test_multiprocessing.py 16
+The multithreaded loops took: 0:00:01.595239
 
 ```
 
@@ -214,15 +214,15 @@ if __name__ == '__main__':
 处理本身非常简单。关键是池保持可用，您不需要等待它。只需在需要时添加作业，并在异步结果可用时使用它们：
 
 ```py
-**# python3 test_pool.py**
-**Start processing...**
-**Still processing 0.000**
-**Result done 1.513**
-**Result done 2.984**
-**Result done 4.463**
-**Result done 5.978**
-**Result done 7.388**
-**Done processing: 7.388**
+# python3 test_pool.py
+Start processing...
+Still processing 0.000
+Result done 1.513
+Result done 2.984
+Result done 4.463
+Result done 5.978
+Result done 7.388
+Done processing: 7.388
 
 ```
 
@@ -337,21 +337,21 @@ while not queue.empty():
 从前面的代码中，您可以看到我们如何传递函数；管理器允许注册可以从客户端调用的函数和类。通过这样，我们可以传递一个队列，从多进程类中，这对多线程和多进程都是安全的。现在我们需要启动进程本身。首先是保持运行的服务器：
 
 ```py
-**# python3 multiprocessing_server.py**
+# python3 multiprocessing_server.py
 
 ```
 
 之后，运行生产者生成质数生成请求：
 
 ```py
-**# python3 multiprocessing_producer.py**
+# python3 multiprocessing_producer.py
 
 ```
 
 现在我们可以在多台机器上运行多个客户端，以获得前 1000 个质数。由于这些客户端现在打印出前 1000 个质数，输出有点太长，无法在这里显示，但您可以简单地在多台机器上并行运行此操作以生成您的输出：
 
 ```py
-**# python3 multiprocessing_client.py**
+# python3 multiprocessing_client.py
 
 ```
 
@@ -362,7 +362,7 @@ while not queue.empty():
 IPyparallel 模块（以前是 IPython Parallel）是一个模块，使得在多台计算机上同时处理代码变得非常容易。该库支持的功能比您可能需要的要多，但了解基本用法非常重要，以防您需要进行可以从多台计算机中受益的大量计算。首先，让我们从安装最新的 IPyparallel 包和所有 IPython 组件开始：
 
 ```py
-**pip install -U ipython[all] ipyparallel**
+pip install -U ipython[all] ipyparallel
 
 ```
 
@@ -373,12 +373,12 @@ IPyparallel 模块（以前是 IPython Parallel）是一个模块，使得在多
 其次，我们需要一个集群配置。从技术上讲，这是可选的，但由于我们将创建一个分布式 IPython 集群，使用特定配置来配置一切会更方便：
 
 ```py
-**# ipython profile create --parallel --profile=mastering_python**
-**[ProfileCreate] Generating default config file: '~/.ipython/profile_mastering_python/ipython_config.py'**
-**[ProfileCreate] Generating default config file: '~/.ipython/profile_mastering_python/ipython_kernel_config.py'**
-**[ProfileCreate] Generating default config file: '~/.ipython/profile_mastering_python/ipcontroller_config.py'**
-**[ProfileCreate] Generating default config file: '~/.ipython/profile_mastering_python/ipengine_config.py'**
-**[ProfileCreate] Generating default config file: '~/.ipython/profile_mastering_python/ipcluster_config.py'**
+# ipython profile create --parallel --profile=mastering_python
+[ProfileCreate] Generating default config file: '~/.ipython/profile_mastering_python/ipython_config.py'
+[ProfileCreate] Generating default config file: '~/.ipython/profile_mastering_python/ipython_kernel_config.py'
+[ProfileCreate] Generating default config file: '~/.ipython/profile_mastering_python/ipcontroller_config.py'
+[ProfileCreate] Generating default config file: '~/.ipython/profile_mastering_python/ipengine_config.py'
+[ProfileCreate] Generating default config file: '~/.ipython/profile_mastering_python/ipcluster_config.py'
 
 ```
 
@@ -419,19 +419,19 @@ c.RegistrationFactory.ip = '*'
 现在启动控制器：
 
 ```py
-**# ipcontroller --profile=mastering_python**
-**[IPControllerApp] Hub listening on tcp://*:58412 for registration.**
-**[IPControllerApp] Hub listening on tcp://127.0.0.1:58412 for registration.**
-**[IPControllerApp] Hub using DB backend: 'NoDB'**
-**[IPControllerApp] hub::created hub**
-**[IPControllerApp] writing connection info to ~/.ipython/profile_mastering_python/security/ipcontroller-client.json**
-**[IPControllerApp] writing connection info to ~/.ipython/profile_mastering_python/security/ipcontroller-engine.json**
-**[IPControllerApp] task::using Python leastload Task scheduler**
-**[IPControllerApp] Heartmonitor started**
-**[IPControllerApp] Creating pid file: .ipython/profile_mastering_python/pid/ipcontroller.pid**
-**[scheduler] Scheduler started [leastload]**
-**[IPControllerApp] client::client b'\x00\x80\x00A\xa7' requested 'connection_request'**
-**[IPControllerApp] client::client [b'\x00\x80\x00A\xa7'] connected**
+# ipcontroller --profile=mastering_python
+[IPControllerApp] Hub listening on tcp://*:58412 for registration.
+[IPControllerApp] Hub listening on tcp://127.0.0.1:58412 for registration.
+[IPControllerApp] Hub using DB backend: 'NoDB'
+[IPControllerApp] hub::created hub
+[IPControllerApp] writing connection info to ~/.ipython/profile_mastering_python/security/ipcontroller-client.json
+[IPControllerApp] writing connection info to ~/.ipython/profile_mastering_python/security/ipcontroller-engine.json
+[IPControllerApp] task::using Python leastload Task scheduler
+[IPControllerApp] Heartmonitor started
+[IPControllerApp] Creating pid file: .ipython/profile_mastering_python/pid/ipcontroller.pid
+[scheduler] Scheduler started [leastload]
+[IPControllerApp] client::client b'\x00\x80\x00A\xa7' requested 'connection_request'
+[IPControllerApp] client::client [b'\x00\x80\x00A\xa7'] connected
 
 ```
 
@@ -452,17 +452,17 @@ c.RegistrationFactory.ip = '*'
 现在是时候启动集群了，因为我们已经单独启动了`ipcontroller`，所以我们只需要启动引擎。在本地机器上，我们只需要启动它，但其他机器还没有配置。一种选择是复制整个 IPython 配置文件目录，但实际上只需要复制`security/ipcontroller-engine.json`文件。在使用配置文件创建命令创建配置文件之后。因此，除非您打算复制整个 IPython 配置文件目录，否则需要再次执行配置文件创建命令：
 
 ```py
-**# ipython profile create --parallel --profile=mastering_python**
+# ipython profile create --parallel --profile=mastering_python
 
 ```
 
 之后，只需复制`ipcontroller-engine.json`文件，就完成了。现在我们可以启动实际的引擎了：
 
 ```py
-**# ipcluster engines --profile=mastering_python -n 4**
-**[IPClusterEngines] IPython cluster: started**
-**[IPClusterEngines] Starting engines with [daemon=False]**
-**[IPClusterEngines] Starting 4 Engines with LocalEngineSetLauncher**
+# ipcluster engines --profile=mastering_python -n 4
+[IPClusterEngines] IPython cluster: started
+[IPClusterEngines] Starting engines with [daemon=False]
+[IPClusterEngines] Starting 4 Engines with LocalEngineSetLauncher
 
 ```
 
@@ -511,20 +511,20 @@ IPyParallel 库提供了许多其他有用的功能，但这超出了本书的�
 使用 IPyParallel 最方便的方法之一是通过 Jupyter/IPython 笔记本。为了演示，我们首先必须确保在 Jupyter Notebook 中启用并行处理，因为 IPython 笔记本默认情况下是单线程执行的：
 
 ```py
-**ipcluster nbextension enable**
+ipcluster nbextension enable
 
 ```
 
 之后，我们可以启动`notebook`，看看它是怎么回事：
 
 ```py
-**# jupyter notebook**
-**Unrecognized JSON config file version, assuming version 1**
-**Loading IPython parallel extension**
-**Serving notebooks from local directory: ./**
-**0 active kernels**
-**The Jupyter Notebook is running at: http://localhost:8888/**
-**Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).**
+# jupyter notebook
+Unrecognized JSON config file version, assuming version 1
+Loading IPython parallel extension
+Serving notebooks from local directory: ./
+0 active kernels
+The Jupyter Notebook is running at: http://localhost:8888/
+Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
 
 ```
 

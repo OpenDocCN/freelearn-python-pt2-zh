@@ -106,7 +106,11 @@ pandas 库用于分析数据，构建在 numpy 包的基础上。pandas 和 NumP
 
 ch12_abbreviate.py
 
-[PRE0]
+```py
+import numpy as np
+myArray = np.arange(0, 12).reshape(2, 6)
+print(myArray)
+```
 
 请注意，我们导入的是`numpy as np`，而不是只有`numpy`。这意味着我现在可以使用`np`来调用 NumPy 函数，而不必每次都输入`numpy`。
 
@@ -116,11 +120,18 @@ ch12_abbreviate.py
 
 在上面的代码片段中，我们要求算法将从`0`到`11`的数字列表分成`2`行，每行`6`个元素。然后，我们打印数组以查看我们的结果。看一下输出：
 
-[PRE1]
+```py
+[[ 0  1  2  3  4  5]
+ [ 6  7  8  9 10 11]]
+```
 
 正如你所看到的，我们从`0`开始，这是我们在范围`0`到`12`中的下限。现在我们有两行，每行有六个数字。*我们不包括 12*。如果我们尝试做`0`到`13`，我们将无法重塑我们的数组，因为我们无法均匀地分割 13 个数字。我们将得到以下回溯错误（最近的调用最后）：
 
-[PRE2]
+```py
+  File "C:/Users/… /ch12_abbreviate.py", line 3, in <module>
+    myArray = np.arange(0, 13).reshape(2, 6)
+ValueError: cannot reshape array of size 13 into shape (2,6)
+```
 
 请注意，当你看到省略号（`…`）时，你的信息将会不同。它将根据你的 Python 设置有你的文件位置或路径。例如，你的文件位置可能类似于`C:/Users/JohnSmith/Documents/ch12_abbreviate.py`。这应该替换前面代码中的文件位置。
 
@@ -130,11 +141,29 @@ ch12_abbreviate.py
 
 ch12_pdDataFrame.py
 
-[PRE3]
+```py
+import pandas as pd
+myAddressBook = {'names': ['Susan', 'Malena', 'Isabel',    
+                           'Juan', 'Mike'],
+                 'phoneNumbers':['333-333-3333', 
+                                 '444-444-4444', 
+                                 '555-555-5555',
+                                 '777-777-7777', 
+                                 '888-888-8888']}
+addressBook = pd.DataFrame(myAddressBook)
+print(addressBook)
+```
 
 请注意，我们创建了一个带有联系人姓名和号码值对的字典。这样做之后，我们将我们的通讯录保存为`DataFrame`，它将以表格形式组织我们的信息。最后，我们打印了我们的通讯录。看一下输出：
 
-[PRE4]
+```py
+    names  phoneNumbers
+0   Susan  333-333-3333
+1  Malena  444-444-4444
+2  Isabel  555-555-5555
+3    Juan  777-777-7777
+4    Mike  888-888-8888
+```
 
 请注意，pandas 使用字典中的信息来为我们的列创建标签。我们没有为行标签提供信息，所以 Python 和 pandas 自动使用了`0`到`4`的数字。该算法生成了一个表格，提供了我们通讯录中的姓名和号码。
 
@@ -146,7 +175,11 @@ ch12_pdDataFrame.py
 
 ch12_matplotlib.py
 
-[PRE5]
+```py
+import matplotlib.pyplot as plt
+plt.plot([0, 3, 6], [4, 5, 6])
+plt.show()
+```
 
 请注意，这个特定的库的名字甚至比`matplotlib`还要长。要导入这个库，我们必须使用`matplotlib.pyplot`来导入它。想象一下，每次在算法中需要它时都要写这么长的名字。*不，谢谢！* 相反，我们将它导入为`plt`。
 
@@ -194,13 +227,23 @@ ch12_matplotlib.py
 
 ch12_csvAnalysis.py
 
-[PRE6]
+```py
+import pandas as pd
+import matplotlib as mlp
+import matplotlib.pyplot as plt
+import os
+#Let Python know correct directory for file.
+os.chdir('C:\\Users\\...\\Program Files\\Chapter 12')
+print('Current directory', os.getcwd())
+```
 
 与以前一样，请确保用您自己的位置替换用户信息中的省略号。在存储库中提供的算法中，您还需要调整该位置，以便运行此算法，因为该算法的位置将是我的路径。
 
 现在我们已经告诉 Python 在哪里找到文件，我们可以在算法中使用它。如果我们运行这个算法，我们会看到输出应该与我们在以`os.chdir`开头的行中注意到的路径匹配：
 
-[PRE7]
+```py
+Current directory C:\Users\...\Program Files\Chapter 12
+```
 
 再次注意，我们的路径不会匹配。这将取决于您保存文件的位置。
 
@@ -214,7 +257,11 @@ ch12_csvAnalysis.py
 
 ch12_csvAnalysis_2.py
 
-[PRE8]
+```py
+import pandas as pd
+graduates = pd.read_csv('ch12_data.csv', index_col = 0)
+print(graduates[0: 16])
+```
 
 请注意，我们的算法导入了 pandas 库。`read_csv()`函数告诉 Python 我们将使用文件名和我们想要开始处理的列的索引。该索引给我们提供了我们将用作行标题的值。如果索引不在第一列，我们可以将其更改为不同的值。然后，我们打印我们想要看到的行。因为我们的数据很宽，我们的输出如下所示：
 
@@ -228,7 +275,26 @@ ch12_csvAnalysis_2.py
 
 ch12_csvAnalysis_3.py
 
-[PRE9]
+```py
+import pandas as pd
+import matplotlib as mlp
+import matplotlib.pyplot as plt
+import os
+#Let Python know correct directory for file.
+os.chdir('C:\\Users\\sofia.dejesus\\OneDrive - Hawken 
+    School\\03_book\\Program Files\\Chapter 12')
+graduates = pd.read_csv('ch12_data.csv', index_col = 0)
+print(graduates[0:13])
+fig, ax = plt.subplots()
+ax.bar(graduates.index, graduates['Hispanic'])
+ax.set_xticks(graduates.index)
+ax.set_xticklabels(graduates.index, rotation = 60, 
+    horizontalalignment = 'right')
+ax.set_title('Number of Hispanic graduates from 1996-2012', 
+    fontsize = 16)
+ax.set_ylabel('Number of Graduates')
+plt.show()
+```
 
 我们应该仔细查看我们前面的代码中的一些事情。我们做的第一件事是添加`fig, ax = plt.subplots()`行。这行允许我们创建图表，还允许我们在一个图中创建多个图表。如果我们要添加四个图表，我们会使用`fig, ax = plt.subplots(2, 2)`，这会告诉算法我们要在两行两列中创建四个图表。如果我们像前面的代码中那样将括号留空，我们就只有一个子图。
 
@@ -269,7 +335,18 @@ Seaborn 有一些可以访问的示例数据集 - 也就是说，它们是内置
 
 让我们看看以下代码片段和生成的图形：ch12_seabornSample.py
 
-[PRE10]
+```py
+# Import seaborn
+import seaborn as sns
+sns.set_style('darkgrid')
+# Load an example dataset
+exercise = sns.load_dataset("exercise")
+#Create the plot
+sns.relplot(    
+    data=exercise,    
+    x='id', y="pulse", col="time",
+)
+```
 
 从上面的代码中，您可以看到我们为图表设置了样式。我们在导入库后为我们的图表添加了`'darkgrid'`样式。Seaborn 有一些内置样式：`white`、`whitegrid`、`dark`、`darkgrid`和`ticks`。
 
@@ -285,7 +362,17 @@ Seaborn 有一些可以访问的示例数据集 - 也就是说，它们是内置
 
 ch12_pairplotSNS.py
 
-[PRE11]
+```py
+# Import seaborn
+import seaborn as sns
+sns.set_style('darkgrid')
+# Load an example dataset
+flights = sns.load_dataset("flights")
+#Create the plot
+sns.pairplot(
+    data=flights,
+)
+```
 
 上述代码片段与之前的练习数据非常相似。不同之处在于，在这种情况下我们调用了`pairplot()`函数。以下截图显示了我们得到的图表网格：
 

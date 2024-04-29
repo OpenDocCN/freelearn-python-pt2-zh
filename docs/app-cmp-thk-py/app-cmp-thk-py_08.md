@@ -36,7 +36,10 @@
 
 在 Python 中，冒号用于分隔条件、创建循环等等。冒号是一种告诉算法下一步是这个特定代码块的方式。当我们在 Python 中引入冒号时，它会自动缩进我们代码的下一行。但如果我们忘记在需要的地方包括冒号，程序将无法成功运行。让我们看一个语法错误的例子：
 
-[PRE0]
+```py
+for i in range(1, 10)
+    print(i)
+```
 
 如果我们运行这段代码，会得到一个错误消息，说*invalid syntax*。下面的截图显示了当我们尝试运行这个程序时出现的弹出窗口：
 
@@ -46,7 +49,9 @@
 
 如果我们从 Python shell 中运行这个程序，错误会如何显示：
 
-[PRE1]
+```py
+SyntaxError: invalid syntax
+```
 
 正如你所看到的，Python 程序会在我们的代码中包含错误时提醒我们。
 
@@ -54,11 +59,24 @@
 
 ch7_syntaxerror1.py
 
-[PRE2]
+```py
+for i in range(1, 10):
+    print(i)
+```
 
 当我们运行修正后的代码时，程序会运行并打印出数字 1 到 9，如下所示：
 
-[PRE3]
+```py
+1
+2
+3
+4
+5
+6
+7
+8
+9
+```
 
 你可能还记得`range`函数不包括上限端点。如果我们想打印数字 10，我们的范围需要是`range(1, 11)`。
 
@@ -68,37 +86,64 @@ ch7_syntaxerror1.py
 
 除了涉及冒号的语法错误外，还有嵌套括号的错误。我们必须始终检查每个开括号是否有闭括号。对于括号也是如此。让我们看一下下面的代码，其中包含括号错误：
 
-[PRE4]
+```py
+name = str(input('What is your name? ')
+print(name)
+```
 
 正如你所看到的，名称定义中有两个开括号，但只有一个闭括号。当我们运行该程序时，Python 会报告一个无效的语法错误。当我们在 Python shell 或解释器中运行该程序时，会发生什么：
 
-[PRE5]
+```py
+SyntaxError: invalid syntax
+```
 
 现在这是没有错误的相同代码，注意我们甚至将`str()`去掉了，因为它是不需要的，这样简化了我们的代码，同时消除了错误。
 
 ch7_syntaxerror2.py
 
-[PRE6]
+```py
+name = input('What is your name? ')
+print(name)
+```
 
 现在当我们运行代码时，程序会要求输入名称，然后打印出来。输出如下所示：
 
-[PRE7]
+```py
+What is your name? Monique
+Monique
+```
 
 正如你所看到的，程序现在可以正常运行了。
 
 在[*第三章*]（B15413_03_Final_SK_ePub.xhtml#_idTextAnchor056）*理解算法和算法思维*中，我们使用字典创建了一个带有每个菜单项定价的菜单。字典包含括号，用于表示字典开始和结束的位置。让我们看一下几行代码：
 
-[PRE8]
+```py
+cars = {
+    "Hyundai": "Kona",
+    "Honda": "CR-V",
+    "Toyota": "Camry"
+
+print(cars)
+```
 
 如果我们看一下程序，字典缺少闭括号`}`，所以我们会得到一个语法错误，就像我们之前的例子一样。以下片段显示了已纠正的程序：
 
 ch7_syntaxerror3.py
 
-[PRE9]
+```py
+cars = {
+    "Hyundai": "Kona",
+    "Honda": "CR-V",
+    "Toyota": "Camry"
+    }
+print(cars)
+```
 
 正如你所看到的，一旦添加了括号，程序就会运行并打印出以下输出：
 
-[PRE10]
+```py
+{'Hyundai': 'Kona', 'Honda': 'CR-V', 'Toyota': 'Camry'}
+```
 
 字典中的每个条目都打印在一行中，用逗号分隔。在编写算法时，添加`print`语句是有帮助的，以确保我们没有任何错误。一旦测试过，我通常会删除不必要的打印函数，但在编写长算法并需要测试以避免问题时，它们确实很有用。
 
@@ -130,11 +175,15 @@ ch7_syntaxerror3.py
 
 ch7_errors.py
 
-[PRE11]
+```py
+print(dir(locals()['__builtins__']))
+```
 
 当我们运行该代码时，输出提供了以下错误值：
 
-[PRE12]
+```py
+['ArithmeticError', 'AssertionError', 'AttributeError', 'BaseException', 'BlockingIOError', 'BrokenPipeError', 'BufferError', 'BytesWarning', 'ChildProcessError', 'ConnectionAbortedError', 'ConnectionError', 'ConnectionRefusedError', 'ConnectionResetError', 'DeprecationWarning', 'EOFError', 'Ellipsis', 'EnvironmentError', 'Exception', 'False', 'FileExistsError', 'FileNotFoundError', 'FloatingPointError', 'FutureWarning', 'GeneratorExit', 'IOError', 'ImportError', 'ImportWarning', 'IndentationError', 'IndexError', 'InterruptedError', 'IsADirectoryError', 'KeyError', 'KeyboardInterrupt', 'LookupError', 'MemoryError', 'ModuleNotFoundError', 'NameError', 'None', 'NotADirectoryError', 'NotImplemented', 'NotImplementedError', 'OSError', 'OverflowError', 'PendingDeprecationWarning', 'PermissionError', 'ProcessLookupError', 'RecursionError', 'ReferenceError', 'ResourceWarning', 'RuntimeError', 'RuntimeWarning', 'StopAsyncIteration', 'StopIteration', 'SyntaxError', 'SyntaxWarning', 'SystemError', 'SystemExit', 'TabError', 'TimeoutError', 'True', 'TypeError', 'UnboundLocalError', 'UnicodeDecodeError', 'UnicodeEncodeError', 'UnicodeError', 'UnicodeTranslateError', 'UnicodeWarning', 'UserWarning', 'ValueError', 'Warning', 'ZeroDivisionError', '__build_class__', '__debug__', '__doc__', '__import__', '__loader__', '__name__', '__package__', '__spec__', 'abs', 'all', 'any', 'ascii', 'bin', 'bool', 'breakpoint', 'bytearray', 'bytes', 'callable', 'chr', 'classmethod', 'compile', 'complex', 'copyright', 'credits', 'delattr', 'dict', 'dir', 'divmod', 'enumerate', 'eval', 'exec', 'exit', 'filter', 'float', 'format', 'frozenset', 'getattr', 'globals', 'hasattr', 'hash', 'help', 'hex', 'id', 'input', 'int', 'isinstance', 'issubclass', 'iter', 'len', 'license', 'list', 'locals', 'map', 'max', 'memoryview', 'min', 'next', 'object', 'oct', 'open', 'ord', 'pow', 'print', 'property', 'quit', 'range', 'repr', 'reversed', 'round', 'set', 'setattr', 'slice', 'sorted', 'staticmethod', 'str', 'sum', 'super', 'tuple', 'type', 'vars', 'zip']
+```
 
 如前所述，这些是 Python 中的内置异常。有一种方法可以定义我们自己的异常，但在这本书中我们不会涉及到它们。
 
@@ -160,45 +209,114 @@ ch7_errors.py
 
 ch7_debugger.py
 
-[PRE13]
+```py
+number = 5
+number2 = 'five'
+print(number)
+breakpoint()
+print(number2)
+```
 
 看看这段代码，你可以看到`print(number)`后面的`breakpoint()`命令。代码将正常运行，直到达到`breakpoint()`命令。在这个阶段，执行停止。如果我们按下*c*键，那么它将继续运行程序。看看输出是什么样子。
 
 请注意，在代码中有两个斜杠之间有三个点，`/…/`。这是因为路径可能会因计算机不同而不同。你的路径将包括程序所在的完整路径：
 
-[PRE14]
+```py
+5
+> /Users/.../Python/ch7_debugger.py(8)<module>()
+-> print(number2)
+(Pdb) c
+five
+```
 
 如你所见，它继续打印字符串`five`，因为它只是继续运行程序。现在让我们看看当我们运行`q`命令时的输出，它会退出程序：
 
-[PRE15]
+```py
+5
+> /Users/.../Python/ch7_debugger.py(8)<module>()
+-> print(number2)
+(Pdb) q
+Traceback (most recent call last):
+  File "/Users/.../Python/ch7_debugger.py", line 8, in <module>
+    print(number2)
+  File "/Users/.../Python/ch7_debugger.py", line 8, in <module>
+    print(number2)
+bdb.BdbQuit
+```
 
 正如你所看到的，一旦我们使用`q`命令，由于程序退出，我们会得到一个**回溯错误**。它打印了`breakpoint()`代码上面的行，但没有打印第二个`print(number2)`命令。现在，让我们看看当我们输入`n`时会发生什么，它应该会带我们到下一行：
 
-[PRE16]
+```py
+5
+> /Users/.../Python/ch7_debugger.py(8)<module>()
+-> print(number2)
+(Pdb) n
+five
+--Return--
+> /Users/.../Python/ch7_debugger.py(8)<module>()->None
+-> print(number2)
+(Pdb)
+```
 
 如你所见，当我们输入`n`时，程序继续运行并打印第二个命令行。当这样做时，你可以看到`-> None`输出和运行的代码：`print(number2)`。最后，让我们看一下稍微改变的代码，看看在运行调试器时使用`s`会发生什么：
 
 ch7_debugger2.py
 
-[PRE17]
+```py
+number = 5
+number2 = 'five'
+print(number)
+breakpoint()
+print(str(number) + number2)
+```
 
 当我们运行这个程序和调试器时，如果我们使用`s`，我们会得到以下输出：
 
-[PRE18]
+```py
+5
+> /Users/.../Python/ch7_debugger2.py(8)<module>()
+-> print(number + " " + number2)
+(Pdb) s
+TypeError: unsupported operand type(s) for +: 'int' and 'str'
+> /Users/.../Python/ch7_debugger2.py(8)<module>()
+-> print(number + " " + number2)
+(Pdb)
+```
 
 如你所见，程序遇到了`TypeError`并提供了更多信息。我尝试将整数和字符串组合在一起。因此，我们需要修复代码以正确运行。在我这样做之前，让我们看看当我尝试使用`c`继续代码时会发生什么：
 
-[PRE19]
+```py
+5
+> /Users/.../Python/ch7_debugger2.py(8)<module>()
+-> print(number + " " + number2)
+(Pdb) c
+Traceback (most recent call last):
+  File "/Users/.../Python/ch7_debugger2.py", line 8, in <module>
+    print(number + " " + number2)
+TypeError: unsupported operand type(s) for +: 'int' and 'str'
+```
 
 如你所见，我可以从两个命令中获得相同的信息，程序的响应略有不同。要解决这个问题，我必须将数字转换为字符串，在`print`行中可以使用以下代码来实现：
 
 ch7_debugger3.py
 
-[PRE20]
+```py
+number = 5
+number2 = 'five'
+print(number)
+breakpoint()
+print(str(number) + " " + number2)
+```
 
 现在，我已经修复了代码，使得打印行中的项目都是字符串，当我使用`c`继续时，输出如下：
 
-[PRE21]
+```py
+5
+> /Users/.../Python/ch7_debugger3.py(8)<module>()
+-> print(str(number) + " " + number2)
+(Pdb) c
+5 five 
+```
 
 如你所见，程序现在打印了正确的信息，将数字作为字符串与`five`字符串组合在一起。双引号在它们之间添加了一个空格，我们以前已经见过，但当我们在*第八章*中查看 Python 基础知识时，将再次讨论。
 
@@ -220,17 +338,40 @@ ch7_debugger3.py
 
 ch7_evenalgorithm1.py
 
-[PRE22]
+```py
+print("This program will print the even numbers for any range of numbers provided.")
+endpoint1 = int(input("What is the lower endpoint of your range? "))
+endpoint2 = int(input("What is the upper endpoint of your range? "))
+endpoint2 = endpoint2 + 1
+for i in range(endpoint1, endpoint2):
+    if i % 2 == 0:
+        print(i)
+
+```
 
 注意，`endpoint2`被转换为`endpoint2 + 1`。这是因为如果我们不添加`1`，那么如果它是一个偶数，上限端点将不会被包括在内。程序还以用户的打印消息开始，说明程序的功能是什么。
 
 当我用端点`2`和`6`运行这个程序时，我得到以下输出：
 
-[PRE23]
+```py
+This program will print the even numbers for any range of numbers provided.
+What is the lower endpoint of your range? 2
+What is the upper endpoint of your range? 6
+2
+4
+6
+```
 
 如你所见，两个端点都是偶数且包括在内。如果我们用端点`3`和`9`运行程序，我们得到以下输出：
 
-[PRE24]
+```py
+This program will print the even numbers for any range of numbers provided.
+What is the lower endpoint of your range? 3
+What is the upper endpoint of your range? 9
+4
+6
+8
+```
 
 尽管终点现在在技术上是`10`，但范围的上限并不包括在内，因此在`10`以下的最大偶数是`8`。现在，我可以为一个更大的范围运行这个程序，但是范围越大，滚动以获取所有数字就越困难。因此，让我们看一种不同的方法来获取我们的偶数。
 
@@ -242,15 +383,36 @@ ch7_evenalgorithm1.py
 
 ch7_evenalgorithm2.py
 
-[PRE25]
+```py
+print("This program will print the even numbers for any range of numbers provided.")
+endpoint1 = int(input("What is the lower endpoint of your range? "))
+endpoint2 = int(input("What is the upper endpoint of your range? "))
+endpoint2 = endpoint2 + 1
+evenNumbers = []
+for i in range(endpoint1, endpoint2):
+    if i % 2 == 0:
+        evenNumbers.append(i)
+
+print(evenNumbers)
+```
 
 你可以看到代码的前几行是相同的。在这个特定的代码中唯一的区别是数字的打印方式。列表是在`for`循环之前创建的。然后，使用`evenNumbers.append(i)`代码将每个数字附加到列表中。最后，我们打印我们的列表以获得以下输出：
 
-[PRE26]
+```py
+This program will print the even numbers for any range of numbers provided.
+What is the lower endpoint of your range? 2
+What is the upper endpoint of your range? 10
+[2, 4, 6, 8, 10]
+```
 
 如你所见，所有偶数都包含在一个列表中，这比一个接一个地打印更容易阅读。*想象一下，如果你必须打印范围在 300-1,000 之间的偶数*。当我们运行程序时，列表会使阅读更容易。对于第二个算法，输出如下：
 
-[PRE27]
+```py
+This program will print the even numbers for any range of numbers provided.
+What is the lower endpoint of your range? 300
+What is the upper endpoint of your range? 1000
+[300, 302, 304, 306, 308, 310, 312, 314, 316, 318, 320, 322, 324, 326, 328, 330, 332, 334, 336, 338, 340, 342, 344, 346, 348, 350, 352, 354, 356, 358, 360, 362, 364, 366, 368, 370, 372, 374, 376, 378, 380, 382, 384, 386, 388, 390, 392, 394, 396, 398, 400, 402, 404, 406, 408, 410, 412, 414, 416, 418, 420, 422, 424, 426, 428, 430, 432, 434, 436, 438, 440, 442, 444, 446, 448, 450, 452, 454, 456, 458, 460, 462, 464, 466, 468, 470, 472, 474, 476, 478, 480, 482, 484, 486, 488, 490, 492, 494, 496, 498, 500, 502, 504, 506, 508, 510, 512, 514, 516, 518, 520, 522, 524, 526, 528, 530, 532, 534, 536, 538, 540, 542, 544, 546, 548, 550, 552, 554, 556, 558, 560, 562, 564, 566, 568, 570, 572, 574, 576, 578, 580, 582, 584, 586, 588, 590, 592, 594, 596, 598, 600, 602, 604, 606, 608, 610, 612, 614, 616, 618, 620, 622, 624, 626, 628, 630, 632, 634, 636, 638, 640, 642, 644, 646, 648, 650, 652, 654, 656, 658, 660, 662, 664, 666, 668, 670, 672, 674, 676, 678, 680, 682, 684, 686, 688, 690, 692, 694, 696, 698, 700, 702, 704, 706, 708, 710, 712, 714, 716, 718, 720, 722, 724, 726, 728, 730, 732, 734, 736, 738, 740, 742, 744, 746, 748, 750, 752, 754, 756, 758, 760, 762, 764, 766, 768, 770, 772, 774, 776, 778, 780, 782, 784, 786, 788, 790, 792, 794, 796, 798, 800, 802, 804, 806, 808, 810, 812, 814, 816, 818, 820, 822, 824, 826, 828, 830, 832, 834, 836, 838, 840, 842, 844, 846, 848, 850, 852, 854, 856, 858, 860, 862, 864, 866, 868, 870, 872, 874, 876, 878, 880, 882, 884, 886, 888, 890, 892, 894, 896, 898, 900, 902, 904, 906, 908, 910, 912, 914, 916, 918, 920, 922, 924, 926, 928, 930, 932, 934, 936, 938, 940, 942, 944, 946, 948, 950, 952, 954, 956, 958, 960, 962, 964, 966, 968, 970, 972, 974, 976, 978, 980, 982, 984, 986, 988, 990, 992, 994, 996, 998, 1000]
+```
 
 我之所以只打印这一个而不是第一个算法，是因为第一个算法需要很多页，我们不想在这本书中浪费纸张。你可以看到其中一个比另一个更容易使用和更合适，因为更容易阅读更大的数字组。
 
@@ -266,13 +428,21 @@ ch7_evenalgorithm2.py
 
 ch7_pets1.py
 
-[PRE28]
+```py
+cat = "Whiskers"
+dog = "King Kong"
+bird = "Pirate"
+print("The cat's name is " + cat + ", the dog's name is " + dog + \
+      ", and the bird's name is " + bird + ".")
+```
 
 这个简单的代码中包含了一切，所以这次没有用户输入。你可以看到在`print()`命令中的`dog +`后使用了`\`字符。这个反斜杠允许我们在下一行添加剩余的代码，这样我们可以更容易地阅读它。
 
 代码的输出如下：
 
-[PRE29]
+```py
+The cat's name is Whiskers, the dog's name is King Kong, and the bird's name is Pirate.
+```
 
 正如你所看到的，这是一个简单的句子，带有宠物名字。
 
@@ -280,21 +450,39 @@ ch7_pets1.py
 
 ch7_pets2.py
 
-[PRE30]
+```py
+def myPets(cat, dog, bird):
+    print("The cat's name is " + cat + ", the dog's name is " + dog +\
+          ", and the bird's name is " + bird + ".")
+myPets(cat = "Whiskers", dog = "King Kong", bird = "Pirate")
+```
 
 这个算法看起来与上一个非常相似，只是名字的定义在代码的最后一行。调用函数时，使用该行的信息来填写上面算法行中的定义的空白。输出看起来与上一个代码相同：
 
-[PRE31]
+```py
+The cat's name is Whiskers, the dog's name is King Kong, and the bird's name is Pirate.
+```
 
 现在，正如你所看到的，这只打印了一个函数，因为我们只提供了一个信息，但我们可以随时调用函数，使用任意数量的值。看看这个算法：
 
 ch7_pets3.py
 
-[PRE32]
+```py
+def myPets(cat, dog, bird):
+    print("The cat's name is " + cat + ", the dog's name is " + dog +\
+          ", and the bird's name is " + bird + ".")
+myPets(cat = "Whiskers", dog = "King Kong", bird = "Pirate")
+myPets(cat = "Mimi", dog = "Jack", bird = "Peyo")
+myPets(cat = "Softy", dog = "Leila", bird = "Oliver")
+```
 
 正如你所看到的，现在函数将被调用三次。我们只有一个`print()`命令，但是函数定义意味着每次调用函数时都会使用`print()`命令。看看输出是什么样子的：
 
-[PRE33]
+```py
+The cat's name is Whiskers, the dog's name is King Kong, and the bird's name is Pirate.
+The cat's name is Mimi, the dog's name is Jack, and the bird's name is Peyo.
+The cat's name is Softy, the dog's name is Leila, and the bird's name is Oliver.
+```
 
 请注意，当我们调用函数时，使用了三组宠物名字，打印了三个不同的句子。
 

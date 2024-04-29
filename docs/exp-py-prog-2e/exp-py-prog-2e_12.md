@@ -2,7 +2,22 @@
 
 优化程序并不是一个神奇的过程。它是通过遵循一个简单的算法完成的，由 Stefan Schwarzer 在 Europython 2006 中合成的原始伪代码示例：
 
-[PRE0]
+```py
+def optimize():
+    """Recommended optimization"""
+    assert got_architecture_right(), "fix architecture"
+    assert made_code_work(bugs=None), "fix bugs"
+    while code_is_too_slow():
+        wbn = find_worst_bottleneck(just_guess=False,
+                                    profile=True)
+        is_faster = try_to_optimize(wbn,
+                                    run_unit_tests=True,
+                                    new_bugs=None)
+        if not is_faster:
+            undo_last_code_change()
+
+# By Stefan Schwarzer, Europython 2006
+```
 
 这个例子可能不是最整洁和最清晰的例子，但基本上涵盖了组织优化过程的所有重要方面。我们从中学到的主要内容是：
 
@@ -94,13 +109,28 @@
 
 让我们来看另一个例子：
 
-[PRE1]
+```py
+>>> def function(n):
+...     for i in range(n):
+...         print(i)
+...
+
+```
 
 在这种情况下，打印语句将被执行*n*次。循环速度将取决于`n`，因此它的复杂度使用大 O 符号表示将是*O(n)*。
 
 如果函数有条件，保留的正确符号是最高的：
 
-[PRE2]
+```py
+>>> def function(n):
+...     if some_test:
+...         print('something')
+...     else:
+...         for i in range(n):
+...             print(i)
+...** 
+
+```
 
 在这个例子中，函数可能是*O(1)*或*O(n)*，取决于测试。但最坏情况是*O(n)*，所以整个函数的复杂度是*O(n)*。
 
@@ -126,7 +156,14 @@
 
 如果您需要在列表上进行快速搜索，可以尝试 Python 标准库中的`bisect`模块。该模块中的函数主要设计用于以保持已排序序列顺序的方式插入或查找给定值的插入索引。无论如何，它们可以用于使用二分算法有效地查找元素索引。以下是官方文档中使用二分搜索查找元素索引的函数的配方：
 
-[PRE3]
+```py
+def index(a, x):
+    'Locate the leftmost value exactly equal to x'
+    i = bisect_left(a, x)
+    if i != len(a) and a[i] == x:
+        return i
+    raise ValueError
+```
 
 请注意，`bisect`模块中的每个函数都需要一个排序好的序列才能工作。如果您的列表没有按正确的顺序排列，那么对其进行排序至少需要*O(n log n)*的复杂度。这是比*O(n)*更糟糕的类别，因此对整个列表进行排序仅进行单个搜索肯定不划算。但是，如果您需要在一个不经常改变的大列表中执行大量索引搜索，那么使用单个排序操作的`bisect`可能是一个非常好的折衷方案。
 
@@ -136,13 +173,29 @@
 
 当您需要从给定序列中构建一系列不同值时，可能首先想到的算法是：
 
-[PRE4]
+```py
+>>> sequence = ['a', 'a', 'b', 'c', 'c', 'd']
+>>> result = []
+>>> for element in sequence:
+...     if element not in result:
+...         result.append(element)
+...** 
+>>> result
+['a', 'b', 'c', 'd']
+
+```
 
 复杂度是由在`result`列表中使用`in`运算符引入的，它的时间复杂度是*O(n)*。然后它在循环中使用，这将花费*O(n)*。因此，总体复杂度是二次的—*O(n²)*。
 
 对于相同的工作使用`set`类型将更快，因为存储的值使用哈希查找，就像`dict`类型一样。此外，`set`确保元素的唯一性，因此我们不需要做任何额外的工作，只需从我们的`sequence`对象创建一个新的集合。换句话说，对于`sequence`中的每个值，查看它是否已经在`set`中所花费的时间将是恒定的：
 
-[PRE5]
+```py
+>>> sequence = ['a', 'a', 'b', 'c', 'c', 'd']
+>>> result = set(sequence)
+>>> result
+set(['a', 'c', 'b', 'd'])
+
+```
 
 这将复杂度降低到*O(n)*，这是`set`对象创建的复杂度。额外的优势是代码更短更明确。
 
@@ -172,17 +225,50 @@
 
 例如，如果我们使用 `timeit` 测量向序列添加一个元素并从中删除的时间，`list` 和 `deque` 之间的差异甚至可能不会被注意到：
 
-[PRE6]
+```py
+$ python3 -m timeit \
+> -s 'sequence=list(range(10))' \
+> 'sequence.append(0); sequence.pop();'
+1000000 loops, best of 3: 0.168 usec per loop
 
-[PRE7]
+```
+
+```py
+$ python3 -m timeit \** 
+> -s 'from collections import deque; sequence=deque(range(10))' \
+> 'sequence.append(0); sequence.pop();'
+1000000 loops, best of 3: 0.168 usec per loop
+
+```
 
 但是，如果我们对想要添加和移除序列的第一个元素的情况进行类似的比较，性能差异是显著的：
 
-[PRE8]
+```py
+$ python3 -m timeit \
+> -s 'sequence=list(range(10))' \
+> 'sequence.insert(0, 0); sequence.pop(0)'
+
+1000000 loops, best of 3: 0.392 usec per loop
+$ python3 -m timeit \
+> -s 'from collections import deque; sequence=deque(range(10))' \
+> 'sequence.appendleft(0); sequence.popleft()'
+10000000 loops, best of 3: 0.172 usec per loop
+
+```
 
 而且，当序列的大小增长时，这种差异会变得更大。以下是对包含 10,000 个元素的列表执行相同测试的示例：
 
-[PRE9]
+```py
+$ python3 -m timeit \
+> -s 'sequence=list(range(10000))' \
+> 'sequence.insert(0, 0); sequence.pop(0)'
+100000 loops, best of 3: 14 usec per loop
+$ python3 -m timeit \
+> -s 'from collections import deque; sequence=deque(range(10000))' \** 
+> 'sequence.appendleft(0); sequence.popleft()'
+10000000 loops, best of 3: 0.168 usec per loop
+
+```
 
 由于高效的 `append()` 和 `pop()` 方法可以同时从序列的两端以相同的速度工作，`deque` 是实现队列的完美类型。例如，使用 `deque` 而不是 `list` 来实现 **FIFO**（先进先出）队列将会更加高效。
 
@@ -196,19 +282,48 @@
 
 `defaultdict` 看起来只是 `dict` 上的语法糖，简单地允许您编写更短的代码。实际上，在失败的键查找时返回预定义值也比 `dict.setdefault()` 方法稍微快一些：
 
-[PRE10]
+```py
+$ python3 -m timeit \
+> -s 'd = {}'** 
+> 'd.setdefault("x", None)'
+10000000 loops, best of 3: 0.153 usec per loop
+$ python3 -m timeit \** 
+> -s 'from collections import defaultdict; d=defaultdict(lambda: None)' \
+> 'd["x"]'
+10000000 loops, best of 3: 0.0447 usec per loop
+
+```
 
 差异并不大，因为计算复杂度并没有改变。`dict.setdefault`方法包括两个步骤（键查找和键设置），这两个步骤的复杂度都是*O(1)*，正如我们在第二章的*字典*部分中所看到的，*语法最佳实践-类级别以下*。没有办法使复杂度低于*O(1)*。但在某些情况下，它无疑更快，值得知道，因为在优化关键代码部分时，每一个小的速度提升都很重要。
 
 `defaultdict`类型接受一个工厂作为参数，因此可以与不需要参数的内置类型或类一起使用其构造函数。以下是官方文档中的一个示例，展示了如何使用`defaultdict`进行计数：
 
-[PRE11]
+```py
+>>> s = 'mississippi'
+>>> d = defaultdict(int)
+>>> for k in s:
+...     d[k] += 1
+...
+>>> list(d.items())
+[('i', 4), ('p', 2), ('s', 4), ('m', 1)]
+
+```
 
 ## namedtuple
 
 `namedtuple`是一个类工厂，它接受一个类型名称和一个属性列表，并创建一个类。然后可以用这个类来实例化一个类似元组的对象，并为其元素提供访问器：
 
-[PRE12]
+```py
+>>> from collections import namedtuple** 
+>>> Customer = namedtuple(
+...     'Customer',
+...     'firstname lastname'
+... )
+>>> c = Customer('Tarek', 'Ziadé')
+>>> c.firstname
+'Tarek'
+
+```
 
 它可以用来创建比需要一些样板代码来初始化值的自定义类更容易编写的记录。另一方面，它基于元组，因此通过索引访问其元素非常快。生成的类可以被子类化以添加更多操作。
 
@@ -350,7 +465,15 @@ HyperLogLog（参见[`en.wikipedia.org/wiki/HyperLogLog`](https://en.wikipedia.o
 
 在优化可能多次评估相同输入的递归函数时，记忆化非常有用。我们已经在第七章中讨论了斐波那契数列的递归实现，*其他语言中的 Python 扩展*。当时，我们尝试用 C 和 Cython 来改进我们的程序的性能。现在我们将尝试通过更简单的方法来实现相同的目标——借助缓存的帮助。但在这样做之前，让我们回顾一下`fibonacci()`函数的代码：
 
-[PRE13]
+```py
+def fibonacci(n):
+    """ Return nth Fibonacci sequence number computed recursively
+    """
+    if n < 2:
+        return 1
+    else:
+        return fibonacci(n - 1) + fibonacci(n - 2)
+```
 
 正如我们所见，`fibonacci()`是一个递归函数，如果输入值大于两，它会调用自身两次。这使得它非常低效。运行时间复杂度为*O(2^n)*，执行会创建一个非常深和广的调用树。对于大的值，这个函数将需要非常长的时间来执行，并且很有可能很快就会超过 Python 解释器的最大递归限制。
 
@@ -362,11 +485,35 @@ HyperLogLog（参见[`en.wikipedia.org/wiki/HyperLogLog`](https://en.wikipedia.o
 
 一个简单的记忆化尝试是将先前运行的结果存储在字典中，并在可用时检索它们。`fibonacci()`函数中的递归调用都包含在一行代码中：
 
-[PRE14]
+```py
+return fibonacci(n - 1) + fibonacci(n - 2)
+```
 
 我们知道 Python 从左到右评估指令。这意味着，在这种情况下，具有更高参数值的函数调用将在具有较低参数的函数调用之前执行。由于这个原因，我们可以通过构建一个非常简单的装饰器来提供记忆化：
 
-[PRE15]
+```py
+def memoize(function):
+    """ Memoize the call to single-argument function
+    """
+    call_cache = {}
+
+    def memoized(argument):
+        try:
+            return call_cache[argument]
+        except KeyError:
+            return call_cache.setdefault(argument, function(argument))
+
+    return memoized
+
+@memoize
+def fibonacci(n):
+    """ Return nth Fibonacci sequence number computed recursively
+    """
+    if n < 2:
+        return 1
+    else:
+        return fibonacci(n - 1) + fibonacci(n - 2)
+```
 
 我们在`memoize()`装饰器的闭包上使用了字典作为缓存值的简单存储。将值保存和检索到这个数据结构的平均*O(1)*复杂度，因此这大大降低了记忆化函数的总体复杂度。每个唯一的函数调用将只被评估一次。这样更新的函数的调用树如*图 4*所示。在不进行数学证明的情况下，我们可以直观地推断，在不改变`fibonacci()`函数的核心的情况下，我们将复杂度从非常昂贵的*O(2n)*降低到线性的*O(n)*。
 
@@ -382,7 +529,16 @@ HyperLogLog（参见[`en.wikipedia.org/wiki/HyperLogLog`](https://en.wikipedia.o
 
 在我们的斐波那契数列示例中使用`lru_cache`的方法如下：
 
-[PRE16]
+```py
+@lru_cache(None)
+def fibonacci(n):
+    """ Return nth Fibonacci sequence number computed recursively
+    """
+    if n < 2:
+        return 1
+    else:
+        return fibonacci(n - 1) + fibonacci(n - 2)
+```
 
 ## 非确定性缓存
 
@@ -432,11 +588,42 @@ HyperLogLog（参见[`en.wikipedia.org/wiki/HyperLogLog`](https://en.wikipedia.o
 
 这里有一个与 Memcached 集成的示例，使用了流行的 Python 包之一——`pymemcached`：
 
-[PRE17]
+```py
+from pymemcache.client.base import Client
+
+# setup Memcached client running under 11211 port on localhost
+client = Client(('localhost', 11211))
+
+# cache some value under some key and expire it after 10 seconds
+client.set('some_key', 'some_value', expire=10)
+
+# retrieve value for the same key
+result = client.get('some_key')
+```
 
 Memcached 的一个缺点是它设计用于将值存储为字符串或二进制数据块，这与每种本地 Python 类型都不兼容。实际上，它只与一种类型兼容——字符串。这意味着更复杂的类型需要被序列化才能成功存储在 Memcached 中。对于简单数据结构来说，常见的序列化选择是 JSON。这里有一个使用 JSON 序列化与`pymemcached`的示例：
 
-[PRE18]
+```py
+import json
+from pymemcache.client.base import Client
+
+def json_serializer(key, value):
+     if type(value) == str:
+         return value, 1
+     return json.dumps(value), 2
+
+def json_deserializer(key, value, flags):
+    if flags == 1:
+        return value
+    if flags == 2:
+        return json.loads(value)
+    raise Exception("Unknown serialization format")
+
+client = Client(('localhost', 11211), serializer=json_serializer,
+                deserializer=json_deserializer)
+client.set('key', {'a':'b', 'c':'d'})
+result = client.get('key')
+```
 
 与每个基于键/值存储原则的缓存服务一起工作时，非常常见的另一个问题是如何选择键名。
 

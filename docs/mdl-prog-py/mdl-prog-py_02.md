@@ -736,9 +736,9 @@ def show_error(err_msg):
                     ...
                     if not datastorage.remove_item(product,
                                                    location):
- **userinterface.show_error(**
- **"There is no product with " +**
- **"that code at that location!")**
+ **userinterface.show_error(
+ **"There is no product with " +
+ **"that code at that location!")
 
 ```
 

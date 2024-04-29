@@ -816,11 +816,11 @@ class Hand_x:
     def __init__( self, dealer_card, *cards ):
         self.dealer_card= dealer_card
         self.cards= list(cards)
-        **for c in self.cards:**
- **audit_log.info( "Initial %s", c )**
+        **for c in self.cards:
+ **audit_log.info( "Initial %s", c )
     def append( self, card ):
         self.cards.append( card )
-        **audit_log.info( "Hit %s", card )**
+        **audit_log.info( "Hit %s", card )
     def __str__( self ):
         cards= ", ".join( map(str,self.cards) )
         return "{self.dealer_card} | {cards}".format( self=self, cards=cards )
@@ -1052,10 +1052,10 @@ with open("blog.csv","r",newline="") as source:
     blogs = []
     for r in rdr:
         if r[0] == 'Blog':
- **blog= Blog( *r[1:2] )**
+ **blog= Blog( *r[1:2] )
             blogs.append( blog )
         if r[0] == 'Post':
- **post= post_builder( r )**
+ **post= post_builder( r )
             blogs[-1].append( post )
 ```
 
@@ -1092,13 +1092,13 @@ def blog_iter(source):
     for r in rdr:
         if r[0] == 'Blog':
             if blog:
-                **yield blog**
+                **yield blog
             blog= Blog( *r[1:2] )
         if r[0] == 'Post':
             post= post_builder( r )
             blog.append( post )
     if blog:
-        **yield blog**
+        **yield blog
 
 ```
 
@@ -1806,7 +1806,7 @@ def add_blog( self, blog ):
         self.max['Blog'] += 1
         key= "Blog:{id}".format(id=self.max['Blog'])
         blog._id= key
-        **self.database[blog._id]= blog**
+        **self.database[blog._id]= blog
 return blog
     def get_blog( self, id ):
         return self.database[id]
@@ -1818,12 +1818,12 @@ return blog
             raise OperationError( "Blog not added" )
         post._id= key
         post._blog= blog._id
-        **self.database[post._id]= post**
+        **self.database[post._id]= post
 return post
     def get_post( self, id ):
         return self.database[id]
     def replace_post( self, post ):
-        **self.database[post._id]= post**
+        **self.database[post._id]= post
 return post
     def delete_post( self, post ):
         del self.database[post._id]
@@ -1910,7 +1910,7 @@ class Access2( Access ):
         self.max['Blog'] += 1
         key= "Blog:{id}".format(id=self.max['Blog'])
         blog._id= key
-        **blog._post_list= []**
+        **blog._post_list= []
         self.database[blog._id]= blog
         return blog
 
@@ -1923,14 +1923,14 @@ class Access2( Access ):
         post._id= key
         post._blog= blog._id
         self.database[post._id]= post
-        **blog._post_list.append( post._id )**
-        **self.database[blog._id]= blog**
+        **blog._post_list.append( post._id )
+        **self.database[blog._id]= blog
         return post
     def delete_post( self, post ):
         del self.database[post._id]
         blog= self.database[blog._id]
-        **blog._post_list.remove( post._id )**
- **self.database[blog._id]= blog**
+        **blog._post_list.remove( post._id )
+ **self.database[blog._id]= blog
 
 ```
 
@@ -1954,9 +1954,9 @@ class Access2( Access ):
             if not k.startswith("Blog:"): continue
             if ":Post:" in k: continue # Skip children
             yield self.database[k]
-    **def post_iter( self, blog ):**
- **for k in blog._post_list:**
- **yield self.database[k]**
+    **def post_iter( self, blog ):
+ **for k in blog._post_list:
+ **yield self.database[k]
     def title_iter( self, blog, title ):
         return ( p for p in self.post_iter(blog) if p.title == title )
 ```
@@ -1984,7 +1984,7 @@ Access: 19.3
 class Access3( Access2 ):
     def new( self, *args, **kw ):
         super().new( *args, **kw )
-        **self.database['_DB:Blog']= list()**
+        **self.database['_DB:Blog']= list()
 
     def add_blog( self, blog ):
         self.max['Blog'] += 1
@@ -1992,10 +1992,10 @@ class Access3( Access2 ):
         blog._id= key
         blog._post_list= []
         self.database[blog._id]= blog
-        **self.database['_DB:Blog'].append( blog._id )**
+        **self.database['_DB:Blog'].append( blog._id )
         return blog
 
-    **def blog_iter( self ):**
+    **def blog_iter( self ):
  **return ( self.database[k] for k in self.database['_DB:Blog']** )
 ```
 
@@ -2029,9 +2029,9 @@ class Access4( Access2 ):
         blog._post_list= []
         self.database[blog._id]= blog
         self.database['_DB:Blog'].append( blog._id )
-        **blog_title= self.database['_DB:Blog_Title']**
- **blog_title[blog.title].append( blog._id )**
- **self.database['_DB:Blog_Title']= blog_title**
+        **blog_title= self.database['_DB:Blog_Title']
+ **blog_title[blog.title].append( blog._id )
+ **self.database['_DB:Blog_Title']= blog_title
         return blog
 ```
 
@@ -2054,8 +2054,8 @@ class Access4( Access2 ):
         for k in empties:
             del blog_title[k]
         # Put key into index in new spot.
-        **blog_title[blog.title].append( blog._id )**
- **self.database['_DB:Blog_Title']= blog_title**
+        **blog_title[blog.title].append( blog._id )
+ **self.database['_DB:Blog_Title']= blog_title
 
 ```
 
@@ -2501,12 +2501,12 @@ class Blog:
         self.entries= list(posts)
     def append( self, post ):
         self.entries.append(post)
-    **def by_tag(self):**
- **tag_index= defaultdict(list)**
- **for post in self.entries:**
- **for tag in post.tags:**
- **tag_index[tag].append( post )**
- **return tag_index**
+    **def by_tag(self):
+ **tag_index= defaultdict(list)
+ **for post in self.entries:
+ **for tag in post.tags:
+ **tag_index[tag].append( post )
+ **return tag_index
     def as_dict( self ):
         return dict(
             title= self.title,
@@ -2629,12 +2629,12 @@ class Blog:
         self.id= kw.pop('id', None)
         self.title= kw.pop('title', None)
         if kw: raise TooManyValues( kw )
-        **self.entries= list() # ???**
+        **self.entries= list() # ???
     def append( self, post ):
         self.entries.append(post)
     def by_tag(self):
         tag_index= defaultdict(list)
-        **for post in self.entries: # ???**
+        **for post in self.entries: # ???
             for tag in post.tags:
                 tag_index[tag].append( post )
         return tag_index
@@ -3998,7 +3998,7 @@ class Authentication:
             salt=salt_x, hash=hash_x)
     def match( self, password ):
         test= self._iter_hash( self.iterations, self.salt, self.username, password )
-        return self.hash == test # **Constant Time is Best**
+        return self.hash == test # **Constant Time is Best
 
 ```
 
@@ -5083,7 +5083,7 @@ def main_nested_dict( config ):
         'NoReSplitAces':NoReSplitAces()}.get(split_nm, ReSplit())
     decks= config.get('table',{}).get('decks', 6)
     limit= config.get('table',{}).get('limit', 100)
- **payout= config.get('table',{}).get('payout', (3,2))**
+ **payout= config.get('table',{}).get('payout', (3,2))
     table= Table( decks=decks, limit=limit, dealer=dealer_rule,
         split=split_rule, payout=payout )
 ```
@@ -5135,7 +5135,7 @@ def main_cm( config ):
         'NoReSplitAces':NoReSplitAces()}.get(split_nm, ReSplit())
     decks= int(config.get('table.decks', 6))
     limit= int(config.get('table.limit', 100))
-    **payout= config.get('table.payout', (3,2))**
+    **payout= config.get('table.payout', (3,2))
     table= Table( decks=decks, limit=limit, dealer=dealer_rule,
         split=split_rule, payout=payout )
 ```
@@ -5349,7 +5349,7 @@ def main_cm_str( config ):
         'NoReSplitAces':NoReSplitAces()}.get(split_nm, ReSplit())
     decks= int(config.get('table.decks', 6))
     limit= int(config.get('table.limit', 100))
-    **payout= ast.literal_eval(config.get('table.payout', '(3,2)'))**
+    **payout= ast.literal_eval(config.get('table.payout', '(3,2)'))
     table= Table( decks=decks, limit=limit, dealer=dealer_rule,
         split=split_rule, payout=payout )
 ```

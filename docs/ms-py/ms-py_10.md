@@ -37,86 +37,86 @@
 让我们从一个快速示例开始：一个对输入进行平方的函数。以下示例是一个完全功能的命令行应用程序，包含了代码和运行测试。前几个测试覆盖了函数在正常执行时应该如何行为，然后是一些测试来演示预期的错误：
 
 ```py
-**def square(n):**
- **'''**
- **Returns the input number, squared**
+def square(n):
+ **'''
+ **Returns the input number, squared
 
- **>>> square(0)**
- **0**
- **>>> square(1)**
- **1**
- **>>> square(2)**
- **4**
- **>>> square(3)**
- **9**
- **>>> square()**
- **Traceback (most recent call last):**
- **...**
- **TypeError: square() missing 1 required positional argument: 'n'**
- **>>> square('x')**
- **Traceback (most recent call last):**
- **...**
- **TypeError: can't multiply sequence by non-int of type 'str'**
+ **>>> square(0)
+ **0
+ **>>> square(1)
+ **1
+ **>>> square(2)
+ **4
+ **>>> square(3)
+ **9
+ **>>> square()
+ **Traceback (most recent call last):
+ **...
+ **TypeError: square() missing 1 required positional argument: 'n'
+ **>>> square('x')
+ **Traceback (most recent call last):
+ **...
+ **TypeError: can't multiply sequence by non-int of type 'str'
 
- **Args:**
- **n (int): The number to square**
+ **Args:
+ **n (int): The number to square
 
- **Returns:**
- **int: The squared result**
- **'''**
- **return n * n**
+ **Returns:
+ **int: The squared result
+ **'''
+ **return n * n
 
-**if __name__ == '__main__':**
- **import doctest**
- **doctest.testmod()**
+if __name__ == '__main__':
+ **import doctest
+ **doctest.testmod()
 
 ```
 
 它可以像任何 Python 脚本一样执行，但是常规命令不会产生任何输出，因为所有测试都成功了。幸运的是，`doctest.testmod`函数接受冗长参数：
 
 ```py
-**# python square.py -v**
-**Trying:**
- **square(0)**
-**Expecting:**
- **0**
-**ok**
-**Trying:**
- **square(1)**
-**Expecting:**
- **1**
-**ok**
-**Trying:**
- **square(2)**
-**Expecting:**
- **4**
-**ok**
-**Trying:**
- **square(3)**
-**Expecting:**
- **9**
-**ok**
-**Trying:**
- **square()**
-**Expecting:**
- **Traceback (most recent call last):**
- **...**
- **TypeError: square() missing 1 required positional argument: 'n'**
-**ok**
-**Trying:**
- **square('x')**
-**Expecting:**
- **Traceback (most recent call last):**
- **...**
- **TypeError: can't multiply sequence by non-int of type 'str'**
-**ok**
-**1 items had no tests:**
- **__main__**
-**1 items passed all tests:**
- **6 tests in __main__.square**
-**6 tests in 2 items.**
-**6 passed and 0 failed.**
-**Test passed.**
+# python square.py -v
+Trying:
+ **square(0)
+Expecting:
+ **0
+ok
+Trying:
+ **square(1)
+Expecting:
+ **1
+ok
+Trying:
+ **square(2)
+Expecting:
+ **4
+ok
+Trying:
+ **square(3)
+Expecting:
+ **9
+ok
+Trying:
+ **square()
+Expecting:
+ **Traceback (most recent call last):
+ **...
+ **TypeError: square() missing 1 required positional argument: 'n'
+ok
+Trying:
+ **square('x')
+Expecting:
+ **Traceback (most recent call last):
+ **...
+ **TypeError: can't multiply sequence by non-int of type 'str'
+ok
+1 items had no tests:
+ **__main__
+1 items passed all tests:
+ **6 tests in __main__.square
+6 tests in 2 items.
+6 passed and 0 failed.
+Test passed.
 
 ```
 
@@ -129,66 +129,66 @@
 这次，我们使用`n ** 2`而不是`n * n`。两者都是对一个数字求平方，对吧？所以结果必须是相同的。对吧？这些是导致错误的假设类型，也是通过一些基本测试轻松捕捉到的假设类型：
 
 ```py
-**def square(n):**
- **'''**
- **Returns the input number, squared**
+def square(n):
+ **'''
+ **Returns the input number, squared
 
- **>>> square(0)**
- **0**
- **>>> square(1)**
- **1**
- **>>> square(2)**
- **4**
- **>>> square(3)**
- **9**
- **>>> square()**
- **Traceback (most recent call last):**
- **...**
- **TypeError: square() missing 1 required positional argument: 'n'**
- **>>> square('x')**
- **Traceback (most recent call last):**
- **...**
- **TypeError: can't multiply sequence by non-int of type 'str'**
+ **>>> square(0)
+ **0
+ **>>> square(1)
+ **1
+ **>>> square(2)
+ **4
+ **>>> square(3)
+ **9
+ **>>> square()
+ **Traceback (most recent call last):
+ **...
+ **TypeError: square() missing 1 required positional argument: 'n'
+ **>>> square('x')
+ **Traceback (most recent call last):
+ **...
+ **TypeError: can't multiply sequence by non-int of type 'str'
 
- **Args:**
- **n (int): The number to square**
+ **Args:
+ **n (int): The number to square
 
- **Returns:**
- **int: The squared result**
- **'''**
- **return n ** 2**
+ **Returns:
+ **int: The squared result
+ **'''
+ **return n ** 2
 
-**if __name__ == '__main__':**
- **import doctest**
- **doctest.testmod()**
+if __name__ == '__main__':
+ **import doctest
+ **doctest.testmod()
 
 ```
 
 让我们再次执行测试，看看这次会发生什么。为简洁起见，这次我们将跳过冗长标志：
 
 ```py
-**# python square.py**
-**************************************************************************
-**File "square.py", line 17, in __main__.square**
-**Failed example:**
- **square('x')**
-**Expected:**
- **Traceback (most recent call last):**
- **...**
- **TypeError: can't multiply sequence by non-int of type 'str'**
-**Got:**
- **Traceback (most recent call last):**
- **File "doctest.py", line 1320, in __run**
- **compileflags, 1), test.globs)**
- **File "<doctest __main__.square[5]>", line 1, in <module>**
- **square('x')**
- **File "square.py", line 28, in square**
- **return n ** 2**
- **TypeError: unsupported operand type(s) for ** or pow(): 'str' and 'int'**
-**************************************************************************
-**1 items had failures:**
- **1 of   6 in __main__.square**
-*****Test Failed*** 1 failures.**
+# python square.py
+**********************************************************************
+File "square.py", line 17, in __main__.square
+Failed example:
+ **square('x')
+Expected:
+ **Traceback (most recent call last):
+ **...
+ **TypeError: can't multiply sequence by non-int of type 'str'
+Got:
+ **Traceback (most recent call last):
+ **File "doctest.py", line 1320, in __run
+ **compileflags, 1), test.globs)
+ **File "<doctest __main__.square[5]>", line 1, in <module>
+ **square('x')
+ **File "square.py", line 28, in square
+ **return n ** 2
+ **TypeError: unsupported operand type(s) for ** or pow(): 'str' and 'int'
+**********************************************************************
+1 items had failures:
+ **1 of   6 in __main__.square
+***Test Failed*** 1 failures.
 
 ```
 
@@ -201,14 +201,14 @@
 也许你已经注意到前面的示例中，语法与常规 Python 控制台非常相似，这正是重点所在。`doctest`输入只不过是常规 Python shell 会话的输出。这就是使用此模块进行测试如此直观的原因；只需在 Python 控制台中编写代码，然后将输出复制到文档字符串中进行测试。这里有一个例子：
 
 ```py
-**# python**
-**>>> from square import square**
-**>>> square(5)**
-**25**
-**>>> square()**
-**Traceback (most recent call last):**
- **File "<stdin>", line 1, in <module>**
-**TypeError: square() missing 1 required positional argument: 'n'**
+# python
+>>> from square import square
+>>> square(5)
+25
+>>> square()
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+TypeError: square() missing 1 required positional argument: 'n'
 
 ```
 
@@ -219,7 +219,7 @@
 函数、类和模块中的文档字符串通常是向代码添加 doctest 的最明显方式，但并非唯一的方式。正如我们在上一章中讨论的，Sphinx 文档也支持`doctest`模块。您可能还记得，在创建 Sphinx 项目时，我们启用了`doctest`模块：
 
 ```py
-**> doctest: automatically test code snippets in doctest blocks (y/n) [n]:y**
+> doctest: automatically test code snippets in doctest blocks (y/n) [n]:y
 
 ```
 
@@ -228,103 +228,103 @@
 **square.py**
 
 ```py
-**def square(n):**
- **'''**
- **Returns the input number, squared**
+def square(n):
+ **'''
+ **Returns the input number, squared
 
- **>>> square(2)**
- **4**
+ **>>> square(2)
+ **4
 
- **Args:**
- **n (int): The number to square**
+ **Args:
+ **n (int): The number to square
 
- **Returns:**
- **int: The squared result**
- **'''**
- **return n * n**
+ **Returns:
+ **int: The squared result
+ **'''
+ **return n * n
 
-**if __name__ == '__main__':**
- **import doctest**
- **doctest.testmod()**
+if __name__ == '__main__':
+ **import doctest
+ **doctest.testmod()
 
 ```
 
 **square.rst**
 
 ```py
-**square module**
-**=============**
+square module
+=============
 
-**.. automodule:: square**
- **:members:**
- **:undoc-members:**
- **:show-inheritance:**
+.. automodule:: square
+ **:members:
+ **:undoc-members:
+ **:show-inheritance:
 
-**Examples:**
+Examples:
 
-**.. testsetup::**
+.. testsetup::
 
- **from square import square**
+ **from square import square
 
-**.. doctest::**
+.. doctest::
 
- **>>> square(100)**
+ **>>> square(100)
 
- **>>> square(0)**
- **0**
- **>>> square(1)**
- **1**
- **>>> square(3)**
- **9**
- **>>> square()**
- **Traceback (most recent call last):**
- **...**
- **TypeError: square() missing 1 required positional argument: 'n'**
- **>>> square('x')**
- **Traceback (most recent call last):**
- **...**
- **TypeError: can't multiply sequence by non-int of type 'str'**
+ **>>> square(0)
+ **0
+ **>>> square(1)
+ **1
+ **>>> square(3)
+ **9
+ **>>> square()
+ **Traceback (most recent call last):
+ **...
+ **TypeError: square() missing 1 required positional argument: 'n'
+ **>>> square('x')
+ **Traceback (most recent call last):
+ **...
+ **TypeError: can't multiply sequence by non-int of type 'str'
 
 ```
 
 现在，是时候执行测试了。对于 Sphinx，有一个特定的命令：
 
 ```py
-**# make doctest**
-**sphinx-build -b doctest -d _build/doctrees . _build/doctest**
-**Running Sphinx v1.3.3**
-**loading translations [en]... done**
-**loading pickled environment... done**
-**building [mo]: targets for 0 po files that are out of date**
-**building [doctest]: targets for 3 source files that are out of date**
-**updating environment: 0 added, 0 changed, 0 removed**
-**looking for now-outdated files... none found**
-**running tests...**
+# make doctest
+sphinx-build -b doctest -d _build/doctrees . _build/doctest
+Running Sphinx v1.3.3
+loading translations [en]... done
+loading pickled environment... done
+building [mo]: targets for 0 po files that are out of date
+building [doctest]: targets for 3 source files that are out of date
+updating environment: 0 added, 0 changed, 0 removed
+looking for now-outdated files... none found
+running tests...
 
-**Document: square**
-**----------------**
-**************************************************************************
-**File "square.rst", line 16, in default**
-**Failed example:**
- **square(100)**
-**Expected nothing**
-**Got:**
- **10000**
-**************************************************************************
-**1 items had failures:**
- **1 of   7 in default**
-**7 tests in 1 items.**
-**6 passed and 1 failed.**
-*****Test Failed*** 1 failures.**
+Document: square
+----------------
+**********************************************************************
+File "square.rst", line 16, in default
+Failed example:
+ **square(100)
+Expected nothing
+Got:
+ **10000
+**********************************************************************
+1 items had failures:
+ **1 of   7 in default
+7 tests in 1 items.
+6 passed and 1 failed.
+***Test Failed*** 1 failures.
 
-**Doctest summary**
-**===============**
- **7 tests**
- **1 failure in tests**
- **0 failures in setup code**
- **0 failures in cleanup code**
-**build finished with problems.**
-**make: *** [doctest] Error 1**
+Doctest summary
+===============
+ **7 tests
+ **1 failure in tests
+ **0 failures in setup code
+ **0 failures in cleanup code
+build finished with problems.
+make: *** [doctest] Error 1
 
 ```
 
@@ -337,7 +337,7 @@
 `doctest`模块具有几个选项标志。它们影响`doctest`处理测试的方式。这些选项标志可以通过测试套件全局传递，通过运行测试时的命令行参数传递，以及通过内联命令传递。对于本书，我已经通过`pytest.ini`文件全局启用了以下选项标志（我们将在本章后面更多地介绍`py.test`）：
 
 ```py
-**doctest_optionflags = ELLIPSIS NORMALIZE_WHITESPACE**
+doctest_optionflags = ELLIPSIS NORMALIZE_WHITESPACE
 
 ```
 
@@ -358,47 +358,47 @@
 将 True 评估为 1，False 评估为 0，在大多数情况下是有用的，但可能会产生意想不到的结果。为了演示差异，我们有以下几行：
 
 ```py
-**'''**
-**>>> False**
-**0**
-**>>> True**
-**1**
-**>>> False  # doctest: +DONT_ACCEPT_TRUE_FOR_1**
-**0**
-**>>> True  # doctest: +DONT_ACCEPT_TRUE_FOR_1**
-**1**
-**'''**
+'''
+>>> False
+0
+>>> True
+1
+>>> False  # doctest: +DONT_ACCEPT_TRUE_FOR_1
+0
+>>> True  # doctest: +DONT_ACCEPT_TRUE_FOR_1
+1
+'''
 
-**if __name__ == '__main__':**
- **import doctest**
- **doctest.testmod()**
+if __name__ == '__main__':
+ **import doctest
+ **doctest.testmod()
 
 ```
 
 这是`DONT_ACCEPT_TRUE_FOR_1`标志的结果：
 
 ```py
-**# python test.py**
-**************************************************************************
-**File "test.py", line 6, in __main__**
-**Failed example:**
- **False  # doctest: +DONT_ACCEPT_TRUE_FOR_1**
-**Expected:**
- **0**
-**Got:**
- **False**
-**************************************************************************
-**File "test.py", line 8, in __main__**
-**Failed example:**
- **True  # doctest: +DONT_ACCEPT_TRUE_FOR_1**
-**Expected:**
- **1**
-**Got:**
- **True**
-**************************************************************************
-**1 items had failures:**
- **2 of   4 in __main__**
-*****Test Failed*** 2 failures.**
+# python test.py
+**********************************************************************
+File "test.py", line 6, in __main__
+Failed example:
+ **False  # doctest: +DONT_ACCEPT_TRUE_FOR_1
+Expected:
+ **0
+Got:
+ **False
+**********************************************************************
+File "test.py", line 8, in __main__
+Failed example:
+ **True  # doctest: +DONT_ACCEPT_TRUE_FOR_1
+Expected:
+ **1
+Got:
+ **True
+**********************************************************************
+1 items had failures:
+ **2 of   4 in __main__
+***Test Failed*** 2 failures.
 
 ```
 
@@ -409,20 +409,20 @@
 由于 doctest 用于文档和测试目的，因此保持可读性几乎是必需的。但是，如果不规范化空格，这可能有些棘手。考虑以下示例：
 
 ```py
-**>>> [list(range(5)) for i in range(5)]**
-**[[0, 1, 2, 3, 4], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4]]**
+>>> [list(range(5)) for i in range(5)]
+[[0, 1, 2, 3, 4], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4]]
 
 ```
 
 虽然并不是很糟糕，但这种输出对于可读性并不是最佳的。通过规范化空格，我们可以做到这一点：
 
 ```py
-**>>> [list(range(5)) for i in range(5)]  # doctest: +NORMALIZE_WHITESPACE**
-**[[0, 1, 2, 3, 4],**
- **[0, 1, 2, 3, 4],**
- **[0, 1, 2, 3, 4],**
- **[0, 1, 2, 3, 4],**
- **[0, 1, 2, 3, 4]]**
+>>> [list(range(5)) for i in range(5)]  # doctest: +NORMALIZE_WHITESPACE
+[[0, 1, 2, 3, 4],
+ **[0, 1, 2, 3, 4],
+ **[0, 1, 2, 3, 4],
+ **[0, 1, 2, 3, 4],
+ **[0, 1, 2, 3, 4]]
 
 ```
 
@@ -433,16 +433,16 @@
 `ELLIPSIS`标志非常有用，但也有点危险，因为它很容易导致不正确的匹配。它使`...`匹配任何子字符串，在异常情况下非常有用，但在其他情况下危险：
 
 ```py
-**>>> {10: 'a', 20: 'b'}  # doctest: +ELLIPSIS**
-**{...}**
-**>>> [True, 1, 'a']  # doctest: +ELLIPSIS**
-**[...]**
-**>>> True,  # doctest: +ELLIPSIS**
-**(...)**
-**>>> [1, 2, 3, 4]  # doctest: +ELLIPSIS**
-**[1, ..., 4]**
-**>>> [1, 0, 0, 0, 0, 0, 4]  # doctest: +ELLIPSIS**
-**[1, ..., 4]**
+>>> {10: 'a', 20: 'b'}  # doctest: +ELLIPSIS
+{...}
+>>> [True, 1, 'a']  # doctest: +ELLIPSIS
+[...]
+>>> True,  # doctest: +ELLIPSIS
+(...)
+>>> [1, 2, 3, 4]  # doctest: +ELLIPSIS
+[1, ..., 4]
+>>> [1, 0, 0, 0, 0, 0, 4]  # doctest: +ELLIPSIS
+[1, ..., 4]
 
 ```
 
@@ -451,22 +451,22 @@
 在记录类实例时更有用：
 
 ```py
-**>>> class Spam(object):**
-**...     pass**
-**>>> Spam()  # doctest: +ELLIPSIS**
-**<__main__.Spam object at 0x...>**
+>>> class Spam(object):
+...     pass
+>>> Spam()  # doctest: +ELLIPSIS
+<__main__.Spam object at 0x...>
 
 ```
 
 如果没有`ELLIPSIS`标志，内存地址（`0x...`部分）永远不会是您期望的。让我们在正常的 CPython 实例中演示一个实际运行：
 
 ```py
-**Failed example:**
- **Spam()**
-**Expected:**
- **<__main__.Spam object at 0x...>**
-**Got:**
- **<__main__.Spam object at 0x10d9ad160>**
+Failed example:
+ **Spam()
+Expected:
+ **<__main__.Spam object at 0x...>
+Got:
+ **<__main__.Spam object at 0x10d9ad160>
 
 ```
 
@@ -477,14 +477,14 @@
 最重要的情况是浮点不准确性、字典和随机值，例如计时器。以下示例大多数情况下会失败，因为 Python 中的某些类型没有一致的排序，并且取决于外部变量：
 
 ```py
-**>>> dict.fromkeys('spam')**
-**{'s': None, 'p': None, 'a': None, 'm': None}**
-**>>> 1./7.**
-**0.14285714285714285**
+>>> dict.fromkeys('spam')
+{'s': None, 'p': None, 'a': None, 'm': None}
+>>> 1./7.
+0.14285714285714285
 
-**>>> import time**
-**>>> time.time() - time.time()**
-**-9.5367431640625e-07**
+>>> import time
+>>> time.time() - time.time()
+-9.5367431640625e-07
 
 ```
 
@@ -497,10 +497,10 @@
 第一个是使用`pprint`库以漂亮的方式格式化它：
 
 ```py
-**>>> import pprint**
-**>>> data = dict.fromkeys('spam')**
-**>>> pprint.pprint(data)**
-**{'a': None, 'm': None, 'p': None, 's': None}**
+>>> import pprint
+>>> data = dict.fromkeys('spam')
+>>> pprint.pprint(data)
+{'a': None, 'm': None, 'p': None, 's': None}
 
 ```
 
@@ -509,9 +509,9 @@
 另一个选项是手动对项目进行排序：
 
 ```py
-**>>> data = dict.fromkeys('spam')**
-**>>> sorted(data.items())**
-**[('a', None), ('m', None), ('p', None), ('s', None)]**
+>>> data = dict.fromkeys('spam')
+>>> sorted(data.items())
+[('a', None), ('m', None), ('p', None), ('s', None)]
 
 ```
 
@@ -520,40 +520,40 @@
 最后，将`dict`与由相同元素组成的不同`dict`进行比较也可以：
 
 ```py
-**>>> data = dict.fromkeys('spam')**
-**>>> data == {'a': None, 'm': None, 'p': None, 's': None}**
-**True**
+>>> data = dict.fromkeys('spam')
+>>> data == {'a': None, 'm': None, 'p': None, 's': None}
+True
 
 ```
 
 当然，这是一个完全可以的解决方案！但是`True`并不是最清晰的输出，特别是如果比较不起作用：
 
 ```py
-**Failed example:**
- **data == {'a': None, 'm': None, 'p': None}**
-**Expected:**
- **True**
-**Got:**
- **False**
+Failed example:
+ **data == {'a': None, 'm': None, 'p': None}
+Expected:
+ **True
+Got:
+ **False
 
 ```
 
 另一方面，先前提出的其他选项都正确显示了预期值和返回值：
 
 ```py
-**Failed example:**
- **sorted(data.items())**
-**Expected:**
- **[('a', None), ('m', None), ('p', None)]**
-**Got:**
- **[('a', None), ('m', None), ('p', None), ('s', None)]**
+Failed example:
+ **sorted(data.items())
+Expected:
+ **[('a', None), ('m', None), ('p', None)]
+Got:
+ **[('a', None), ('m', None), ('p', None), ('s', None)]
 
-**Failed example:**
- **pprint.pprint(data)**
-**Expected:**
- **{'a': None, 'm': None, 'p': None}**
-**Got:**
- **{'a': None, 'm': None, 'p': None, 's': None}**
+Failed example:
+ **pprint.pprint(data)
+Expected:
+ **{'a': None, 'm': None, 'p': None}
+Got:
+ **{'a': None, 'm': None, 'p': None, 's': None}
 
 ```
 
@@ -564,16 +564,16 @@
 由于浮点比较可能存在问题（即`1/3 == 0.333`），表示字符串比较也存在问题。最简单的解决方案是在代码中添加一些四舍五入/裁剪，但在这里也可以使用`ELLIPSIS`标志。以下是几种解决方案的列表：
 
 ```py
-**>>> 1/3  # doctest: +ELLIPSIS**
-**0.333...**
-**>>> '%.3f' % (1/3)**
-**'0.333'**
-**>>> '{:.3f}'.format(1/3)**
-**'0.333'**
-**>>> round(1/3, 3)**
-**0.333**
-**>>> 0.333 < 1/3 < 0.334**
-**True**
+>>> 1/3  # doctest: +ELLIPSIS
+0.333...
+>>> '%.3f' % (1/3)
+'0.333'
+>>> '{:.3f}'.format(1/3)
+'0.333'
+>>> round(1/3, 3)
+0.333
+>>> 0.333 < 1/3 < 0.334
+True
 
 ```
 
@@ -584,22 +584,22 @@
 对于时间，您将遇到的问题与浮点问题非常相似。当测量代码片段的执行时间时，总会存在一些变化。这就是为测试包括时间的最稳定的解决方案是限制精度，尽管即使如此也不能保证。不过，最简单的解决方案是检查两个时间之间的差值是否小于某个数，如下所示：
 
 ```py
-**>>> import time**
-**>>> a = time.time()**
-**>>> b = time.time()**
-**>>> (b - a) < 0.01**
-**True**
+>>> import time
+>>> a = time.time()
+>>> b = time.time()
+>>> (b - a) < 0.01
+True
 
 ```
 
 然而，对于`timedelta`对象，情况稍微复杂一些。然而，这正是`ELLIPSIS`标志再次派上用场的地方：
 
 ```py
-**>>> import datetime**
-**>>> a = datetime.datetime.now()**
-**>>> b = datetime.datetime.now()**
-**>>> str(b - a)  # doctest: +ELLIPSIS**
-**'0:00:00.000...**
+>>> import datetime
+>>> a = datetime.datetime.now()
+>>> b = datetime.datetime.now()
+>>> str(b - a)  # doctest: +ELLIPSIS
+'0:00:00.000...
 
 ```
 
@@ -616,23 +616,23 @@
 首先，当然要安装`py.test`：
 
 ```py
-**pip install pytest**
+pip install pytest
 
 ```
 
 现在您可以进行一次测试运行，让我们尝试一下`square.py`中的 doctests：
 
 ```py
-**# py.test --doctest-modules -v square.py**
-**======================== test session starts ========================**
-**platform darwin -- Python 3.5.1, pytest-2.8.2, py-1.4.30, pluggy-0.3.1 -- python3.5**
-**cachedir: .cache**
-**rootdir: code, inifile: pytest.ini**
-**collected 1 items**
+# py.test --doctest-modules -v square.py
+======================== test session starts ========================
+platform darwin -- Python 3.5.1, pytest-2.8.2, py-1.4.30, pluggy-0.3.1 -- python3.5
+cachedir: .cache
+rootdir: code, inifile: pytest.ini
+collected 1 items
 
-**square.py::square.square PASSED**
+square.py::square.square PASSED
 
-**===================== 1 passed in 0.02 seconds ======================**
+===================== 1 passed in 0.02 seconds ======================
 
 ```
 
@@ -643,124 +643,124 @@
 首先，我们有`cube.py`的代码，类似于`square.py`，但减去了 doctests，因为我们不再需要它们：
 
 ```py
-**def cube(n):**
- **'''**
- **Returns the input number, cubed**
+def cube(n):
+ **'''
+ **Returns the input number, cubed
 
- **Args:**
- **n (int): The number to cube**
+ **Args:
+ **n (int): The number to cube
 
- **Returns:**
- **int: The cubed result**
- **'''**
- **return n ** 3**
+ **Returns:
+ **int: The cubed result
+ **'''
+ **return n ** 3
 
 ```
 
 现在让我们从`unittest`示例`test_cube.py`开始：
 
 ```py
-**import cube**
-**import unittest**
+import cube
+import unittest
 
-**class TestCube(unittest.TestCase):**
- **def test_0(self):**
- **self.assertEqual(cube.cube(0), 0)**
+class TestCube(unittest.TestCase):
+ **def test_0(self):
+ **self.assertEqual(cube.cube(0), 0)
 
- **def test_1(self):**
- **self.assertEqual(cube.cube(1), 1)**
+ **def test_1(self):
+ **self.assertEqual(cube.cube(1), 1)
 
- **def test_2(self):**
- **self.assertEqual(cube.cube(2), 8)**
+ **def test_2(self):
+ **self.assertEqual(cube.cube(2), 8)
 
- **def test_3(self):**
- **self.assertEqual(cube.cube(3), 27)**
+ **def test_3(self):
+ **self.assertEqual(cube.cube(3), 27)
 
- **def test_no_arguments(self):**
- **with self.assertRaises(TypeError):**
- **cube.cube()**
+ **def test_no_arguments(self):
+ **with self.assertRaises(TypeError):
+ **cube.cube()
 
- **def test_exception_str(self):**
- **with self.assertRaises(TypeError):**
- **cube.cube('x')**
+ **def test_exception_str(self):
+ **with self.assertRaises(TypeError):
+ **cube.cube('x')
 
-**if __name__ == '__main__':**
- **unittest.main()**
+if __name__ == '__main__':
+ **unittest.main()
 
 ```
 
 这可以通过执行文件本身来执行：
 
 ```py
-**# python test_cube.py -v**
-**test_0 (__main__.TestCube) ... ok**
-**test_1 (__main__.TestCube) ... ok**
-**test_2 (__main__.TestCube) ... ok**
-**test_3 (__main__.TestCube) ... ok**
-**test_exception_str (__main__.TestCube) ... ok**
-**test_no_arguments (__main__.TestCube) ... ok**
+# python test_cube.py -v
+test_0 (__main__.TestCube) ... ok
+test_1 (__main__.TestCube) ... ok
+test_2 (__main__.TestCube) ... ok
+test_3 (__main__.TestCube) ... ok
+test_exception_str (__main__.TestCube) ... ok
+test_no_arguments (__main__.TestCube) ... ok
 
-**----------------------------------------------------------------------**
-**Ran 6 tests in 0.001s**
+----------------------------------------------------------------------
+Ran 6 tests in 0.001s
 
-**OK**
+OK
 
 ```
 
 或者，可以通过模块来完成：
 
 ```py
-**# python -m unittest -v test_cube.py**
-**test_0 (test_cube.TestCube) ... ok**
-**test_1 (test_cube.TestCube) ... ok**
-**test_2 (test_cube.TestCube) ... ok**
-**test_3 (test_cube.TestCube) ... ok**
-**test_exception_str (test_cube.TestCube) ... ok**
-**test_no_arguments (test_cube.TestCube) ... ok**
+# python -m unittest -v test_cube.py
+test_0 (test_cube.TestCube) ... ok
+test_1 (test_cube.TestCube) ... ok
+test_2 (test_cube.TestCube) ... ok
+test_3 (test_cube.TestCube) ... ok
+test_exception_str (test_cube.TestCube) ... ok
+test_no_arguments (test_cube.TestCube) ... ok
 
-**----------------------------------------------------------------------**
-**Ran 6 tests in 0.001s**
+----------------------------------------------------------------------
+Ran 6 tests in 0.001s
 
-**OK**
+OK
 
 ```
 
 这是通过`py.test`执行的：
 
 ```py
-**# py.test -v test_cube.py**
-**====================== test session starts ======================**
-**platform darwin -- Python 3.5.1, pytest-2.8.5, py-1.4.31, pluggy-0.3.1 -- python3.5**
-**cachedir: ../.cache**
-**rootdir: code, inifile: pytest.ini**
-**collected 6 items**
+# py.test -v test_cube.py
+====================== test session starts ======================
+platform darwin -- Python 3.5.1, pytest-2.8.5, py-1.4.31, pluggy-0.3.1 -- python3.5
+cachedir: ../.cache
+rootdir: code, inifile: pytest.ini
+collected 6 items
 
-**test_cube.py::TestCube::test_0 PASSED**
-**test_cube.py::TestCube::test_1 PASSED**
-**test_cube.py::TestCube::test_2 PASSED**
-**test_cube.py::TestCube::test_3 PASSED**
-**test_cube.py::TestCube::test_exception_str PASSED**
-**test_cube.py::TestCube::test_no_arguments PASSED**
+test_cube.py::TestCube::test_0 PASSED
+test_cube.py::TestCube::test_1 PASSED
+test_cube.py::TestCube::test_2 PASSED
+test_cube.py::TestCube::test_3 PASSED
+test_cube.py::TestCube::test_exception_str PASSED
+test_cube.py::TestCube::test_no_arguments PASSED
 
-**=================== 6 passed in 0.02 seconds ====================**
+=================== 6 passed in 0.02 seconds ====================
 
 ```
 
 我们甚至有`nose`：
 
 ```py
-**# nosetests -v test_cube.py**
-**test_0 (test_cube.TestCube) ... ok**
-**test_1 (test_cube.TestCube) ... ok**
-**test_2 (test_cube.TestCube) ... ok**
-**test_3 (test_cube.TestCube) ... ok**
-**test_exception_str (test_cube.TestCube) ... ok**
-**test_no_arguments (test_cube.TestCube) ... ok**
+# nosetests -v test_cube.py
+test_0 (test_cube.TestCube) ... ok
+test_1 (test_cube.TestCube) ... ok
+test_2 (test_cube.TestCube) ... ok
+test_3 (test_cube.TestCube) ... ok
+test_exception_str (test_cube.TestCube) ... ok
+test_no_arguments (test_cube.TestCube) ... ok
 
-**----------------------------------------------------------------------**
-**Ran 6 tests in 0.001s**
+----------------------------------------------------------------------
+Ran 6 tests in 0.001s
 
-**OK**
+OK
 
 ```
 
@@ -769,74 +769,74 @@
 首先，我们有常规的`unittest`输出：
 
 ```py
-**# python test_cube.py -v**
-**test_0 (__main__.TestCube) ... ok**
-**test_1 (__main__.TestCube) ... ok**
-**test_2 (__main__.TestCube) ... FAIL**
-**test_3 (__main__.TestCube) ... FAIL**
-**test_exception_str (__main__.TestCube) ... ok**
-**test_no_arguments (__main__.TestCube) ... ok**
+# python test_cube.py -v
+test_0 (__main__.TestCube) ... ok
+test_1 (__main__.TestCube) ... ok
+test_2 (__main__.TestCube) ... FAIL
+test_3 (__main__.TestCube) ... FAIL
+test_exception_str (__main__.TestCube) ... ok
+test_no_arguments (__main__.TestCube) ... ok
 
-**======================================================================**
-**FAIL: test_2 (__main__.TestCube)**
-**----------------------------------------------------------------------**
-**Traceback (most recent call last):**
- **File "test_cube.py", line 13, in test_2**
- **self.assertEqual(cube.cube(2), 8)**
-**AssertionError: 4 != 8**
+======================================================================
+FAIL: test_2 (__main__.TestCube)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+ **File "test_cube.py", line 13, in test_2
+ **self.assertEqual(cube.cube(2), 8)
+AssertionError: 4 != 8
 
-**======================================================================**
-**FAIL: test_3 (__main__.TestCube)**
-**----------------------------------------------------------------------**
-**Traceback (most recent call last):**
- **File "test_cube.py", line 16, in test_3**
- **self.assertEqual(cube.cube(3), 27)**
-**AssertionError: 9 != 27**
+======================================================================
+FAIL: test_3 (__main__.TestCube)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+ **File "test_cube.py", line 16, in test_3
+ **self.assertEqual(cube.cube(3), 27)
+AssertionError: 9 != 27
 
-**----------------------------------------------------------------------**
-**Ran 6 tests in 0.001s**
+----------------------------------------------------------------------
+Ran 6 tests in 0.001s
 
-**FAILED (failures=2)**
+FAILED (failures=2)
 
 ```
 
 每个测试返回一个包含值和其他内容的漂亮的堆栈跟踪，这并不算太糟糕。然而，与`py.test`运行相比，我们可以观察到一个小差异：
 
 ```py
-**# py.test -v test_cube.py**
-**======================= test session starts ========================**
-**platform darwin -- Python 3.5.1, pytest-2.8.5, py-1.4.31, pluggy-0.3.1 -- python3.5**
-**cachedir: ../.cache**
-**rootdir: code, inifile: pytest.ini**
-**collected 6 items**
+# py.test -v test_cube.py
+======================= test session starts ========================
+platform darwin -- Python 3.5.1, pytest-2.8.5, py-1.4.31, pluggy-0.3.1 -- python3.5
+cachedir: ../.cache
+rootdir: code, inifile: pytest.ini
+collected 6 items
 
-**test_cube.py::TestCube::test_0 PASSED**
-**test_cube.py::TestCube::test_1 PASSED**
-**test_cube.py::TestCube::test_2 FAILED**
-**test_cube.py::TestCube::test_3 FAILED**
-**test_cube.py::TestCube::test_exception_str PASSED**
-**test_cube.py::TestCube::test_no_arguments PASSED**
+test_cube.py::TestCube::test_0 PASSED
+test_cube.py::TestCube::test_1 PASSED
+test_cube.py::TestCube::test_2 FAILED
+test_cube.py::TestCube::test_3 FAILED
+test_cube.py::TestCube::test_exception_str PASSED
+test_cube.py::TestCube::test_no_arguments PASSED
 
-**============================= FAILURES =============================**
-**_________________________ TestCube.test_2 __________________________**
+============================= FAILURES =============================
+_________________________ TestCube.test_2 __________________________
 
-**self = <test_cube.TestCube testMethod=test_2>**
+self = <test_cube.TestCube testMethod=test_2>
 
- **def test_2(self):**
-**>       self.assertEqual(cube.cube(2), 8)**
-**E       AssertionError: 4 != 8**
+ **def test_2(self):
+>       self.assertEqual(cube.cube(2), 8)
+E       AssertionError: 4 != 8
 
-**test_cube.py:13: AssertionError**
-**_________________________ TestCube.test_3 __________________________**
+test_cube.py:13: AssertionError
+_________________________ TestCube.test_3 __________________________
 
-**self = <test_cube.TestCube testMethod=test_3>**
+self = <test_cube.TestCube testMethod=test_3>
 
- **def test_3(self):**
-**>       self.assertEqual(cube.cube(3), 27)**
-**E       AssertionError: 9 != 27**
+ **def test_3(self):
+>       self.assertEqual(cube.cube(3), 27)
+E       AssertionError: 9 != 27
 
-**test_cube.py:16: AssertionError**
-**================= 2 failed, 4 passed in 0.03 seconds ================**
+test_cube.py:16: AssertionError
+================= 2 failed, 4 passed in 0.03 seconds ================
 
 ```
 
@@ -909,48 +909,48 @@ class TestPyCube(object):
 那么我们做了什么？嗯，我们只是用`assert ... == ...`替换了`self.assertEqual`，用`with pytest.raises`替换了`with self.assertRaises`。确实是一个小改进，但实际的好处在于失败的输出。前两个使用了`unittest`风格，后两个使用了`py.test`风格：
 
 ```py
-**============================= FAILURES =============================**
-**_________________________ TestCube.test_2 __________________________**
+============================= FAILURES =============================
+_________________________ TestCube.test_2 __________________________
 
-**self = <test_cube.TestCube testMethod=test_2>**
+self = <test_cube.TestCube testMethod=test_2>
 
- **def test_2(self):**
-**>       self.assertEqual(cube.cube(2), 8)**
-**E       AssertionError: 4 != 8**
+ **def test_2(self):
+>       self.assertEqual(cube.cube(2), 8)
+E       AssertionError: 4 != 8
 
-**test_cube.py:14: AssertionError**
-**_________________________ TestCube.test_3 __________________________**
+test_cube.py:14: AssertionError
+_________________________ TestCube.test_3 __________________________
 
-**self = <test_cube.TestCube testMethod=test_3>**
+self = <test_cube.TestCube testMethod=test_3>
 
- **def test_3(self):**
-**>       self.assertEqual(cube.cube(3), 27)**
-**E       AssertionError: 9 != 27**
+ **def test_3(self):
+>       self.assertEqual(cube.cube(3), 27)
+E       AssertionError: 9 != 27
 
-**test_cube.py:17: AssertionError**
-**________________________ TestPyCube.test_2 _________________________**
+test_cube.py:17: AssertionError
+________________________ TestPyCube.test_2 _________________________
 
-**self = <test_cube.TestPyCube object at 0x107c7bef0>**
+self = <test_cube.TestPyCube object at 0x107c7bef0>
 
- **def test_2(self):**
-**>       assert cube.cube(2) == 8**
-**E       assert 4 == 8**
-**E        +  where 4 = <function cube at 0x107bb7c80>(2)**
-**E        +    where <function cube at 0x107bb7c80> = cube.cube**
+ **def test_2(self):
+>       assert cube.cube(2) == 8
+E       assert 4 == 8
+E        +  where 4 = <function cube at 0x107bb7c80>(2)
+E        +    where <function cube at 0x107bb7c80> = cube.cube
 
-**test_cube.py:36: AssertionError**
-**________________________ TestPyCube.test_3 _________________________**
+test_cube.py:36: AssertionError
+________________________ TestPyCube.test_3 _________________________
 
-**self = <test_cube.TestPyCube object at 0x107c56a90>**
+self = <test_cube.TestPyCube object at 0x107c56a90>
 
- **def test_3(self):**
-**>       assert cube.cube(3) == 27**
-**E       assert 9 == 27**
-**E        +  where 9 = <function cube at 0x107bb7c80>(3)**
-**E        +    where <function cube at 0x107bb7c80> = cube.cube**
+ **def test_3(self):
+>       assert cube.cube(3) == 27
+E       assert 9 == 27
+E        +  where 9 = <function cube at 0x107bb7c80>(3)
+E        +    where <function cube at 0x107bb7c80> = cube.cube
 
-**test_cube.py:39: AssertionError**
-**================ 4 failed, 8 passed in 0.05 seconds ================**
+test_cube.py:39: AssertionError
+================ 4 failed, 8 passed in 0.05 seconds ================
 
 ```
 
@@ -988,18 +988,18 @@ def test_spam_equal_broken():
 这是常规的`py.test`输出：
 
 ```py
-**============================= FAILURES =============================**
-**______________________ test_spam_equal_broken ______________________**
+============================= FAILURES =============================
+______________________ test_spam_equal_broken ______________________
 
- **def test_spam_equal_broken():**
- **a = Spam(5)**
- **b = Spam(10)**
+ **def test_spam_equal_broken():
+ **a = Spam(5)
+ **b = Spam(10)
 
-**>       assert a == b**
-**E       assert <test_spam.Spam object at 0x105b484e0> == <test_spam.Spam object at 0x105b48518>**
+>       assert a == b
+E       assert <test_spam.Spam object at 0x105b484e0> == <test_spam.Spam object at 0x105b48518>
 
-**test_spam.py:20: AssertionError**
-**================ 1 failed, 1 passed in 0.01 seconds ================**
+test_spam.py:20: AssertionError
+================ 1 failed, 1 passed in 0.01 seconds ================
 
 ```
 
@@ -1027,19 +1027,19 @@ def pytest_assertrepr_compare(config, op, left, right):
 前面的函数将被用作我们的测试输出。所以当它失败时，这次我们会得到我们自己的，稍微更有用的输出：
 
 ```py
-**============================= FAILURES =============================**
-**______________________ test_spam_equal_broken ______________________**
+============================= FAILURES =============================
+______________________ test_spam_equal_broken ______________________
 
- **def test_spam_equal_broken():**
- **a = Spam(5)**
- **b = Spam(10)**
+ **def test_spam_equal_broken():
+ **a = Spam(5)
+ **b = Spam(10)
 
-**>       assert a == b**
-**E       assert Comparing Spam instances:**
-**E             counts: 5 != 10**
+>       assert a == b
+E       assert Comparing Spam instances:
+E             counts: 5 != 10
 
-**test_spam.py:20: AssertionError**
-**================ 1 failed, 1 passed in 0.01 seconds ================**
+test_spam.py:20: AssertionError
+================ 1 failed, 1 passed in 0.01 seconds ================
 
 ```
 
@@ -1068,32 +1068,32 @@ def test_cube(n, expected):
 正如你可能已经预料到的那样，这将输出以下内容：
 
 ```py
-**============================= FAILURES =============================**
-**__________________________ test_cube[2-8] __________________________**
+============================= FAILURES =============================
+__________________________ test_cube[2-8] __________________________
 
-**n = 2, expected = 8**
+n = 2, expected = 8
 
- **@pytest.mark.parametrize('n,expected', cubes)**
- **def test_cube(n, expected):**
-**>       assert cube.cube(n) == expected**
-**E       assert 4 == 8**
-**E        +  where 4 = <function cube at 0x106576268>(2)**
-**E        +    where <function cube at 0x106576268> = cube.cube**
+ **@pytest.mark.parametrize('n,expected', cubes)
+ **def test_cube(n, expected):
+>       assert cube.cube(n) == expected
+E       assert 4 == 8
+E        +  where 4 = <function cube at 0x106576268>(2)
+E        +    where <function cube at 0x106576268> = cube.cube
 
-**test_cube.py:15: AssertionError**
-**_________________________ test_cube[3-27] __________________________**
+test_cube.py:15: AssertionError
+_________________________ test_cube[3-27] __________________________
 
-**n = 3, expected = 27**
+n = 3, expected = 27
 
- **@pytest.mark.parametrize('n,expected', cubes)**
- **def test_cube(n, expected):**
-**>       assert cube.cube(n) == expected**
-**E       assert 9 == 27**
-**E        +  where 9 = <function cube at 0x106576268>(3)**
-**E        +    where <function cube at 0x106576268> = cube.cube**
+ **@pytest.mark.parametrize('n,expected', cubes)
+ **def test_cube(n, expected):
+>       assert cube.cube(n) == expected
+E       assert 9 == 27
+E        +  where 9 = <function cube at 0x106576268>(3)
+E        +    where <function cube at 0x106576268> = cube.cube
 
-**test_cube.py:15: AssertionError**
-**================ 2 failed, 2 passed in 0.02 seconds ================**
+test_cube.py:15: AssertionError
+================ 2 failed, 2 passed in 0.02 seconds ================
 
 ```
 
@@ -1108,64 +1108,64 @@ def test_cube(n, expected):
 装置系统是`py.test`最神奇的功能之一。它会以与你的参数相同名称的装置函数来执行装置函数。因此，参数的命名变得非常重要，因为它们很容易与其他装置发生冲突。为了防止冲突，默认情况下将作用域设置为`function`。然而，`class`、`module`和`session`也是作用域的有效选项。默认情况下，有几个装置可用，其中一些你经常会使用，而其他一些则很可能永远不会使用。可以使用以下命令生成完整的列表：
 
 ```py
-**# py.test --quiet --fixtures**
-**cache**
- **Return a cache object that can persist state between testing sessions.**
+# py.test --quiet --fixtures
+cache
+ **Return a cache object that can persist state between testing sessions.
 
- **cache.get(key, default)**
- **cache.set(key, value)**
+ **cache.get(key, default)
+ **cache.set(key, value)
 
- **Keys must be a ``/`` separated value, where the first part is usually the**
- **name of your plugin or application to avoid clashes with other cache users.**
+ **Keys must be a ``/`` separated value, where the first part is usually the
+ **name of your plugin or application to avoid clashes with other cache users.
 
- **Values can be any object handled by the json stdlib module.**
-**capsys**
- **enables capturing of writes to sys.stdout/sys.stderr and makes**
- **captured output available via ``capsys.readouterr()`` method calls**
- **which return a ``(out, err)`` tuple.**
-**capfd**
- **enables capturing of writes to file descriptors 1 and 2 and makes**
- **captured output available via ``capfd.readouterr()`` method calls**
- **which return a ``(out, err)`` tuple.**
-**record_xml_property**
- **Fixture that adds extra xml properties to the tag for the calling test.**
- **The fixture is callable with (name, value), with value being automatically**
- **xml-encoded.**
-**monkeypatch**
- **The returned ``monkeypatch`` funcarg provides these**
- **helper methods to modify objects, dictionaries or os.environ::**
+ **Values can be any object handled by the json stdlib module.
+capsys
+ **enables capturing of writes to sys.stdout/sys.stderr and makes
+ **captured output available via ``capsys.readouterr()`` method calls
+ **which return a ``(out, err)`` tuple.
+capfd
+ **enables capturing of writes to file descriptors 1 and 2 and makes
+ **captured output available via ``capfd.readouterr()`` method calls
+ **which return a ``(out, err)`` tuple.
+record_xml_property
+ **Fixture that adds extra xml properties to the tag for the calling test.
+ **The fixture is callable with (name, value), with value being automatically
+ **xml-encoded.
+monkeypatch
+ **The returned ``monkeypatch`` funcarg provides these
+ **helper methods to modify objects, dictionaries or os.environ::
 
- **monkeypatch.setattr(obj, name, value, raising=True)**
- **monkeypatch.delattr(obj, name, raising=True)**
- **monkeypatch.setitem(mapping, name, value)**
- **monkeypatch.delitem(obj, name, raising=True)**
- **monkeypatch.setenv(name, value, prepend=False)**
- **monkeypatch.delenv(name, value, raising=True)**
- **monkeypatch.syspath_prepend(path)**
- **monkeypatch.chdir(path)**
+ **monkeypatch.setattr(obj, name, value, raising=True)
+ **monkeypatch.delattr(obj, name, raising=True)
+ **monkeypatch.setitem(mapping, name, value)
+ **monkeypatch.delitem(obj, name, raising=True)
+ **monkeypatch.setenv(name, value, prepend=False)
+ **monkeypatch.delenv(name, value, raising=True)
+ **monkeypatch.syspath_prepend(path)
+ **monkeypatch.chdir(path)
 
- **All modifications will be undone after the requesting**
- **test function has finished. The ``raising``**
- **parameter determines if a KeyError or AttributeError**
- **will be raised if the set/deletion operation has no target.**
-**pytestconfig**
- **the pytest config object with access to command line opts.**
-**recwarn**
- **Return a WarningsRecorder instance that provides these methods:**
+ **All modifications will be undone after the requesting
+ **test function has finished. The ``raising``
+ **parameter determines if a KeyError or AttributeError
+ **will be raised if the set/deletion operation has no target.
+pytestconfig
+ **the pytest config object with access to command line opts.
+recwarn
+ **Return a WarningsRecorder instance that provides these methods:
 
- *** ``pop(category=None)``: return last warning matching the category.**
- *** ``clear()``: clear list of warnings**
+ *** ``pop(category=None)``: return last warning matching the category.
+ *** ``clear()``: clear list of warnings
 
- **See http://docs.python.org/library/warnings.html for information**
- **on warning categories.**
-**tmpdir_factory**
- **Return a TempdirFactory instance for the test session.**
-**tmpdir**
- **return a temporary directory path object**
- **which is unique to each test function invocation,**
- **created as a sub directory of the base temporary**
- **directory.  The returned object is a `py.path.local`_**
- **path object.**
+ **See http://docs.python.org/library/warnings.html for information
+ **on warning categories.
+tmpdir_factory
+ **Return a TempdirFactory instance for the test session.
+tmpdir
+ **return a temporary directory path object
+ **which is unique to each test function invocation,
+ **created as a sub directory of the base temporary
+ **directory.  The returned object is a `py.path.local`_
+ **path object.
 
 ```
 
@@ -1251,16 +1251,16 @@ def test_print():
 以下是实际输出：
 
 ```py
-**# py.test test_print.py -v**
-**======================= test session starts ========================**
-**platform darwin -- Python 3.5.1, pytest-2.8.5, py-1.4.31, pluggy-0.3.1**
-**cachedir: ../.cache**
-**rootdir: code, inifile: pytest.ini**
-**collected 1 items**
+# py.test test_print.py -v
+======================= test session starts ========================
+platform darwin -- Python 3.5.1, pytest-2.8.5, py-1.4.31, pluggy-0.3.1
+cachedir: ../.cache
+rootdir: code, inifile: pytest.ini
+collected 1 items
 
-**test_print.py .**
+test_print.py .
 
-**===================== 1 passed in 0.01 seconds =====================**
+===================== 1 passed in 0.01 seconds =====================
 
 ```
 
@@ -1283,28 +1283,28 @@ def test_print():
 那么带有错误的输出呢？
 
 ```py
-**============================= FAILURES =============================**
-**____________________________ test_print ____________________________**
+============================= FAILURES =============================
+____________________________ test_print ____________________________
 
- **def test_print():**
- **print('Printing to stdout')**
- **print('Printing to stderr', file=sys.stderr)**
- **logging.debug('Printing to debug')**
- **logging.info('Printing to info')**
- **logging.warning('Printing to warning')**
- **logging.error('Printing to error')**
-**>       assert False, 'Dying because we can'**
-**E       AssertionError: Dying because we can**
-**E       assert False**
+ **def test_print():
+ **print('Printing to stdout')
+ **print('Printing to stderr', file=sys.stderr)
+ **logging.debug('Printing to debug')
+ **logging.info('Printing to info')
+ **logging.warning('Printing to warning')
+ **logging.error('Printing to error')
+>       assert False, 'Dying because we can'
+E       AssertionError: Dying because we can
+E       assert False
 
-**test_print.py:12: AssertionError**
-**------------------------ Captured stdout call ------------------------**
-**Printing to stdout**
-**------------------------ Captured stderr call ------------------------**
-**Printing to stderr**
-**WARNING:root:Printing to warning**
-**ERROR:root:Printing to error**
-**===================== 1 failed in 0.01 seconds =====================**
+test_print.py:12: AssertionError
+------------------------ Captured stdout call ------------------------
+Printing to stdout
+------------------------ Captured stderr call ------------------------
+Printing to stderr
+WARNING:root:Printing to warning
+ERROR:root:Printing to error
+===================== 1 failed in 0.01 seconds =====================
 
 ```
 
@@ -1333,7 +1333,7 @@ def test_print():
 确保您已安装了`pytest-cov`：
 
 ```py
-**pip install pytest-cov**
+pip install pytest-cov
 
 ```
 
@@ -1418,22 +1418,22 @@ def test_cube_root(n, expected):
 现在让我们看看当我们使用`--cov-report=html`参数运行时会发生什么：
 
 ```py
-**# py.test test_cube_root.py --cov-report=html --cov-report=term-missing --cov=cube_root.py**
-**======================= test session starts ========================**
-**platform darwin -- Python 3.5.1, pytest-2.8.5, py-1.4.31, pluggy-0.3.1**
-**rootdir: code, inifile: pytest.ini**
-**plugins: cov-2.2.0**
-**collected 4 items**
+# py.test test_cube_root.py --cov-report=html --cov-report=term-missing --cov=cube_root.py
+======================= test session starts ========================
+platform darwin -- Python 3.5.1, pytest-2.8.5, py-1.4.31, pluggy-0.3.1
+rootdir: code, inifile: pytest.ini
+plugins: cov-2.2.0
+collected 4 items
 
-**test_cube_root.py ....**
-**--------- coverage: platform darwin, python 3.5.1-final-0 ----------**
-**Name           Stmts   Miss Branch BrPart  Cover   Missing**
-**----------------------------------------------------------**
-**cube_root.py       4      1      2      1    67%   14, 11->14**
-**Coverage HTML written to dir htmlcov**
-**Traceback (most recent call last):**
-**...**
-**pytest_cov.plugin.CoverageError: Required test coverage of 100% not reached. Total coverage: 66.67%**
+test_cube_root.py ....
+--------- coverage: platform darwin, python 3.5.1-final-0 ----------
+Name           Stmts   Miss Branch BrPart  Cover   Missing
+----------------------------------------------------------
+cube_root.py       4      1      2      1    67%   14, 11->14
+Coverage HTML written to dir htmlcov
+Traceback (most recent call last):
+...
+pytest_cov.plugin.CoverageError: Required test coverage of 100% not reached. Total coverage: 66.67%
 
 ```
 
@@ -1446,7 +1446,7 @@ def test_cube_root(n, expected):
 黄线表示只执行了分支的一部分(`(n >= 0) == True`)，而没有执行另一部分(`(n >= 0) == False`)，这发生在`if`语句、循环和其他至少有一个分支未覆盖的情况下。例如，如果对空数组进行循环是不可能的情况，那么测试可以部分跳过：
 
 ```py
-**#  pragma: no branch**
+#  pragma: no branch
 
 ```
 
@@ -1475,21 +1475,21 @@ def test_cube_root_below_zero():
 然后我们再次运行测试：
 
 ```py
-**# py.test test_cube_root.py --cov-report=html --cov-report=term-missing --cov=cube_root.py**
-**======================= test session starts ========================**
-**platform darwin -- Python 3.5.1, pytest-2.8.5, py-1.4.31, pluggy-0.3.1**
-**rootdir: code, inifile: pytest.ini**
-**plugins: cov-2.2.0**
-**collected 5 items**
+# py.test test_cube_root.py --cov-report=html --cov-report=term-missing --cov=cube_root.py
+======================= test session starts ========================
+platform darwin -- Python 3.5.1, pytest-2.8.5, py-1.4.31, pluggy-0.3.1
+rootdir: code, inifile: pytest.ini
+plugins: cov-2.2.0
+collected 5 items
 
-**test_cube_root.py .....**
-**---------- coverage: platform darwin, python 3.5.1-final-0 -----------**
-**Name           Stmts   Miss Branch BrPart  Cover   Missing**
-**----------------------------------------------------------**
-**cube_root.py       4      0      2      0   100%**
-**Coverage HTML written to dir htmlcov**
+test_cube_root.py .....
+---------- coverage: platform darwin, python 3.5.1-final-0 -----------
+Name           Stmts   Miss Branch BrPart  Cover   Missing
+----------------------------------------------------------
+cube_root.py       4      0      2      0   100%
+Coverage HTML written to dir htmlcov
 
-**===================== 5 passed in 0.03 seconds =====================**
+===================== 5 passed in 0.03 seconds =====================
 
 ```
 
@@ -1538,21 +1538,21 @@ def test_cube_root(n, expected):
 再次运行测试：
 
 ```py
-**# py.test test_cube_root.py --cov-report=html --cov-report=term-missing --cov=cube_root.py**
-**======================= test session starts ========================**
-**platform darwin -- Python 3.5.1, pytest-2.8.5, py-1.4.31, pluggy-0.3.1**
-**rootdir: code, inifile: pytest.ini**
-**plugins: cov-2.2.0**
-**collected 4 items**
+# py.test test_cube_root.py --cov-report=html --cov-report=term-missing --cov=cube_root.py
+======================= test session starts ========================
+platform darwin -- Python 3.5.1, pytest-2.8.5, py-1.4.31, pluggy-0.3.1
+rootdir: code, inifile: pytest.ini
+plugins: cov-2.2.0
+collected 4 items
 
-**test_cube_root.py ....**
-**---------- coverage: platform darwin, python 3.5.1-final-0 -----------**
-**Name           Stmts   Miss Branch BrPart  Cover   Missing**
-**----------------------------------------------------------**
-**cube_root.py       3      0      0      0   100%**
-**Coverage HTML written to dir htmlcov**
+test_cube_root.py ....
+---------- coverage: platform darwin, python 3.5.1-final-0 -----------
+Name           Stmts   Miss Branch BrPart  Cover   Missing
+----------------------------------------------------------
+cube_root.py       3      0      0      0   100%
+Coverage HTML written to dir htmlcov
 
-**===================== 4 passed in 0.03 seconds =====================**
+===================== 4 passed in 0.03 seconds =====================
 
 ```
 
@@ -1567,7 +1567,7 @@ def test_cube_root(n, expected):
 Pyflakes 和 pep8 是非常有用的代码质量测试工具，可以使您的代码可读且符合 pep8。`pytest-pep8`和`pytest-flakes`模块在运行实际测试之前会自动执行这些检查。要安装它们，只需执行这行：
 
 ```py
-**# pip install pytest-flakes pytest-pep8**
+# pip install pytest-flakes pytest-pep8
 
 ```
 
@@ -1575,16 +1575,16 @@ Pyflakes 和 pep8 是非常有用的代码质量测试工具，可以使您的�
 
 ```py
 
-**# py.test --flakes --pep8 cube_root.py**
-**======================= test session starts ========================**
-**platform darwin -- Python 3.5.1, pytest-2.8.5, py-1.4.31, pluggy-0.3.1**
-**rootdir: code, inifile: pytest.ini**
-**plugins: cov-2.2.0, flakes-1.0.1, pep8-1.0.6**
-**collected 2 items**
+# py.test --flakes --pep8 cube_root.py
+======================= test session starts ========================
+platform darwin -- Python 3.5.1, pytest-2.8.5, py-1.4.31, pluggy-0.3.1
+rootdir: code, inifile: pytest.ini
+plugins: cov-2.2.0, flakes-1.0.1, pep8-1.0.6
+collected 2 items
 
-**cube_root.py ..**
+cube_root.py ..
 
-**===================== 2 passed in 0.01 seconds =====================**
+===================== 2 passed in 0.01 seconds =====================
 
 ```
 
@@ -1777,10 +1777,10 @@ logging.critical('critical')
 使用默认日志级别，您只会看到警告和更高级别的日志：
 
 ```py
-**# python log.py**
-**WARNING:root:warning**
-**ERROR:root:error**
-**CRITICAL:root:critical**
+# python log.py
+WARNING:root:warning
+ERROR:root:error
+CRITICAL:root:critical
 
 ```
 
@@ -1820,10 +1820,10 @@ other_logger.critical('critical')
 这将在我们的屏幕上给出以下输出：
 
 ```py
-**# python log.py**
-**[2015-12-02 15:56:19,449] WARNING  some         warning**
-**[2015-12-02 15:56:19,449] ERROR    some         error**
-**[2015-12-02 15:56:19,449] CRITICAL some.other   critical**
+# python log.py
+[2015-12-02 15:56:19,449] WARNING  some         warning
+[2015-12-02 15:56:19,449] ERROR    some         error
+[2015-12-02 15:56:19,449] CRITICAL some.other   critical
 
 ```
 
@@ -1945,13 +1945,13 @@ format=[%(asctime)s] %(levelname)-8s %(name)-12s %(message)s
 level=DEBUG
 class=FileHandler
 formatter=standard
-**args=('debug.log',)**
+args=('debug.log',)
 
 [handler_stream]
 level=WARNING
 class=StreamHandler
 formatter=standard
-**args=(sys.stderr,)**
+args=(sys.stderr,)
 
 [logger_root]
 handlers=file,stream
@@ -2027,10 +2027,10 @@ sock.close()
 接下来，让我们看看输出。在循环的第一次执行之后，我们将执行第二个脚本来读取日志配置：
 
 ```py
-**# python log_networkconfig.py**
-**WARNING:some:warning**
-**ERROR:some:error**
-**CRITICAL:some.other:critical**
+# python log_networkconfig.py
+WARNING:some:warning
+ERROR:some:error
+CRITICAL:some.other:critical
 
 ```
 
@@ -2051,7 +2051,7 @@ keys=standard
 keys=file,stream
 
 [loggers]
-**keys=root,some**
+keys=root,some
 
 [formatter_standard]
 format=[%(asctime)s] %(levelname)-8s %(name)-12s %(message)s
@@ -2072,23 +2072,23 @@ args=(sys.stderr,)
 handlers=file,stream
 level=DEBUG
 
-**[logger_some]**
-**level=DEBUG**
-**qualname=some**
-**handlers=**
+[logger_some]
+level=DEBUG
+qualname=some
+handlers=
 
 ```
 
 现在它按预期工作：
 
 ```py
-**# python log_networkconfig.py**
-**WARNING:some:warning**
-**ERROR:some:error**
-**CRITICAL:some.other:critical**
-**[2015-12-03 12:42:05,621] WARNING  some         warning**
-**[2015-12-03 12:42:05,622] ERROR    some         error**
-**[2015-12-03 12:42:05,622] CRITICAL some.other   critical**
+# python log_networkconfig.py
+WARNING:some:warning
+ERROR:some:error
+CRITICAL:some.other:critical
+[2015-12-03 12:42:05,621] WARNING  some         warning
+[2015-12-03 12:42:05,622] ERROR    some         error
+[2015-12-03 12:42:05,622] CRITICAL some.other   critical
 
 ```
 
@@ -2192,8 +2192,8 @@ logger.error('the message', extra=dict(spam='some spam'))
 这导致以下结果：
 
 ```py
-**# python test_spam.py**
-**some spam: the message**
+# python test_spam.py
+some spam: the message
 
 ```
 
@@ -2215,13 +2215,13 @@ logger.error('And an error')
 这会导致异常的堆栈跟踪，但不会终止代码：
 
 ```py
-**# python test_spam.py**
-**Got an exception**
-**Traceback (most recent call last):**
- **File "test_spam.py", line 6, in <module>**
- **raise RuntimeError('Not enough spam')**
-**RuntimeError: Not enough spam**
-**And an error**
+# python test_spam.py
+Got an exception
+Traceback (most recent call last):
+ **File "test_spam.py", line 6, in <module>
+ **raise RuntimeError('Not enough spam')
+RuntimeError: Not enough spam
+And an error
 
 ```
 

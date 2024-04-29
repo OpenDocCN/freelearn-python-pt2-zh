@@ -92,7 +92,20 @@ Python 包是一种方便的方式来分发软件并以更一般的方式重用�
 
 一般来说，库的最小布局如下：
 
-[PRE0]
+```py
+.
+├── Makefile
+├── README.rst
+├── setup.py
+├── src
+│   └── apptool
+│   ├── common.py
+│   ├── __init__.py
+│   └── parse.py
+└── tests
+    ├── integration
+    └── unit
+```
 
 重要的部分是`setup.py`文件，其中包含了项目的定义。在这个文件中，指定了项目的所有重要定义（其要求、依赖关系、名称、描述等）。
 
@@ -100,7 +113,22 @@ Python 包是一种方便的方式来分发软件并以更一般的方式重用�
 
 `setup.py`文件的一个例子可能是：
 
-[PRE1]
+```py
+from setuptools import find_packages, setup
+
+with open("README.rst", "r") as longdesc:
+    long_description = longdesc.read()
+
+setup(
+    name="apptool",
+    description="Description of the intention of the package",
+    long_description=long_description,
+    author="Dev team",
+    version="0.1.0",
+    packages=find_packages(where="src/"),
+    package_dir={"": "src"},
+)
+```
 
 这个最小的例子包含了项目的关键元素。`setup`函数中的`name`参数用于给包在存储库中的名称（在这个名称下，我们运行安装命令，这种情况下是`pip install apptool`*）。*它不是严格要求与项目目录的名称匹配（`src/apptool`），但强烈建议这样做，这样对用户来说更容易。
 
@@ -110,7 +138,10 @@ Python 包是一种方便的方式来分发软件并以更一般的方式重用�
 
 通过运行以下命令构建包，假设其在已安装依赖项的虚拟环境中运行：
 
-[PRE2]
+```py
+$VIRTUAL_ENV/bin/pip install -U setuptools wheel
+$VIRTUAL_ENV/bin/python setup.py sdist bdist_wheel
+```
 
 这将把构件放在`dist/`目录中，从那里它们可以稍后发布到 PyPi 或公司的内部包存储库。
 
@@ -176,7 +207,69 @@ Docker 容器需要一个镜像来运行，这个镜像是从其他基础镜像�
 
 在每种情况下，文档字符串都记录了每个类的目的，根据业务规则：
 
-[PRE3]
+```py
+from typing import Union
+
+class DispatchedOrder:
+    """An order that was just created and notified to start its delivery."""
+
+    status = "dispatched"
+
+    def __init__(self, when):
+        self._when = when
+
+    def message(self) -> dict:
+        return {
+            "status": self.status,
+            "msg": "Order was dispatched on {0}".format(
+                self._when.isoformat()
+            ),
+        }
+
+class OrderInTransit:
+    """An order that is currently being sent to the customer."""
+
+    status = "in transit"
+
+    def __init__(self, current_location):
+        self._current_location = current_location
+
+    def message(self) -> dict:
+        return {
+            "status": self.status,
+            "msg": "The order is in progress (current location: {})".format(
+                self._current_location
+            ),
+        }
+
+class OrderDelivered:
+    """An order that was already delivered to the customer."""
+
+    status = "delivered"
+
+    def __init__(self, delivered_at):
+        self._delivered_at = delivered_at
+
+    def message(self) -> dict:
+        return {
+            "status": self.status,
+            "msg": "Order delivered on {0}".format(
+                self._delivered_at.isoformat()
+            ),
+        }
+
+class DeliveryOrder:
+    def __init__(
+        self,
+        delivery_id: str,
+        status: Union[DispatchedOrder, OrderInTransit, OrderDelivered],
+    ) -> None:
+        self._delivery_id = delivery_id
+        self._status = status
+
+    def message(self) -> dict:
+        return {"id": self._delivery_id, **self._status.message()}
+```
 
 从这段代码中，我们已经可以想象应用程序的样子了——我们想要有一个`DeliveryOrder`对象，它将有自己的状态（作为内部协作者），一旦我们有了这个对象，我们将调用它的`message()`方法将这些信息返回给用户。
 
@@ -184,7 +277,22 @@ Docker 容器需要一个镜像来运行，这个镜像是从其他基础镜像�
 
 这些对象将如何在应用程序中使用。请注意，这取决于先前的包（`web`和`storage`），但反之则不然：
 
-[PRE4]
+```py
+from storage import DBClient, DeliveryStatusQuery, OrderNotFoundError
+from web import NotFound, View, app, register_route
+
+class DeliveryView(View):
+    async def _get(self, request, delivery_id: int):
+        dsq = DeliveryStatusQuery(int(delivery_id), await DBClient())
+        try
+            result = await dsq.get()
+        except OrderNotFoundError as e:
+             raise NotFound(str(e)) from e
+
+        return result.message()
+
+register_route(DeliveryView, "/status/<delivery_id:int>")
+```
 
 在前一节中，展示了`domain`对象，这里显示了应用程序的代码。我们是不是漏掉了什么？当然，但这是我们现在真的需要知道的吗？不一定。
 
@@ -206,7 +314,9 @@ Docker 容器需要一个镜像来运行，这个镜像是从其他基础镜像�
 
 想象一下，我们想要改变信息的检索方式。这有多难？应用程序依赖于一个 API，就像下面这样：
 
-[PRE5]
+```py
+dsq = DeliveryStatusQuery(int(delivery_id), await DBClient())
+```
 
 因此，只需更改`get()`方法的工作方式，将其适应新的实现细节。我们只需要让这个新对象在其`get()`方法上返回`DeliveryOrder`，就可以了。我们可以更改查询、ORM、数据库等等，在所有情况下，应用程序中的代码都不需要更改！
 
@@ -226,7 +336,20 @@ Docker 容器需要一个镜像来运行，这个镜像是从其他基础镜像�
 
 现在，我们讨论准备 Python 应用程序在 Docker 容器中运行的众多方法之一。这是将 Python 项目打包到容器中的众多替代方案之一。首先，让我们看一下目录结构是什么样子的：
 
-[PRE6]
+```py
+.
+├── Dockerfile
+├── libs
+│   ├── README.rst
+│   ├── storage
+│   └── web
+├── Makefile
+├── README.rst
+├── setup.py
+└── statusweb
+    ├── __init__.py
+    └── service.py
+```
 
 `libs`目录可以忽略，因为它只是放置依赖项的地方（这里显示出来是为了在`setup.py`文件中引用它们时记住它们，但它们可以放在不同的存储库中，并通过`pip`远程安装）。
 
@@ -234,7 +357,29 @@ Docker 容器需要一个镜像来运行，这个镜像是从其他基础镜像�
 
 现在我们有了`setup.py`文件的内容，其中说明了应用程序的一些细节：
 
-[PRE7]
+```py
+from setuptools import find_packages, setup
+
+with open("README.rst", "r") as longdesc:
+    long_description = longdesc.read()
+
+install_requires = ["web", "storage"]
+
+setup(
+    name="delistatus",
+    description="Check the status of a delivery order",
+    long_description=long_description,
+    author="Dev team",
+    version="0.1.0",
+    packages=find_packages(),
+    install_requires=install_requires,
+    entry_points={
+        "console_scripts": [
+            "status-service = statusweb.service:main",
+        ],
+    },
+)
+```
 
 我们注意到的第一件事是应用程序声明了它的依赖项，这些依赖项是我们在`libs/`下创建并放置的包，即`web`和`storage`，对一些外部组件进行了抽象和适应。这些包反过来又会有依赖项，因此我们必须确保容器在创建镜像时安装所有所需的库，以便它们可以成功安装，然后再安装这个包。
 
@@ -250,13 +395,32 @@ Docker 容器需要一个镜像来运行，这个镜像是从其他基础镜像�
 
 定义如下：
 
-[PRE8]
+```py
+"status-service = statusweb.service:main"
+```
 
 等号左边声明了入口点的名称。在这种情况下，我们将有一个名为`status-service`的命令可用。右边声明了该命令应该如何运行。它需要包含函数定义的包，后面跟着`:`和函数名。在这种情况下，它将运行`statusweb/service.py`中声明的`main`函数。
 
 接下来是 Dockerfile 的定义：
 
-[PRE9]
+```py
+FROM python:3.6.6-alpine3.6
+
+RUN apk add --update \
+    python-dev \
+    gcc \
+    musl-dev \
+    make
+
+WORKDIR /app
+ADD . /app
+
+RUN pip install /app/libs/web /app/libs/storage
+RUN pip install /app
+
+EXPOSE 8080
+CMD ["/usr/local/bin/status-service"]
+```
 
 该镜像是基于轻量级的 Python 镜像构建的，然后安装操作系统依赖项，以便我们可以安装我们的库。根据之前的考虑，这个`Dockerfile`只是简单地复制了库，但这也可以根据`requirements.txt`文件进行安装。在所有`pip install`命令准备好之后，它将应用程序复制到工作目录中，并且 Docker 的入口点（`CMD`命令，不要与 Python 混淆）调用了我们放置了启动进程的函数的包的入口点。
 
@@ -266,7 +430,10 @@ Docker 容器需要一个镜像来运行，这个镜像是从其他基础镜像�
 
 现在我们已经运行了容器，我们可以启动它并对其进行小型测试，以了解其工作原理：
 
-[PRE10]
+```py
+$ curl http://localhost:8080/status/1
+{"id":1,"status":"dispatched","msg":"Order was dispatched on 2018-08-01T22:25:12+00:00"}
+```
 
 # 分析
 

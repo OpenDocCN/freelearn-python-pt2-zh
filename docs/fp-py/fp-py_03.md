@@ -34,7 +34,11 @@
 
 这里有一个例子，解释了使用全局语句的用法：
 
-[PRE0]
+```py
+ **def some_function(a, b, t):
+ **return a+b*t+global_adjustment
+
+```
 
 我们可以重构这个函数，将`global_adjustment`变量变成一个适当的参数。我们需要改变对这个函数的每个引用，这可能会在一个复杂的应用程序中产生很大的连锁反应。全局引用将在函数体中作为自由变量可见。对于这个变量，既没有参数也没有赋值，因此可以清楚地看出它是全局的。
 
@@ -48,7 +52,13 @@ Python 中有许多内部对象，这些对象是有状态的。`file`类的实�
 
 我们应该始终避免全局文件对象、全局数据库连接和相关的状态问题。全局文件对象是处理打开文件的非常常见的模式。我们可能有一个如下命令片段所示的函数：
 
-[PRE1]
+```py
+def open(iname, oname):
+ **global ifile, ofile
+ **ifile= open(iname, "r")
+ **ofile= open(oname, "w")
+
+```
 
 在这种情况下，许多其他函数可以使用`ifile`和`ofile`变量，希望它们正确地引用应用程序要使用的`global`文件，这些文件保持打开状态。
 
@@ -70,19 +80,44 @@ Python 函数是一等对象并不足为奇。在 Python 中，函数是带有�
 
 以下是一个带有嵌入式策略对象的可调用对象的示例：
 
-[PRE2]
+```py
+import collections
+class Mersenne1(collections.Callable):
+ **def __init__(self, algorithm):
+ **self.pow2= algorithm
+ **def __call__(self, arg):
+ **return self.pow2(arg)-1
+
+```
 
 这个类使用`__init__()`保存对另一个函数的引用。我们没有创建任何有状态的实例变量。
 
 作为策略对象给出的函数必须将 2 提升到给定的幂。我们可以将三个候选对象插入到这个类中，如下所示：
 
-[PRE3]
+```py
+def shifty(b):
+ **return 1 << b
+def multy(b):
+ **if b == 0: return 1
+ **return 2*multy(b-1)
+def faster(b):
+ **if b == 0: return 1
+ **if b%2 == 1: return 2*faster(b-1)
+ **t= faster(b//2)
+ **return t*t
+
+```
 
 `shifty()`函数使用位左移将 2 提升到所需的幂。`multy()`函数使用一个天真的递归乘法。`faster()`函数使用分治策略，将执行![函数作为一等对象](img/B03652_03_01.jpg)次乘法，而不是*b*次乘法。
 
 我们可以使用嵌入的策略算法创建`Mersenne1`类的实例，如下所示：
 
-[PRE4]
+```py
+m1s= Mersenne1(shifty)
+m1m= Mersenne1(multy)
+m1f= Mersenne1(faster)
+
+```
 
 这显示了我们如何定义产生相同结果但使用不同算法的替代函数。
 
@@ -100,17 +135,34 @@ Python 允许我们计算![函数作为一等对象](img/B03652_03_02.jpg)，因
 
 它可能看起来像以下命令片段：
 
-[PRE5]
+```py
+from decimal import *
+def clean_decimal(text):
+ **if text is None: return text
+ **try:
+ **return Decimal(text.replace("$", "").replace(",", ""))
+ **except InvalidOperation:
+ **return text
+
+```
 
 此函数对字符串进行两次替换，以删除`$`和`,`字符串值。生成的字符串被用作`Decimal`类构造函数的参数，该构造函数返回所需的对象。
 
 为了使其更一致，我们可以考虑为`string`方法函数定义自己的前缀函数，如下所示：
 
-[PRE6]
+```py
+def replace(data, a, b):
+ **return data.replace(a,b)
+
+```
 
 这使我们可以使用具有一致外观的前缀语法`Decimal(replace(replace(text, "$", ""), ",", ""))`。在这种情况下，我们只是重新排列现有的参数值，允许我们使用额外的技术。我们可以对简单情况进行这样做，例如以下情况：
 
-[PRE7]
+```py
+>>> replace=str.replace
+>>> replace("$12.45","$","")
+
+```
 
 12.45
 
@@ -118,7 +170,12 @@ Python 允许我们计算![函数作为一等对象](img/B03652_03_02.jpg)，因
 
 一个稍微更好的方法可能是定义一个更有意义的前缀函数来去除标点，如下面的命令片段所示：
 
-[PRE8]
+```py
+def remove( str, chars ):
+ **if chars: return remove( str.replace(chars[0], ""), chars[1:] )
+ **return str
+
+```
 
 此函数将递归地从`char`变量中删除每个字符。我们可以将其用作`Decimal(remove(text, "$,"))`，以使我们的字符串清理意图更清晰。
 
@@ -134,11 +191,19 @@ Python 允许我们计算![函数作为一等对象](img/B03652_03_02.jpg)，因
 
 我们可以使用函数来拆分三元组，如下面的命令片段所示：
 
-[PRE9]
+```py
+red = lambda color: color[0]
+green = lambda color: color[1]
+blue = lambda color: color[2]
+
+```
 
 或者，我们可以引入以下命令行：
 
-[PRE10]
+```py
+Color = namedtuple("Color", ("red", "green", "blue", "name"))
+
+```
 
 这使我们可以使用`item.red`而不是`red(item)`。
 
@@ -160,7 +225,22 @@ Python 允许我们计算![函数作为一等对象](img/B03652_03_02.jpg)，因
 
 这是一个我们将用于一些示例的生成器函数：
 
-[PRE11]
+```py
+def pfactorsl(x):
+ **if x % 2 == 0:
+ **yield 2
+ **if x//2 > 1:
+ **yield from pfactorsl(x//2)
+ **return
+ **for i in range(3,int(math.sqrt(x)+.5)+1,2):
+ **if x % i == 0:
+ **yield i
+ **if x//i > 1:
+ **yield from pfactorsl(x//i)
+ **return
+ **yield x
+
+```
 
 我们正在寻找一个数字的质因数。如果数字*x*是偶数，我们将产出 2，然后递归地产出*x*÷2 的所有因子。
 
@@ -192,7 +272,26 @@ Python 允许我们计算![函数作为一等对象](img/B03652_03_02.jpg)，因
 
 作为替代，以下命令是一个更纯粹的递归版本：
 
-[PRE12]
+```py
+def pfactorsr(x):
+ **def factor_n(x, n):
+ **if n*n > x:
+ **yield x
+ **return
+ **if x % n == 0:
+ **yield n
+ **if x//n > 1:
+ **yield from factor_n(x//n, n)
+ **else:
+ **yield from factor_n(x, n+2)
+ **if x % 2 == 0:
+ **yield 2
+ **if x//2 > 1:
+ **yield from pfactorsr(x//2)
+ **return
+ **yield from factor_n(x, 3)
+
+```
 
 我们定义了一个内部递归函数`factor_n()`，来测试范围内的因子*n*。如果候选因子*n*在范围之外，那么*x*就是质数。否则，我们将看看*n*是否是*x*的因子。如果是，我们将产出*n*和![使用生成器表达式](img/B03652_03_06.jpg)的所有因子。如果*n*不是因子，我们将递归地使用*n*+2 进行函数求值。这种递归来测试![使用生成器表达式](img/B03652_03_07.jpg)的每个值可以被优化为一个`for`循环，就像前面的例子中所示的那样。
 
@@ -206,7 +305,18 @@ Python 允许我们计算![函数作为一等对象](img/B03652_03_02.jpg)，因
 
 我们注意到生成器表达式和生成器函数有一些限制。可以通过执行以下命令片段来观察这些限制：
 
-[PRE13]
+```py
+>>> from ch02_ex4 import *
+>>> pfactorsl( 1560 )
+<generator object pfactorsl at 0x1007b74b0>
+>>> list(pfactorsl(1560))
+[2, 2, 2, 3, 5, 13]
+>>> len(pfactorsl(1560))
+Traceback (most recent call last):
+ **File "<stdin>", line 1, in <module>
+TypeError: object of type 'generator' has no len()
+
+```
 
 在第一个例子中，我们看到生成器函数并不严格。它们是懒惰的，在我们消耗生成器函数之前没有正确的值。这并不是一个限制，这正是生成器表达式与 Python 中的函数式编程相匹配的整个原因。
 
@@ -216,7 +326,14 @@ Python 允许我们计算![函数作为一等对象](img/B03652_03_02.jpg)，因
 
 生成器函数的另一个限制是它们只能使用一次。例如，看下面的命令片段：
 
-[PRE14]
+```py
+>>> result= pfactorsl(1560)
+>>> sum(result)
+27
+>>> sum(result)
+0
+
+```
 
 `sum()`方法的第一次评估执行了生成器的评估。`sum()`方法的第二次评估发现生成器现在为空了。我们只能消耗值一次。
 
@@ -224,7 +341,13 @@ Python 允许我们计算![函数作为一等对象](img/B03652_03_02.jpg)，因
 
 我们可以尝试使用`itertools.tee()`方法来克服一次性限制。我们将在第八章*迭代工具模块*中深入研究这个问题。这里是它的一个快速示例用法：
 
-[PRE15]
+```py
+import itertools
+def limits(iterable):
+ **max_tee, min_tee = itertools.tee(iterable, 2)
+ **return max(max_tee), min(min_tee)
+
+```
 
 我们创建了参数生成器表达式的两个克隆，`max_tee()`和`min_tee()`。这使原始迭代器保持不变，这是一个令人愉快的特性，允许我们对函数进行非常灵活的组合。我们可以消耗这两个克隆来从可迭代对象中获得`maxima`和`minima`。
 
@@ -238,17 +361,27 @@ Python 允许我们计算![函数作为一等对象](img/B03652_03_02.jpg)，因
 
 我们可以调整原始的生成器表达式如下：
 
-[PRE16]
+```py
+g_f_x = (g(f(x)) for x in range())
+
+```
 
 虽然在技术上是正确的，但这破坏了任何重用的想法。我们不是重用一个表达式，而是重写它。
 
 我们还可以在另一个表达式中替换一个表达式，如下所示：
 
-[PRE17]
+```py
+g_f_x = (g(y) for y in (f(x) for x in range()))
+
+```
 
 这有一个优点，允许我们使用简单的替换。我们可以稍微修改这个以强调重用，使用以下命令：
 
-[PRE18]
+```py
+f_x= (f(x) for x in range())
+g_f_x= (g(y) for y in f_x)
+
+```
 
 这有一个优点，它保留了初始表达式`(f(x) for x in range())`，基本上没有改变。我们所做的只是将表达式分配给一个变量。
 
@@ -260,29 +393,62 @@ Python 允许我们计算![函数作为一等对象](img/B03652_03_02.jpg)，因
 
 让我们看一个简化的数据集。这个数据通常用来展示探索性数据分析技术。它被称为**Anscombe's Quartet**，来源于 F. J. Anscombe 在 1973 年发表在*American Statistician*上的文章**Graphs in Statistical Analysis**。以下是一个下载文件中这个数据集的前几行：
 
-[PRE19]
+```py
+Anscombe's quartet
+I  II  III  IV
+x  y  x  y  x  y  x  y
+10.0  8.04  10.0  9.14	  10.0  7.46  8.0  6.58
+8.0	6.95  8.0  8.14  8.0  6.77  8.0  5.76
+13.0  7.58  13.0  8.74  13.0  12.74  8.0  7.71
+```
 
 遗憾的是，我们不能简单地使用`csv`模块处理这个问题。我们必须对文件进行一些解析，以提取出文件中的有用信息。由于数据是正确的制表符分隔的，我们可以使用`csv.reader()`函数来遍历各行。我们可以定义一个数据迭代器如下：
 
-[PRE20]
+```py
+import csv
+def row_iter(source):
+ **return csv.reader(source, delimiter="\t")
+
+```
 
 我们只是将一个文件包装在`csv.reader`函数中，以创建一个行的迭代器。我们可以在以下上下文中使用这个迭代器：
 
-[PRE21]
+```py
+with open("Anscombe.txt") as source:
+ **print( list(row_iter(source)) )
+
+```
 
 问题在于结果可迭代对象中的前三个项目不是数据。当打开 Anacombe's quartet 文件时，它看起来是这样的：
 
-[PRE22]
+```py
+[["Anscombe's quartet"], ['I', 'II', 'III', 'IV'], ['x', 'y', 'x', 'y', 'x', 'y', 'x', 'y'],** 
+
+```
 
 我们需要从可迭代对象中过滤这些行。下面是一个可以整洁地切除三个预期标题行，并返回剩余行的迭代器的函数：
 
-[PRE23]
+```py
+def head_split_fixed(row_iter):
+ **title= next(row_iter)
+ **assert len(title) == 1 and title[0] == "Anscombe's quartet"
+ **heading= next(row_iter)
+ **assert len(heading) == 4 and heading == ['I', 'II', 'III', 'IV']
+ **columns= next(row_iter)
+ **assert len(columns) == 8 and columns == ['x', 'y', 'x', 'y', 'x', 'y', 'x', 'y']
+ **return row_iter
+
+```
 
 这个函数从可迭代对象中取出三行。它断言每行都有一个预期值。如果文件不符合这些基本期望，那么这表明文件已损坏，或者我们的分析可能集中在错误的文件上。
 
 由于`row_iter()`和`head_split_fixed()`函数都期望一个可迭代对象作为参数值，它们可以如下简单地组合：
 
-[PRE24]
+```py
+with open("Anscombe.txt") as source:
+ **print( list(head_split_fixed(row_iter(source))))
+
+```
 
 我们只是将一个迭代器应用到另一个迭代器的结果上。实际上，这定义了一个复合函数。当然，我们还没有完成；我们仍然需要将`strings`值转换为`float`值，而且我们还需要拆分每行中的四个并行数据系列。
 
@@ -296,7 +462,17 @@ Python 序列对象，比如`list`，是可迭代的。但它还有一些额外�
 
 以下是一个枚举案例的例子：
 
-[PRE25]
+```py
+>>> range(10)
+range(0, 10)
+>>> [range(10)]
+[range(0, 10)]
+>>> [x for x in range(10)]
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+>>> list(range(10))
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+```
 
 第一个例子是一个生成器函数。
 
@@ -318,21 +494,46 @@ Python 序列对象，比如`list`，是可迭代的。但它还有一些额外�
 
 在数据清洗示例中，我们使用一个复合函数来创建四个元组的列表。函数如下所示：
 
-[PRE26]
+```py
+with open("Anscombe.txt") as source:
+ **data = head_split_fixed(row_iter(source))
+ **print(list(data))
+
+```
 
 我们将复合函数的结果分配给一个名为`data`的名称。数据如下所示：
 
-[PRE27]
+```py
+[['10.0', '8.04', '10.0', '9.14', '10.0', '7.46', '8.0', '6.58'],** 
+['8.0', '6.95', '8.0', '8.14', '8.0', '6.77', '8.0', '5.76'], ...
+['5.0', '5.68', '5.0', '4.74', '5.0', '5.73', '8.0', '6.89']]
+
+```
 
 我们需要做一些更多的处理才能让它有用。首先，我们需要从八个元组中选择一对列。我们可以使用一个函数选择一对列，如下面的命令片段所示：
 
-[PRE28]
+```py
+from collections import namedtuple
+Pair = namedtuple("Pair", ("x", "y"))
+def series(n, row_iter):
+ **for row in row_iter:
+ **yield Pair(*row[n*2:n*2+2])
+
+```
 
 这个函数根据 0 到 3 之间的数字选择两个相邻的列。它从这两列创建一个`namedtuple`对象。这使我们可以从每一行中选择*x*或*y*值。
 
 我们现在可以创建一个元组集合，如下所示：
 
-[PRE29]
+```py
+with open("Anscombe.txt") as source:
+ **data = tuple(head_split_fixed(row_iter(source)))
+ **sample_I= tuple(series(0,data))
+ **sample_II= tuple(series(1,data))
+ **sample_III= tuple(series(2,data))
+ **sample_IV= tuple(series(3,data))
+
+```
 
 我们将`tuple()`函数应用于基于`head_split_fixed()`和`row_iter()`方法的复合函数。这将创建一个对象，我们可以在其他几个函数中重复使用。如果我们不实现一个`tuple`对象，那么只有第一个样本会有任何数据。之后，源迭代器将被耗尽，所有其他尝试访问它都将产生空的序列。
 
@@ -340,7 +541,13 @@ Python 序列对象，比如`list`，是可迭代的。但它还有一些额外�
 
 `sample_I`序列看起来像下面的命令片段：
 
-[PRE30]
+```py
+(Pair(x='10.0', y='8.04'), Pair(x='8.0', y='6.95'),** 
+Pair(x='13.0', y='7.58'), Pair(x='9.0', y='8.81'),** 
+Etc.** 
+Pair(x='5.0', y='5.68'))
+
+```
 
 其他三个序列的结构类似。然而，值是非常不同的。
 
@@ -348,11 +555,19 @@ Python 序列对象，比如`list`，是可迭代的。但它还有一些额外�
 
 下面是一个描述`float()`函数用法的例子：
 
-[PRE31]
+```py
+ **mean = sum(float(pair.y) for pair in sample_I)/len(sample_I)
+
+```
 
 这将提供`Pair`对象中`y`值的平均值。我们可以按如下方式收集一些统计信息：
 
-[PRE32]
+```py
+for subset in sample_I, sample_II, sample_III, sample_III:
+ **mean = sum(float(pair.y) for pair in subset)/len(subset)
+ **print(mean)
+
+```
 
 我们计算了从源数据库构建的每个`pair`中`y`值的平均值。我们创建了一个通用的元组-命名元组结构，这样我们就可以清晰地引用源数据集的成员。使用`pair.y`比`pair[1]`更清晰一些。
 
@@ -376,27 +591,51 @@ Python 提供了几种有状态的集合；各种映射包括 dict 类和`collec
 
 第一个例子，只建立一次字典，源自一个具有三个操作阶段的应用程序：收集一些输入，创建一个`dict`对象，然后根据字典中的映射处理输入。作为这种应用程序的一个例子，我们可能正在进行一些图像处理，并且有一个特定的调色板，由名称和(R, G, B)元组表示。如果我们使用**GNU 图像处理程序**（**GIMP**）**GNU 通用公共许可证**（**GPL**）文件格式，颜色调色板可能看起来像以下命令片段：
 
-[PRE33]
+```py
+ **GIMP Palette
+ **Name: Small
+ **Columns: 3
+ **#
+ **0  0  0    Black
+ **255 255 255    White
+ **238  32  77    Red
+ **28 172 120      Green
+ **31 117 254      Blue
+
+```
 
 解析这个文件的细节是第六章的主题，*递归和归约*。重要的是解析的结果。
 
 首先，我们假设我们正在使用以下的`Color`命名元组：
 
-[PRE34]
+```py
+from collections import namedtuple
+Color = namedtuple("Color", ("red", "green", "blue", "name"))
+
+```
 
 其次，我们假设有一个产生`Color`对象可迭代的解析器。如果我们将其实现为一个元组，它看起来会像这样：
 
-[PRE35]
+```py
+(Color(red=239, green=222, blue=205, name='Almond'), Color(red=205, green=149, blue=117, name='Antique Brass'), Color(red=253, green=217, blue=181, name='Apricot'), Color(red=197, green=227, blue=132, name='Yellow Green'), Color(red=255, green=174, blue=66, name='Yellow Orange'))
+
+```
 
 为了快速定位给定的颜色名称，我们将从这个序列创建一个冻结字典。这不是获取颜色名称快速查找的唯一方法。我们稍后会看另一个选项。
 
 为了从元组创建映射，我们将使用`process(wrap(iterable))`设计模式。以下命令显示了我们如何创建颜色名称映射：
 
-[PRE36]
+```py
+name_map= dict( (c.name, c) for c in sequence )
+
+```
 
 其中，序列变量是先前显示的`Color`对象的可迭代对象，设计模式的`wrap()`元素简单地将每个`Color`对象`c`转换成两元组`(c.name, c)`。设计的`process()`元素使用`dict()`初始化来创建从名称到`Color`的映射。结果字典如下所示：
 
-[PRE37]
+```py
+{'Caribbean Green': Color(red=28, green=211, blue=162, name='Caribbean Green'),'Peach': Color(red=255, green=207, blue=171, name='Peach'), 'Blizzard Blue': Color(red=172, green=229, blue=238, name='Blizzard Blue'),
+
+```
 
 顺序不能保证，所以你可能看不到加勒比绿色排在第一位。
 
@@ -410,7 +649,25 @@ Python 提供了几种有状态的集合；各种映射包括 dict 类和`collec
 
 `static`映射类看起来像以下命令片段：
 
-[PRE38]
+```py
+import bisect
+from collections.abc import Mapping
+class StaticMapping(Mapping):
+ **def __init__( self, iterable ):
+ **self._data = tuple(iterable)
+ **self._keys = tuple(sorted(key for key, _ in self._data))
+
+ **def __getitem__(self, key):
+ **ix= bisect.bisect_left(self._keys, key)
+ **if ix != len(self._keys) and self._keys[ix] == key:
+ **return self._data[ix][1]
+ **raise ValueError("{0!r} not found".format(key))
+ **def __iter__(self):
+ **return iter(self._keys)
+ **def __len__(self):
+ **return len(self._keys)
+
+```
 
 这个类扩展了抽象超类`collections.abc.Mapping`。它提供了三个函数的初始化和实现，这些函数在抽象定义中缺失。`__getitem__()`方法使用`bisect.bisect_left()`函数来搜索键的集合。如果找到键，则返回相应的值。`__iter__()`方法返回一个迭代器，如超类所需。`__len__()`方法同样提供了集合的所需长度。
 

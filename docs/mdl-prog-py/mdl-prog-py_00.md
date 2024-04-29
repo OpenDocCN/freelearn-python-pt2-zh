@@ -60,15 +60,15 @@ def init():
 [default]
 exten => s,1,Dial(Zap/1|30)
 exten => s,2,Voicemail(u100)
-**exten => s,102,Voicemail(b100)**
+exten => s,102,Voicemail(b100)
 exten => i,1,Voicemail(s0)
 ```
 
 任何命令行输入或输出都以以下方式编写：
 
 ```py
-**# cp /usr/src/asterisk-addons/configs/cdr_mysql.conf.sample**
- **/etc/asterisk/cdr_mysql.conf**
+# cp /usr/src/asterisk-addons/configs/cdr_mysql.conf.sample
+ **/etc/asterisk/cdr_mysql.conf
 
 ```
 

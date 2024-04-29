@@ -21,24 +21,24 @@
 这是一个基本示例（我已经知道做类似的事情）使用生成器可以如下所示：
 
 ```py
-**>>> def spam_generator():**
-**...     print('a')**
-**...     yield 'spam'**
-**...     print('b')**
-**...     yield 'spam!'**
-**...     print('c')**
-**...     yield 'SPAM!'**
-**...     print('d')**
+>>> def spam_generator():
+...     print('a')
+...     yield 'spam'
+...     print('b')
+...     yield 'spam!'
+...     print('c')
+...     yield 'SPAM!'
+...     print('d')
 
-**>>> generator = spam_generator()**
+>>> generator = spam_generator()
 
-**>>> next(generator)**
-**a**
-**'spam'**
+>>> next(generator)
+a
+'spam'
 
-**>>> next(generator)**
-**b**
-**'spam!'**
+>>> next(generator)
+b
+'spam!'
 
 ```
 
@@ -47,23 +47,23 @@
 虽然这是使用打印语句调试函数的最简单方法之一，但绝对不是最佳方法。我们可以从制作一个自动打印函数开始，该函数会自动递增字母：
 
 ```py
-**>>> import string**
+>>> import string
 
-**>>> def print_character():**
-**...     i = 0**
-**...     while True:**
-**...         print('Letter: %r' % string.ascii_letters[i])**
-**...         i = (i + 1) % len(string.ascii_letters)**
-**...         yield**
-**>>> # Always initialize**
-**>>> print_character = print_character()**
+>>> def print_character():
+...     i = 0
+...     while True:
+...         print('Letter: %r' % string.ascii_letters[i])
+...         i = (i + 1) % len(string.ascii_letters)
+...         yield
+>>> # Always initialize
+>>> print_character = print_character()
 
-**>>> next(print_character)**
-**Letter: 'a'**
-**>>> next(print_character)**
-**Letter: 'b'**
-**>>> next(print_character)**
-**Letter: 'c'**
+>>> next(print_character)
+Letter: 'a'
+>>> next(print_character)
+Letter: 'b'
+>>> next(print_character)
+Letter: 'c'
 
 ```
 
@@ -96,27 +96,27 @@ print(next(generator))
 我们将使用 trace 模块执行它：
 
 ```py
-**# python3 -m trace --trace --timing tracing.py**
- **--- modulename: tracing, funcname: <module>**
-**0.00 tracing.py(1): def eggs_generator():**
-**0.00 tracing.py(6): def spam_generator():**
-**0.00 tracing.py(11): generator = spam_generator()**
-**0.00 tracing.py(12): print(next(generator))**
- **--- modulename: tracing, funcname: spam_generator**
-**0.00 tracing.py(7):     yield 'spam'**
-**spam**
-**0.00 tracing.py(13): print(next(generator))**
- **--- modulename: tracing, funcname: spam_generator**
-**0.00 tracing.py(8):     yield 'spam!'**
-**spam!**
-**0.00 tracing.py(15): generator = eggs_generator()**
- **--- modulename: tracing, funcname: spam_generator**
-**0.00 tracing.py(16): print(next(generator))**
- **--- modulename: tracing, funcname: eggs_generator**
-**0.00 tracing.py(2):     yield 'eggs'**
-**eggs**
- **--- modulename: trace, funcname: _unsettrace**
-**0.00 trace.py(77):         sys.settrace(None)**
+# python3 -m trace --trace --timing tracing.py
+ **--- modulename: tracing, funcname: <module>
+0.00 tracing.py(1): def eggs_generator():
+0.00 tracing.py(6): def spam_generator():
+0.00 tracing.py(11): generator = spam_generator()
+0.00 tracing.py(12): print(next(generator))
+ **--- modulename: tracing, funcname: spam_generator
+0.00 tracing.py(7):     yield 'spam'
+spam
+0.00 tracing.py(13): print(next(generator))
+ **--- modulename: tracing, funcname: spam_generator
+0.00 tracing.py(8):     yield 'spam!'
+spam!
+0.00 tracing.py(15): generator = eggs_generator()
+ **--- modulename: tracing, funcname: spam_generator
+0.00 tracing.py(16): print(next(generator))
+ **--- modulename: tracing, funcname: eggs_generator
+0.00 tracing.py(2):     yield 'eggs'
+eggs
+ **--- modulename: trace, funcname: _unsettrace
+0.00 trace.py(77):         sys.settrace(None)
 
 ```
 
@@ -161,19 +161,19 @@ print(next(generator))
 当作为常规 Python 文件执行时，返回：
 
 ```py
-**# python3 tracing.py**
- **--- modulename: tracing, funcname: spam_generator**
-**0.00 tracing.py(24):     yield 'spam'**
-**spam**
- **--- modulename: tracing, funcname: spam_generator**
-**0.00 tracing.py(25):     yield 'spam!'**
-**spam!**
- **--- modulename: contextlib, funcname: __exit__**
-**0.00 contextlib.py(64):         if type is None:**
-**0.00 contextlib.py(65):             try:**
-**0.00 contextlib.py(66):                 next(self.gen)**
- **--- modulename: tracing, funcname: trace**
-**0.00 tracing.py(12):     sys.settrace(None)**
+# python3 tracing.py
+ **--- modulename: tracing, funcname: spam_generator
+0.00 tracing.py(24):     yield 'spam'
+spam
+ **--- modulename: tracing, funcname: spam_generator
+0.00 tracing.py(25):     yield 'spam!'
+spam!
+ **--- modulename: contextlib, funcname: __exit__
+0.00 contextlib.py(64):         if type is None:
+0.00 contextlib.py(65):             try:
+0.00 contextlib.py(66):                 next(self.gen)
+ **--- modulename: tracing, funcname: trace
+0.00 tracing.py(12):     sys.settrace(None)
 
 ```
 
@@ -241,10 +241,10 @@ spam(b=1, a=456)
 返回以下输出：
 
 ```py
-**# python3 logged.py**
-**DEBUG:root:spam(a=1, b=123): 'some spam'**
-**DEBUG:root:spam(a=1, b=456): 'some spam'**
-**DEBUG:root:spam(a=456, b=1): 'some spam'**
+# python3 logged.py
+DEBUG:root:spam(a=1, b=123): 'some spam'
+DEBUG:root:spam(a=1, b=456): 'some spam'
+DEBUG:root:spam(a=456, b=1): 'some spam'
 
 ```
 
@@ -263,11 +263,11 @@ logging.basicConfig(level=logging.DEBUG, format=log_format)
 那么你的结果会是这样的：
 
 ```py
-**# time python3 logged.py**
-**[0 DEBUG] logged.py:31:_debug: spam(a=1, b=123): 'some spam'**
-**[0 DEBUG] logged.py:31:_debug: spam(a=1, b=456): 'some spam'**
-**[0 DEBUG] logged.py:31:_debug: spam(a=456, b=1): 'some spam'**
-**python3 logged.py  0.04s user 0.01s system 96% cpu 0.048 total**
+# time python3 logged.py
+[0 DEBUG] logged.py:31:_debug: spam(a=1, b=123): 'some spam'
+[0 DEBUG] logged.py:31:_debug: spam(a=1, b=456): 'some spam'
+[0 DEBUG] logged.py:31:_debug: spam(a=456, b=1): 'some spam'
+python3 logged.py  0.04s user 0.01s system 96% cpu 0.048 total
 
 ```
 
@@ -298,13 +298,13 @@ if __name__ == '__main__':
 这导致以下结果：
 
 ```py
-**# python3 traceback_test.py**
-**Before stack print**
- **File "traceback_test.py", line 18, in <module>**
- **eggs.run()**
- **File "traceback_test.py", line 8, in run**
- **traceback.print_stack()**
-**After stack print**
+# python3 traceback_test.py
+Before stack print
+ **File "traceback_test.py", line 18, in <module>
+ **eggs.run()
+ **File "traceback_test.py", line 8, in run
+ **traceback.print_stack()
+After stack print
 
 ```
 
@@ -331,11 +331,11 @@ if __name__ == '__main__':
 这导致以下结果：
 
 ```py
-**# python3 traceback_test.py**
-**Before stack print**
- **File "traceback_test.py", line 18, in <module>**
- **eggs.run()**
-**After stack print**
+# python3 traceback_test.py
+Before stack print
+ **File "traceback_test.py", line 18, in <module>
+ **eggs.run()
+After stack print
 
 ```
 
@@ -354,35 +354,35 @@ if __name__ == '__main__':
 在大多数 Linux/Unix/Mac shell 会话中，可以使用它作为前缀设置环境变量：
 
 ```py
-**SOME_ENVIRONMENT_VARIABLE=value python3 script.py**
+SOME_ENVIRONMENT_VARIABLE=value python3 script.py
 
 ```
 
 此外，可以使用`export`为当前 shell 会话进行配置：
 
 ```py
-**export SOME_ENVIRONMENT_VARIABLE=value**
+export SOME_ENVIRONMENT_VARIABLE=value
 
 ```
 
 可以使用以下行来获取当前值：
 
 ```py
-**echo $SOME_ENVIRONMENT_VARIABLE**
+echo $SOME_ENVIRONMENT_VARIABLE
 
 ```
 
 在 Windows 上，可以使用`set`命令为本地 shell 会话配置环境变量：
 
 ```py
-**set SOME_ENVIRONMENT_VARIABLE=value**
+set SOME_ENVIRONMENT_VARIABLE=value
 
 ```
 
 可以使用以下行来获取当前值：
 
 ```py
-**set SOME_ENVIRONMENT_VARIABLE**
+set SOME_ENVIRONMENT_VARIABLE
 
 ```
 
@@ -401,11 +401,11 @@ printer()
 这导致打印器协程出现错误，这里从未产生过：
 
 ```py
-**# PYTHONASYNCIODEBUG=1 python3 asyncio_test.py**
-**<CoroWrapper printer() running, defined at asyncio_test.py:4, created at asyncio_test.py:8> was never yielded from**
-**Coroutine object created at (most recent call last):**
- **File "asyncio_test.py", line 8, in <module>**
- **printer()**
+# PYTHONASYNCIODEBUG=1 python3 asyncio_test.py
+<CoroWrapper printer() running, defined at asyncio_test.py:4, created at asyncio_test.py:8> was never yielded from
+Coroutine object created at (most recent call last):
+ **File "asyncio_test.py", line 8, in <module>
+ **printer()
 
 ```
 
@@ -422,9 +422,9 @@ loop = asyncio.get_event_loop()
 这导致以下调试消息：
 
 ```py
-**# PYTHONASYNCIODEBUG=1 python3 asyncio_test.py**
-**DEBUG:asyncio:Using selector: KqueueSelector**
-**DEBUG:asyncio:Close <_UnixSelectorEventLoop running=False closed=False debug=True>**
+# PYTHONASYNCIODEBUG=1 python3 asyncio_test.py
+DEBUG:asyncio:Using selector: KqueueSelector
+DEBUG:asyncio:Close <_UnixSelectorEventLoop running=False closed=False debug=True>
 
 ```
 
@@ -460,8 +460,8 @@ ctypes.string_at(0)
 它会产生类似以下的结果：
 
 ```py
-**# python faulthandler_test.py**
-**zsh: segmentation fault  python faulthandler_test.py**
+# python faulthandler_test.py
+zsh: segmentation fault  python faulthandler_test.py
 
 ```
 
@@ -492,13 +492,13 @@ ctypes.string_at(0)
 它会产生类似以下的结果：
 
 ```py
-**# python faulthandler_test.py**
-**Fatal Python error: Segmentation fault**
+# python faulthandler_test.py
+Fatal Python error: Segmentation fault
 
-**Current thread 0x00007fff79171300 (most recent call first):**
- **File "ctypes/__init__.py", line 491 in string_at**
- **File "faulthandler_test.py", line 7 in <module>**
-**zsh: segmentation fault  python faulthandler_test.py**
+Current thread 0x00007fff79171300 (most recent call first):
+ **File "ctypes/__init__.py", line 491 in string_at
+ **File "faulthandler_test.py", line 7 in <module>
+zsh: segmentation fault  python faulthandler_test.py
 
 ```
 
@@ -529,14 +529,14 @@ if __name__ == '__main__':
 在执行时，我们将在交互式控制台中间停下来：
 
 ```py
-**# python3 test_code.py**
-**The begin of spam**
-**>>> eggs**
-**123**
-**>>> eggs = 456**
-**>>>**
-**The end of spam**
-**The value of eggs: 123**
+# python3 test_code.py
+The begin of spam
+>>> eggs
+123
+>>> eggs = 456
+>>>
+The end of spam
+The value of eggs: 123
 
 ```
 
@@ -565,16 +565,16 @@ if __name__ == '__main__':
 这个例子与前一段中的例子几乎完全相同，只是这一次我们最终进入了`pdb`控制台，而不是常规的交互式控制台。所以让我们试试交互式调试器：
 
 ```py
-**# python3 test_pdb.py**
-**The begin of spam**
-**> test_pdb.py(8)spam()**
-**-> print('The end of spam')**
-**(Pdb) eggs**
-**123**
-**(Pdb) eggs = 456**
-**(Pdb) continue**
-**The end of spam**
-**The value of eggs: 456**
+# python3 test_pdb.py
+The begin of spam
+> test_pdb.py(8)spam()
+-> print('The end of spam')
+(Pdb) eggs
+123
+(Pdb) eggs = 456
+(Pdb) continue
+The end of spam
+The value of eggs: 456
 
 ```
 
@@ -610,7 +610,7 @@ if __name__ == '__main__':
 | `alias name command` | 创建一个别名。命令可以是任何有效的 Python 表达式，所以你可以这样做来打印对象的所有属性：
 
 ```py
-**alias pd pp %1.__dict__** 
+alias pd pp %1.__dict__** 
 
 ```
 
@@ -640,43 +640,43 @@ if __name__ == '__main__':
 到目前为止，没有发生什么新的事情，但现在让我们打开交互式调试会话，如下所示：
 
 ```py
-**# python3 test_pdb.py**
-**> test_pdb.py(11)<module>()**
-**-> while True:**
-**(Pdb) source spam  # View the source of spam**
- **4     def spam():**
- **5         print('The begin of spam')**
- **6         print('The end of spam')**
+# python3 test_pdb.py
+> test_pdb.py(11)<module>()
+-> while True:
+(Pdb) source spam  # View the source of spam
+ **4     def spam():
+ **5         print('The begin of spam')
+ **6         print('The end of spam')
 
-**(Pdb) b 5  # Add a breakpoint to line 5**
-**Breakpoint 1 at test_pdb.py:5**
+(Pdb) b 5  # Add a breakpoint to line 5
+Breakpoint 1 at test_pdb.py:5
 
-**(Pdb) w  # Where shows the current line**
-**> test_pdb.py(11)<module>()**
-**-> while True:**
+(Pdb) w  # Where shows the current line
+> test_pdb.py(11)<module>()
+-> while True:
 
-**(Pdb) c  # Continue (until the next breakpoint or exception)**
-**> test_pdb.py(5)spam()**
-**-> print('The begin of spam')**
+(Pdb) c  # Continue (until the next breakpoint or exception)
+> test_pdb.py(5)spam()
+-> print('The begin of spam')
 
-**(Pdb) w  # Where again**
- **test_pdb.py(12)<module>()**
-**-> spam()**
-**> test_pdb.py(5)spam()**
-**-> print('The begin of spam')**
+(Pdb) w  # Where again
+ **test_pdb.py(12)<module>()
+-> spam()
+> test_pdb.py(5)spam()
+-> print('The begin of spam')
 
-**(Pdb) ll  # List the lines of the current function**
- **4     def spam():**
- **5 B->     print('The begin of spam')**
- **6         print('The end of spam')**
+(Pdb) ll  # List the lines of the current function
+ **4     def spam():
+ **5 B->     print('The begin of spam')
+ **6         print('The end of spam')
 
-**(Pdb) b  # Show the breakpoints**
-**Num Type         Disp Enb   Where**
-**1   breakpoint   keep yes   at test_pdb.py:5**
- **breakpoint already hit 1 time**
+(Pdb) b  # Show the breakpoints
+Num Type         Disp Enb   Where
+1   breakpoint   keep yes   at test_pdb.py:5
+ **breakpoint already hit 1 time
 
-**(Pdb) cl 1  # Clear breakpoint 1**
-**Deleted breakpoint 1 at test_pdb.py:5**
+(Pdb) cl 1  # Clear breakpoint 1
+Deleted breakpoint 1 at test_pdb.py:5
 
 ```
 
@@ -717,25 +717,25 @@ if __name__ == '__main__':
 现在，让我们执行代码，并确保它只在特定时间中断：
 
 ```py
-**# python3 test_breakpoint.py**
-**> test_breakpoint.py(10)<module>()**
-**-> for i in range(5):**
-**(Pdb) source spam**
- **4     def spam(eggs):**
- **5         print('eggs:', eggs)**
-**(Pdb) b 5, eggs == 3  # Add a breakpoint to line 5 whenever eggs=3**
-**Breakpoint 1 at test_breakpoint.py:5**
-**(Pdb) c  # Continue**
-**eggs: 0**
-**eggs: 1**
-**eggs: 2**
-**> test_breakpoint.py(5)spam()**
-**-> print('eggs:', eggs)**
-**(Pdb) a  # Show function arguments**
-**eggs = 3**
-**(Pdb) c  # Continue**
-**eggs: 3**
-**eggs: 4**
+# python3 test_breakpoint.py
+> test_breakpoint.py(10)<module>()
+-> for i in range(5):
+(Pdb) source spam
+ **4     def spam(eggs):
+ **5         print('eggs:', eggs)
+(Pdb) b 5, eggs == 3  # Add a breakpoint to line 5 whenever eggs=3
+Breakpoint 1 at test_breakpoint.py:5
+(Pdb) c  # Continue
+eggs: 0
+eggs: 1
+eggs: 2
+> test_breakpoint.py(5)spam()
+-> print('eggs:', eggs)
+(Pdb) a  # Show function arguments
+eggs = 3
+(Pdb) c  # Continue
+eggs: 3
+eggs: 4
 
 ```
 
@@ -764,35 +764,35 @@ print('We shouldnt reach this code')
 如果我们使用`pdb`参数运行它，每当它崩溃时我们就会进入 Python 调试器：
 
 ```py
-**# python3 -m pdb test_zero.py**
-**> test_zero.py(1)<module>()**
-**-> print('This still works')**
-**(Pdb) w  # Where**
- **bdb.py(431)run()**
-**-> exec(cmd, globals, locals)**
- **<string>(1)<module>()**
-**> test_zero.py(1)<module>()**
-**-> print('This still works')**
-**(Pdb) s  # Step into the next statement**
-**This still works**
-**> test_zero.py(2)<module>()**
-**-> 1/0**
-**(Pdb) c  # Continue**
-**Traceback (most recent call last):**
- **File "pdb.py", line 1661, in main**
- **pdb._runscript(mainpyfile)**
- **File "pdb.py", line 1542, in _runscript**
- **self.run(statement)**
- **File "bdb.py", line 431, in run**
- **exec(cmd, globals, locals)**
- **File "<string>", line 1, in <module>**
- **File "test_zero.py", line 2, in <module>**
- **1/0**
-**ZeroDivisionError: division by zero**
-**Uncaught exception. Entering post mortem debugging**
-**Running 'cont' or 'step' will restart the program**
-**> test_zero.py(2)<module>()**
-**-> 1/0**
+# python3 -m pdb test_zero.py
+> test_zero.py(1)<module>()
+-> print('This still works')
+(Pdb) w  # Where
+ **bdb.py(431)run()
+-> exec(cmd, globals, locals)
+ **<string>(1)<module>()
+> test_zero.py(1)<module>()
+-> print('This still works')
+(Pdb) s  # Step into the next statement
+This still works
+> test_zero.py(2)<module>()
+-> 1/0
+(Pdb) c  # Continue
+Traceback (most recent call last):
+ **File "pdb.py", line 1661, in main
+ **pdb._runscript(mainpyfile)
+ **File "pdb.py", line 1542, in _runscript
+ **self.run(statement)
+ **File "bdb.py", line 431, in run
+ **exec(cmd, globals, locals)
+ **File "<string>", line 1, in <module>
+ **File "test_zero.py", line 2, in <module>
+ **1/0
+ZeroDivisionError: division by zero
+Uncaught exception. Entering post mortem debugging
+Running 'cont' or 'step' will restart the program
+> test_zero.py(2)<module>()
+-> 1/0
 
 ```
 
@@ -819,28 +819,28 @@ if __name__ == '__main__':
 代码足够简单，所以现在我们将添加断点和命令，如下所示：
 
 ```py
-**# python3 test_breakpoint.py**
-**> test_breakpoint.py(10)<module>()**
-**-> for i in range(3):**
-**(Pdb) b spam  # Add a breakpoint to function spam**
-**Breakpoint 1 at test_breakpoint.py:4**
-**(Pdb) commands 1  # Add a command to breakpoint 1**
-**(com) print('The value of eggs: %s' % eggs)**
-**(com) end  # End the entering of the commands**
-**(Pdb) c  # Continue**
-**The value of eggs: 0**
-**> test_breakpoint.py(5)spam()**
-**-> print('eggs:', eggs)**
-**(Pdb) c  # Continue**
-**eggs: 0**
-**The value of eggs: 1**
-**> test_breakpoint.py(5)spam()**
-**-> print('eggs:', eggs)**
-**(Pdb) cl 1  # Clear breakpoint 1**
-**Deleted breakpoint 1 at test_breakpoint.py:4**
-**(Pdb) c  # Continue**
-**eggs: 1**
-**eggs: 2**
+# python3 test_breakpoint.py
+> test_breakpoint.py(10)<module>()
+-> for i in range(3):
+(Pdb) b spam  # Add a breakpoint to function spam
+Breakpoint 1 at test_breakpoint.py:4
+(Pdb) commands 1  # Add a command to breakpoint 1
+(com) print('The value of eggs: %s' % eggs)
+(com) end  # End the entering of the commands
+(Pdb) c  # Continue
+The value of eggs: 0
+> test_breakpoint.py(5)spam()
+-> print('eggs:', eggs)
+(Pdb) c  # Continue
+eggs: 0
+The value of eggs: 1
+> test_breakpoint.py(5)spam()
+-> print('eggs:', eggs)
+(Pdb) cl 1  # Clear breakpoint 1
+Deleted breakpoint 1 at test_breakpoint.py:4
+(Pdb) c  # Continue
+eggs: 1
+eggs: 2
 
 ```
 
@@ -853,7 +853,7 @@ if __name__ == '__main__':
 首先确保你已经安装了`ipdb`：
 
 ```py
-**pip install ipdb**
+pip install ipdb
 
 ```
 
@@ -874,40 +874,40 @@ if __name__ == '__main__':
 然后我们执行它：
 
 ```py
-**# python3 test_ipdb.py**
-**> test_ipdb.py(10)<module>()**
- **9     ipdb.set_trace()**
-**---> 10     for i in range(3):**
- **11         spam(i)**
+# python3 test_ipdb.py
+> test_ipdb.py(10)<module>()
+ **9     ipdb.set_trace()
+---> 10     for i in range(3):
+ **11         spam(i)
 
-**ipdb> b spam  # Set a breakpoint**
-**Breakpoint 1 at test_ipdb.py:4**
-**ipdb> c  # Continue (until exception or breakpoint)**
-**> test_ipdb.py(5)spam()**
-**1     4 def spam(eggs):**
-**----> 5     print('eggs:', eggs)**
- **6**
+ipdb> b spam  # Set a breakpoint
+Breakpoint 1 at test_ipdb.py:4
+ipdb> c  # Continue (until exception or breakpoint)
+> test_ipdb.py(5)spam()
+1     4 def spam(eggs):
+----> 5     print('eggs:', eggs)
+ **6
 
-**ipdb> a  # Show the arguments**
-**eggs = 0**
-**ipdb> c  # Continue**
-**eggs: 0**
-**> test_ipdb.py(5)spam()**
-**1     4 def spam(eggs):**
-**----> 5     print('eggs:', eggs)**
- **6**
+ipdb> a  # Show the arguments
+eggs = 0
+ipdb> c  # Continue
+eggs: 0
+> test_ipdb.py(5)spam()
+1     4 def spam(eggs):
+----> 5     print('eggs:', eggs)
+ **6
 
-**ipdb>   # Repeat the previous command, so continue again**
-**eggs: 1**
-**> test_ipdb.py(5)spam()**
-**1     4 def spam(eggs):**
-**----> 5     print('eggs:', eggs)**
- **6**
+ipdb>   # Repeat the previous command, so continue again
+eggs: 1
+> test_ipdb.py(5)spam()
+1     4 def spam(eggs):
+----> 5     print('eggs:', eggs)
+ **6
 
-**ipdb> cl 1  # Remove breakpoint 1**
-**Deleted breakpoint 1 at test_ipdb.py:4**
-**ipdb> c  # Continue**
-**eggs: 2**
+ipdb> cl 1  # Remove breakpoint 1
+Deleted breakpoint 1 at test_ipdb.py:4
+ipdb> c  # Continue
+eggs: 2
 
 ```
 

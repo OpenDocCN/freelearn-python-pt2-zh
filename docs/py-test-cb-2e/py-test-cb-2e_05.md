@@ -734,7 +734,7 @@ class Item(object):
 1.  使用纯文本和空格分隔的条目创建一个名为`recipe41.txt`的新文件，其中包含一些测试用例：一个简单的测试用例和另一个更复杂的测试用例，带有文档和标记：
 
 ```py
-***Test Cases***
+*Test Cases*
 Simple check of adding one item
     Given an empty cart
     When I add a carton of milk for 2.50
@@ -759,7 +759,7 @@ system installed to interact properly.cart.db
 1.  使用纯文本和空格分隔的值创建自定义关键字定义的表：
 
 ```py
-***Keywords***
+*Keywords*
 Given an empty cart
     create empty cart
 When I add a
@@ -822,7 +822,7 @@ class recipe41:
 1.  向`recipe41.txt`添加最后一个表，导入我们的 Python 代码作为库，以提供所需关键字的最后一组：
 
 ```py
-***Settings****** Library recipe41.py
+*Settings****** Library recipe41.py
 ```
 
 1.  通过输入`pybot recipe41.txt`来运行测试场景，就好像我们在一个具有数据库支持的机器上一样：
@@ -912,7 +912,7 @@ So that I can verify the store's functionality.
 1.  创建一个测试用例部分，并添加一个验证购物车为空并捕获屏幕截图的场景：
 
 ```py
-***Test Cases***
+*Test Cases*
 Inspect empty cart in detail
   Click link Cart
   Page Should Contain Your cart is empty
@@ -943,7 +943,7 @@ Load up a cart with 2 of the same
 1.  添加一个关键字部分，并定义一个用于检查页面原始 HTML 的关键字：
 
 ```py
-***Keywords***
+*Keywords*
 Html Should Contain
     [Arguments]     ${expected}
     ${html}= Get Source
@@ -958,7 +958,7 @@ Startup
 1.  添加一个导入 Selenium 库的部分，并为每个测试用例启动和关闭浏览器定义一个设置和拆卸过程：
 
 ```py
-***Settings***
+*Settings*
 Library         SeleniumLibrary
 Test Setup      Open Browser http://localhost:8000
 Test Teardown   Close All Browsers
@@ -1031,7 +1031,7 @@ So that I can check the product catalog.
 1.  为测试用例添加一个部分，并编写一个测试用例，测试登录页面：
 
 ```py
-***Test Cases***
+*Test Cases*
 Logging in to the admin page
   Open Browser http://localhost:8000/admin
   Input text username gturnquist
@@ -1057,7 +1057,7 @@ Check product catalog
 1.  创建一个捕获登录过程的关键字部分，作为一个单一的关键字：
 
 ```py
-***Keywords***
+*Keywords*
 Given that I am logged in
   Open Browser http://localhost:8000/admin/
   Input text username gturnquist
@@ -1074,7 +1074,7 @@ Startup
 1.  最后，添加一个设置部分，导入 Selenium 库，并在测试套件的开头和结尾启动和停止 Selenium 服务器：
 
 ```py
-***Settings***
+*Settings*
 Library SeleniumLibrary
 Suite Setup Startup
 Suite Teardown Stop Selenium Server

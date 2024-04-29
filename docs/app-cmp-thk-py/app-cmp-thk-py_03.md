@@ -210,7 +210,9 @@
 
 输入是用户可以输入的内容。因此，当我们定义变量时，我们将要求输入。在 Python 和任何其他语言中，一个好的做法不仅仅是要求输入而没有任何指导。也就是说，我们希望告诉用户他们正在回答的问题。例如，我可以编写以下代码来要求用户输入他们的身高：
 
-[PRE0]
+```py
+h = input("Enter your height in inches: ")
+```
 
 上述代码将要求用户输入一些内容。它还要求用户以英寸输入信息。如果您使用的是公制单位，您将相应说明。
 
@@ -218,17 +220,27 @@
 
 我们可以进行基本的数学运算，并根据身高打印出我们得到的值：
 
-[PRE1]
+```py
+h = input("Enter your height in inches: ")
+total = (int(h)/0.069)*0.25
+print(total)
+```
 
 请注意，在上面的片段中，我们在`total`变量的定义中使用了`int(h)`。我们将`h`值转换为整数，以便可以使用该变量进行数学运算。当我们要求输入时，变量被保存为字符串，这就是为什么我们需要转换它以便使用它。
 
 使用我的身高运行上述代码，即 70 英寸，得到以下结果：
 
-[PRE2]
+```py
+253.62318840579707
+```
 
 如果我们将打印代码调整如下所示，我们的答案将是`253.62`，看起来会好得多：
 
-[PRE3]
+```py
+h=input("Enter your height in inches: ")
+total = (int(h)/0.069)*0.25
+print(round(total,2))
+```
 
 当我运行这个程序时，窗口看起来是这样的：
 
@@ -246,7 +258,18 @@
 
 现在，我将要求计算机根据这些条件告诉我该做什么。我们将需要一个**if-elif**，**else**语句。这些是我们将测试的条件，以便获得更好的输出。我们将测试总额是否与 250 美元相同。否则，如果总额少于 250 美元，我们将希望计算机执行某些操作（这是我们的`elif`语句）。最后，在所有其他情况下，我们将使用`else`命令：
 
-[PRE4]
+```py
+h=input("Enter your height in inches: ")
+total = (int(h)/0.069)*0.25
+total = round(total,2)
+if total == 250:
+    print("Your height in quarters is the same as $250.")
+elif total > 250:
+    total = str(total)
+    print("Your height in quarters is more than $250\. It is $" + total)
+else:
+    print("You're short, so choose the $250.")
+```
 
 让我们看看一些测试案例是什么样子的。
 
@@ -288,7 +311,16 @@
 
 我们也可以使用 Python 为这种情况编写算法：
 
-[PRE5]
+```py
+k = int(input("How many children are coming to the party? "))
+T = 12 * k
+if T == 200:
+    print("You are right on budget, at " + str(T))
+elif T <= 200:
+    print("You are under budget, at " + str(T))
+else:
+    print("You are over budget, at " + str(T))
+```
 
 让我们测试一些情况，以验证我们的代码是否有效：
 
@@ -346,7 +378,17 @@
 
 上面的截图显示了复利的 Python 程序。请注意注释前面有`#`符号。它说明我们需要将利率转换为公式中使用的形式。否则，我们将得到一个不正确的总额。此外，我们在这里使用了浮点数，因为我们需要使用小数。整数或`int`不会给我们所需的信息。此外，我们将总额四舍五入到两位小数。这是因为我们在谈论金钱时使用两位小数。*图 2.7*中显示的算法文本如下：
 
-[PRE6]
+```py
+P = float(input("How much are you planning on depositing? "))
+r = float(input("At what monthly compound rate will it be paid out? "))
+t = float(input("How many years will the money be deposited? "))
+#Convert the rate to a decimal for the formula by dividing by 100
+r = r/100
+A = P * (1 + r/12)**(12*t)
+A = round(A, 2)
+print("Total after " + str(t) + " years: ")
+print(A)
+```
 
 使用复利算法中的代码，如果我们有初始金额、利率和存款年限，我们可以运行任何可能的复利实例。给定初始存款$1,000，利率 4.5%，存款 10 年的程序输出如下：
 

@@ -84,10 +84,10 @@
 
 ```py
     def add_property(self):
- **property_type = get_valid_input(**
+ **property_type = get_valid_input(
                 "What type of property? ",
                 ("house", "apartment")).lower()
- **payment_type = get_valid_input(**
+ **payment_type = get_valid_input(
                 "What payment type? ",
                 ("purchase", "rental")).lower()
 ```
@@ -95,11 +95,11 @@
 任何命令行输入或输出都写成如下形式：
 
 ```py
-**>>> c1 = Contact("John A", "johna@example.net")**
-**>>> c2 = Contact("John B", "johnb@example.net")**
-**>>> c3 = Contact("Jenna C", "jennac@example.net")**
-**>>> [c.name for c in Contact.all_contacts.search('John')]**
-**['John A', 'John B']**
+>>> c1 = Contact("John A", "johna@example.net")
+>>> c2 = Contact("John B", "johnb@example.net")
+>>> c3 = Contact("Jenna C", "jennac@example.net")
+>>> [c.name for c in Contact.all_contacts.search('John')]
+['John A', 'John B']
 
 ```
 

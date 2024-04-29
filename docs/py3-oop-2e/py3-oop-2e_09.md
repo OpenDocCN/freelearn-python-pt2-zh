@@ -68,23 +68,23 @@ class CapitalIterator:
 这个例子定义了一个`CapitalIterable`类，其工作是循环遍历字符串中的每个单词，并输出它们的首字母大写。这个可迭代对象的大部分工作都交给了`CapitalIterator`实现。与这个迭代器互动的规范方式如下：
 
 ```py
-**>>> iterable = CapitalIterable('the quick brown fox jumps over the lazy dog')**
-**>>> iterator = iter(iterable)**
-**>>> while True:**
-**...     try:**
-**...         print(next(iterator))**
-**...     except StopIteration:**
-**...         break**
-**...** 
-**The**
-**Quick**
-**Brown**
-**Fox**
-**Jumps**
-**Over**
-**The**
-**Lazy**
-**Dog**
+>>> iterable = CapitalIterable('the quick brown fox jumps over the lazy dog')
+>>> iterator = iter(iterable)
+>>> while True:
+...     try:
+...         print(next(iterator))
+...     except StopIteration:
+...         break
+...** 
+The
+Quick
+Brown
+Fox
+Jumps
+Over
+The
+Lazy
+Dog
 
 ```
 
@@ -95,18 +95,18 @@ class CapitalIterator:
 当然，我们已经知道了一个更简单的语法来从可迭代对象中构造一个迭代器：
 
 ```py
-**>>> for i in iterable:**
-**...     print(i)**
-**...** 
-**The**
-**Quick**
-**Brown**
-**Fox**
-**Jumps**
-**Over**
-**The**
-**Lazy**
-**Dog**
+>>> for i in iterable:
+...     print(i)
+...** 
+The
+Quick
+Brown
+Fox
+Jumps
+Over
+The
+Lazy
+Dog
 
 ```
 
@@ -158,11 +158,11 @@ filename = sys.argv[1]
 
 with open(filename) as file:
     header = file.readline().strip().split('\t')
- **contacts = [**
- **dict(**
- **zip(header, line.strip().split('\t'))**
- **) for line in file**
- **]**
+ **contacts = [
+ **dict(
+ **zip(header, line.strip().split('\t'))
+ **) for line in file
+ **]
 
 for contact in contacts:
     print("email: {email} -- {last}, {first}".format(
@@ -197,16 +197,16 @@ books = [
         Book("Phillips", "Twice Upon A Time", "scifi"),
         ]
 
-**fantasy_authors = {**
- **b.author for b in books if b.genre == 'fantasy'}**
+fantasy_authors = {
+ **b.author for b in books if b.genre == 'fantasy'}
 
 ```
 
 与演示数据设置相比，突出显示的集合推导确实很短！如果我们使用列表推导，特里·普拉切特当然会被列出两次。因为集合的性质消除了重复项，我们最终得到：
 
 ```py
-**>>> fantasy_authors**
-**{'Turner', 'Pratchett', 'Le Guin'}**
+>>> fantasy_authors
+{'Turner', 'Pratchett', 'Le Guin'}
 
 ```
 
@@ -255,7 +255,7 @@ outname = sys.argv[2]
 
 with open(inname) as infile:
     with open(outname, "w") as outfile:
- **warnings = (l for l in infile if 'WARNING' in l)**
+ **warnings = (l for l in infile if 'WARNING' in l)
         for l in warnings:
             outfile.write(l)
 ```
@@ -287,8 +287,8 @@ inname, outname = sys.argv[1:3]
 
 with open(inname) as infile:
     with open(outname, "w") as outfile:
- **warnings = (l.replace('\tWARNING', '')**
- **for l in infile if 'WARNING' in l)**
+ **warnings = (l.replace('\tWARNING', '')
+ **for l in infile if 'WARNING' in l)
         for l in warnings:
             outfile.write(l)
 ```
@@ -301,9 +301,9 @@ inname, outname = sys.argv[1:3]
 
 with open(inname) as infile:
     with open(outname, "w") as outfile:
- **for l in infile:**
- **if 'WARNING' in l:**
- **outfile.write(l.replace('\tWARNING', ''))**
+ **for l in infile:
+ **if 'WARNING' in l:
+ **outfile.write(l.replace('\tWARNING', ''))
 
 ```
 
@@ -313,18 +313,18 @@ with open(inname) as infile:
 import sys
 inname, outname = sys.argv[1:3]
 
-**class WarningFilter:**
- **def __init__(self, insequence):**
- **self.insequence = insequence**
- **def __iter__(self):**
- **return self**
- **def __next__(self):**
- **l = self.insequence.readline()**
- **while l and 'WARNING' not in l:**
- **l = self.insequence.readline()**
- **if not l:**
- **raise StopIteration**
- **return l.replace('\tWARNING', '')**
+class WarningFilter:
+ **def __init__(self, insequence):
+ **self.insequence = insequence
+ **def __iter__(self):
+ **return self
+ **def __next__(self):
+ **l = self.insequence.readline()
+ **while l and 'WARNING' not in l:
+ **l = self.insequence.readline()
+ **if not l:
+ **raise StopIteration
+ **return l.replace('\tWARNING', '')
 
 with open(inname) as infile:
     with open(outname, "w") as outfile:
@@ -343,10 +343,10 @@ with open(inname) as infile:
 import sys
 inname, outname = sys.argv[1:3]
 
-**def warnings_filter(insequence):**
- **for l in insequence:**
- **if 'WARNING' in l:**
- **yield l.replace('\tWARNING', '')**
+def warnings_filter(insequence):
+ **for l in insequence:
+ **if 'WARNING' in l:
+ **yield l.replace('\tWARNING', '')
 
 with open(inname) as infile:
     with open(outname, "w") as outfile:
@@ -362,8 +362,8 @@ with open(inname) as infile:
 虽然看起来像是一个函数在循环处理行，但实际上它创建了一种特殊类型的对象，即生成器对象：
 
 ```py
-**>>> print(warnings_filter([]))**
-**<generator object warnings_filter at 0xb728c6bc>**
+>>> print(warnings_filter([]))
+<generator object warnings_filter at 0xb728c6bc>
 
 ```
 
@@ -385,11 +385,11 @@ inname, outname = sys.argv[1:3]
 
 def warnings_filter(infilename):
     with open(infilename) as infile:
- **yield from (**
- **l.replace('\tWARNING', '')**
- **for l in infile**
- **if 'WARNING' in l**
- **)**
+ **yield from (
+ **l.replace('\tWARNING', '')
+ **for l in infile
+ **if 'WARNING' in l
+ **)
 
 filter = warnings_filter(inname)
 with open(outname, "w") as outfile:
@@ -434,11 +434,11 @@ log.children.append(File('kernel'))
 ```py
 def walk(file):
     if isinstance(file, Folder):
- **yield file.name + '/'**
+ **yield file.name + '/'
         for f in file.children:
- **yield from walk(f)**
+ **yield from walk(f)
     else:
- **yield file.name**
+ **yield file.name
 
 ```
 
@@ -464,27 +464,27 @@ def walk(file):
 def tally():
     score = 0
     while True:
- **increment = yield score**
+ **increment = yield score
         score += increment
 ```
 
 这段代码看起来像不可能工作的黑魔法，所以我们将在逐行描述之前看到它的工作原理。这个简单的对象可以被棒球队的记分应用程序使用。可以为每个团队保留单独的计分，并且他们的得分可以在每个半局结束时递增。看看这个交互式会话：
 
 ```py
-**>>> white_sox = tally()**
-**>>> blue_jays = tally()**
-**>>> next(white_sox)**
-**0**
-**>>> next(blue_jays)**
-**0**
-**>>> white_sox.send(3)**
-**3**
-**>>> blue_jays.send(2)**
-**2**
-**>>> white_sox.send(2)**
-**5**
-**>>> blue_jays.send(4)**
-**6**
+>>> white_sox = tally()
+>>> blue_jays = tally()
+>>> next(white_sox)
+0
+>>> next(blue_jays)
+0
+>>> white_sox.send(3)
+3
+>>> blue_jays.send(2)
+2
+>>> white_sox.send(2)
+5
+>>> blue_jays.send(4)
+6
 
 ```
 
@@ -567,17 +567,17 @@ def match_regex(filename, regex):
     for line in reversed(lines):
         match = re.match(regex, line)
         if match:
- **regex = yield match.groups()[0]**
+ **regex = yield match.groups()[0]
 
 def get_serials(filename):
     ERROR_RE = 'XFS ERROR (\[sd[a-z]\])'
- **matcher = match_regex(filename, ERROR_RE)**
+ **matcher = match_regex(filename, ERROR_RE)
     device = next(matcher)
     while True:
         bus = matcher.send(
             '(sd \S+) {}.*'.format(re.escape(device)))
         serial = matcher.send('{} \(SERIAL=([^)]*)\)'.format(bus))
- **yield serial**
+ **yield serial
         device = matcher.send(ERROR_RE)
 
 for serial_number in get_serials('EXAMPLE_LOG.log'):
@@ -697,9 +697,9 @@ dataset_filename = 'colors.csv'
 
 def load_colors(filename):
     with open(filename) as dataset_file:
- **lines = csv.reader(dataset_file)**
+ **lines = csv.reader(dataset_file)
         for line in lines:
- **yield tuple(float(y) for y in line[0:3]), line[3]**
+ **yield tuple(float(y) for y in line[0:3]), line[3]
 
 ```
 
@@ -726,7 +726,7 @@ from random import random
 
 def generate_colors(count=100):
     for i in range(count):
- **yield (random(), random(), random())**
+ **yield (random(), random(), random())
 
 ```
 
@@ -762,14 +762,14 @@ def color_distance(color1, color2):
 ```py
 def nearest_neighbors(model_colors, num_neighbors):
     model = list(model_colors)
- **target = yield**
+ **target = yield
     while True:
         distances = sorted(
             ((color_distance(c[0], target), c) for c in model),
         )
- **target = yield [**
- **d[1] for d in distances[0:num_neighbors]**
- **]**
+ **target = yield [
+ **d[1] for d in distances[0:num_neighbors]
+ **]
 
 model_colors = load_colors(dataset_filename)
 target_colors = generate_colors(3)
@@ -804,7 +804,7 @@ def write_results(filename="output.csv"):
     with open(filename, "w") as file:
         writer = csv.writer(file)
         while True:
- **color, name = yield**
+ **color, name = yield
             writer.writerow(list(color) + [name])
 
 results = write_results()
@@ -821,12 +821,12 @@ for i in range(3):
 ```py
 from collections import Counter
 def name_colors(get_neighbors):
- **color = yield**
+ **color = yield
     while True:
- **near = get_neighbors.send(color)**
+ **near = get_neighbors.send(color)
         name_guess = Counter(
             n[1] for n in near).most_common(1)[0][0]
- **color = yield name_guess**
+ **color = yield name_guess
 
 ```
 
@@ -838,15 +838,15 @@ def name_colors(get_neighbors):
 def process_colors(dataset_filename="colors.csv"):
     model_colors = load_colors(dataset_filename)
     get_neighbors = nearest_neighbors(model_colors, 5)
- **get_color_name = name_colors(get_neighbors)**
+ **get_color_name = name_colors(get_neighbors)
     output = write_results()
- **next(output)**
- **next(get_neighbors)**
- **next(get_color_name)**
+ **next(output)
+ **next(get_neighbors)
+ **next(get_color_name)
 
     for color in generate_colors():
- **name = get_color_name.send(color)**
- **output.send((color, name))**
+ **name = get_color_name.send(color)
+ **output.send((color, name))
 
 process_colors()
 ```

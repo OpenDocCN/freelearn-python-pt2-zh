@@ -33,7 +33,7 @@ import socket
 
 def respond(client):
     response = input("Enter a value: ")
-    **client.send(bytes(response, 'utf8'))**
+    **client.send(bytes(response, 'utf8'))
     client.close()
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -77,13 +77,13 @@ class LogSocket:
     def __init__(self, socket):
         self.socket = socket
 
- **def send(self, data):**
- **print("Sending {0} to {1}".format(**
- **data, self.socket.getpeername()[0]))**
- **self.socket.send(data)**
+ **def send(self, data):
+ **print("Sending {0} to {1}".format(
+ **data, self.socket.getpeername()[0]))
+ **self.socket.send(data)
 
- **def close(self):**
- **self.socket.close()**
+ **def close(self):
+ **self.socket.close()
 
 ```
 
@@ -112,7 +112,7 @@ class GzipSocket:
         zipfile = gzip.GzipFile(fileobj=buf, mode="w")
         zipfile.write(data)
         zipfile.close()
- **self.socket.send(buf.getvalue())**
+ **self.socket.send(buf.getvalue())
 
     def close(self):
         self.socket.close()
@@ -145,15 +145,15 @@ class GzipSocket:
 import time
 
 def log_calls(func):
- **def wrapper(*args, **kwargs):**
+ **def wrapper(*args, **kwargs):
         now = time.time()
         print("Calling {0} with {1} and {2}".format(
             func.__name__, args, kwargs))
- **return_value = func(*args, **kwargs)**
+ **return_value = func(*args, **kwargs)
         print("Executed {0} in {1}ms".format(
             func.__name__, time.time() - now))
         return return_value
- **return wrapper**
+ **return wrapper
 
 def test1(a,b,c):
     print("\ttest1 called")
@@ -165,9 +165,9 @@ def test3(a,b):
     print("\ttest3 called")
     time.sleep(1)
 
-**test1 = log_calls(test1)**
-**test2 = log_calls(test2)**
-**test3 = log_calls(test3)**
+test1 = log_calls(test1)
+test2 = log_calls(test2)
+test3 = log_calls(test3)
 
 test1(1,2,3)
 test2(4,b=5)
@@ -191,7 +191,7 @@ test3(6,7)
 我们可以使用`@decorator`语法一次完成所有操作，而不是在方法定义之后应用装饰器函数：
 
 ```py
-**@log_calls**
+@log_calls
 def test1(a,b,c):
     print("\ttest1 called")
 ```
@@ -254,7 +254,7 @@ class ConsoleObserver:
     def __init__(self, inventory):
         self.inventory = inventory
 
- **def __call__(self):**
+ **def __call__(self):
         print(self.inventory.product)
         print(self.inventory.quantity)
 ```
@@ -262,31 +262,31 @@ class ConsoleObserver:
 这里没有什么特别激动人心的；观察对象在初始化程序中设置，当观察者被调用时，我们会“做一些事情”。我们可以在交互式控制台中测试观察者：
 
 ```py
-**>>> i = Inventory()**
-**>>> c = ConsoleObserver(i)**
-**>>> i.attach(c)**
-**>>> i.product = "Widget"**
-**Widget**
-**0**
-**>>> i.quantity = 5**
-**Widget**
-**5**
+>>> i = Inventory()
+>>> c = ConsoleObserver(i)
+>>> i.attach(c)
+>>> i.product = "Widget"
+Widget
+0
+>>> i.quantity = 5
+Widget
+5
 
 ```
 
 将观察者附加到库存对象后，每当我们更改两个观察属性中的一个时，观察者都会被调用并调用其动作。我们甚至可以添加两个不同的观察者实例：
 
 ```py
-**>>> i = Inventory()**
-**>>> c1 = ConsoleObserver(i)**
-**>>> c2 = ConsoleObserver(i)**
-**>>> i.attach(c1)**
-**>>> i.attach(c2)**
-**>>> i.product = "Gadget"**
-**Gadget**
-**0**
-**Gadget**
-**0**
+>>> i = Inventory()
+>>> c1 = ConsoleObserver(i)
+>>> c2 = ConsoleObserver(i)
+>>> i.attach(c1)
+>>> i.attach(c2)
+>>> i.product = "Gadget"
+Gadget
+0
+Gadget
+0
 
 ```
 
@@ -479,8 +479,8 @@ class FirstTag:
         tag_name = remaining_string[i_start_tag+1:i_end_tag]
         root = Node(tag_name)
         parser.root = parser.current_node = root
- **parser.state = ChildNode()**
-        **return remaining_string[i_end_tag+1:]**
+ **parser.state = ChildNode()
+        **return remaining_string[i_end_tag+1:]
 
 ```
 
@@ -577,17 +577,17 @@ if __name__ == "__main__":
 这段代码打开文件，加载内容，并解析结果。然后按顺序打印每个节点及其子节点。我们最初在节点类上添加的`__str__`方法负责格式化节点以进行打印。如果我们在之前的示例上运行脚本，它将输出树如下：
 
 ```py
-**book**
-**author: Dusty Phillips**
-**publisher: Packt Publishing**
-**title: Python 3 Object Oriented Programming**
-**content**
-**chapter**
-**number: 1**
-**title: Object Oriented Design**
-**chapter**
-**number: 2**
-**title: Objects In Python**
+book
+author: Dusty Phillips
+publisher: Packt Publishing
+title: Python 3 Object Oriented Programming
+content
+chapter
+number: 1
+title: Object Oriented Design
+chapter
+number: 2
+title: Objects In Python
 
 ```
 
@@ -634,14 +634,14 @@ class OneOnly:
 当调用`__new__`时，通常会构造该类的新实例。当我们重写它时，我们首先检查我们的单例实例是否已创建；如果没有，我们使用`super`调用来创建它。因此，无论何时我们在`OneOnly`上调用构造函数，我们总是得到完全相同的实例：
 
 ```py
-**>>> o1 = OneOnly()**
-**>>> o2 = OneOnly()**
-**>>> o1 == o2**
-**True**
-**>>> o1**
-**<__main__.OneOnly object at 0xb71c008c>**
-**>>> o2**
-**<__main__.OneOnly object at 0xb71c008c>**
+>>> o1 = OneOnly()
+>>> o2 = OneOnly()
+>>> o1 == o2
+True
+>>> o1
+<__main__.OneOnly object at 0xb71c008c>
+>>> o2
+<__main__.OneOnly object at 0xb71c008c>
 
 ```
 
@@ -665,18 +665,18 @@ class FirstTag:
         tag_name = remaining_string[i_start_tag+1:i_end_tag]
         root = Node(tag_name)
         parser.root = parser.current_node = root
- **parser.state = child_node**
+ **parser.state = child_node
         return remaining_string[i_end_tag+1:]
 
 class ChildNode:
     def process(self, remaining_string, parser):
         stripped = remaining_string.strip()
         if stripped.startswith("</"):
- **parser.state = close_tag**
+ **parser.state = close_tag
         elif stripped.startswith("<"):
- **parser.state = open_tag**
+ **parser.state = open_tag
         else:
- **parser.state = text_node**
+ **parser.state = text_node
         return stripped
 
 class OpenTag:
@@ -687,14 +687,14 @@ class OpenTag:
         node = Node(tag_name, parser.current_node)
         parser.current_node.children.append(node)
         parser.current_node = node
- **parser.state = child_node**
+ **parser.state = child_node
         return remaining_string[i_end_tag+1:]
 class TextNode:
     def process(self, remaining_string, parser):
         i_start_tag = remaining_string.find('<')
         text = remaining_string[:i_start_tag]
         parser.current_node.text = text
- **parser.state = child_node**
+ **parser.state = child_node
         return remaining_string[i_start_tag:]
 
 class CloseTag:
@@ -705,14 +705,14 @@ class CloseTag:
         tag_name = remaining_string[i_start_tag+2:i_end_tag]
         assert tag_name == parser.current_node.tag_name
         parser.current_node = parser.current_node.parent
- **parser.state = child_node**
+ **parser.state = child_node
         return remaining_string[i_end_tag+1:].strip()
 
-**first_tag = FirstTag()**
-**child_node = ChildNode()**
-**text_node = TextNode()**
-**open_tag = OpenTag()**
-**close_tag = CloseTag()**
+first_tag = FirstTag()
+child_node = ChildNode()
+text_node = TextNode()
+open_tag = OpenTag()
+close_tag = CloseTag()
 
 ```
 
@@ -798,7 +798,7 @@ class QueryTemplate:
     def output_results(self):
         pass
 
- **def process_format(self):**
+ **def process_format(self):
         self.connect()
         self.construct_query()
         self.do_query()
@@ -813,24 +813,24 @@ import sqlite3
 
 class QueryTemplate:
     def connect(self):
- **self.conn = sqlite3.connect("sales.db")**
+ **self.conn = sqlite3.connect("sales.db")
 
     def construct_query(self):
- **raise NotImplementedError()**
+ **raise NotImplementedError()
 
     def do_query(self):
- **results = self.conn.execute(self.query)**
- **self.results = results.fetchall()**
+ **results = self.conn.execute(self.query)
+ **self.results = results.fetchall()
 
     def format_results(self):
- **output = []**
- **for row in self.results:**
- **row =[str(i) for i in row]**
- **output.append(", ".join(row))**
- **self.formatted_results = "\n".join(output)**
+ **output = []
+ **for row in self.results:
+ **row =[str(i) for i in row]
+ **output.append(", ".join(row))
+ **self.formatted_results = "\n".join(output)
 
     def output_results(self):
- **raise NotImplementedError()**
+ **raise NotImplementedError()
 
 ```
 
@@ -843,18 +843,18 @@ class QueryTemplate:
 ```py
 import datetime
 class NewVehiclesQuery(QueryTemplate):
- **def construct_query(self):**
+ **def construct_query(self):
         self.query = "select * from Sales where new='true'"
 
- **def output_results(self):**
+ **def output_results(self):
         print(self.formatted_results)
 
 class UserGrossQuery(QueryTemplate):
- **def construct_query(self):**
+ **def construct_query(self):
         self.query = ("select salesperson, sum(amt) " +
         " from Sales group by salesperson")
 
- **def output_results(self):**
+ **def output_results(self):
         filename = "gross_sales_{0}".format(
                 datetime.date.today().strftime("%Y%m%d")
                 )

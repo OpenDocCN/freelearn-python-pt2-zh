@@ -1067,7 +1067,7 @@ POST  /restaurants/reserve
 例如，在 Linux 上，可以通过以下一系列命令计算文件中的单词数：
 
 ```py
-**$ cat filename | wc -w**
+$ cat filename | wc -w
 
 ```
 
@@ -1169,7 +1169,7 @@ if __name__ == "__main__":
 可以使用以下命令验证类似于前面程序的输出：
 
 ```py
-**$ wc -w *.py**
+$ wc -w *.py
 
 ```
 

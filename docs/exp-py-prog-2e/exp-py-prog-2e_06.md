@@ -92,15 +92,125 @@ Fabric ([`www.fabfile.org/`](http://www.fabfile.org/))到目前为止是 Python 
 
 一个定义了简单部署过程的示例`fabfile`将如下所示：
 
-[PRE0]
+```py
+# -*- coding: utf-8 -*-
+import os
+
+from fabric.api import *  # noqa
+from fabric.contrib.files import exists
+
+# Let's assume we have private package repository created
+# using 'devpi' project
+PYPI_URL = 'http://devpi.webxample.example.com'
+
+# This is arbitrary location for storing installed releases.
+# Each release is a separate virtual environment directory
+# which is named after project version. There is also a
+# symbolic link 'current' that points to recently deployed
+# version. This symlink is an actual path that will be used
+# for configuring the process supervision tool e.g.:
+# .
+# ├── 0.0.1
+# ├── 0.0.2
+# ├── 0.0.3
+# ├── 0.1.0
+# └── current -> 0.1.0/
+
+REMOTE_PROJECT_LOCATION = "/var/projects/webxample"
+
+env.project_location = REMOTE_PROJECT_LOCATION
+
+# roledefs map out environment types (staging/production)
+env.roledefs = {
+    'staging': [
+        'staging.webxample.example.com',
+    ],
+    'production': [
+        'prod1.webxample.example.com',
+        'prod2.webxample.example.com',
+    ],
+}
+
+def prepare_release():
+    """ Prepare a new release by creating source distribution and uploading to out private package repository
+    """
+    local('python setup.py build sdist upload -r {}'.format(
+        PYPI_URL
+    ))
+
+def get_version():
+    """ Get current project version from setuptools """
+    return local(
+        'python setup.py --version', capture=True
+    ).stdout.strip()
+
+def switch_versions(version):
+    """ Switch versions by replacing symlinks atomically """
+    new_version_path = os.path.join(REMOTE_PROJECT_LOCATION, version)
+    temporary = os.path.join(REMOTE_PROJECT_LOCATION, 'next')
+    desired = os.path.join(REMOTE_PROJECT_LOCATION, 'current')
+
+    # force symlink (-f) since probably there is a one already
+    run(
+        "ln -fsT {target} {symlink}"
+        "".format(target=new_version_path, symlink=temporary)
+    )
+    # mv -T ensures atomicity of this operation
+    run("mv -Tf {source} {destination}"
+        "".format(source=temporary, destination=desired))
+
+@task
+def uptime():
+    """
+    Run uptime command on remote host - for testing connection.
+    """
+    run("uptime")
+
+@task
+def deploy():
+    """ Deploy application with packaging in mind """
+    version = get_version()
+    pip_path = os.path.join(
+        REMOTE_PROJECT_LOCATION, version, 'bin', 'pip'
+    )
+
+    prepare_release()
+
+    if not exists(REMOTE_PROJECT_LOCATION):
+        # it may not exist for initial deployment on fresh host
+        run("mkdir -p {}".format(REMOTE_PROJECT_LOCATION))
+
+    with cd(REMOTE_PROJECT_LOCATION):
+        # create new virtual environment using venv
+        run('python3 -m venv {}'.format(version))
+
+        run("{} install webxample=={} --index-url {}".format(
+            pip_path, version, PYPI_URL
+        ))
+
+    switch_versions(version)
+    # let's assume that Circus is our process supervision tool
+    # of choice.
+    run('circusctl restart webxample')
+```
 
 每个使用`@task`装饰的函数都被视为`fabric`包提供的`fab`实用程序的可用子命令。您可以使用`-l`或`--list`开关列出所有可用的子命令：
 
-[PRE1]
+```py
+$ fab --list
+Available commands:
+
+ **deploy  Deploy application with packaging in mind
+ **uptime  Run uptime command on remote host - for testing connection.
+
+```
 
 现在，您可以只需一个 shell 命令将应用程序部署到给定的环境类型：
 
-[PRE2]
+```py
+$ fab –R production deploy
+
+```
 
 请注意，前面的`fabfile`仅用于举例说明。在您自己的代码中，您可能希望提供全面的故障处理，并尝试重新加载应用程序，而无需重新启动 Web 工作进程。此外，此处介绍的一些技术现在可能很明显，但稍后将在本章中进行解释。这些是：
 
@@ -192,7 +302,51 @@ devpi 相对于 bandersnatch 的主要优势在于它如何处理镜像。它当
 
 让我们以一个基于 Django 的项目（在 Django 1.9 版本中）为例。我选择这个框架是因为它似乎是这种类型的最受欢迎的 Python 项目，所以你很有可能已经对它有所了解。这样的项目中文件的典型结构可能如下所示：
 
-[PRE3]
+```py
+$ tree . -I __pycache__ --dirsfirst
+.
+├── webxample
+│   ├── conf
+│   │   ├── __init__.py
+│   │   ├── settings.py
+│   │   ├── urls.py
+│   │   └── wsgi.py
+│   ├── locale
+│   │   ├── de
+│   │   │   └── LC_MESSAGES
+│   │   │       └── django.po
+│   │   ├── en
+│   │   │   └── LC_MESSAGES
+│   │   │       └── django.po
+│   │   └── pl
+│   │       └── LC_MESSAGES
+│   │           └── django.po
+│   ├── myapp
+│   │   ├── migrations
+│   │   │   └── __init__.py
+│   │   ├── static
+│   │   │   ├── js
+│   │   │   │   └── myapp.js
+│   │   │   └── sass
+│   │   │       └── myapp.scss
+│   │   ├── templates
+│   │   │   ├── index.html
+│   │   │   └── some_view.html
+│   │   ├── __init__.py
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── models.py
+│   │   ├── tests.py
+│   │   └── views.py
+│   ├── __init__.py
+│   └── manage.py
+├── MANIFEST.in
+├── README.md
+└── setup.py
+
+15 directories, 23 files
+
+```
 
 请注意，这与通常的 Django 项目模板略有不同。默认情况下，包含 WSGI 应用程序、设置模块和 URL 配置的包与项目名称相同。因为我们决定采用打包的方法，这将被命名为`webxample`。这可能会引起一些混淆，所以最好将其重命名为`conf`。
 
@@ -218,29 +372,194 @@ devpi 相对于 bandersnatch 的主要优势在于它如何处理镜像。它当
 
 我们在这里有点运气。 `libsass` 的 Python 绑定是 SASS 引擎的 C/C++端口，它与 `setuptools` 和 `distutils` 提供了很好的集成。只需进行少量配置，它就可以为运行 SASS 编译提供自定义的 `setup.py` 命令：
 
-[PRE4]
+```py
+from setuptools import setup
+
+setup(
+    name='webxample',
+    setup_requires=['libsass >= 0.6.0'],
+    sass_manifests={
+        'webxample.myapp': ('static/sass', 'static/css')
+    },
+)
+```
 
 因此，我们可以通过键入 `python setup.py build_scss` 来将我们的 SCSS 文件编译为 CSS，而不是手动运行 `sass` 命令或在 `setup.py` 脚本中执行子进程。这还不够。这让我们的生活变得更容易，但我们希望整个分发过程完全自动化，因此只需一个步骤即可创建新版本。为了实现这个目标，我们不得不稍微覆盖一些现有的 `setuptools` 分发命令。
 
 处理一些项目准备步骤的 `setup.py` 文件示例可能如下所示：
 
-[PRE5]
+```py
+import os
+
+from setuptools import setup
+from setuptools import find_packages
+from distutils.cmd import Command
+from distutils.command.build import build as _build
+
+try:
+    from django.core.management.commands.compilemessages \
+        import Command as CompileCommand
+except ImportError:
+    # note: during installation django may not be available
+    CompileCommand = None
+
+# this environment is requires
+os.environ.setdefault(
+    "DJANGO_SETTINGS_MODULE", "webxample.conf.settings"
+)
+
+class build_messages(Command):
+    """ Custom command for building gettext messages in Django
+    """
+    description = """compile gettext messages"""
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+
+        pass
+
+    def run(self):
+        if CompileCommand:
+            CompileCommand().handle(
+                verbosity=2, locales=[], exclude=[]
+            )
+        else:
+            raise RuntimeError("could not build translations")
+
+class build(_build):
+    """ Overriden build command that adds additional build steps
+    """
+    sub_commands = [
+        ('build_messages', None),
+        ('build_sass', None),
+    ] + _build.sub_commands
+
+setup(
+    name='webxample',
+    setup_requires=[
+        'libsass >= 0.6.0',
+        'django >= 1.9.2',
+    ],
+    install_requires=[
+        'django >= 1.9.2',
+        'gunicorn == 19.4.5',
+        'djangorestframework == 3.3.2',
+        'django-allauth == 0.24.1',
+    ],
+    packages=find_packages('.'),
+    sass_manifests={
+        'webxample.myapp': ('static/sass', 'static/css')
+    },
+    cmdclass={
+        'build_messages': build_messages,
+        'build': build,
+    },
+    entry_points={
+        'console_scripts': {
+            'webxample = webxample.manage:main',
+        }
+    }
+)
+```
 
 通过这种实现，我们可以使用这个单一的终端命令构建所有资产并为 `webxample` 项目创建源分发的软件包：
 
-[PRE6]
+```py
+$ python setup.py build sdist
+
+```
 
 如果您已经拥有自己的软件包索引（使用 `devpi` 创建），则可以添加 `install` 子命令或使用 `twine`，这样该软件包将可以在您的组织中使用 `pip` 进行安装。如果我们查看使用我们的 `setup.py` 脚本创建的源分发结构，我们可以看到它包含了从 SCSS 文件生成的编译的 `gettext` 消息和 CSS 样式表：
 
-[PRE7]
+```py
+$ tar -xvzf dist/webxample-0.0.0.tar.gz 2> /dev/null
+$ tree webxample-0.0.0/ -I __pycache__ --dirsfirst
+webxample-0.0.0/
+├── webxample
+│   ├── conf
+│   │   ├── __init__.py
+│   │   ├── settings.py
+│   │   ├── urls.py
+│   │   └── wsgi.py
+│   ├── locale
+│   │   ├── de
+│   │   │   └── LC_MESSAGES
+│   │   │       ├── django.mo
+│   │   │       └── django.po
+│   │   ├── en
+│   │   │   └── LC_MESSAGES
+│   │   │       ├── django.mo
+│   │   │       └── django.po
+│   │   └── pl
+│   │       └── LC_MESSAGES
+│   │           ├── django.mo
+│   │           └── django.po
+│   ├── myapp
+│   │   ├── migrations
+│   │   │   └── __init__.py
+│   │   ├── static
+│   │   │   ├── css
+│   │   │   │   └── myapp.scss.css
+│   │   │   └── js
+│   │   │       └── myapp.js
+│   │   ├── templates
+│   │   │   ├── index.html
+│   │   │   └── some_view.html
+│   │   ├── __init__.py
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── models.py
+│   │   ├── tests.py
+│   │   └── views.py
+│   ├── __init__.py
+│   └── manage.py
+├── webxample.egg-info
+│   ├── PKG-INFO
+│   ├── SOURCES.txt
+│   ├── dependency_links.txt
+│   ├── requires.txt
+│   └── top_level.txt
+├── MANIFEST.in
+├── PKG-INFO
+├── README.md
+├── setup.cfg
+└── setup.py
+
+16 directories, 33 files
+
+```
 
 使用这种方法的额外好处是，我们能够在 Django 的默认 `manage.py` 脚本的位置提供我们自己的项目入口点。现在我们可以使用这个入口点运行任何 Django 管理命令，例如：
 
-[PRE8]
+```py
+$ webxample migrate
+$ webxample collectstatic
+$ webxample runserver
+
+```
 
 这需要在 `manage.py` 脚本中进行一些小的更改，以便与 `setup()` 中的 `entry_points` 参数兼容，因此它的主要部分的代码被包装在 `main()` 函数调用中：
 
-[PRE9]
+```py
+#!/usr/bin/env python3
+import os
+import sys
+
+def main():
+    os.environ.setdefault(
+        "DJANGO_SETTINGS_MODULE", "webxample.conf.settings"
+    )
+
+    from django.core.management import execute_from_command_line
+
+    execute_from_command_line(sys.argv)
+
+if __name__ == "__main__":
+    main()
+```
 
 不幸的是，许多框架（包括 Django）并不是以打包项目的方式设计的。这意味着根据应用程序的进展，将其转换为包可能需要进行许多更改。在 Django 中，这通常意味着重写许多隐式导入并更新设置文件中的许多配置变量。
 
@@ -296,15 +615,42 @@ Python 社区中管理应用程序进程的两种流行工具是 Supervisor ([`s
 
 假设我们想要在 Circus 控制下使用`gunicorn` web 服务器运行 webxample 应用程序（在本章前面介绍过）。在生产环境中，我们可能会在适用的系统级进程监控工具（`initd`、`upstart`和`runit`）下运行 Circus，特别是如果它是从系统软件包存储库安装的。为了简单起见，我们将在虚拟环境内本地运行。允许我们在 Circus 中运行应用程序的最小配置文件（这里命名为`circus.ini`）如下所示：
 
-[PRE10]
+```py
+[watcher:webxample]
+cmd = /path/to/venv/dir/bin/gunicorn webxample.conf.wsgi:application
+numprocesses = 1
+```
 
 现在，`circus`进程可以使用这个配置文件作为执行参数来运行：
 
-[PRE11]
+```py
+$ circusd circus.ini
+2016-02-15 08:34:34 circus[1776] [INFO] Starting master on pid 1776
+2016-02-15 08:34:34 circus[1776] [INFO] Arbiter now waiting for commands
+2016-02-15 08:34:34 circus[1776] [INFO] webxample started
+[2016-02-15 08:34:34 +0100] [1778] [INFO] Starting gunicorn 19.4.5
+[2016-02-15 08:34:34 +0100] [1778] [INFO] Listening at: http://127.0.0.1:8000 (1778)
+[2016-02-15 08:34:34 +0100] [1778] [INFO] Using worker: sync
+[2016-02-15 08:34:34 +0100] [1781] [INFO] Booting worker with pid: 1781
+
+```
 
 现在，您可以使用`circusctl`命令来运行一个交互式会话，并使用简单的命令来控制所有受管进程。以下是这样一个会话的示例：
 
-[PRE12]
+```py
+$ circusctl
+circusctl 0.13.0
+webxample: active
+(circusctl) stop webxample
+ok
+(circusctl) status
+webxample: stopped
+(circusctl) start webxample
+ok
+(circusctl) status
+webxample: active
+
+```
 
 当然，上述两种工具都有更多功能可用。它们的所有功能都在它们的文档中有解释，因此在做出选择之前，您应该仔细阅读它们。
 
@@ -344,7 +690,10 @@ Twelve-Factor App 方法论的第九条规则涉及进程的可处置性，并�
 
 优雅的重新加载在部署 Web 应用程序中已经成为标准。Gunicorn 似乎有一种最容易使用但也给您留下最少灵活性的方法。另一方面，uWSGI 中的优雅重新加载允许更好地控制重新加载，但需要更多的努力来自动化和设置。此外，您如何处理自动部署中的优雅重新加载也受到您使用的监视工具以及其配置方式的影响。例如，在 Gunicorn 中，优雅的重新加载就像这样简单：
 
-[PRE13]
+```py
+kill -HUP <gunicorn-master-process-pid>
+
+```
 
 但是，如果您想通过为每个发布分离虚拟环境并使用符号链接配置进程监视来正确隔离项目分发（如之前在`fabfile`示例中提出的），您很快会注意到这并不像预期的那样工作。对于更复杂的部署，目前还没有可用的解决方案可以直接为您解决问题。您总是需要进行一些黑客攻击，有时这将需要对低级系统实现细节有相当高的了解。
 
@@ -382,19 +731,46 @@ Twelve-Factor App 方法论的第九条规则涉及进程的可处置性，并�
 
 Sentry 以付费软件即服务模式提供，但它是开源的，因此可以免费托管在您自己的基础设施上。提供与 Sentry 集成的库是`raven`（可在 PyPI 上获得）。如果您尚未使用过它，想要测试它但无法访问自己的 Sentry 服务器，那么您可以轻松在 Sentry 的本地服务站点上注册免费试用。一旦您可以访问 Sentry 服务器并创建了一个新项目，您将获得一个称为 DSN 或数据源名称的字符串。这个 DSN 字符串是集成应用程序与 sentry 所需的最小配置设置。它以以下形式包含协议、凭据、服务器位置和您的组织/项目标识符：
 
-[PRE14]
+```py
+'{PROTOCOL}://{PUBLIC_KEY}:{SECRET_KEY}@{HOST}/{PATH}{PROJECT_ID}'
+```
 
 一旦您获得了 DSN，集成就非常简单：
 
-[PRE15]
+```py
+from raven import Client
+
+client = Client('https://<key>:<secret>@app.getsentry.com/<project>')
+
+try:
+    1 / 0
+except ZeroDivisionError:
+    client.captureException()
+```
 
 Raven 与最流行的 Python 框架（如 Django，Flask，Celery 和 Pyramid）有许多集成，以使集成更容易。这些集成将自动提供特定于给定框架的附加上下文。如果您选择的 Web 框架没有专门的支持，`raven`软件包提供了通用的 WSGI 中间件，使其与任何基于 WSGI 的 Web 服务器兼容：
 
-[PRE16]
+```py
+from raven import Client
+from raven.middleware import Sentry
+
+# note: application is some WSGI application object defined earlier
+application = Sentry(
+    application,
+    Client('https://<key>:<secret>@app.getsentry.com/<project>')
+)
+```
 
 另一个值得注意的集成是跟踪通过 Python 内置的`logging`模块记录的消息的能力。启用此类支持仅需要几行额外的代码：
 
-[PRE17]
+```py
+from raven.handlers.logging import SentryHandler
+from raven.conf import setup_logging
+
+client = Client('https://<key>:<secret>@app.getsentry.com/<project>')
+handler = SentryHandler(client)
+setup_logging(handler)
+```
 
 捕获`logging`消息可能会有一些不明显的注意事项，因此，如果您对此功能感兴趣，请确保阅读官方文档。这应该可以避免令人不快的惊喜。
 
@@ -418,7 +794,13 @@ Munin 的主要缺点是它将图形呈现为静态图像，并且实际的绘�
 
 另一个特别容易收集自定义指标的流行解决方案是 StatsD（[`github.com/etsy/statsd`](https://github.com/etsy/statsd)）。它是一个用 Node.js 编写的网络守护程序，监听各种统计数据，如计数器、计时器和量规。由于基于 UDP 的简单协议，它非常容易集成。还可以使用名为`statsd`的 Python 包将指标发送到 StatsD 守护程序：
 
-[PRE18]
+```py
+>>> import statsd
+>>> c = statsd.StatsClient('localhost', 8125)
+>>> c.incr('foo')  # Increment the 'foo' counter.
+>>> c.timing('stats.timed', 320)  # Record a 320ms 'stats.timed'.
+
+```
 
 由于 UDP 是无连接的，它对应用程序代码的性能开销非常低，因此非常适合跟踪和测量应用程序代码内的自定义事件。
 
