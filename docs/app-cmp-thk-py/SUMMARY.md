@@ -1,3 +1,4 @@
++   [Python 应用计算思维](README.md)
 +   [前言](app-cmp-thk-py_00.md)
 +   [第一部分：引言计算思维](app-cmp-thk-py_01.md)
 +   [第一章：计算机科学基础](app-cmp-thk-py_02.md)

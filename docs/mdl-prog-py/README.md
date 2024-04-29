@@ -1,6 +1,6 @@
-# Java 云原生应用
+# Python 模块化编程
 
-> 原文：[`zh.annas-archive.org/md5/3AA62EAF8E1B76B168545ED8887A16CF`](https://zh.annas-archive.org/md5/3AA62EAF8E1B76B168545ED8887A16CF)
+> 原文：[`zh.annas-archive.org/md5/253F5AD072786A617BB26982B7C4733F`](https://zh.annas-archive.org/md5/253F5AD072786A617BB26982B7C4733F)
 > 
 > 译者：[飞龙](https://github.com/wizardforcel)
 > 

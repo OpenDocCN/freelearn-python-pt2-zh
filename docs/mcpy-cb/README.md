@@ -1,6 +1,6 @@
-# Java 云原生应用
+# MicroPython 秘籍
 
-> 原文：[`zh.annas-archive.org/md5/3AA62EAF8E1B76B168545ED8887A16CF`](https://zh.annas-archive.org/md5/3AA62EAF8E1B76B168545ED8887A16CF)
+> 原文：[`zh.annas-archive.org/md5/EE140280D367F2C84B38C2F3034D057C`](https://zh.annas-archive.org/md5/EE140280D367F2C84B38C2F3034D057C)
 > 
 > 译者：[飞龙](https://github.com/wizardforcel)
 > 

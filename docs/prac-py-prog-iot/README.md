@@ -1,6 +1,6 @@
-# Java 云原生应用
+# Python 物联网编程实践
 
-> 原文：[`zh.annas-archive.org/md5/3AA62EAF8E1B76B168545ED8887A16CF`](https://zh.annas-archive.org/md5/3AA62EAF8E1B76B168545ED8887A16CF)
+> 原文：[`zh.annas-archive.org/md5/7FABA31DD38F615362E1254C67CC152E`](https://zh.annas-archive.org/md5/7FABA31DD38F615362E1254C67CC152E)
 > 
 > 译者：[飞龙](https://github.com/wizardforcel)
 > 

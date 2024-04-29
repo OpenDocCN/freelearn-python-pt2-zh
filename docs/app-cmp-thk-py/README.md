@@ -1,6 +1,6 @@
-# Java 云原生应用
+# Python 应用计算思维
 
-> 原文：[`zh.annas-archive.org/md5/3AA62EAF8E1B76B168545ED8887A16CF`](https://zh.annas-archive.org/md5/3AA62EAF8E1B76B168545ED8887A16CF)
+> 原文：[`zh.annas-archive.org/md5/D0EC374B077B4C90AC07697977B27176`](https://zh.annas-archive.org/md5/D0EC374B077B4C90AC07697977B27176)
 > 
 > 译者：[飞龙](https://github.com/wizardforcel)
 > 

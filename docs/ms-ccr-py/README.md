@@ -1,6 +1,6 @@
-# Java 云原生应用
+# 精通 Python 并发
 
-> 原文：[`zh.annas-archive.org/md5/3AA62EAF8E1B76B168545ED8887A16CF`](https://zh.annas-archive.org/md5/3AA62EAF8E1B76B168545ED8887A16CF)
+> 原文：[`zh.annas-archive.org/md5/9D7D3F09D4C6183257545C104A0CAC2A`](https://zh.annas-archive.org/md5/9D7D3F09D4C6183257545C104A0CAC2A)
 > 
 > 译者：[飞龙](https://github.com/wizardforcel)
 > 
