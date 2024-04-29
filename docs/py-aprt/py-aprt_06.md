@@ -1,4 +1,4 @@
-## 第一章-入门
+## 第二章：入门
 
 在本章中，我们将介绍如何在 Windows、Ubuntu Linux 和 macOS 上获取和安装 Python。我们还将编写我们的第一个基本 Python 代码，并熟悉 Python 编程文化的基本知识，比如 Python 之禅，同时永远不要忘记语言名称的滑稽起源。
 
