@@ -1,6 +1,4 @@
-# 第六章
-
-使用 MQTT，Python 和 Mosquitto MQTT 代理进行网络连接
+# 第四章：使用 MQTT，Python 和 Mosquitto MQTT 代理进行网络连接
 
 在上一章中，我们使用 RESTful API 和 Web Socket 方法创建了两个 Python 服务器和相应的网页。在本章中，我们将涵盖另一种在物联网世界中常见的网络拓扑，称为**MQTT**或**消息队列遥测传输**。
 
