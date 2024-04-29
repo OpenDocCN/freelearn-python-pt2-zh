@@ -1,3 +1,4 @@
++   [MicroPython 秘籍](README.md)
 +   [前言](mcpy-cb_00.md)
 +   [第一章：开始使用 MicroPython](mcpy-cb_01.md)
 +   [第二章：控制 LED](mcpy-cb_02.md)

@@ -1,3 +1,4 @@
++   [Python 软件工程实用指南](README.md)
 +   [前言](hsn-swe-py_00.md)
 +   [第一章：编程与软件工程](hsn-swe-py_01.md)
 +   [第二章：软件开发生命周期](hsn-swe-py_02.md)

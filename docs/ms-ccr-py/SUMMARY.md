@@ -1,3 +1,4 @@
++   [精通 Python 并发](README.md)
 +   [前言](ms-ccr-py_00.md)
 +   [第一章：并发和并行编程的高级介绍](ms-ccr-py_01.md)
 +   [第二章：阿姆达尔定律](ms-ccr-py_02.md)

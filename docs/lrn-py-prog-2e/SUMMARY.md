@@ -1,3 +1,4 @@
++   [Python 编程学习手册第二版](README.md)
 +   [前言](lrn-py-prog-2e_00.md)
 +   [第一章：Python 的简介](lrn-py-prog-2e_01.md)
 +   [第二章：内置数据类型](lrn-py-prog-2e_02.md)
