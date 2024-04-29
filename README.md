@@ -12,24 +12,24 @@
 ### Docker
 
 ```
-docker pull apachecn0/apachecn-python-zh-pt2
-docker run -tid -p <port>:80 apachecn0/apachecn-python-zh-pt2
+docker pull apachecn0/freelearn-python-pt2-zh
+docker run -tid -p <port>:80 apachecn0/freelearn-python-pt2-zh
 # 访问 http://localhost:{port} 查看文档
 ```
 
 ### PYPI
 
 ```
-pip install apachecn-python-zh-pt2
-apachecn-python-zh-pt2 <port>
+pip install freelearn-python-pt2-zh
+freelearn-python-pt2-zh <port>
 # 访问 http://localhost:{port} 查看文档
 ```
 
 ### NPM
 
 ```
-npm install -g apachecn-python-zh-pt2
-apachecn-python-zh-pt2 <port>
+npm install -g freelearn-python-pt2-zh
+freelearn-python-pt2-zh <port>
 # 访问 http://localhost:{port} 查看文档
 ```
 
