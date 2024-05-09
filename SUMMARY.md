@@ -1,8 +1,6 @@
-+   [Python 应用计算思维](docs/app-cmp-thk-py/README.md)
 +   [Python 代码整洁之道](docs/cln-code-py/README.md)
 +   [Python 专家级编程第二版](docs/exp-py-prog-2e/README.md)
 +   [Python 函数式编程](docs/fp-py/README.md)
-+   [Python 区块链开发实用指南](docs/hsn-bc-py-dev/README.md)
 +   [Python 企业级应用开发实用指南](docs/hsn-etp-app-dev-py/README.md)
 +   [Python MQTT 编程实用指南](docs/hsn-mqtt-prog-py/README.md)
 +   [Python 软件工程实用指南](docs/hsn-swe-py/README.md)
